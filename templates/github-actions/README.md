@@ -15,12 +15,54 @@ When users run `/jpspec:operate` with the SRE agent, these templates are used to
 
 ## Available Templates
 
-| Stack | Template File | Description |
-|-------|--------------|-------------|
-| **Node.js/TypeScript** | `nodejs-ci-cd.yml` | npm/yarn/pnpm, TypeScript, React/Next.js, etc. |
-| **Python** | `python-ci-cd.yml` | pip/poetry/uv, Django/Flask/FastAPI, etc. |
-| **.NET** | `dotnet-ci-cd.yml` | C#, ASP.NET Core, Blazor, etc. |
-| **Go** | `go-ci-cd.yml` | Go applications and services |
+| Stack | Template File | Description | Build Tool |
+|-------|--------------|-------------|------------|
+| **Node.js/TypeScript** | `nodejs-ci-cd.yml` | npm/yarn/pnpm, TypeScript, React/Next.js, etc. | npm/yarn/pnpm |
+| **Python** | `python-ci-cd.yml` | pip/poetry/uv, Django/Flask/FastAPI, etc. | pip/poetry/uv |
+| **.NET** | `dotnet-ci-cd.yml` | C#, ASP.NET Core, Blazor, etc. | dotnet CLI |
+| **Go** | `go-ci-cd.yml` | Go applications and services | **Mage** |
+
+### Go Template (Uses Mage)
+
+The Go template uses **[Mage](https://magefile.org/)** as its build automation tool instead of Make or direct `go` commands.
+
+**Why Mage?**
+- Written in Go (no new syntax to learn)
+- Cross-platform (Windows, macOS, Linux)
+- Type-safe build definitions
+- Better IDE support and autocomplete
+- Explicit dependency management between build targets
+
+**Getting Started:**
+1. Copy `templates/github-actions/magefile.go` to your project root
+2. Copy `templates/github-actions/go-ci-cd.yml` to `.github/workflows/ci.yml`
+3. Replace template variables:
+   - `{{GO_VERSION}}` - Your Go version (e.g., "1.21")
+   - `{{PROJECT_NAME}}` - Your project name (e.g., "my-api")
+   - `{{MODULE_PATH}}` - Your Go module path (e.g., "github.com/user/project")
+4. Customize `magefile.go` for your project structure
+
+**Mage Targets Available:**
+- `mage build` - Build binary with version embedding
+- `mage buildrelease` - Build optimized production binary
+- `mage test` - Run tests with coverage
+- `mage lint` - Run golangci-lint
+- `mage security` - Run SAST (gosec) and SCA (govulncheck)
+- `mage sbom` - Generate CycloneDX SBOM (JSON + XML)
+- `mage clean` - Remove build artifacts
+- `mage ci` - Run all CI checks
+
+**Features:**
+- Go 1.21+ support
+- golangci-lint comprehensive linting
+- Race detector in tests
+- gosec SAST scanning
+- govulncheck SCA scanning
+- CycloneDX SBOM generation
+- Version embedding with git describe
+- Binary digest calculation (SHA256)
+- Optional container builds with Docker
+- Optional SLSA provenance attestation
 
 ## Template Structure
 

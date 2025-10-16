@@ -112,21 +112,20 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache-dependency-path: backend/go.sum
 
+      - name: Install Mage
+        run: go install github.com/magefile/mage@latest
+
       - name: Download dependencies
-        run: go mod download
+        run: mage installdeps
 
       - name: Verify dependencies
-        run: go mod verify
+        run: mage verify
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v4
-        with:
-          version: latest
-          working-directory: backend
-          args: --timeout=5m
+        run: mage lint
 
-      - name: Run unit tests
-        run: go test -v -race -coverprofile=coverage.out -covermode=atomic ./...
+      - name: Run tests with coverage
+        run: mage test
         env:
           DATABASE_URL: postgres://test:test@localhost:5432/test?sslmode=disable
           REDIS_URL: redis://localhost:6379
@@ -137,6 +136,21 @@ jobs:
           files: ./backend/coverage.out
           flags: backend
           fail_ci_if_error: false
+
+      - name: Run security scans
+        run: mage security
+
+      - name: Generate SBOM
+        run: mage sbom
+
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-sbom-cyclonedx
+          path: |
+            backend/sbom.json
+            backend/sbom.xml
+          retention-days: 90
 
   #==========================================================================
   # SECURITY - Outer Loop Security Scans

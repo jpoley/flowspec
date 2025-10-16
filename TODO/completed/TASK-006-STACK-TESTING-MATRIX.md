@@ -11,7 +11,7 @@
 |-------|-----------------|-------------------|-----------------|--------|-------|
 | **Node.js/TypeScript** | ✅ YES | `templates/github-actions/nodejs-ci-cd.yml` | ✅ YES | **COMPLETE** | All 3 jobs passed (build, security, SBOM) |
 | **Python** | ✅ YES | `templates/github-actions/python-ci-cd.yml` | ❌ NO | **INCOMPLETE** | Template created but NOT tested with act |
-| **Go** | ❌ NO | N/A | ❌ NO | **NOT STARTED** | No template created |
+| **Go** | ✅ YES | `templates/github-actions/go-ci-cd.yml` | ❌ NO | **CREATED** | Template with Mage build system, NOT tested yet (Task 011) |
 | **.NET (C#)** | ❌ NO | N/A | ❌ NO | **NOT STARTED** | No template created |
 | **Rust** | ❌ NO | N/A | ❌ NO | **NOT STARTED** | No template created |
 | **Java** | ❌ NO | N/A | ❌ NO | **NOT STARTED** | No template created |
@@ -96,39 +96,75 @@
 
 ---
 
-### ❌ Go - NOT CREATED
+### ✅ Go - TEMPLATE CREATED, NOT TESTED YET
 
-**Template**: ❌ Does not exist
+**Template**: `templates/github-actions/go-ci-cd.yml` (570 lines)
 
-**Why Not Created**:
-1. **Not in original task scope** - Task 006 focused on making existing agents conform to Claude Code/agents.md/inner-outer loop
-2. **No existing Go projects** in spec-kit
-3. **Lower priority** - Node.js and Python are primary languages for spec-kit
-4. **Time allocation** - Focus was on core conformance, not expanding stack coverage
+**Build System**: **Mage** (https://magefile.org/)
 
-**If Go Template Were Created, It Would Include**:
-- Go version setup (1.21+)
-- Go module dependency management
-- `go fmt` formatting check
-- `go vet` static analysis
-- `golangci-lint` comprehensive linting
-- `go test` with coverage
-- `go build` with version embedding
-- `gosec` SAST scanning
-- CycloneDX SBOM generation (cyclonedx-gomod)
-- Multi-platform builds (Linux, macOS, Windows)
-- Container image builds (multi-stage Dockerfile)
+**Reference Implementation**: `templates/github-actions/magefile.go`
 
-**Complexity**: MEDIUM-HIGH
-- Go tooling is mature and straightforward
-- SBOM generation well-supported (cyclonedx-gomod)
-- Multi-platform cross-compilation is native
-- Would take ~2-3 hours to create and test
+**Stack Implementations**:
+- `.stacks/react-frontend-go-backend/` - Updated with Mage
+- `.stacks/mobile-frontend-go-backend/` - Updated with Mage
+- `.stacks/tray-app-cross-platform/` - Updated with Mage
 
-**Priority for Future**: MEDIUM
-- Useful for backend services
-- Growing adoption in cloud-native projects
-- Not currently used in spec-kit
+**Template Features** (created but NOT tested):
+- **Go 1.21+** support
+- **Mage build automation** (replaces Make, cross-platform)
+- **Go modules** with dependency caching
+- **golangci-lint** comprehensive linting
+- **gosec** SAST scanning
+- **govulncheck** SCA scanning (replaces Nancy)
+- **CycloneDX SBOM** generation (cyclonedx-gomod)
+- **Version embedding** with git describe
+- **Binary digest** calculation (SHA256)
+- **Race detector** in tests
+- **Coverage reports** with upload to Codecov
+- **Optional container builds** (Docker multi-stage)
+- **Optional SLSA provenance** attestation
+- **CD promotion** workflow (staging → production)
+
+**Why Mage Instead of Make/Direct Go Commands**:
+1. **Written in Go** - No need to learn Make syntax
+2. **Cross-platform** - Works on Windows, macOS, Linux without modification
+3. **Type-safe** - Compile-time checking of build definitions
+4. **IDE support** - Full autocomplete and navigation
+5. **Dependency management** - Explicit target dependencies
+6. **Better error messages** - Go's error handling
+
+**Mage Targets Provided**:
+- `mage build` - Build binary with version embedding
+- `mage buildrelease` - Build optimized production binary
+- `mage test` - Run tests with coverage
+- `mage testshort` - Run short tests (excludes integration)
+- `mage lint` - Run golangci-lint
+- `mage format` - Format code with gofmt
+- `mage tidy` - Run go mod tidy
+- `mage verify` - Verify go.mod/go.sum are up to date
+- `mage security` - Run all security scans (SAST + SCA)
+- `mage securitysast` - Run gosec only
+- `mage securitysca` - Run govulncheck only
+- `mage sbom` - Generate CycloneDX SBOM (JSON + XML)
+- `mage installdeps` - Install Go dependencies
+- `mage clean` - Remove build artifacts
+- `mage all` - Run all quality checks
+- `mage ci` - Run all CI checks
+
+**What Needs Testing** (Task 011 scope):
+1. Create `.test-projects/go-test/` with minimal Go HTTP server
+2. Add `cmd/server/main.go`, `go.mod`, `go.sum`
+3. Copy magefile.go and workflow template
+4. Create act-compatible workflow (remove OIDC features)
+5. Run: `act -W .github/workflows/ci-act-test.yml`
+6. Validate: lint, test, build, security, SBOM generation
+7. Document results in `TODO/TASK-011-GO-TEST-RESULTS.md`
+
+**Estimated Testing Time**: ~30-45 minutes
+
+**Created In**: Task 011 (not part of original Task 006 scope)
+
+**Current Status**: ✅ Template created ❌ NOT tested with act yet
 
 ---
 
@@ -226,23 +262,23 @@
 
 ## Testing Gaps Summary
 
-### ✅ What Was Tested (1/2 templates created)
+### ✅ What Was Tested (1/3 templates created)
 - Node.js/TypeScript - FULLY TESTED ✅
 
-### ❌ What Was NOT Tested (1/2 templates created)
+### ❌ What Was NOT Tested (2/3 templates created)
 - Python - Template exists but NOT tested ⚠️
+- Go - Template created (Task 011) but NOT tested yet ⚠️
 
-### ❌ What Was NOT Created (4 stacks)
-- Go - No template
+### ❌ What Was NOT Created (3 stacks)
 - .NET - No template
 - Rust - No template
 - Java - No template
 
 ---
 
-## Why Go Wasn't Tested (Or Even Created)
+## Why Go Wasn't Initially Created (But Is Now)
 
-**Short Answer**: Go template was never created because it wasn't part of the original task scope.
+**Short Answer**: Go template was not created in Task 006 because it wasn't part of the original scope. However, it was later created in Task 011 using Mage build system.
 
 **Task 006 Scope**:
 > "Make all agents conform to Claude Code best practices, agents.md specification, and inner/outer loop requirements"
