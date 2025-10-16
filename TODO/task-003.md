@@ -16,6 +16,8 @@ Stacks are chosen in /jpspec.plan by combination of
 - agent project architect
 - agent platform engineer
 
+they should be in a .stacks folder and also there will need to be criteria as to which stack is chosen based on requirements.  (these stacks will improve and evolve over time)
+
 # Stacks:
     - Full Stack React
     - React Frontend - Go Backend

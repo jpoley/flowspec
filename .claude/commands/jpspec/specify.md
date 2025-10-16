@@ -10,40 +10,82 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
-## Outline
+## Execution Instructions
 
-This command creates feature specifications using a specialized PM (Product Manager) planner agent.
+This command creates comprehensive feature specifications using the PM Planner agent, integrating with /speckit.tasks for task management.
 
-1. **PM Planner Agent**: Creates PRDs (Product Requirement Documents)
-   - Analyzes product requirements from user input
-   - Creates comprehensive PRDs following best practices
-   - Manages task breakdown and prioritization
-   - Integrates with /speckit.tasks for task management
-   - Ensures specifications are clear, complete, and actionable
+### Specification Creation
 
-## Execution Flow
+Use the Task tool to launch the **product-requirements-manager-enhanced** agent with the following prompt:
 
-1. Parse user input to understand feature requirements
+```
+Create a comprehensive Product Requirement Document (PRD) for: [USER INPUT FEATURE]
 
-2. **Specification Creation**:
-   - Dispatch PM Planner agent to analyze requirements
-   - Generate Product Requirement Document (PRD)
-   - Define user stories and acceptance criteria
-   - Identify dependencies and constraints
+Context:
+[Include any research findings, business validation, or context from previous phases]
 
-3. **Task Management**:
-   - Coordinate with /speckit.tasks for task breakdown
-   - Ensure traceability between requirements and tasks
-   - Define success criteria and metrics
+Your deliverables should include:
 
-4. **Output**:
-   - Complete feature specification document
-   - PRD with detailed requirements
-   - Task breakdown and dependencies
-   - Success criteria and acceptance tests
+1. **Executive Summary**
+   - Problem statement
+   - Proposed solution
+   - Success metrics
+   - Business value
 
-## Notes
+2. **User Stories and Use Cases**
+   - Primary user personas
+   - User journey maps
+   - Detailed user stories with acceptance criteria
+   - Edge cases and error scenarios
 
-- This command is a placeholder for future agent implementation
-- Full PM Planner agent integration will be completed in a future task
-- Manages interaction with /speckit.tasks workflow
+3. **Functional Requirements**
+   - Core features and capabilities
+   - User interface requirements
+   - API requirements (if applicable)
+   - Integration requirements
+   - Data requirements
+
+4. **Non-Functional Requirements**
+   - Performance requirements (latency, throughput)
+   - Scalability requirements
+   - Security requirements
+   - Accessibility requirements (WCAG 2.1 AA)
+   - Compliance requirements
+
+5. **Task Breakdown for /speckit.tasks**
+   - Epics and user stories
+   - Task dependencies
+   - Priority ordering (P0, P1, P2)
+   - Estimated complexity (S, M, L, XL)
+   - Success criteria for each task
+
+6. **Acceptance Criteria and Testing**
+   - Acceptance test scenarios
+   - Definition of Done
+   - Quality gates
+   - Test coverage requirements
+
+7. **Dependencies and Constraints**
+   - Technical dependencies
+   - External dependencies
+   - Timeline constraints
+   - Resource constraints
+   - Risk factors
+
+8. **Success Metrics**
+   - Key Performance Indicators (KPIs)
+   - Success criteria
+   - Measurement approach
+   - Target values
+
+Please ensure the PRD is:
+- Clear and unambiguous
+- Complete and actionable
+- Traceable (requirements → tasks → tests)
+- Aligned with business objectives
+- Ready for engineering implementation
+```
+
+### Output
+
+The agent will produce a comprehensive PRD that integrates with /speckit.tasks and provides clear direction for the planning and implementation phases.

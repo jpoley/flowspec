@@ -1,11 +1,14 @@
 
 # GOAL
 
-goal make each agent have just the right MCP servers
+goal make each agent have just the right MCP servers (only)
 
 - serena 
 - github 
-- context7 
+- context7
+
+are there any others that apply to all ? 
+(be conservative here, as only load needed)
 
 propose which MCP servers go with each agent - once validated configure it.
 
@@ -25,3 +28,7 @@ propose which MCP servers go with each agent - once validated configure it.
  - Signs Binaries
  - creates SBOM
  - (only one who can marge to main)
+
+
+# REQUIRED: 
+make sure each MCP can only be executed and used by the right personas.

@@ -1,5 +1,5 @@
 
-
+# GOAL
 next goal write out each Agent in detail
 
 refer to the .agents folder if there is a close match for this agent 

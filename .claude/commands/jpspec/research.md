@@ -10,42 +10,60 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
-## Outline
+## Execution Instructions
 
-This command orchestrates research and business validation using two specialized agents:
+This command orchestrates comprehensive research and business validation using two specialized agents working sequentially.
 
-1. **Researcher Agent**: Goes out and does research on an idea
-   - Conducts market research
-   - Analyzes competitive landscape
-   - Gathers technical feasibility data
-   - Identifies industry trends and best practices
+### Phase 1: Research
 
-2. **Business Validator Agent**: Provides realistic validation based on certain criteria
-   - Evaluates business viability
-   - Assesses market potential
-   - Validates against business constraints
-   - Provides risk assessment
+Use the Task tool to launch the **researcher** agent with the following prompt:
 
-## Execution Flow
+```
+Conduct comprehensive research on: [USER INPUT TOPIC]
 
-1. Parse user input to understand research topic and validation requirements
+Provide detailed findings covering:
+1. Market Analysis: Market size, growth trends, customer segments
+2. Competitive Landscape: Key competitors, their strengths/weaknesses, market positioning
+3. Technical Feasibility: Available technologies, implementation complexity, technical risks
+4. Industry Trends: Emerging patterns, best practices, future outlook
 
-2. **Research Phase**:
-   - Dispatch Researcher agent to gather information
-   - Collect findings on market, technical, and competitive aspects
-   - Document research results
+Deliver a structured research report with:
+- Executive Summary (key findings)
+- Detailed Market Analysis
+- Competitive Analysis
+- Technical Feasibility Assessment
+- Industry Trends and Future Outlook
+- Sources and references
+```
 
-3. **Validation Phase**:
-   - Dispatch Business Validator agent with research findings
-   - Apply validation criteria (market size, feasibility, ROI potential, etc.)
-   - Generate validation report
+### Phase 2: Business Validation
 
-4. **Output**:
-   - Consolidated research document
-   - Business validation assessment
-   - Recommendations for next steps
+After receiving the research findings, use the Task tool to launch the **business-validator** agent with the following prompt:
 
-## Notes
+```
+Based on the research findings provided, conduct a comprehensive business validation assessment for: [USER INPUT TOPIC]
 
-- This command is a placeholder for future agent implementation
-- Full agent integration will be completed in a future task
+Research Context:
+[PASTE RESEARCH FINDINGS FROM PHASE 1]
+
+Provide detailed validation covering:
+1. Market Opportunity Assessment (TAM, SAM, SOM)
+2. Financial Viability Analysis (revenue model, cost structure, unit economics)
+3. Operational Feasibility (resource requirements, capability gaps)
+4. Strategic Fit Analysis
+5. Risk Analysis and Mitigation
+
+Deliver a structured validation report with:
+- Executive Assessment (Go/No-Go recommendation with confidence level)
+- Detailed Opportunity Score (1-10 across key dimensions)
+- Strengths and Opportunities
+- Weaknesses and Threats
+- Critical Assumptions
+- Risk Register
+- Financial Projections Review
+- Recommendations and Next Steps
+```
+
+### Final Output
+
+Consolidate both reports into a comprehensive research and validation package that enables informed decision-making.
