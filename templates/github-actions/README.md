@@ -1,0 +1,103 @@
+# GitHub Actions CI/CD Templates
+
+This directory contains GitHub Actions workflow templates for different tech stacks. These templates implement the **Outer Loop** principles defined in `docs/reference/outer-loop.md`.
+
+## Purpose
+
+When users run `/jpspec:operate` with the SRE agent, these templates are used to generate CI/CD pipelines specific to their tech stack. Each template follows the outer-loop principles:
+
+- **Build once** in dev/CI, promote everywhere else
+- **SBOM generation** for supply chain security
+- **Artifact attestation** (SLSA provenance)
+- **Security scanning** (SAST, DAST, SCA)
+- **Environment-agnostic artifacts** with externalized configuration
+- **Automated deployment** with GitOps
+
+## Available Templates
+
+| Stack | Template File | Description |
+|-------|--------------|-------------|
+| **Node.js/TypeScript** | `nodejs-ci-cd.yml` | npm/yarn/pnpm, TypeScript, React/Next.js, etc. |
+| **Python** | `python-ci-cd.yml` | pip/poetry/uv, Django/Flask/FastAPI, etc. |
+| **.NET** | `dotnet-ci-cd.yml` | C#, ASP.NET Core, Blazor, etc. |
+| **Go** | `go-ci-cd.yml` | Go applications and services |
+
+## Template Structure
+
+Each template follows this structure:
+
+1. **Build** - Compile/bundle application, run tests
+2. **Security Scan** - SAST, SCA, dependency scanning
+3. **SBOM Generation** - Create Software Bill of Materials
+4. **Artifact Creation** - Build container or package
+5. **Attestation** - Sign and attest build provenance (SLSA)
+6. **Promotion** - Deploy to staging/production
+
+## Usage by SRE Agent
+
+The `sre-agent` (invoked via `/jpspec:operate`) uses these templates to:
+
+1. Detect the project's tech stack
+2. Select the appropriate template
+3. Customize it based on project requirements
+4. Generate `.github/workflows/` files in the user's project
+
+## Customization Variables
+
+Templates use these placeholders for customization:
+
+- `{{PROJECT_NAME}}` - Project name
+- `{{NODE_VERSION}}` - Node.js version (e.g., "20")
+- `{{PYTHON_VERSION}}` - Python version (e.g., "3.11")
+- `{{DOTNET_VERSION}}` - .NET version (e.g., "8.0")
+- `{{GO_VERSION}}` - Go version (e.g., "1.21")
+- `{{PACKAGE_MANAGER}}` - npm, yarn, pnpm, pip, poetry, uv, etc.
+- `{{BUILD_COMMAND}}` - Stack-specific build command
+- `{{TEST_COMMAND}}` - Stack-specific test command
+- `{{ARTIFACT_PATH}}` - Path to built artifacts
+
+## Outer Loop Compliance
+
+All templates enforce:
+
+### Critical Requirements
+- ✅ **Build once in CI** - Never rebuild for other environments
+- ✅ **Immutable artifacts** - Use content-addressable digests
+- ✅ **SBOM generation** - Track all dependencies
+- ✅ **Provenance attestation** - SLSA build provenance
+- ✅ **Security scanning** - Automated vulnerability detection
+- ✅ **No secrets in artifacts** - Externalized configuration
+
+### Anti-Patterns Prevented
+- ❌ Never rebuild for staging/production
+- ❌ Never embed environment config in artifacts
+- ❌ Never skip security scans
+- ❌ Never deploy unsigned artifacts
+
+## Integration with Inner Loop
+
+These outer-loop templates complement the inner-loop scripts:
+
+| Inner Loop (Local) | Outer Loop (CI/CD) |
+|-------------------|-------------------|
+| `scripts/bash/run-local-ci.sh` | GitHub Actions workflows |
+| Pre-commit hooks | PR validation |
+| Local testing | Multi-environment testing |
+| Fast iteration | Comprehensive validation |
+
+## Adding New Stack Templates
+
+To add a new stack:
+
+1. Create `templates/github-actions/{stack}-ci-cd.yml`
+2. Follow the template structure above
+3. Include all outer-loop requirements
+4. Add to this README
+5. Update `sre-agent` detection logic in `.claude/commands/jpspec/operate.md`
+
+## References
+
+- [Outer Loop Principles](../../docs/reference/outer-loop.md)
+- [Inner Loop Principles](../../docs/reference/inner-loop.md)
+- [Agent Loop Classification](../../docs/reference/agent-loop-classification.md)
+- [SRE Agent Command](../../.claude/commands/jpspec/operate.md)

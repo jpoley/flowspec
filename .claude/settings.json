@@ -1,0 +1,27 @@
+{
+  "description": "Claude Code settings for JP Spec Kit project",
+  "projectName": "JP Spec Kit",
+  "allowedTools": [
+    "Read",
+    "Write",
+    "Edit",
+    "Glob",
+    "Grep",
+    "Bash",
+    "WebFetch",
+    "WebSearch",
+    "Task",
+    "TodoWrite"
+  ],
+  "preferences": {
+    "codeStyle": "ruff",
+    "testFramework": "pytest",
+    "packageManager": "uv"
+  },
+  "hooks": {
+    "pre-commit": {
+      "enabled": false,
+      "command": "ruff check . && ruff format . && pytest tests/"
+    }
+  }
+}

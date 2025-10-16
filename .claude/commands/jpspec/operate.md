@@ -47,6 +47,19 @@ Define and implement:
 
 ## 2. CI/CD Pipeline Architecture (GitHub Actions)
 
+**IMPORTANT**: Use the stack-specific CI/CD templates from `templates/github-actions/`:
+- `nodejs-ci-cd.yml` for Node.js/TypeScript projects
+- `python-ci-cd.yml` for Python projects
+- `dotnet-ci-cd.yml` for .NET projects
+- `go-ci-cd.yml` for Go projects
+
+These templates implement outer-loop principles:
+- Build once in CI, promote everywhere (NO rebuilding)
+- SBOM generation (CycloneDX format)
+- SLSA build provenance attestation
+- Security scanning (SAST, SCA)
+- Immutable artifacts with digest verification
+
 Design and implement:
 
 - **Build Pipeline**
@@ -55,6 +68,7 @@ Design and implement:
   - Multi-stage builds for optimization
   - Build artifact generation
   - SBOM generation
+  - **Artifact digest calculation** for immutability
 
 - **Test Pipeline**
   - Unit tests
@@ -65,7 +79,8 @@ Design and implement:
   - Parallel test execution
 
 - **Deployment Pipeline**
-  - Automated deployments to staging/production
+  - **Promote artifacts** (never rebuild)
+  - **Digest verification** before deployment
   - GitOps workflow
   - Progressive delivery (canary/blue-green)
   - Automated rollback on failure
