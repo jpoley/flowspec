@@ -1,0 +1,155 @@
+{
+  "description": "Configuration mapping for jp-spec-kit agents following agents.md specification",
+  "agents": {
+    "sre-agent": {
+      "file": "sre-agent.md",
+      "role": "Site Reliability Engineer",
+      "workflows": ["operate"],
+      "loop": "outer",
+      "description": "CI/CD, Kubernetes, DevSecOps, observability, and operational excellence"
+    },
+    "software-architect-enhanced": {
+      "file": "software-architect-enhanced.md",
+      "role": "Enterprise Software Architect",
+      "workflows": ["plan"],
+      "loop": "inner",
+      "description": "System architecture using Hohpe's principles, Enterprise Integration Patterns"
+    },
+    "platform-engineer-enhanced": {
+      "file": "platform-engineer-enhanced.md",
+      "role": "Platform Engineer",
+      "workflows": ["plan"],
+      "loop": "inner",
+      "description": "DevOps/CI/CD, DORA metrics, NIST/SSDF compliance"
+    },
+    "product-requirements-manager-enhanced": {
+      "file": "product-requirements-manager-enhanced.md",
+      "role": "Product Requirements Manager",
+      "workflows": ["specify"],
+      "loop": "inner",
+      "description": "Product management using SVPG principles, outcomes over outputs"
+    },
+    "researcher": {
+      "file": "researcher.md",
+      "role": "Research Analyst",
+      "workflows": ["research"],
+      "loop": "inner",
+      "description": "Market research, competitive intelligence, technical feasibility"
+    },
+    "business-validator": {
+      "file": "business-validator.md",
+      "role": "Business Validator",
+      "workflows": ["research"],
+      "loop": "inner",
+      "description": "Business viability, financial feasibility, risk analysis"
+    },
+    "frontend-engineer": {
+      "file": "frontend-engineer.md",
+      "role": "Frontend Engineer",
+      "workflows": ["implement"],
+      "loop": "inner",
+      "description": "React, React Native, TypeScript, performance, accessibility"
+    },
+    "backend-engineer": {
+      "file": "backend-engineer.md",
+      "role": "Backend Engineer",
+      "workflows": ["implement"],
+      "loop": "inner",
+      "description": "Go, TypeScript, Python, CLI tools, APIs, middleware"
+    },
+    "ai-ml-engineer": {
+      "file": "ai-ml-engineer.md",
+      "role": "AI/ML Engineer",
+      "workflows": ["implement"],
+      "loop": "inner",
+      "description": "MLOps, model development, deployment, monitoring"
+    },
+    "frontend-code-reviewer": {
+      "file": "frontend-code-reviewer.md",
+      "role": "Frontend Code Reviewer",
+      "workflows": ["implement"],
+      "loop": "inner",
+      "description": "Frontend code review focusing on quality, performance, accessibility"
+    },
+    "backend-code-reviewer": {
+      "file": "backend-code-reviewer.md",
+      "role": "Backend Code Reviewer",
+      "workflows": ["implement"],
+      "loop": "inner",
+      "description": "Backend code review focusing on security, performance, scalability"
+    },
+    "quality-guardian": {
+      "file": "quality-guardian.md",
+      "role": "Quality Guardian",
+      "workflows": ["validate"],
+      "loop": "inner",
+      "description": "Risk analysis, quality assessment, critical evaluation"
+    },
+    "secure-by-design-engineer": {
+      "file": "secure-by-design-engineer.md",
+      "role": "Security Engineer",
+      "workflows": ["validate"],
+      "loop": "inner",
+      "description": "Security analysis, threat modeling, compliance"
+    },
+    "tech-writer": {
+      "file": "tech-writer.md",
+      "role": "Technical Writer",
+      "workflows": ["validate"],
+      "loop": "inner",
+      "description": "Documentation, API references, user guides, tutorials"
+    },
+    "release-manager": {
+      "file": "release-manager.md",
+      "role": "Release Manager",
+      "workflows": ["validate"],
+      "loop": "outer",
+      "description": "Release coordination, quality validation, deployment management"
+    }
+  },
+  "workflows": {
+    "specify": {
+      "description": "Create/update feature specs (PM planner agent)",
+      "agents": ["product-requirements-manager-enhanced"],
+      "phase": "requirements"
+    },
+    "plan": {
+      "description": "Execute planning workflow (architect + platform engineer)",
+      "agents": ["software-architect-enhanced", "platform-engineer-enhanced"],
+      "phase": "architecture",
+      "parallel": true
+    },
+    "research": {
+      "description": "Execute research and validation (researcher + business validator)",
+      "agents": ["researcher", "business-validator"],
+      "phase": "research",
+      "parallel": true
+    },
+    "implement": {
+      "description": "Execute implementation (engineers + code reviewers)",
+      "agents": [
+        "frontend-engineer",
+        "backend-engineer",
+        "ai-ml-engineer",
+        "frontend-code-reviewer",
+        "backend-code-reviewer"
+      ],
+      "phase": "development"
+    },
+    "validate": {
+      "description": "Execute QA and validation (QA + security + docs + release)",
+      "agents": [
+        "quality-guardian",
+        "secure-by-design-engineer",
+        "tech-writer",
+        "release-manager"
+      ],
+      "phase": "validation"
+    },
+    "operate": {
+      "description": "Execute operations (SRE agent for CI/CD + K8s + DevSecOps)",
+      "agents": ["sre-agent"],
+      "phase": "operations"
+    }
+  }
+}
