@@ -159,7 +159,7 @@ BANNER = """
 ╚══════╝╚═╝     ╚══════╝ ╚═════╝╚═╝╚═╝        ╚═╝   
 """
 
-TAGLINE = "GitHub Spec Kit - Spec-Driven Development Toolkit"
+TAGLINE = "(jp extension to) GitHub Spec Kit - Spec-Driven Development Toolkit"
 
 # Repository configuration for two-stage download
 BASE_REPO_OWNER = "github"
