@@ -1,29 +1,65 @@
 <div align="center">
     <img src="./media/logo_small.webp"/>
-    <h1>🌱 Spec Kit</h1>
-    <h3><em>Build high-quality software faster.</em></h3>
+    <h1>🌱 JP Spec Kit</h1>
+    <h3><em>Build high-quality software faster with multi-language expertise and advanced agent orchestration.</em></h3>
 </div>
 
 <p align="center">
-    <strong>An open source toolkit that allows you to focus on product scenarios and predictable outcomes instead of vibe coding every piece from scratch.</strong>
+    <strong>A layered extension of GitHub's spec-kit that adds multi-language support, expert knowledge bases, and sophisticated multi-agent workflows.</strong>
 </p>
 
 <p align="center">
-    <a href="https://github.com/github/spec-kit/actions/workflows/release.yml"><img src="https://github.com/github/spec-kit/actions/workflows/release.yml/badge.svg" alt="Release"/></a>
-    <a href="https://github.com/github/spec-kit/stargazers"><img src="https://img.shields.io/github/stars/github/spec-kit?style=social" alt="GitHub stars"/></a>
-    <a href="https://github.com/github/spec-kit/blob/main/LICENSE"><img src="https://img.shields.io/github/license/github/spec-kit" alt="License"/></a>
-    <a href="https://github.github.io/spec-kit/"><img src="https://img.shields.io/badge/docs-GitHub_Pages-blue" alt="Documentation"/></a>
+    <a href="https://github.com/jpoley/jp-spec-kit/actions/workflows/release.yml"><img src="https://github.com/jpoley/jp-spec-kit/actions/workflows/release.yml/badge.svg" alt="Release"/></a>
+    <a href="https://github.com/jpoley/jp-spec-kit/stargazers"><img src="https://img.shields.io/github/stars/jpoley/jp-spec-kit?style=social" alt="GitHub stars"/></a>
+    <a href="https://github.com/jpoley/jp-spec-kit/blob/main/LICENSE"><img src="https://img.shields.io/github/license/jpoley/jp-spec-kit" alt="License"/></a>
 </p>
 
 ---
 
+## 🎯 What Makes JP Spec Kit Different?
+
+JP Spec Kit is a **layered extension** of GitHub's [spec-kit](https://github.com/github/spec-kit) that:
+
+- ✨ **Extends base spec-kit** - Automatically stays up-to-date with upstream features
+- 🌍 **Multi-language expertise** - 12+ language ecosystems with expert knowledge bases
+- 🤖 **Advanced orchestration** - Multi-agent workflows (parallel architects, code reviewers, etc.)
+- 📚 **Expert personas** - Language-specific best practices from thought leaders
+- 🔄 **Two-stage architecture** - Downloads base spec-kit + jp-spec-kit overlay with smart merge
+- ⬆️ **Upgrade support** - Sync with latest upstream while keeping customizations
+
+### Architecture: Layered Extension Model
+
+```
+┌─────────────────────────────────────────┐
+│  Your Project                           │
+│  ┌───────────────────────────────────┐  │
+│  │ JP Spec Kit Extension (Layer 2)  │  │
+│  │ • jpspec:* commands               │  │
+│  │ • .languages/ expertise           │  │
+│  │ • Multi-agent workflows           │  │
+│  │ • Expert personas                 │  │
+│  └───────────────────────────────────┘  │
+│  ┌───────────────────────────────────┐  │
+│  │ Base Spec Kit (Layer 1)          │  │
+│  │ • /speckit.* commands             │  │
+│  │ • Core templates                  │  │
+│  │ • Setup scripts                   │  │
+│  └───────────────────────────────────┘  │
+└─────────────────────────────────────────┘
+```
+
+**Precedence**: Extension overrides base where conflicts exist.
+
 ## Table of Contents
 
+- [🎯 What Makes JP Spec Kit Different?](#-what-makes-jp-spec-kit-different)
 - [🤔 What is Spec-Driven Development?](#-what-is-spec-driven-development)
 - [⚡ Get Started](#-get-started)
 - [📽️ Video Overview](#️-video-overview)
 - [🤖 Supported AI Agents](#-supported-ai-agents)
 - [🔧 Specify CLI Reference](#-specify-cli-reference)
+- [🌐 Multi-Language Support](#-multi-language-support)
+- [🚀 Advanced jpspec Commands](#-advanced-jpspec-commands)
 - [📚 Core Philosophy](#-core-philosophy)
 - [🌟 Development Phases](#-development-phases)
 - [🎯 Experimental Goals](#-experimental-goals)
@@ -57,11 +93,17 @@ uv tool install specify-cli --from git+https://github.com/jpoley/jp-spec-kit.git
 Then use the tool directly:
 
 ```bash
+# Initialize with two-stage layered download (default)
 specify init <PROJECT_NAME>
+
+# Check installation
 specify check
+
+# Upgrade to latest base + extension
+specify upgrade
 ```
 
-To upgrade specify run:
+To upgrade specify CLI itself:
 
 ```bash
 uv tool install specify-cli --force --from git+https://github.com/jpoley/jp-spec-kit.git
@@ -75,12 +117,21 @@ Run directly without installing:
 uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init <PROJECT_NAME>
 ```
 
+#### Option 3: Version Pinning
+
+Lock to specific versions of base and extension:
+
+```bash
+specify init my-project --base-version 0.0.20 --extension-version 0.0.20
+```
+
 **Benefits of persistent installation:**
 
 - Tool stays installed and available in PATH
 - No need to create shell aliases
 - Better tool management with `uv tool list`, `uv tool upgrade`, `uv tool uninstall`
 - Cleaner shell configuration
+- Support for `specify upgrade` command
 
 ### 2. Establish project principles
 
@@ -156,7 +207,8 @@ The `specify` command supports the following options:
 
 | Command     | Description                                                    |
 |-------------|----------------------------------------------------------------|
-| `init`      | Initialize a new Specify project from the latest template      |
+| `init`      | Initialize a new Specify project with two-stage layered download (base + extension) |
+| `upgrade`   | Upgrade existing project to latest base spec-kit and jp-spec-kit extension |
 | `check`     | Check for installed tools (`git`, `claude`, `gemini`, `code`/`code-insiders`, `cursor-agent`, `windsurf`, `qwen`, `opencode`, `codex`) |
 
 ### `specify init` Arguments & Options
@@ -166,6 +218,9 @@ The `specify` command supports the following options:
 | `<project-name>`       | Argument | Name for your new project directory (optional if using `--here`, or use `.` for current directory) |
 | `--ai`                 | Option   | AI assistant to use: `claude`, `gemini`, `copilot`, `cursor-agent`, `qwen`, `opencode`, `codex`, `windsurf`, `kilocode`, `auggie`, `roo`, `codebuddy`, or `q` |
 | `--script`             | Option   | Script variant to use: `sh` (bash/zsh) or `ps` (PowerShell)                 |
+| `--base-version`       | Option   | Specific version of base spec-kit to use (default: `latest`)                |
+| `--extension-version`  | Option   | Specific version of jp-spec-kit extension to use (default: `latest`)        |
+| `--layered/--no-layered` | Flag   | Use two-stage layered download (default: `--layered`)                       |
 | `--ignore-agent-tools` | Flag     | Skip checks for AI agent tools like Claude Code                             |
 | `--no-git`             | Flag     | Skip git repository initialization                                          |
 | `--here`               | Flag     | Initialize project in the current directory instead of creating a new one   |
@@ -174,14 +229,34 @@ The `specify` command supports the following options:
 | `--debug`              | Flag     | Enable detailed debug output for troubleshooting                            |
 | `--github-token`       | Option   | GitHub token for API requests (or set GH_TOKEN/GITHUB_TOKEN env variable)  |
 
+### `specify upgrade` Options
+
+Upgrade an existing Specify project to the latest versions of base spec-kit and jp-spec-kit extension.
+
+| Option                 | Type     | Description                                                                  |
+|------------------------|----------|------------------------------------------------------------------------------|
+| `--base-version`       | Option   | Specific version of base spec-kit to upgrade to (default: `latest`)         |
+| `--extension-version`  | Option   | Specific version of jp-spec-kit extension to upgrade to (default: `latest`) |
+| `--dry-run`            | Flag     | Preview what would be upgraded without making changes                       |
+| `--templates-only`     | Flag     | Only update templates, skip other files                                     |
+| `--skip-tls`           | Flag     | Skip SSL/TLS verification (not recommended)                                 |
+| `--debug`              | Flag     | Show verbose diagnostic output                                              |
+| `--github-token`       | Option   | GitHub token to use for API requests                                        |
+
 ### Examples
 
 ```bash
-# Basic project initialization
+# Basic project initialization (two-stage: base + extension)
 specify init my-project
 
 # Initialize with specific AI assistant
 specify init my-project --ai claude
+
+# Pin to specific versions (reproducible builds)
+specify init my-project --base-version 0.0.20 --extension-version 0.0.20
+
+# Initialize with base spec-kit only (no jp-spec-kit extension)
+specify init my-project --no-layered
 
 # Initialize with Cursor support
 specify init my-project --ai cursor-agent
@@ -213,13 +288,25 @@ specify init my-project --ai claude --github-token ghp_your_token_here
 
 # Check system requirements
 specify check
+
+# Upgrade existing project to latest versions
+specify upgrade
+
+# Preview upgrade changes without applying them
+specify upgrade --dry-run
+
+# Upgrade with pinned versions
+specify upgrade --base-version 0.0.21 --extension-version 0.0.21
+
+# Upgrade only templates (skip scripts and other files)
+specify upgrade --templates-only
 ```
 
 ### Available Slash Commands
 
 After running `specify init`, your AI coding agent will have access to these slash commands for structured development:
 
-#### Core Commands
+#### Core Commands (from base spec-kit)
 
 Essential commands for the Spec-Driven Development workflow:
 
@@ -231,7 +318,7 @@ Essential commands for the Spec-Driven Development workflow:
 | `/speckit.tasks`         | Generate actionable task lists for implementation                     |
 | `/speckit.implement`     | Execute all tasks to build the feature according to the plan         |
 
-#### Optional Commands
+#### Optional Commands (from base spec-kit)
 
 Additional commands for enhanced quality and validation:
 
@@ -240,6 +327,83 @@ Additional commands for enhanced quality and validation:
 | `/speckit.clarify`   | Clarify underspecified areas (recommended before `/speckit.plan`; formerly `/quizme`) |
 | `/speckit.analyze`   | Cross-artifact consistency & coverage analysis (run after `/speckit.tasks`, before `/speckit.implement`) |
 | `/speckit.checklist` | Generate custom quality checklists that validate requirements completeness, clarity, and consistency (like "unit tests for English") |
+
+## 🚀 Advanced jpspec Commands
+
+JP Spec Kit extends base spec-kit with advanced multi-agent orchestration commands:
+
+| Command              | Description                                                           |
+|----------------------|-----------------------------------------------------------------------|
+| `/jpspec:specify`    | Product Requirements Manager using SVPG Product Operating Model      |
+| `/jpspec:plan`       | Multi-agent architecture planning (Architect + Platform Engineer in parallel) |
+| `/jpspec:research`   | Market research with Researcher + Business Validator (TAM/SAM/SOM)   |
+| `/jpspec:implement`  | Multi-agent implementation with code review gates (Frontend/Backend/AI-ML + Reviewers) |
+| `/jpspec:validate`   | QA, Security, Documentation, and Release validation workflow         |
+| `/jpspec:operate`    | SRE operations for CI/CD, Kubernetes, and DevSecOps                  |
+
+### jpspec Command Workflows
+
+**Product Discovery** (`/jpspec:specify`):
+- Product Manager persona with SVPG methodology
+- User story mapping and job stories
+- Outcome-based requirements
+
+**Architecture** (`/jpspec:plan`):
+- Parallel execution: Software Architect + Platform Engineer
+- System design with C4 diagrams
+- Infrastructure and deployment planning
+
+**Market Research** (`/jpspec:research`):
+- Researcher: competitive analysis, market trends
+- Business Validator: TAM/SAM/SOM calculations
+- Go-to-market strategy validation
+
+**Implementation** (`/jpspec:implement`):
+- Frontend Engineer → Frontend Code Reviewer
+- Backend Engineer → Backend Code Reviewer  
+- AI/ML Engineer (parallel with others)
+- Sequential review gates ensure quality
+
+**Quality Assurance** (`/jpspec:validate`):
+- QA Engineer: test plans and automation
+- Security Engineer: threat modeling, OWASP compliance
+- Technical Writer: documentation review
+- Release Manager: deployment checklist
+
+**Operations** (`/jpspec:operate`):
+- SRE: CI/CD pipelines, monitoring, alerting
+- Kubernetes: container orchestration, scaling
+- DevSecOps: security scanning, compliance
+
+## 🌐 Multi-Language Support
+
+JP Spec Kit includes expert knowledge bases for 12+ language ecosystems:
+
+### Supported Languages
+
+- **Python** - Guido van Rossum, Raymond Hettinger expertise
+- **Go** - Rob Pike, Dave Cheney best practices
+- **Rust** - Systems programming, memory safety
+- **Java** - Enterprise patterns, Spring ecosystem
+- **Kotlin** - Android development, coroutines
+- **TypeScript/JavaScript** - Modern web development
+- **C/C++** - Systems programming, performance
+- **C#** - .NET ecosystem, Azure integration
+- **Web** - HTML, CSS, accessibility, performance
+- **Mobile** - iOS, Android, cross-platform
+- **Systems** - Operating systems, embedded
+
+### Language Knowledge Structure
+
+Each language has:
+
+```
+.languages/<language>/
+├── experts/           # Thought leaders and their philosophies
+├── agent-personas/    # Specialized agent roles (architect, backend, etc.)
+├── resources/         # Documentation, books, papers, videos
+└── principles/        # Core philosophy and best practices
+```
 
 ### Environment Variables
 

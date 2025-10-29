@@ -160,6 +160,15 @@ BANNER = """
 """
 
 TAGLINE = "GitHub Spec Kit - Spec-Driven Development Toolkit"
+
+# Repository configuration for two-stage download
+BASE_REPO_OWNER = "github"
+BASE_REPO_NAME = "spec-kit"
+BASE_REPO_DEFAULT_VERSION = "latest"  # or specific version like "0.0.20"
+
+EXTENSION_REPO_OWNER = "jpoley"
+EXTENSION_REPO_NAME = "jp-spec-kit"
+EXTENSION_REPO_DEFAULT_VERSION = "latest"
 class StepTracker:
     """Track and render hierarchical steps without emojis, similar to Claude Code tree output.
     Supports live auto-refresh via an attached refresh callback.
@@ -485,15 +494,26 @@ def init_git_repo(project_path: Path, quiet: bool = False) -> Tuple[bool, Option
     finally:
         os.chdir(original_cwd)
 
-def download_template_from_github(ai_assistant: str, download_dir: Path, *, script_type: str = "sh", verbose: bool = True, show_progress: bool = True, client: httpx.Client = None, debug: bool = False, github_token: str = None) -> Tuple[Path, dict]:
-    repo_owner = "github"
-    repo_name = "spec-kit"
+def download_template_from_github(ai_assistant: str, download_dir: Path, *, script_type: str = "sh", verbose: bool = True, show_progress: bool = True, client: httpx.Client = None, debug: bool = False, github_token: str = None, repo_owner: str = None, repo_name: str = None, version: str = None) -> Tuple[Path, dict]:
+    # Use provided repo or default to base spec-kit
+    if repo_owner is None:
+        repo_owner = BASE_REPO_OWNER
+    if repo_name is None:
+        repo_name = BASE_REPO_NAME
+    if version is None:
+        version = BASE_REPO_DEFAULT_VERSION
+    
     if client is None:
         client = httpx.Client(verify=ssl_context)
 
     if verbose:
-        console.print("[cyan]Fetching latest release information...[/cyan]")
-    api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/releases/latest"
+        console.print(f"[cyan]Fetching release information from {repo_owner}/{repo_name}...[/cyan]")
+    
+    # Construct API URL based on version
+    if version == "latest":
+        api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/releases/latest"
+    else:
+        api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/releases/tags/{version}"
 
     try:
         response = client.get(
@@ -595,7 +615,181 @@ def download_template_from_github(ai_assistant: str, download_dir: Path, *, scri
     }
     return zip_path, metadata
 
-def download_and_extract_template(project_path: Path, ai_assistant: str, script_type: str, is_current_dir: bool = False, *, verbose: bool = True, tracker: StepTracker | None = None, client: httpx.Client = None, debug: bool = False, github_token: str = None) -> Path:
+def download_and_extract_two_stage(project_path: Path, ai_assistant: str, script_type: str, is_current_dir: bool = False, *, verbose: bool = True, tracker: StepTracker | None = None, client: httpx.Client = None, debug: bool = False, github_token: str = None, base_version: str = None, extension_version: str = None) -> Path:
+    """Two-stage download: base spec-kit + jp-spec-kit extension overlay.
+    Returns project_path. Uses tracker if provided.
+    """
+    current_dir = Path.cwd()
+    
+    # Stage 1: Download base spec-kit
+    if tracker:
+        tracker.start("fetch-base", f"downloading from {BASE_REPO_OWNER}/{BASE_REPO_NAME}")
+    
+    try:
+        base_zip, base_meta = download_template_from_github(
+            ai_assistant,
+            current_dir,
+            script_type=script_type,
+            verbose=verbose and tracker is None,
+            show_progress=(tracker is None),
+            client=client,
+            debug=debug,
+            github_token=github_token,
+            repo_owner=BASE_REPO_OWNER,
+            repo_name=BASE_REPO_NAME,
+            version=base_version or BASE_REPO_DEFAULT_VERSION
+        )
+        if tracker:
+            tracker.complete("fetch-base", f"base {base_meta['release']} ({base_meta['size']:,} bytes)")
+    except Exception as e:
+        if tracker:
+            tracker.error("fetch-base", str(e))
+        raise
+    
+    # Stage 2: Download jp-spec-kit extension
+    if tracker:
+        tracker.start("fetch-extension", f"downloading from {EXTENSION_REPO_OWNER}/{EXTENSION_REPO_NAME}")
+    
+    try:
+        ext_zip, ext_meta = download_template_from_github(
+            ai_assistant,
+            current_dir,
+            script_type=script_type,
+            verbose=verbose and tracker is None,
+            show_progress=(tracker is None),
+            client=client,
+            debug=debug,
+            github_token=github_token,
+            repo_owner=EXTENSION_REPO_OWNER,
+            repo_name=EXTENSION_REPO_NAME,
+            version=extension_version or EXTENSION_REPO_DEFAULT_VERSION
+        )
+        if tracker:
+            tracker.complete("fetch-extension", f"extension {ext_meta['release']} ({ext_meta['size']:,} bytes)")
+    except Exception as e:
+        if tracker:
+            tracker.error("fetch-extension", str(e))
+        raise
+    
+    # Extract base first
+    if tracker:
+        tracker.start("extract-base")
+    
+    try:
+        if not is_current_dir:
+            project_path.mkdir(parents=True, exist_ok=True)
+        
+        with zipfile.ZipFile(base_zip, 'r') as zip_ref:
+            if is_current_dir:
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    temp_path = Path(temp_dir)
+                    zip_ref.extractall(temp_path)
+                    
+                    extracted_items = list(temp_path.iterdir())
+                    source_dir = temp_path
+                    if len(extracted_items) == 1 and extracted_items[0].is_dir():
+                        source_dir = extracted_items[0]
+                    
+                    for item in source_dir.iterdir():
+                        dest_path = project_path / item.name
+                        if item.is_dir():
+                            shutil.copytree(item, dest_path, dirs_exist_ok=True)
+                        else:
+                            shutil.copy2(item, dest_path)
+            else:
+                zip_ref.extractall(project_path)
+                extracted_items = list(project_path.iterdir())
+                if len(extracted_items) == 1 and extracted_items[0].is_dir():
+                    nested_dir = extracted_items[0]
+                    temp_move_dir = project_path.parent / f"{project_path.name}_temp"
+                    shutil.move(str(nested_dir), str(temp_move_dir))
+                    project_path.rmdir()
+                    shutil.move(str(temp_move_dir), str(project_path))
+        
+        if tracker:
+            tracker.complete("extract-base", "base templates extracted")
+    except Exception as e:
+        if tracker:
+            tracker.error("extract-base", str(e))
+        raise
+    finally:
+        if base_zip.exists():
+            base_zip.unlink()
+    
+    # Extract extension (overlay on top of base)
+    if tracker:
+        tracker.start("extract-extension")
+    
+    try:
+        with zipfile.ZipFile(ext_zip, 'r') as zip_ref:
+            if is_current_dir:
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    temp_path = Path(temp_dir)
+                    zip_ref.extractall(temp_path)
+                    
+                    extracted_items = list(temp_path.iterdir())
+                    source_dir = temp_path
+                    if len(extracted_items) == 1 and extracted_items[0].is_dir():
+                        source_dir = extracted_items[0]
+                    
+                    for item in source_dir.iterdir():
+                        dest_path = project_path / item.name
+                        if item.is_dir():
+                            # Recursively merge directories (extension overrides base)
+                            if dest_path.exists():
+                                for sub_item in item.rglob('*'):
+                                    if sub_item.is_file():
+                                        rel_path = sub_item.relative_to(item)
+                                        dest_file = dest_path / rel_path
+                                        dest_file.parent.mkdir(parents=True, exist_ok=True)
+                                        shutil.copy2(sub_item, dest_file)
+                            else:
+                                shutil.copytree(item, dest_path, dirs_exist_ok=True)
+                        else:
+                            # File overwrites (extension wins)
+                            shutil.copy2(item, dest_path)
+            else:
+                # Extract to temp, then merge
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    temp_path = Path(temp_dir)
+                    zip_ref.extractall(temp_path)
+                    
+                    extracted_items = list(temp_path.iterdir())
+                    source_dir = temp_path
+                    if len(extracted_items) == 1 and extracted_items[0].is_dir():
+                        source_dir = extracted_items[0]
+                    
+                    for item in source_dir.iterdir():
+                        dest_path = project_path / item.name
+                        if item.is_dir():
+                            if dest_path.exists():
+                                # Merge directory contents
+                                for sub_item in item.rglob('*'):
+                                    if sub_item.is_file():
+                                        rel_path = sub_item.relative_to(item)
+                                        dest_file = dest_path / rel_path
+                                        dest_file.parent.mkdir(parents=True, exist_ok=True)
+                                        shutil.copy2(sub_item, dest_file)
+                            else:
+                                shutil.copytree(item, dest_path, dirs_exist_ok=True)
+                        else:
+                            shutil.copy2(item, dest_path)
+        
+        if tracker:
+            tracker.complete("extract-extension", "extension overlay applied")
+            tracker.add("merge", "Merge templates (extension overrides base)")
+            tracker.complete("merge", "precedence rules applied")
+    except Exception as e:
+        if tracker:
+            tracker.error("extract-extension", str(e))
+        raise
+    finally:
+        if ext_zip.exists():
+            ext_zip.unlink()
+    
+    return project_path
+
+def download_and_extract_template(project_path: Path, ai_assistant: str, script_type: str, is_current_dir: bool = False, *, verbose: bool = True, tracker: StepTracker | None = None, client: httpx.Client = None, debug: bool = False, github_token: str = None, repo_owner: str = None, repo_name: str = None, version: str = None) -> Path:
     """Download the latest release and extract it to create a new project.
     Returns project_path. Uses tracker if provided (with keys: fetch, download, extract, cleanup)
     """
@@ -612,7 +806,10 @@ def download_and_extract_template(project_path: Path, ai_assistant: str, script_
             show_progress=(tracker is None),
             client=client,
             debug=debug,
-            github_token=github_token
+            github_token=github_token,
+            repo_owner=repo_owner,
+            repo_name=repo_name,
+            version=version
         )
         if tracker:
             tracker.complete("fetch", f"release {meta['release']} ({meta['size']:,} bytes)")
@@ -797,6 +994,9 @@ def init(
     skip_tls: bool = typer.Option(False, "--skip-tls", help="Skip SSL/TLS verification (not recommended)"),
     debug: bool = typer.Option(False, "--debug", help="Show verbose diagnostic output for network and extraction failures"),
     github_token: str = typer.Option(None, "--github-token", help="GitHub token to use for API requests (or set GH_TOKEN or GITHUB_TOKEN environment variable)"),
+    base_version: str = typer.Option(None, "--base-version", help="Specific version of base spec-kit to use (default: latest)"),
+    extension_version: str = typer.Option(None, "--extension-version", help="Specific version of jp-spec-kit extension to use (default: latest)"),
+    layered: bool = typer.Option(True, "--layered/--no-layered", help="Use two-stage layered download (base + extension). Default: True"),
 ):
     """
     Initialize a new Specify project from the latest template.
@@ -804,8 +1004,8 @@ def init(
     This command will:
     1. Check that required tools are installed (git is optional)
     2. Let you choose your AI assistant
-    3. Download the appropriate template from GitHub
-    4. Extract the template to a new project directory or current directory
+    3. Download the appropriate template from GitHub (two-stage: base + extension)
+    4. Extract and merge templates to a new project directory or current directory
     5. Initialize a fresh git repository (if not --no-git and no existing repo)
     6. Optionally set up AI assistant commands
     
@@ -944,18 +1144,34 @@ def init(
     tracker.complete("ai-select", f"{selected_ai}")
     tracker.add("script-select", "Select script type")
     tracker.complete("script-select", selected_script)
-    for key, label in [
-        ("fetch", "Fetch latest release"),
-        ("download", "Download template"),
-        ("extract", "Extract template"),
-        ("zip-list", "Archive contents"),
-        ("extracted-summary", "Extraction summary"),
-        ("chmod", "Ensure scripts executable"),
-        ("cleanup", "Cleanup"),
-        ("git", "Initialize git repository"),
-        ("final", "Finalize")
-    ]:
-        tracker.add(key, label)
+    
+    # Different tracking keys based on layered mode
+    if layered:
+        for key, label in [
+            ("fetch-base", "Fetch base spec-kit"),
+            ("fetch-extension", "Fetch jp-spec-kit extension"),
+            ("extract-base", "Extract base template"),
+            ("extract-extension", "Extract extension (overlay)"),
+            ("merge", "Merge templates (extension overrides base)"),
+            ("chmod", "Ensure scripts executable"),
+            ("cleanup", "Cleanup"),
+            ("git", "Initialize git repository"),
+            ("final", "Finalize")
+        ]:
+            tracker.add(key, label)
+    else:
+        for key, label in [
+            ("fetch", "Fetch latest release"),
+            ("download", "Download template"),
+            ("extract", "Extract template"),
+            ("zip-list", "Archive contents"),
+            ("extracted-summary", "Extraction summary"),
+            ("chmod", "Ensure scripts executable"),
+            ("cleanup", "Cleanup"),
+            ("git", "Initialize git repository"),
+            ("final", "Finalize")
+        ]:
+            tracker.add(key, label)
 
     # Track git error message outside Live context so it persists
     git_error_message = None
@@ -967,7 +1183,37 @@ def init(
             local_ssl_context = ssl_context if verify else False
             local_client = httpx.Client(verify=local_ssl_context)
 
-            download_and_extract_template(project_path, selected_ai, selected_script, here, verbose=False, tracker=tracker, client=local_client, debug=debug, github_token=github_token)
+            if layered:
+                # Two-stage download: base + extension
+                download_and_extract_two_stage(
+                    project_path, 
+                    selected_ai, 
+                    selected_script, 
+                    here, 
+                    verbose=False, 
+                    tracker=tracker, 
+                    client=local_client, 
+                    debug=debug, 
+                    github_token=github_token,
+                    base_version=base_version,
+                    extension_version=extension_version
+                )
+            else:
+                # Single-stage download (legacy mode or base-only)
+                download_and_extract_template(
+                    project_path, 
+                    selected_ai, 
+                    selected_script, 
+                    here, 
+                    verbose=False, 
+                    tracker=tracker, 
+                    client=local_client, 
+                    debug=debug, 
+                    github_token=github_token,
+                    repo_owner=EXTENSION_REPO_OWNER,
+                    repo_name=EXTENSION_REPO_NAME,
+                    version=extension_version
+                )
 
             ensure_executable_scripts(project_path, tracker=tracker)
 
@@ -1082,6 +1328,137 @@ def init(
     enhancements_panel = Panel("\n".join(enhancement_lines), title="Enhancement Commands", border_style="cyan", padding=(1,2))
     console.print()
     console.print(enhancements_panel)
+
+@app.command()
+def upgrade(
+    base_version: str = typer.Option(None, "--base-version", help="Specific version of base spec-kit to upgrade to (default: latest)"),
+    extension_version: str = typer.Option(None, "--extension-version", help="Specific version of jp-spec-kit extension to upgrade to (default: latest)"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Show what would be upgraded without making changes"),
+    templates_only: bool = typer.Option(False, "--templates-only", help="Only update templates, skip other files"),
+    skip_tls: bool = typer.Option(False, "--skip-tls", help="Skip SSL/TLS verification (not recommended)"),
+    debug: bool = typer.Option(False, "--debug", help="Show verbose diagnostic output"),
+    github_token: str = typer.Option(None, "--github-token", help="GitHub token to use for API requests"),
+):
+    """
+    Upgrade an existing Specify project to the latest (or specified) versions of base spec-kit and jp-spec-kit extension.
+    
+    This command will:
+    1. Detect the AI assistant type from the project
+    2. Download latest base spec-kit templates
+    3. Download latest jp-spec-kit extension
+    4. Merge with precedence (extension overrides base)
+    5. Apply updates to current project
+    
+    Examples:
+        specify upgrade                                    # Upgrade to latest base + extension
+        specify upgrade --dry-run                          # Preview changes
+        specify upgrade --base-version 0.0.20              # Pin base to specific version
+        specify upgrade --extension-version 0.0.21         # Pin extension to specific version
+        specify upgrade --templates-only                   # Only update template files
+    """
+    show_banner()
+    
+    project_path = Path.cwd()
+    
+    # Detect AI assistant from existing project
+    ai_assistant = None
+    for agent_key, agent_config in AGENT_CONFIG.items():
+        agent_folder = project_path / agent_config["folder"]
+        if agent_folder.exists():
+            ai_assistant = agent_key
+            break
+    
+    if not ai_assistant:
+        console.print("[red]Error:[/red] Could not detect AI assistant type in current directory")
+        console.print("[yellow]Tip:[/yellow] Make sure you're in a Specify project directory")
+        raise typer.Exit(1)
+    
+    # Detect script type (look for .sh or .ps1 scripts)
+    script_type = "sh"  # default
+    specify_scripts = project_path / ".specify" / "scripts"
+    if specify_scripts.exists():
+        if list(specify_scripts.glob("**/*.ps1")):
+            script_type = "ps"
+    
+    console.print(f"[cyan]Detected configuration:[/cyan]")
+    console.print(f"  AI Assistant: [green]{ai_assistant}[/green]")
+    console.print(f"  Script Type:  [green]{script_type}[/green]")
+    console.print()
+    
+    if dry_run:
+        console.print("[yellow]DRY RUN MODE - No changes will be made[/yellow]\n")
+    
+    tracker = StepTracker("Upgrade Specify Project")
+    
+    tracker.add("detect", "Detect project configuration")
+    tracker.complete("detect", f"{ai_assistant}, {script_type}")
+    tracker.add("fetch-base", "Fetch base spec-kit")
+    tracker.add("fetch-extension", "Fetch jp-spec-kit extension")
+    tracker.add("backup", "Backup current templates")
+    tracker.add("apply", "Apply updates")
+    tracker.add("final", "Finalize")
+    
+    if dry_run:
+        # In dry run, just fetch and report what would change
+        console.print(tracker.render())
+        console.print("\n[green]Dry run completed. Use without --dry-run to apply changes.[/green]")
+        return
+    
+    with Live(tracker.render(), console=console, refresh_per_second=8, transient=True) as live:
+        tracker.attach_refresh(lambda: live.update(tracker.render()))
+        try:
+            verify = not skip_tls
+            local_ssl_context = ssl_context if verify else False
+            local_client = httpx.Client(verify=local_ssl_context)
+            
+            # Create backup of existing templates
+            tracker.start("backup")
+            backup_dir = project_path / ".specify-backup"
+            if backup_dir.exists():
+                shutil.rmtree(backup_dir)
+            backup_dir.mkdir(parents=True)
+            
+            # Backup key directories
+            for dir_name in [".specify", ".claude", ".github", "templates"]:
+                src = project_path / dir_name
+                if src.exists():
+                    shutil.copytree(src, backup_dir / dir_name, dirs_exist_ok=True)
+            
+            tracker.complete("backup", f"saved to {backup_dir.name}")
+            
+            # Apply two-stage upgrade
+            tracker.start("apply")
+            download_and_extract_two_stage(
+                project_path,
+                ai_assistant,
+                script_type,
+                is_current_dir=True,  # Upgrade in place
+                verbose=False,
+                tracker=tracker,
+                client=local_client,
+                debug=debug,
+                github_token=github_token,
+                base_version=base_version,
+                extension_version=extension_version
+            )
+            
+            tracker.complete("apply", "templates updated")
+            tracker.complete("final", "upgrade complete")
+            
+        except Exception as e:
+            tracker.error("final", str(e))
+            console.print(f"\n[red]Upgrade failed:[/red] {e}")
+            console.print(f"[yellow]Backup available at:[/yellow] {backup_dir}")
+            raise typer.Exit(1)
+    
+    console.print(tracker.render())
+    console.print("\n[bold green]Upgrade completed successfully![/bold green]")
+    console.print(f"[dim]Backup of previous templates: {backup_dir}[/dim]")
+    console.print()
+    console.print("[cyan]Next steps:[/cyan]")
+    console.print("  1. Review changes with: [cyan]git diff[/cyan]")
+    console.print("  2. Test your project to ensure everything works")
+    console.print(f"  3. If needed, restore from backup: [cyan]cp -r {backup_dir}/* .[/cyan]")
 
 @app.command()
 def check():

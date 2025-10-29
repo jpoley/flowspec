@@ -1,0 +1,103 @@
+# JP Spec Kit Plugin Manifest
+# Declares jp-spec-kit as a layered extension of github/spec-kit
+
+name: jp-spec-kit
+version: 0.0.20
+type: layered-extension
+author: jpoley
+repository: https://github.com/jpoley/jp-spec-kit
+
+# Base dependency
+extends:
+  name: spec-kit
+  repository: github/spec-kit
+  version: 0.0.20
+  strategy: overlay
+
+# What this plugin provides
+provides:
+  # Custom slash commands (jpspec:* namespace)
+  commands:
+    - path: templates/commands/jpspec/specify.md
+      name: jpspec:specify
+      description: Product Requirements Manager
+    - path: templates/commands/jpspec/plan.md
+      name: jpspec:plan
+      description: Architecture & Platform Planning
+    - path: templates/commands/jpspec/research.md
+      name: jpspec:research
+      description: Market Research & Analysis
+    - path: templates/commands/jpspec/implement.md
+      name: jpspec:implement
+      description: Multi-Agent Implementation
+    - path: templates/commands/jpspec/validate.md
+      name: jpspec:validate
+      description: QA, Security, Release Validation
+    - path: templates/commands/jpspec/operate.md
+      name: jpspec:operate
+      description: SRE Operations
+
+  # Language-specific expertise
+  languages:
+    - name: python
+      path: .languages/python/
+      features:
+        - experts
+        - agent-personas
+        - resources
+        - principles
+    - name: go
+      path: .languages/go/
+      features:
+        - experts
+        - agent-personas
+        - resources
+        - principles
+    - name: rust
+      path: .languages/rust/
+      features:
+        - experts
+        - agent-personas
+        - resources
+        - principles
+    # Add other languages...
+
+  # Extended templates (override base)
+  templates:
+    - source: templates/jpspec-plan-template.md
+      destination: .specify/jpspec-plan-template.md
+      merge_strategy: override
+
+# Installation behavior
+installation:
+  # Two-stage download
+  stages:
+    - name: base
+      source: github/spec-kit
+      version: 0.0.20
+      files: all
+    
+    - name: extension
+      source: jpoley/jp-spec-kit
+      version: 0.0.20
+      files:
+        - templates/commands/jpspec/**
+        - .languages/**
+        - memory/constitution.md
+  
+  # Merge rules when conflicts occur
+  merge_rules:
+    - pattern: "**/*.md"
+      strategy: override
+      description: "Extension templates override base"
+    - pattern: ".claude/commands/**"
+      strategy: merge
+      description: "Combine commands from both sources"
+    - pattern: ".specify/scripts/**"
+      strategy: keep-both
+      description: "Keep scripts from both, prefer extension on conflicts"
+
+# Upgrade behavior
+upgrade:
+  sync_base: true
+  description: "Pull latest spec-kit, then re-apply jp-spec-kit overlay"
