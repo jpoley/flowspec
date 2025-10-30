@@ -59,10 +59,17 @@ def _github_token(cli_token: str | None = None) -> str | None:
     """Return sanitized GitHub token (cli arg takes precedence) or None."""
     return ((cli_token or os.getenv("GH_TOKEN") or os.getenv("GITHUB_TOKEN") or "").strip()) or None
 
-def _github_auth_headers(cli_token: str | None = None) -> dict:
-    """Return Authorization header dict only when a non-empty token exists."""
+def _github_headers(cli_token: str | None = None) -> dict:
+    """Return GitHub API headers including optional Authorization, Accept and User-Agent."""
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "jp-spec-kit/specify-cli",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
     token = _github_token(cli_token)
-    return {"Authorization": f"Bearer {token}"} if token else {}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    return headers
 
 # Agent configuration with name, folder, install URL, and CLI tool requirement
 AGENT_CONFIG = {
@@ -160,7 +167,7 @@ BANNER = """
 """
 
 # Version - keep in sync with pyproject.toml
-__version__ = "0.0.21"
+__version__ = "0.0.22"
 
 TAGLINE = f"(jp extension v{__version__}) GitHub Spec Kit - Spec-Driven Development Toolkit"
 
@@ -511,33 +518,65 @@ def download_template_from_github(ai_assistant: str, download_dir: Path, *, scri
 
     if verbose:
         console.print(f"[cyan]Fetching release information from {repo_owner}/{repo_name}...[/cyan]")
-    
-    # Construct API URL based on version
-    if version == "latest":
-        api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/releases/latest"
-    else:
-        api_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/releases/tags/{version}"
 
-    try:
-        response = client.get(
-            api_url,
+    # Resolve effective token once so env-based tokens are honored consistently (including fallbacks)
+    effective_token = _github_token(github_token)
+
+    def _req(url: str) -> httpx.Response:
+        return client.get(
+            url,
             timeout=30,
             follow_redirects=True,
-            headers=_github_auth_headers(github_token),
+            headers=_github_headers(effective_token),
         )
-        status = response.status_code
-        if status != 200:
-            msg = f"GitHub API returned {status} for {api_url}"
-            if debug:
-                msg += f"\nResponse headers: {response.headers}\nBody (truncated 500): {response.text[:500]}"
-            raise RuntimeError(msg)
-        try:
-            release_data = response.json()
-        except ValueError as je:
-            raise RuntimeError(f"Failed to parse release JSON: {je}\nRaw (truncated 400): {response.text[:400]}")
+
+    def _pick_latest(releases: list[dict]) -> Optional[dict]:
+        filtered = [r for r in releases if not r.get("draft") and not r.get("prerelease")]
+        return (filtered[0] if filtered else (releases[0] if releases else None))
+
+    try:
+        release_data = None
+        if version == "latest" or version is None:
+            r = _req(f"https://api.github.com/repos/{repo_owner}/{repo_name}/releases/latest")
+            if r.status_code == 200:
+                release_data = r.json()
+            else:
+                r2 = _req(f"https://api.github.com/repos/{repo_owner}/{repo_name}/releases?per_page=20")
+                if r2.status_code == 200:
+                    release_data = _pick_latest(r2.json())
+        else:
+            r = _req(f"https://api.github.com/repos/{repo_owner}/{repo_name}/releases/tags/{version}")
+            if r.status_code == 200:
+                release_data = r.json()
+            else:
+                alt = version[1:] if version.startswith("v") else f"v{version}"
+                r2 = _req(f"https://api.github.com/repos/{repo_owner}/{repo_name}/releases/tags/{alt}")
+                if r2.status_code == 200:
+                    release_data = r2.json()
+                else:
+                    r3 = _req(f"https://api.github.com/repos/{repo_owner}/{repo_name}/releases?per_page=50")
+                    if r3.status_code == 200:
+                        for rel in r3.json():
+                            tag = rel.get("tag_name", "")
+                            if tag in {version, alt}:
+                                release_data = rel
+                                break
+
+        if not release_data:
+            raise RuntimeError(
+                f"Could not resolve release for {repo_owner}/{repo_name} (version='{version}')\n"
+                f"Tried: /releases/latest, /releases/tags/<tag> with v/no-v, and /releases list"
+            )
     except Exception as e:
+        msg = str(e)
+        if debug:
+            try:
+                meta = _req(f"https://api.github.com/repos/{repo_owner}/{repo_name}")
+                msg += f"\nRepo visibility: {meta.json().get('visibility','?')} (HTTP {meta.status_code})"
+            except Exception:
+                pass
         console.print(f"[red]Error fetching release information[/red]")
-        console.print(Panel(str(e), title="Fetch Error", border_style="red"))
+        console.print(Panel(msg, title="Fetch Error", border_style="red"))
         raise typer.Exit(1)
 
     assets = release_data.get("assets", [])
@@ -556,6 +595,7 @@ def download_template_from_github(ai_assistant: str, download_dir: Path, *, scri
         raise typer.Exit(1)
 
     download_url = asset["browser_download_url"]
+    api_asset_url = asset.get("url")
     filename = asset["name"]
     file_size = asset["size"]
 
@@ -569,38 +609,43 @@ def download_template_from_github(ai_assistant: str, download_dir: Path, *, scri
         console.print(f"[cyan]Downloading template...[/cyan]")
 
     try:
-        with client.stream(
-            "GET",
-            download_url,
-            timeout=60,
-            follow_redirects=True,
-            headers=_github_auth_headers(github_token),
-        ) as response:
+        # Prefer API asset URL when a token is available (works for private and public assets)
+        response = None
+        if effective_token and api_asset_url:
+            api_headers = _github_headers(effective_token).copy()
+            api_headers["Accept"] = "application/octet-stream"
+            response = client.get(
+                api_asset_url,
+                timeout=60,
+                follow_redirects=True,
+                headers=api_headers,
+            )
+            # If API route fails (e.g., insufficient scope), fall back to browser URL
             if response.status_code != 200:
-                body_sample = response.text[:400]
-                raise RuntimeError(f"Download failed with {response.status_code}\nHeaders: {response.headers}\nBody (truncated): {body_sample}")
-            total_size = int(response.headers.get('content-length', 0))
-            with open(zip_path, 'wb') as f:
-                if total_size == 0:
-                    for chunk in response.iter_bytes(chunk_size=8192):
-                        f.write(chunk)
-                else:
-                    if show_progress:
-                        with Progress(
-                            SpinnerColumn(),
-                            TextColumn("[progress.description]{task.description}"),
-                            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-                            console=console,
-                        ) as progress:
-                            task = progress.add_task("Downloading...", total=total_size)
-                            downloaded = 0
-                            for chunk in response.iter_bytes(chunk_size=8192):
-                                f.write(chunk)
-                                downloaded += len(chunk)
-                                progress.update(task, completed=downloaded)
-                    else:
-                        for chunk in response.iter_bytes(chunk_size=8192):
-                            f.write(chunk)
+                response = client.get(
+                    download_url,
+                    timeout=60,
+                    follow_redirects=True,
+                    headers=_github_headers(effective_token),
+                )
+        else:
+            # No token: try browser URL (public-only)
+            response = client.get(
+                download_url,
+                timeout=60,
+                follow_redirects=True,
+                headers=_github_headers(effective_token),
+            )
+        if response.status_code != 200:
+            body_sample = (getattr(response, "text", "") or "")[:400]
+            hint = ""
+            if response.status_code == 404 and not effective_token:
+                hint = "\nHint: This repository or its release assets may be private. Provide a GitHub token via --github-token or GH_TOKEN/GITHUB_TOKEN environment variable."
+            raise RuntimeError(
+                f"Download failed with {response.status_code}\nHeaders: {response.headers}\nBody (truncated): {body_sample}{hint}"
+            )
+        with open(zip_path, 'wb') as f:
+            f.write(response.content)
     except Exception as e:
         console.print(f"[red]Error downloading template[/red]")
         detail = str(e)

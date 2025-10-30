@@ -10,20 +10,27 @@
 
 ## Installation
 
-### Initialize a New Project
+### Initialize a New Project (Layered: base + extension)
 
-The easiest way to get started is to initialize a new project:
+The easiest way to get started is to initialize a new project with the layered model: base spec-kit plus jp-spec-kit overlay.
 
 ```bash
-uvx --from git+https://github.com/github/spec-kit.git specify init <PROJECT_NAME>
+uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init <PROJECT_NAME>
 ```
 
 Or initialize in the current directory:
 
 ```bash
-uvx --from git+https://github.com/github/spec-kit.git specify init .
+uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init .
 # or use the --here flag
-uvx --from git+https://github.com/github/spec-kit.git specify init --here
+uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init --here
+```
+
+Alternatively, install persistently once and use everywhere:
+
+```bash
+uv tool install specify-cli --from git+https://github.com/jpoley/jp-spec-kit.git
+specify init <PROJECT_NAME>
 ```
 
 ### Specify AI Agent
@@ -31,10 +38,10 @@ uvx --from git+https://github.com/github/spec-kit.git specify init --here
 You can proactively specify your AI agent during initialization:
 
 ```bash
-uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --ai claude
-uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --ai gemini
-uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --ai copilot
-uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --ai codebuddy
+uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init <project_name> --ai claude
+uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init <project_name> --ai gemini
+uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init <project_name> --ai copilot
+uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init <project_name> --ai codebuddy
 ```
 
 ### Specify Script Type (Shell vs PowerShell)
@@ -48,8 +55,8 @@ Auto behavior:
 
 Force a specific script type:
 ```bash
-uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --script sh
-uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --script ps
+uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init <project_name> --script sh
+uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init <project_name> --script ps
 ```
 
 ### Ignore Agent Tools Check
@@ -57,7 +64,7 @@ uvx --from git+https://github.com/github/spec-kit.git specify init <project_name
 If you prefer to get the templates without checking for the right tools:
 
 ```bash
-uvx --from git+https://github.com/github/spec-kit.git specify init <project_name> --ai claude --ignore-agent-tools
+uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init <project_name> --ai claude --ignore-agent-tools
 ```
 
 ## Verification
@@ -70,6 +77,36 @@ After initialization, you should see the following commands available in your AI
 The `.specify/scripts` directory will contain both `.sh` and `.ps1` scripts.
 
 ## Troubleshooting
+
+### Private assets or API rate limits (authenticated downloads)
+
+If the jp-spec-kit repository or its release assets are private, or you’re operating behind corporate restrictions/rate limits, provide a GitHub token so the CLI can authenticate when resolving releases and downloading assets.
+
+Supported methods:
+
+- Environment variable: GH_TOKEN or GITHUB_TOKEN
+- CLI flag: --github-token
+
+Examples:
+
+- macOS/Linux (zsh/bash):
+
+	export GH_TOKEN=ghp_your_token_here
+	uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init my-project --ai claude --debug
+
+- Windows PowerShell:
+
+	$env:GH_TOKEN = "ghp_your_token_here"
+	uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init my-project --ai claude --debug
+
+- Pass inline:
+
+	uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init my-project --ai claude --github-token ghp_your_token_here --debug
+
+Notes:
+
+- Scope: a classic Personal Access Token with repo scope (read) is sufficient to download private release assets.
+- Symptom mapping: a 404 Not Found during asset download usually indicates missing auth for private assets. Provide a token or use public assets.
 
 ### Git Credential Manager on Linux
 

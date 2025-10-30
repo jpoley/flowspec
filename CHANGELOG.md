@@ -1,3 +1,16 @@
+## [0.0.22] - 2025-10-29
+
+### Fixed
+
+- Resolve intermittent 404 errors when fetching GitHub releases by:
+  - Adding proper GitHub API headers (Accept, User-Agent, API version)
+  - Implementing robust fallbacks: `latest` → list releases; tag lookup with and without `v` prefix; final search in the releases list
+  - Improves reliability when the `releases/latest` endpoint is unavailable or when tags are prefixed differently
+
+### Changed
+
+- Bump version shown in banner to `jp extension v0.0.22`.
+
 # Changelog
 
 <!-- markdownlint-disable MD024 -->

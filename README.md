@@ -133,7 +133,38 @@ specify init my-project --base-version 0.0.20 --extension-version 0.0.20
 - Cleaner shell configuration
 - Support for `specify upgrade` command
 
-### 2. Establish project principles
+### 2. Authenticated downloads (private assets or rate limits)
+
+If the jp-spec-kit repository or its release assets are private (or you’re on a corporate network with required auth/rate limits), pass a GitHub token so Specify can authenticate when resolving releases and downloading assets.
+
+Supported methods:
+
+- Environment variable: GH_TOKEN or GITHUB_TOKEN
+- CLI flag: --github-token
+
+Examples:
+
+- macOS/Linux (zsh/bash):
+
+    export GH_TOKEN=ghp_your_token_here
+    specify init my-project --ai claude --debug
+
+- Windows PowerShell:
+
+    $env:GH_TOKEN = "ghp_your_token_here"
+    specify init my-project --ai claude --debug
+
+- Pass inline (any OS):
+
+    specify init my-project --ai claude --github-token ghp_your_token_here --debug
+
+Notes:
+
+- Scope: a classic Personal Access Token with repo scope (read) is sufficient for downloading private release assets.
+- Security: the token is only sent to GitHub to resolve releases and download assets; it isn’t stored.
+- Symptom mapping: if you see 404 Not Found while downloading an asset, it likely means the asset is private and no token was provided. Supply GH_TOKEN/GITHUB_TOKEN or --github-token, or make assets public.
+
+### 3. Establish project principles
 
 Use the **`/speckit.constitution`** command to create your project's governing principles and development guidelines that will guide all subsequent development.
 
@@ -141,7 +172,7 @@ Use the **`/speckit.constitution`** command to create your project's governing p
 /speckit.constitution Create principles focused on code quality, testing standards, user experience consistency, and performance requirements
 ```
 
-### 3. Create the spec
+### 4. Create the spec
 
 Use the **`/speckit.specify`** command to describe what you want to build. Focus on the **what** and **why**, not the tech stack.
 
@@ -149,7 +180,7 @@ Use the **`/speckit.specify`** command to describe what you want to build. Focus
 /speckit.specify Build an application that can help me organize my photos in separate photo albums. Albums are grouped by date and can be re-organized by dragging and dropping on the main page. Albums are never in other nested albums. Within each album, photos are previewed in a tile-like interface.
 ```
 
-### 4. Create a technical implementation plan
+### 5. Create a technical implementation plan
 
 Use the **`/speckit.plan`** command to provide your tech stack and architecture choices.
 
@@ -157,7 +188,7 @@ Use the **`/speckit.plan`** command to provide your tech stack and architecture 
 /speckit.plan The application uses Vite with minimal number of libraries. Use vanilla HTML, CSS, and JavaScript as much as possible. Images are not uploaded anywhere and metadata is stored in a local SQLite database.
 ```
 
-### 5. Break down into tasks
+### 6. Break down into tasks
 
 Use **`/speckit.tasks`** to create an actionable task list from your implementation plan.
 
@@ -165,7 +196,7 @@ Use **`/speckit.tasks`** to create an actionable task list from your implementat
 /speckit.tasks
 ```
 
-### 6. Execute implementation
+### 7. Execute implementation
 
 Use **`/speckit.implement`** to execute all tasks and build your feature according to the plan.
 
