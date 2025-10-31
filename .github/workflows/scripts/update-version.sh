@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # update-version.sh
-# Update version in pyproject.toml (for release artifacts only)
+# Update version in pyproject.toml and __init__.py
 # Usage: update-version.sh <version>
 
 if [[ $# -ne 1 ]]; then
@@ -17,7 +17,7 @@ PYTHON_VERSION=${VERSION#v}
 
 if [ -f "pyproject.toml" ]; then
   sed -i "s/version = \".*\"/version = \"$PYTHON_VERSION\"/" pyproject.toml
-  echo "Updated pyproject.toml version to $PYTHON_VERSION (for release artifacts only)"
+  echo "Updated pyproject.toml version to $PYTHON_VERSION"
 else
   echo "Warning: pyproject.toml not found, skipping version update"
 fi

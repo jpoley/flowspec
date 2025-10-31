@@ -59,9 +59,21 @@ jobs:
           .github/workflows/scripts/create-github-release.sh ${{ steps.get_tag.outputs.new_version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Update version in pyproject.toml (for release artifacts only)
+      - name: Update version in source files
         if: steps.check_release.outputs.exists == 'false'
+        env:
+          NEW_VERSION: ${{ steps.get_tag.outputs.new_version }}
         run: |
           chmod +x .github/workflows/scripts/update-version.sh
-          .github/workflows/scripts/update-version.sh ${{ steps.get_tag.outputs.new_version }}
+          .github/workflows/scripts/update-version.sh "$NEW_VERSION"
+      - name: Commit and push version bump
+        if: steps.check_release.outputs.exists == 'false'
+        env:
+          NEW_VERSION: ${{ steps.get_tag.outputs.new_version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pyproject.toml src/specify_cli/__init__.py
+          git commit -m "chore: bump version to $NEW_VERSION [skip ci]" || echo "No changes to commit"
+          git push origin main || echo "Push failed or no changes"
 
