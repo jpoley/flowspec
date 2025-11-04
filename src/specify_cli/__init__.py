@@ -877,9 +877,7 @@ def download_and_extract_two_stage(
     except Exception as e:
         if tracker:
             tracker.error("fetch-base", str(e))
-        # Clean up base zip if it was downloaded before error
-        if base_zip and base_zip.exists():
-            base_zip.unlink()
+        # download_template_from_github already cleans up its zip on error
         raise
 
     # Stage 2: Download jp-spec-kit extension
@@ -911,11 +909,10 @@ def download_and_extract_two_stage(
     except Exception as e:
         if tracker:
             tracker.error("fetch-extension", str(e))
-        # Clean up both zips if extension download fails
+        # download_template_from_github already cleans up its zip on error
+        # But we need to clean up the base_zip since we won't reach extraction
         if base_zip and base_zip.exists():
             base_zip.unlink()
-        if ext_zip and ext_zip.exists():
-            ext_zip.unlink()
         raise
 
     # Extract base first
@@ -958,14 +955,12 @@ def download_and_extract_two_stage(
     except Exception as e:
         if tracker:
             tracker.error("extract-base", str(e))
-        # Clean up both zip files on extraction failure
-        if base_zip and base_zip.exists():
-            base_zip.unlink()
+        # Clean up extension zip on base extraction failure (base_zip cleaned in finally)
         if ext_zip and ext_zip.exists():
             ext_zip.unlink()
         raise
     finally:
-        # Always clean up base zip after extraction (success or failure)
+        # Always clean up base zip after extraction attempt
         if base_zip and base_zip.exists():
             base_zip.unlink()
 
@@ -1039,12 +1034,10 @@ def download_and_extract_two_stage(
     except Exception as e:
         if tracker:
             tracker.error("extract-extension", str(e))
-        # Clean up extension zip on extraction failure
-        if ext_zip and ext_zip.exists():
-            ext_zip.unlink()
+        # ext_zip cleanup happens in finally block
         raise
     finally:
-        # Always clean up extension zip after extraction (success or failure)
+        # Always clean up extension zip after extraction attempt
         if ext_zip and ext_zip.exists():
             ext_zip.unlink()
 
