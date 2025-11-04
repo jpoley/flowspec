@@ -109,6 +109,11 @@ To upgrade specify CLI itself:
 uv tool install specify-cli --force --from git+https://github.com/jpoley/jp-spec-kit.git
 ```
 
+Or if you have ssh key
+```bash
+uv tool install specify-cli --force --from git+ssh://git@github.com/jpoley/jp-spec-kit.git
+```
+
 #### Option 2: One-time Usage
 
 Run directly without installing:
