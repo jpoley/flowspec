@@ -183,6 +183,10 @@ EXTENSION_REPO_OWNER = "jpoley"
 EXTENSION_REPO_NAME = "jp-spec-kit"
 EXTENSION_REPO_DEFAULT_VERSION = "latest"
 
+# Marker file that identifies the jp-spec-kit source repository
+# When present, specify init/upgrade will skip to avoid clobbering source files
+SOURCE_REPO_MARKER = ".jp-spec-kit-source"
+
 
 class StepTracker:
     """Track and render hierarchical steps without emojis, similar to Claude Code tree output.
@@ -1396,6 +1400,25 @@ def init(
         project_name = Path.cwd().name
         project_path = Path.cwd()
 
+        # Check for source repository marker FIRST, before any other prompts
+        marker_path = project_path / SOURCE_REPO_MARKER
+        if marker_path.exists():
+            error_panel = Panel(
+                f"[yellow]This directory contains '{SOURCE_REPO_MARKER}'[/yellow]\n\n"
+                "This indicates it is the jp-spec-kit source repository.\n"
+                "Running 'specify init' here would overwrite source files.\n\n"
+                "[cyan]If you want to use jp-spec-kit commands in this repo:[/cyan]\n"
+                "  Run 'specify dogfood' to set up for development.\n\n"
+                "[cyan]If you want to test 'specify init' on a new project:[/cyan]\n"
+                "  Create a new directory and run 'specify init' there instead.",
+                title="[yellow]Source Repository Detected[/yellow]",
+                border_style="yellow",
+                padding=(1, 2),
+            )
+            console.print()
+            console.print(error_panel)
+            raise typer.Exit(1)
+
         existing_items = list(project_path.iterdir())
         if existing_items:
             console.print(
@@ -1778,6 +1801,25 @@ def upgrade(
 
     project_path = Path.cwd()
 
+    # Check for source repository marker to prevent clobbering jp-spec-kit source
+    marker_path = project_path / SOURCE_REPO_MARKER
+    if marker_path.exists():
+        error_panel = Panel(
+            f"[yellow]This directory contains '{SOURCE_REPO_MARKER}'[/yellow]\n\n"
+            "This indicates it is the jp-spec-kit source repository.\n"
+            "Running 'specify upgrade' here would overwrite source files.\n\n"
+            "[cyan]To update jp-spec-kit itself:[/cyan]\n"
+            "  Use git pull or standard development workflow.\n\n"
+            "[cyan]To test 'specify upgrade' on a project:[/cyan]\n"
+            "  Navigate to a project initialized with 'specify init'.",
+            title="[yellow]Source Repository Detected[/yellow]",
+            border_style="yellow",
+            padding=(1, 2),
+        )
+        console.print()
+        console.print(error_panel)
+        raise typer.Exit(1)
+
     # Detect AI assistant from existing project
     ai_assistant = None
     for agent_key, agent_config in AGENT_CONFIG.items():
@@ -1923,6 +1965,141 @@ def check():
 
     if not any(agent_results.values()):
         console.print("[dim]Tip: Install an AI assistant for the best experience[/dim]")
+
+
+@app.command()
+def dogfood(
+    force: bool = typer.Option(
+        False,
+        "--force",
+        help="Recreate symlinks even if they already exist",
+    ),
+):
+    """
+    Set up jp-spec-kit source repository for dogfooding.
+
+    This command prepares the jp-spec-kit source repository to use its own
+    /speckit.* commands during development. It creates symlinks from
+    .claude/commands/speckit/ to templates/commands/ so that Claude Code
+    can discover the commands.
+
+    This is only useful when developing jp-spec-kit itself. For normal
+    projects, use 'specify init' instead.
+
+    Examples:
+        specify dogfood           # Set up dogfooding in current directory
+        specify dogfood --force   # Recreate symlinks if they exist
+    """
+    show_banner()
+
+    project_path = Path.cwd()
+
+    # Check that we're in the jp-spec-kit source repository
+    marker_path = project_path / SOURCE_REPO_MARKER
+    if not marker_path.exists():
+        console.print(
+            "[red]Error:[/red] This command is only for the jp-spec-kit source repository."
+        )
+        console.print(
+            f"[yellow]Tip:[/yellow] The '{SOURCE_REPO_MARKER}' marker file was not found."
+        )
+        console.print(
+            "[yellow]Tip:[/yellow] If this IS the jp-spec-kit repo, create the marker file first."
+        )
+        raise typer.Exit(1)
+
+    templates_dir = project_path / "templates" / "commands"
+    if not templates_dir.exists():
+        console.print(
+            f"[red]Error:[/red] Templates directory not found: {templates_dir}"
+        )
+        raise typer.Exit(1)
+
+    # Create .claude/commands/speckit/ directory
+    speckit_commands_dir = project_path / ".claude" / "commands" / "speckit"
+    speckit_commands_dir.mkdir(parents=True, exist_ok=True)
+
+    # Get list of template command files
+    template_files = list(templates_dir.glob("*.md"))
+    if not template_files:
+        console.print(
+            f"[yellow]Warning:[/yellow] No command templates found in {templates_dir}"
+        )
+        raise typer.Exit(1)
+
+    console.print("[cyan]Setting up dogfooding for jp-spec-kit...[/cyan]\n")
+
+    tracker = StepTracker("Dogfood Setup")
+    tracker.add("check", "Check prerequisites")
+    tracker.complete("check", "jp-spec-kit source repository detected")
+
+    tracker.add("symlinks", "Create command symlinks")
+
+    created = 0
+    skipped = 0
+    errors = []
+
+    for template_file in template_files:
+        symlink_path = speckit_commands_dir / template_file.name
+        relative_target = Path("..") / ".." / ".." / "templates" / "commands" / template_file.name
+
+        try:
+            if symlink_path.exists() or symlink_path.is_symlink():
+                if force:
+                    symlink_path.unlink()
+                    symlink_path.symlink_to(relative_target)
+                    created += 1
+                else:
+                    skipped += 1
+            else:
+                symlink_path.symlink_to(relative_target)
+                created += 1
+        except OSError as e:
+            errors.append(f"{template_file.name}: {e}")
+
+    if errors:
+        tracker.fail("symlinks", f"{len(errors)} errors")
+        for error in errors:
+            console.print(f"  [red]Error:[/red] {error}")
+    else:
+        tracker.complete("symlinks", f"{created} created, {skipped} skipped")
+
+    tracker.add("verify", "Verify symlinks")
+
+    # Verify symlinks work
+    valid = 0
+    broken = 0
+    for symlink_path in speckit_commands_dir.glob("*.md"):
+        if symlink_path.is_symlink():
+            if symlink_path.resolve().exists():
+                valid += 1
+            else:
+                broken += 1
+
+    if broken > 0:
+        tracker.fail("verify", f"{broken} broken symlinks")
+    else:
+        tracker.complete("verify", f"{valid} valid symlinks")
+
+    tracker.add("final", "Dogfood setup complete")
+    tracker.complete("final", "ready for development")
+
+    console.print(tracker.render())
+
+    console.print("\n[bold green]Dogfood setup complete![/bold green]")
+    console.print("\nThe following /speckit.* commands are now available:")
+    for template_file in sorted(template_files):
+        console.print(f"  [cyan]/speckit:{template_file.stem}[/cyan]")
+    console.print("\n[dim]Note: Restart Claude Code to pick up the new commands.[/dim]")
+
+    if errors:
+        console.print(
+            "\n[yellow]Warning:[/yellow] Some symlinks failed to create."
+        )
+        console.print(
+            "[yellow]On Windows, you may need to enable Developer Mode or run as Administrator.[/yellow]"
+        )
+        raise typer.Exit(1)
 
 
 # Create backlog subcommand group

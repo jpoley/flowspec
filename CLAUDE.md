@@ -260,17 +260,31 @@ jp-spec-kit/
 
 ### Commit Message Format
 
-Follow conventional commits:
+Follow conventional commits with **mandatory DCO sign-off**:
 
 ```
 <type>(<scope>): <description>
 
-Types: feat, fix, docs, style, refactor, test, chore
-Examples:
-- feat(cli): add support for new AI agent
-- fix(templates): correct template variable substitution
-- docs(readme): update installation instructions
-- test(cli): add tests for init command
+[Optional body explaining the change]
+
+Signed-off-by: Your Name <your.email@example.com>
+```
+
+**IMPORTANT: All commits MUST include `Signed-off-by` line (DCO requirement).**
+
+Use `git commit -s` to automatically add the sign-off, or include it manually.
+
+**Types:** feat, fix, docs, style, refactor, test, chore
+
+**Examples:**
+```bash
+# Automatic sign-off (recommended)
+git commit -s -m "feat(cli): add support for new AI agent"
+
+# Manual sign-off
+git commit -m "fix(templates): correct template variable substitution
+
+Signed-off-by: Your Name <your.email@example.com>"
 ```
 
 ## Testing Instructions

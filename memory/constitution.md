@@ -28,6 +28,21 @@
 [PRINCIPLE_5_DESCRIPTION]
 <!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
 
+## Git Commit Requirements (NON-NEGOTIABLE)
+
+### DCO Sign-Off Required
+All commits MUST include a `Signed-off-by` line (Developer Certificate of Origin).
+
+**Always use `git commit -s` to automatically add the sign-off.**
+
+```
+feat(scope): description
+
+Signed-off-by: Your Name <your.email@example.com>
+```
+
+Commits without sign-off will block PRs from being merged.
+
 ## [SECTION_2_NAME]
 <!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
 
