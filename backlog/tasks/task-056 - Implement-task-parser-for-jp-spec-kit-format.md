@@ -1,6 +1,6 @@
 ---
-id: task-3
-title: Implement Backlog.md file writer
+id: task-056
+title: Implement task parser for jp-spec-kit format
 status: Done
 assignee: []
 created_date: '2025-11-24 01:13'
@@ -9,6 +9,7 @@ labels:
   - US1
   - foundational
   - P0
+  - migrated
 dependencies: []
 ---
 

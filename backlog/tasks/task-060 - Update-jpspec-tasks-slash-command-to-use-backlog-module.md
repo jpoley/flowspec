@@ -1,5 +1,5 @@
 ---
-id: task-6
+id: task-060
 title: 'Update /jpspec:tasks slash command to use backlog module'
 status: Done
 assignee:
@@ -10,6 +10,7 @@ labels:
   - US1
   - CLI
   - P0
+  - migrated
 dependencies: []
 ---
 

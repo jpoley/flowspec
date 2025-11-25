@@ -1,5 +1,5 @@
 ---
-id: task-4
+id: task-058
 title: Create dependency graph builder
 status: Done
 assignee: []
@@ -9,6 +9,7 @@ labels:
   - US1
   - foundational
   - P0
+  - migrated
 dependencies: []
 ---
 

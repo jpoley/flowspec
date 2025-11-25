@@ -1,5 +1,5 @@
 ---
-id: task-1
+id: task-055
 title: Integrate Backlog.md with jp-spec-kit
 status: Done
 assignee: []
@@ -8,6 +8,7 @@ completed_date: '2025-11-23'
 labels:
   - integration
   - priority-high
+  - migrated
 dependencies: []
 ---
 

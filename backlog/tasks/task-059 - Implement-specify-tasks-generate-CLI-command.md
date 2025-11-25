@@ -1,5 +1,5 @@
 ---
-id: task-5
+id: task-059
 title: >-
   Implement 'specify tasks generate' CLI command with --format flag (default:
   backlog)
@@ -12,6 +12,7 @@ labels:
   - US1
   - CLI
   - P0
+  - migrated
 dependencies: []
 ---
 

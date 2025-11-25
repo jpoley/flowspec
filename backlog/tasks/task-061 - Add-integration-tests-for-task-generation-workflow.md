@@ -1,5 +1,5 @@
 ---
-id: task-7
+id: task-061
 title: Add integration tests for task generation workflow
 status: Done
 assignee:
@@ -10,6 +10,7 @@ labels:
   - US1
   - testing
   - P0
+  - migrated
 dependencies: []
 ---
 
@@ -26,9 +27,9 @@ Created comprehensive integration test suite with **143 tests** and **98% covera
 - `tests/test_cli_tasks.py` - 23 tests
 
 ### Results
-- ✅ All 143 tests passing
-- ✅ 98% code coverage (537 statements)
-- ✅ <1 second execution time
-- ✅ Production-ready quality
+- All 143 tests passing
+- 98% code coverage (537 statements)
+- <1 second execution time
+- Production-ready quality
 
 
