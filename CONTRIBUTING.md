@@ -45,6 +45,80 @@ When working on spec-kit:
 3. Test script functionality in the `scripts/` directory
 4. Ensure memory files (`memory/constitution.md`) are updated if major process changes are made
 
+## Dogfooding jp-spec-kit
+
+jp-spec-kit can use its own `/speckit.*` and `/jpspec:*` commands during development. This is called "dogfooding" - using the product to develop itself.
+
+### Quick Setup
+
+Run the dogfood command in the jp-spec-kit repository root:
+
+```bash
+specify dogfood
+```
+
+This creates symlinks from `.claude/commands/speckit/` to `templates/commands/` so Claude Code can discover the commands.
+
+### Manual Setup
+
+If you prefer to set up manually or the command fails:
+
+```bash
+# Create the speckit commands directory
+mkdir -p .claude/commands/speckit
+
+# Create symlinks to each template command
+cd .claude/commands/speckit
+ln -sf ../../../templates/commands/analyze.md analyze.md
+ln -sf ../../../templates/commands/checklist.md checklist.md
+ln -sf ../../../templates/commands/clarify.md clarify.md
+ln -sf ../../../templates/commands/constitution.md constitution.md
+ln -sf ../../../templates/commands/implement.md implement.md
+ln -sf ../../../templates/commands/plan.md plan.md
+ln -sf ../../../templates/commands/specify.md specify.md
+ln -sf ../../../templates/commands/tasks.md tasks.md
+```
+
+### Platform Notes
+
+**Linux/macOS**: Symlinks work out of the box.
+
+**Windows**: Requires one of:
+- Enable Developer Mode in Windows Settings → Update & Security → For Developers
+- Run terminal as Administrator
+- Use WSL (Windows Subsystem for Linux)
+
+### How It Works
+
+The jp-spec-kit repository contains a `.jp-spec-kit-source` marker file that:
+- Prevents `specify init` from accidentally overwriting source files
+- Prevents `specify upgrade` from clobbering development work
+- Identifies the repository as the source (not a project created by `specify init`)
+
+The symlinks allow Claude Code to discover the `/speckit.*` commands while keeping `templates/commands/` as the single source of truth.
+
+### Available Commands After Dogfooding
+
+Once set up, you can use these commands in Claude Code:
+
+**Spec-Kit Commands** (via symlinks):
+- `/speckit:specify` - Create feature specifications
+- `/speckit:plan` - Create implementation plans
+- `/speckit:tasks` - Generate task breakdowns
+- `/speckit:implement` - Execute implementation
+- `/speckit:analyze` - Analyze code/features
+- `/speckit:checklist` - Generate checklists
+- `/speckit:clarify` - Clarify underspecified areas
+- `/speckit:constitution` - Work with project constitution
+
+**JP Spec-Kit Commands** (already available):
+- `/jpspec:specify` - Product requirements management
+- `/jpspec:plan` - Architecture planning
+- `/jpspec:research` - Market research
+- `/jpspec:implement` - Multi-agent implementation
+- `/jpspec:validate` - QA and validation
+- `/jpspec:operate` - SRE operations
+
 ## AI contributions in Spec Kit
 
 > [!IMPORTANT]
