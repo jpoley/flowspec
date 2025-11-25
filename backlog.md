@@ -50,11 +50,12 @@ Ask Claude:
 **MCP Integration**: ✅ Configured
 **Tasks**: See `backlog/tasks/`
 
-## 📚 Documentation
+## Documentation
 
-- **Full PRD**: `docs/prd-backlog-md-integration.md` (12,000+ words)
-- **Integration Summary**: `docs/backlog-md-integration-summary.md`
-- **Setup Verification**: `docs/backlog-md-setup-verification.md`
+- **Integration Plan**: `docs/backlog-integration-plan.md`
+- **Quick Start**: `docs/guides/backlog-quickstart.md`
+- **User Guide**: `docs/guides/backlog-user-guide.md`
+- **Commands Reference**: `docs/reference/backlog-commands.md`
 - **Backlog.md Docs**: https://github.com/MrLesk/Backlog.md
 
 ## 🔧 Configuration Files

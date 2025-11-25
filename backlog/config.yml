@@ -1,10 +1,54 @@
 project_name: "jp-spec-kit"
 default_status: "To Do"
-statuses: ["To Do", "In Progress", "Done"]
-labels: []
-milestones: []
+statuses:
+  - "To Do"
+  - "In Progress"
+  - "Review"
+  - "Blocked"
+  - "Done"
+labels:
+  # Priorities
+  - P0
+  - P1
+  - P2
+  - P3
+  # Phases
+  - foundation
+  - setup
+  - discovery
+  - design
+  - implementation
+  - testing
+  - documentation
+  # Components
+  - slash-commands
+  - agents
+  - ci-cd
+  - infrastructure
+  - mcp
+  - cli
+  - backend
+  - frontend
+  # User Stories (Satellite Mode)
+  - US-1
+  - US-2
+  - US-3
+  - US-4
+  - US-all
+  # Characteristics
+  - parallelizable
+  - foundational
+  - satellite-mode
+  - migrated
+milestones:
+  - "Phase 1: Discovery"
+  - "Phase 2: Design"
+  - "Phase 3: Core Infrastructure"
+  - "Phase 4: Provider Implementation"
+  - "Phase 5: CLI & Testing"
+  - "Phase 6: Documentation"
 date_format: yyyy-mm-dd
-max_column_width: 20
+max_column_width: 25
 auto_open_browser: true
 default_port: 6420
 remote_operations: true

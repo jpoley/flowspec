@@ -1,6 +1,6 @@
 ---
 id: task-005
-title: [P1] Implement utility functions in src/utils
+title: "P1: Implement utility functions in src/utils"
 status: To Do
 assignee: []
 created_date: '2025-11-24 20:35'
