@@ -1925,6 +1925,251 @@ def check():
         console.print("[dim]Tip: Install an AI assistant for the best experience[/dim]")
 
 
+# Create backlog subcommand group
+backlog_app = typer.Typer(
+    name="backlog",
+    help="Manage Backlog.md format tasks",
+    add_completion=False,
+)
+app.add_typer(backlog_app, name="backlog")
+
+
+@backlog_app.command("migrate")
+def backlog_migrate(
+    source: Optional[str] = typer.Option(
+        None,
+        "--source",
+        help="Path to tasks.md file (default: ./tasks.md)",
+    ),
+    output: Optional[str] = typer.Option(
+        None,
+        "--output",
+        help="Output backlog directory (default: ./backlog)",
+    ),
+    backup: bool = typer.Option(
+        True,
+        "--backup/--no-backup",
+        help="Create backup of original tasks.md (default: true)",
+    ),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        help="Preview migration without writing files",
+    ),
+    force: bool = typer.Option(
+        False,
+        "--force",
+        help="Overwrite existing backlog tasks",
+    ),
+):
+    """
+    Migrate existing tasks.md file to Backlog.md format.
+
+    This command converts legacy tasks.md files to the new Backlog.md format
+    with individual task files. It preserves all task metadata including IDs,
+    labels, dependencies, status, and user stories.
+
+    Examples:
+        specify backlog migrate                          # Migrate ./tasks.md to ./backlog
+        specify backlog migrate --source ../tasks.md     # Migrate from specific file
+        specify backlog migrate --dry-run                # Preview migration
+        specify backlog migrate --force                  # Overwrite existing tasks
+        specify backlog migrate --no-backup              # Skip backup creation
+    """
+    show_banner()
+
+    # Determine paths
+    source_path = Path(source) if source else Path.cwd() / "tasks.md"
+    output_dir = Path(output) if output else Path.cwd() / "backlog"
+
+    # Validate source file
+    if not source_path.exists():
+        console.print(f"[red]Error:[/red] Source file not found: {source_path}")
+        raise typer.Exit(1)
+
+    if not source_path.is_file():
+        console.print(f"[red]Error:[/red] Source must be a file: {source_path}")
+        raise typer.Exit(1)
+
+    if source_path.name != "tasks.md":
+        console.print(
+            f"[yellow]Warning:[/yellow] Source file is not named 'tasks.md': {source_path.name}"
+        )
+        if not typer.confirm("Continue anyway?"):
+            raise typer.Exit(0)
+
+    console.print(f"[cyan]Source:[/cyan] {source_path}")
+    console.print(f"[cyan]Output:[/cyan] {output_dir}")
+    console.print(f"[cyan]Backup:[/cyan] {backup}")
+
+    if dry_run:
+        console.print("[yellow]DRY RUN MODE - No files will be created[/yellow]")
+
+    console.print()
+
+    # Import migration module
+    from .backlog import TaskMapper
+
+    # Create mapper
+    mapper = TaskMapper(output_dir)
+
+    try:
+        # Check for existing tasks
+        existing_count = 0
+        if (output_dir / "tasks").exists():
+            existing_count = len(list((output_dir / "tasks").glob("task-*.md")))
+            if existing_count > 0 and not force and not dry_run:
+                console.print(
+                    f"[yellow]Warning:[/yellow] Found {existing_count} existing task files in {output_dir / 'tasks'}"
+                )
+                console.print(
+                    "[yellow]Use --force to overwrite existing tasks[/yellow]"
+                )
+                if not typer.confirm("Continue (will skip existing tasks)?"):
+                    raise typer.Exit(0)
+
+        # Create backup if requested
+        backup_path = None
+        if backup and not dry_run:
+            backup_path = source_path.with_suffix(".md.backup")
+            backup_counter = 1
+            while backup_path.exists():
+                backup_path = source_path.with_suffix(f".md.backup.{backup_counter}")
+                backup_counter += 1
+
+            import shutil
+            shutil.copy2(source_path, backup_path)
+            console.print(f"[green]Created backup:[/green] {backup_path}\n")
+
+        # Perform migration
+        result = mapper.generate_from_tasks_file(
+            source_path,
+            overwrite=force,
+            dry_run=dry_run,
+        )
+
+        # Handle results
+        if not result.get("success"):
+            error_msg = result.get("error", "Unknown error")
+            console.print(f"[red]Migration failed:[/red] {error_msg}")
+
+            # Show validation errors if present
+            if "validation_errors" in result:
+                console.print("\n[yellow]Validation Errors:[/yellow]")
+                for error in result["validation_errors"]:
+                    console.print(f"  - {error}")
+
+            # Remove backup on failure (if created)
+            if backup_path and backup_path.exists():
+                backup_path.unlink()
+                console.print(f"[dim]Removed backup (migration failed)[/dim]")
+
+            raise typer.Exit(1)
+
+        # Show success message
+        if dry_run:
+            console.print("[bold green]Migration preview completed![/bold green]\n")
+        else:
+            console.print("[bold green]Migration complete![/bold green]\n")
+
+        # Display statistics
+        stats_lines = []
+
+        if "tasks_parsed" in result:
+            stats_lines.append(
+                f"{'Tasks Found':<20} [green]{result['tasks_parsed']}[/green]"
+            )
+
+        if "tasks_created" in result and not dry_run:
+            stats_lines.append(
+                f"{'Tasks Created':<20} [green]{result['tasks_created']}[/green]"
+            )
+
+        # Count completed vs pending
+        from .backlog.parser import TaskParser
+        parser = TaskParser()
+        tasks = parser.parse_tasks_file(source_path)
+        completed = sum(1 for t in tasks if t.is_completed)
+        pending = len(tasks) - completed
+
+        if completed > 0:
+            stats_lines.append(
+                f"{'Completed Tasks':<20} [green]{completed}[/green]"
+            )
+        if pending > 0:
+            stats_lines.append(
+                f"{'Pending Tasks':<20} [cyan]{pending}[/cyan]"
+            )
+
+        # Count user stories
+        user_stories = set(t.user_story for t in tasks if t.user_story)
+        if user_stories:
+            stats_lines.append(
+                f"{'User Stories':<20} [cyan]{len(user_stories)}[/cyan] ({', '.join(sorted(user_stories))})"
+            )
+
+        # Show groupings
+        if "tasks_by_phase" in result:
+            stats_lines.append("")
+            stats_lines.append("[bold]Tasks by Phase:[/bold]")
+            for phase, task_ids in sorted(result["tasks_by_phase"].items()):
+                stats_lines.append(f"  {phase:<18} {len(task_ids)} tasks")
+
+        if "tasks_by_story" in result and len(result["tasks_by_story"]) > 1:
+            stats_lines.append("")
+            stats_lines.append("[bold]Tasks by Story:[/bold]")
+            for story, task_ids in sorted(result["tasks_by_story"].items()):
+                if story != "No Story":
+                    stats_lines.append(f"  {story:<18} {len(task_ids)} tasks")
+
+        if stats_lines:
+            console.print(
+                Panel(
+                    "\n".join(stats_lines),
+                    title="Migration Summary",
+                    border_style="cyan",
+                    padding=(1, 2),
+                )
+            )
+
+        # Show next steps
+        if not dry_run:
+            console.print()
+            next_steps = [
+                f"1. Review migrated tasks in: [cyan]{output_dir / 'tasks'}[/cyan]",
+                "2. Original tasks.md remains unchanged",
+            ]
+
+            if backup_path:
+                next_steps.append(f"3. Backup created at: [cyan]{backup_path}[/cyan]")
+
+            next_steps.extend([
+                "",
+                "[dim]You can now track task progress by updating status in task frontmatter[/dim]",
+                "[dim]Use 'specify tasks generate' to regenerate tasks from spec[/dim]",
+            ])
+
+            console.print(
+                Panel(
+                    "\n".join(next_steps),
+                    title="Next Steps",
+                    border_style="cyan",
+                    padding=(1, 2),
+                )
+            )
+
+    except FileNotFoundError as e:
+        console.print(f"[red]Error:[/red] File not found: {e}")
+        raise typer.Exit(1)
+    except Exception as e:
+        console.print(f"[red]Error:[/red] {e}")
+        if "--debug" in sys.argv:
+            import traceback
+            console.print("\n[yellow]Debug trace:[/yellow]")
+            console.print(traceback.format_exc())
+        raise typer.Exit(1)
+
+
 @app.command()
 def tasks(
     action: str = typer.Argument(

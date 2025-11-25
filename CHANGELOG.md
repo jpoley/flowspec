@@ -1,3 +1,17 @@
+## [Unreleased]
+
+### Added
+
+- **`specify backlog migrate` Command**: Migrate legacy tasks.md files to Backlog.md format
+  - Converts legacy tasks.md to individual task files in `./backlog/tasks/`
+  - Preserves all task metadata: IDs, labels, dependencies, status, user stories
+  - Automatic backup creation (default: enabled, can use `--no-backup`)
+  - `--dry-run` flag to preview migration without writing files
+  - `--force` flag to overwrite existing task files
+  - `--source` and `--output` flags for custom paths
+  - Comprehensive migration summary with task counts, phases, and user stories
+  - Detects and preserves completed task status (checked boxes → "Done" status)
+
 ## [0.0.22] - 2025-10-29
 
 ### Fixed

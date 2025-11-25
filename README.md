@@ -201,6 +201,12 @@ Use **`/speckit.tasks`** to create an actionable task list from your implementat
 /speckit.tasks
 ```
 
+**NEW**: Enhanced task management with [Backlog.md integration](docs/guides/backlog-quickstart.md)
+- Visual Kanban boards (terminal + web UI)
+- AI-powered task management via MCP
+- Team collaboration with assignees and labels
+- Git-native task tracking
+
 ### 7. Execute implementation
 
 Use **`/speckit.implement`** to execute all tasks and build your feature according to the plan.
@@ -241,11 +247,13 @@ The `specify` command supports the following options:
 
 ### Commands
 
-| Command     | Description                                                    |
-|-------------|----------------------------------------------------------------|
-| `init`      | Initialize a new Specify project with two-stage layered download (base + extension) |
-| `upgrade`   | Upgrade existing project to latest base spec-kit and jp-spec-kit extension |
-| `check`     | Check for installed tools (`git`, `claude`, `gemini`, `code`/`code-insiders`, `cursor-agent`, `windsurf`, `qwen`, `opencode`, `codex`) |
+| Command            | Description                                                    |
+|--------------------|----------------------------------------------------------------|
+| `init`             | Initialize a new Specify project with two-stage layered download (base + extension) |
+| `upgrade`          | Upgrade existing project to latest base spec-kit and jp-spec-kit extension |
+| `check`            | Check for installed tools (`git`, `claude`, `gemini`, `code`/`code-insiders`, `cursor-agent`, `windsurf`, `qwen`, `opencode`, `codex`) |
+| `tasks generate`   | Generate tasks from spec/plan files in Backlog.md format |
+| `backlog migrate`  | Migrate legacy tasks.md files to Backlog.md format |
 
 ### `specify init` Arguments & Options
 
@@ -279,6 +287,25 @@ Upgrade an existing Specify project to the latest versions of base spec-kit and 
 | `--debug`              | Flag     | Show verbose diagnostic output                                              |
 | `--github-token`       | Option   | GitHub token to use for API requests                                        |
 
+### `specify backlog migrate` Options
+
+Migrate legacy tasks.md files to the new Backlog.md format with individual task files.
+
+| Option           | Type     | Description                                                                  |
+|------------------|----------|------------------------------------------------------------------------------|
+| `--source`       | Option   | Path to tasks.md file (default: `./tasks.md`)                                |
+| `--output`       | Option   | Output backlog directory (default: `./backlog`)                              |
+| `--backup`       | Flag     | Create backup of original tasks.md (default: enabled, use `--no-backup` to disable) |
+| `--dry-run`      | Flag     | Preview migration without writing files                                       |
+| `--force`        | Flag     | Overwrite existing backlog tasks                                             |
+
+**Features:**
+- Preserves all task metadata: IDs, labels, dependencies, status, user stories
+- Automatically detects completed tasks (checked boxes → "Done" status)
+- Creates numbered backups if backup file already exists
+- Shows comprehensive migration summary with task counts and groupings
+- Safe by default: won't overwrite existing tasks without `--force`
+
 ### Examples
 
 ```bash
@@ -310,8 +337,21 @@ specify init --here --ai copilot
 
 # Force merge into current (non-empty) directory without confirmation
 specify init . --force --ai copilot
-# or 
-specify init --here --force --ai copilot
+
+# Migrate legacy tasks.md to Backlog.md format
+specify backlog migrate
+
+# Migrate from specific file
+specify backlog migrate --source path/to/tasks.md --output backlog
+
+# Preview migration without writing files
+specify backlog migrate --dry-run
+
+# Overwrite existing tasks (use with caution)
+specify backlog migrate --force
+
+# Skip backup creation
+specify backlog migrate --no-backup
 
 # Skip git initialization
 specify init my-project --ai gemini --no-git
@@ -503,6 +543,9 @@ If you encounter issues with an agent, please open an issue so we can refine the
 ## 📖 Learn More
 
 - **[Complete Spec-Driven Development Methodology](./spec-driven.md)** - Deep dive into the full process
+- **[Backlog.md Integration Quick Start](docs/guides/backlog-quickstart.md)** - Get started with AI-powered task management in 5 minutes
+- **[Backlog.md User Guide](docs/guides/backlog-user-guide.md)** - Comprehensive task management documentation
+- **[Migration Guide](docs/guides/backlog-migration.md)** - Convert from tasks.md to Backlog.md
 - **[Detailed Walkthrough](#-detailed-process)** - Step-by-step implementation guide
 
 ---

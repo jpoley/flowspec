@@ -1,5 +1,5 @@
 ---
-description: Generate an actionable, dependency-ordered tasks.md for the feature based on available design artifacts.
+description: Generate an actionable, dependency-ordered task backlog for the feature based on available design artifacts.
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json
   ps: scripts/powershell/check-prerequisites.ps1 -Json
@@ -33,7 +33,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Create parallel execution examples per user story
    - Validate task completeness (each user story has all needed tasks, independently testable)
 
-4. **Generate tasks.md**: Use `.specify/templates/tasks-template.md` as structure, fill with:
+4. **Generate intermediate tasks.md**: Use `.specify/templates/tasks-template.md` as structure, fill with:
    - Correct feature name from plan.md
    - Phase 1: Setup tasks (project initialization)
    - Phase 2: Foundational tasks (blocking prerequisites for all user stories)
@@ -46,13 +46,23 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Parallel execution examples per story
    - Implementation strategy section (MVP first, incremental delivery)
 
-5. **Report**: Output path to generated tasks.md and summary:
+5. **Convert to Backlog.md format**:
+   - Run `specify tasks generate --source {FEATURE_DIR}` from the repo root to convert tasks.md to Backlog.md format
+   - This will create individual task files in `{FEATURE_DIR}/backlog/tasks/*.md`
+   - Each task becomes a separate markdown file with YAML frontmatter
+   - Preserves all task metadata (labels, dependencies, phases, user stories)
+   - Enables better task tracking and management
+
+6. **Report**: Output summary and paths:
    - Total task count
-   - Task count per user story
+   - Task count per user story and phase
+   - Path to intermediate tasks.md: `{FEATURE_DIR}/tasks.md`
+   - Path to Backlog.md tasks directory: `{FEATURE_DIR}/backlog/tasks/`
    - Parallel opportunities identified
    - Independent test criteria for each story
    - Suggested MVP scope (typically just User Story 1)
    - Format validation: Confirm ALL tasks follow the checklist format (checkbox, ID, labels, file paths)
+   - Execution order and critical path information
 
 Context for task generation: {ARGS}
 

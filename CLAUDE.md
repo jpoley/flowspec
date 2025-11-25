@@ -54,6 +54,32 @@ When working on this repository, you have access to specialized workflow command
 /jpspec:operate      # Execute operations (SRE agent for CI/CD + K8s + DevSecOps)
 ```
 
+### Backlog.md Integration (Task Management)
+
+This project uses **Backlog.md** for enhanced task management:
+
+```bash
+# View tasks
+backlog board              # Terminal Kanban board
+backlog browser            # Web UI
+backlog overview           # Project statistics
+
+# Manage tasks via CLI
+backlog task create "Title" --labels "US1,backend"
+backlog task edit task-12
+backlog task view task-12
+
+# Or ask Claude (via MCP):
+# "Show me all tasks for User Story 1"
+# "Mark task-12 as in progress"
+# "Create a task for implementing password reset"
+```
+
+**Documentation**:
+- Quick Start: `docs/guides/backlog-quickstart.md`
+- User Guide: `docs/guides/backlog-user-guide.md`
+- Command Reference: `docs/reference/backlog-commands.md`
+
 ### Headless Mode Usage
 
 Claude Code supports headless mode for non-interactive contexts (CI, pre-commit hooks, automation):
@@ -480,6 +506,10 @@ act --version
 - [Inner Loop Principles](docs/reference/inner-loop.md)
 - [Outer Loop Principles](docs/reference/outer-loop.md)
 - [Agent Loop Classification](docs/reference/agent-loop-classification.md)
+- [Backlog.md Quick Start](docs/guides/backlog-quickstart.md)
+- [Backlog.md User Guide](docs/guides/backlog-user-guide.md)
+- [Backlog.md Migration Guide](docs/guides/backlog-migration.md)
+- [Backlog.md Commands](docs/reference/backlog-commands.md)
 - [Contributing Guide](CONTRIBUTING.md)
 - [Spec-Driven Development Guide](spec-driven.md)
 - [Claude Code Documentation](https://docs.claude.com/claude-code)
