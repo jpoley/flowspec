@@ -1,9 +1,11 @@
 ---
 id: task-030
 title: Implement Audit Logger
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - '@claude'
 created_date: '2025-11-24'
+updated_date: '2025-11-26 03:22'
 labels:
   - implementation
   - core
@@ -16,20 +18,22 @@ dependencies:
 
 ## Description
 
+<!-- SECTION:DESCRIPTION:BEGIN -->
 Implement structured audit logging for compliance.
 
 ## Phase
 
 Phase 3: Implementation - Core
+<!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
-
-- [ ] Structured logging with `structlog`
-- [ ] JSON format for parsing
-- [ ] Human-readable markdown format
-- [ ] Log rotation (max 100MB)
-- [ ] Audit log query API
-- [ ] SLSA attestation format
+<!-- AC:BEGIN -->
+- [ ] #1 Structured logging with `structlog`
+- [ ] #2 JSON format for parsing
+- [ ] #3 Human-readable markdown format
+- [ ] #4 Log rotation (max 100MB)
+- [ ] #5 Audit log query API
+- [ ] #6 SLSA attestation format
 
 ## Deliverables
 
@@ -40,3 +44,18 @@ Phase 3: Implementation - Core
 ## Parallelizable
 
 [P] with task-029
+<!-- AC:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+1. Review security architecture doc requirements for audit logging
+2. Check Python standard logging vs structlog trade-offs
+3. Design AuditLogger interface with required methods
+4. Implement FileAuditLogger with JSON and Markdown formatters
+5. Add log rotation with RotatingFileHandler
+6. Implement query API for filtering logs
+7. Add SLSA attestation format support
+8. Export from __init__.py and write tests
+9. Update pyproject.toml if new dependencies needed
+<!-- SECTION:PLAN:END -->

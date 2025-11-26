@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2025-11-24'
-updated_date: '2025-11-26 02:26'
+updated_date: '2025-11-26 02:59'
 labels:
   - discovery
   - US-all
@@ -93,4 +93,34 @@ The following acceptance criteria require human facilitation:
 2. Schedule 30-40 min interview slots
 3. Deploy survey using Google Forms or Typeform
 4. Compile findings after data collection
+
+## Interview #1: jpoley
+
+### Current Workflow
+- **Tools**: GitHub + Atlassian (Jira), evaluating Notion
+- **Local tasks**: Not yet using Backlog.md, but excited to
+- **Task origin**: Mixed - sometimes planning, sometimes local
+
+### Pain Points
+- **Biggest frustration**: Not having the right info when needed
+- **Time on manual sync**: 2-4 hours/week
+- **Lost work**: Yes - every engineer experiences this
+- **Workarounds tried**: All of them
+
+### Feature Validation
+- **Pull command value**: Very valuable
+- **Additional need**: Mark task as "in progress" on remote when pulled
+- **Fields to sync**: All of them
+- **Conflict preference**: Smart merge, local mostly wins
+
+### Adoption
+- **Likelihood**: 10/10 - "yes please"
+- **Blocker**: Complexity of use
+- **Willingness to pay**: Maybe
+
+### Key Insights
+1. Pain is real: 2-4 hrs/week lost to manual sync
+2. New feature request: Auto-set remote status on pull
+3. UX is critical: complexity will kill adoption
+4. Smart merge with local preference aligns with design
 <!-- SECTION:NOTES:END -->

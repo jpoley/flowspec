@@ -1,9 +1,11 @@
 ---
 id: task-019
 title: Design Secret Management
-status: To Do
-assignee: []
+status: Done
+assignee:
+  - '@claude'
 created_date: '2025-11-24'
+updated_date: '2025-11-26 02:40'
 labels:
   - design
   - security
@@ -15,19 +17,21 @@ dependencies:
 
 ## Description
 
+<!-- SECTION:DESCRIPTION:BEGIN -->
 Design secure credential storage using system keychain and env vars.
 
 ## Phase
 
 Phase 2: Design
+<!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
-
-- [ ] Multi-platform keychain support (macOS, Linux, Windows)
-- [ ] Environment variable fallback
-- [ ] CLI auth integration (gh, jira)
-- [ ] Interactive prompt for missing tokens
-- [ ] Never store secrets in config files
+<!-- AC:BEGIN -->
+- [x] #1 Multi-platform keychain support (macOS, Linux, Windows)
+- [x] #2 Environment variable fallback
+- [x] #3 CLI auth integration (gh, jira)
+- [x] #4 Interactive prompt for missing tokens
+- [x] #5 Never store secrets in config files
 
 ## Deliverables
 
@@ -37,3 +41,19 @@ Phase 2: Design
 ## Parallelizable
 
 [P] with task-018
+<!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Secret Management Design Complete
+
+Full docs: `backlog/docs/satellite-mode-subsystems-design.md`
+
+### Summary
+- Multi-platform keychain via `keyring` library
+- Fallback chain: keychain → env vars → CLI tools
+- CLI integration: `gh auth token` for GitHub
+- Interactive prompts with validation
+- Config files NEVER contain tokens (references only)
+<!-- SECTION:NOTES:END -->

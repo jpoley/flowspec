@@ -1,9 +1,11 @@
 ---
 id: task-021
 title: Design Conflict Resolution Strategies
-status: To Do
-assignee: []
+status: Done
+assignee:
+  - '@claude'
 created_date: '2025-11-24'
+updated_date: '2025-11-26 02:42'
 labels:
   - design
   - architecture
@@ -16,6 +18,7 @@ dependencies:
 
 ## Description
 
+<!-- SECTION:DESCRIPTION:BEGIN -->
 Design strategy pattern for pluggable conflict resolution.
 
 ## Phase
@@ -25,14 +28,15 @@ Phase 2: Design
 ## User Stories
 
 - US-2: Sync assigned tasks
+<!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
-
-- [ ] LocalWinsStrategy
-- [ ] RemoteWinsStrategy
-- [ ] PromptStrategy
-- [ ] SmartMergeStrategy
-- [ ] Configuration options in config.yml
+<!-- AC:BEGIN -->
+- [x] #1 LocalWinsStrategy
+- [x] #2 RemoteWinsStrategy
+- [x] #3 PromptStrategy
+- [x] #4 SmartMergeStrategy
+- [x] #5 Configuration options in config.yml
 
 ## Deliverables
 
@@ -42,3 +46,29 @@ Phase 2: Design
 ## Parallelizable
 
 [P] with task-020
+<!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Conflict Resolution Design Complete
+
+Full docs: `backlog/docs/satellite-mode-conflict-resolution.md`
+
+### Strategies Implemented
+1. **LocalWinsStrategy**: Always prefer local, simple and fast
+2. **RemoteWinsStrategy**: Always prefer remote, for SoT workflows
+3. **PromptStrategy**: Interactive resolution with batch mode
+4. **SmartMergeStrategy**: Auto-merge with type-aware logic
+
+### Smart Merge Logic
+- Text: Three-way merge or conflict markers
+- Lists: Union (labels, ACs)
+- Scalar: Newest timestamp wins
+
+### Configuration
+- Default strategy in config.yml
+- Per-provider overrides
+- Per-field overrides
+- Smart merge tuning options
+<!-- SECTION:NOTES:END -->
