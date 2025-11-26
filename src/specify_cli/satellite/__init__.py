@@ -24,6 +24,11 @@ __all__ = [
     "ProviderRegistry",
     "LazyProvider",
     "PROVIDER_PATTERNS",
+    # Secrets
+    "SecretManager",
+    "TokenRedactionFilter",
+    "ENV_VAR_NAMES",
+    "TOKEN_PATTERNS",
     # Errors
     "SatelliteError",
     "AuthenticationError",
@@ -95,3 +100,6 @@ from .errors import (
 
 # Migration
 from .migration import TaskMigrator, MigrationError, migrate_tasks_cli, cleanup_backups
+
+# Secrets
+from .secrets import SecretManager, TokenRedactionFilter, ENV_VAR_NAMES, TOKEN_PATTERNS
