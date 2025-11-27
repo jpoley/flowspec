@@ -45,6 +45,7 @@ uv tool install specify-cli --from git+https://github.com/jpoley/jp-spec-kit.git
 ```bash
 specify init my-project --ai claude
 cd my-project
+backlog init `basename "$PWD"`
 ```
 
 ### 3. Define What You Want to Build
