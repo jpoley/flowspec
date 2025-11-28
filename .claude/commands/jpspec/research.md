@@ -14,6 +14,19 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 This command orchestrates comprehensive research and business validation using two specialized agents working sequentially.
 
+**IMPORTANT: Before starting, check for existing research-related tasks:**
+
+```bash
+# Search for research tasks
+backlog search "research" --plain
+backlog search "$ARGUMENTS" --plain
+
+# List all research tasks
+backlog task list -l research --plain
+```
+
+Review any existing tasks before proceeding. If relevant tasks exist, coordinate with them or update them instead of duplicating work.
+
 ### Phase 1: Research
 
 Use the Task tool to launch a **general-purpose** agent with the following prompt (includes full Researcher context):
@@ -60,6 +73,84 @@ You conduct rigorous, evidence-based research that combines:
 - **Credibility Assessment**: Evaluate source authority, bias, and reliability
 - **Quantification**: Use specific numbers and metrics when available
 - **Citation**: Document sources for key claims and statistics
+
+## Backlog.md Task Management
+
+You MUST use backlog.md CLI to create and manage research tasks. Follow these guidelines:
+
+### Creating Research Spike Tasks
+
+For each research topic, create a research spike task in backlog:
+
+```bash
+backlog task create "Research: [TOPIC]" \
+  -d "Conduct comprehensive research on [TOPIC] to inform decision-making" \
+  --ac "Document market analysis (TAM/SAM/SOM, growth trends, customer segments)" \
+  --ac "Analyze competitive landscape (key competitors, strengths/weaknesses)" \
+  --ac "Assess technical feasibility (available technologies, complexity, risks)" \
+  --ac "Identify industry trends (emerging patterns, best practices, future outlook)" \
+  --ac "Provide sourced recommendations with confidence levels" \
+  -l research,spike \
+  --priority high
+```
+
+### Documenting Findings
+
+1. **Assign the task to yourself and set to In Progress:**
+   ```bash
+   backlog task edit <id> -s "In Progress" -a @researcher
+   ```
+
+2. **Add your research plan:**
+   ```bash
+   backlog task edit <id> --plan $'1. Market intelligence gathering\n2. Competitive analysis\n3. Technical feasibility assessment\n4. Trend forecasting\n5. Risk analysis\n6. Synthesize findings'
+   ```
+
+3. **Mark ACs as you complete each research area:**
+   ```bash
+   backlog task edit <id> --check-ac 1  # After market analysis
+   backlog task edit <id> --check-ac 2  # After competitive analysis
+   # etc.
+   ```
+
+4. **Add research findings as implementation notes:**
+   ```bash
+   backlog task edit <id> --notes $'# Research Findings: [TOPIC]
+
+## Executive Summary
+[Key findings with confidence levels]
+
+## Market Analysis
+- TAM: [specific numbers]
+- SAM: [specific numbers]
+- SOM: [specific numbers]
+- Growth rate: [projections]
+
+## Competitive Landscape
+- Competitor A: [strengths/weaknesses]
+- Competitor B: [strengths/weaknesses]
+
+## Technical Feasibility
+- Available technologies: [list]
+- Implementation complexity: [assessment]
+- Technical risks: [list]
+
+## Industry Trends
+- Trend 1: [description]
+- Trend 2: [description]
+
+## Recommendations
+[Specific recommendations with rationale]
+
+## Sources
+- [Source 1]
+- [Source 2]'
+   ```
+
+5. **Mark task as Done after completing all research:**
+   ```bash
+   backlog task edit <id> -s Done
+   ```
 
 # TASK: Conduct comprehensive research on: [USER INPUT TOPIC]
 
@@ -123,6 +214,100 @@ Your evaluations are grounded in business fundamentals, market realities, and or
 - **Data-Driven Analysis**: Ground assessments in verifiable data
 - **Balanced Perspective**: Present both opportunities and risks
 - **Actionable Insights**: Provide clear recommendations
+
+## Backlog.md Task Management
+
+You MUST use backlog.md CLI to create and manage validation tasks. Follow these guidelines:
+
+### Creating Business Validation Tasks
+
+For each topic requiring business validation, create a validation task in backlog:
+
+```bash
+backlog task create "Business Validation: [TOPIC]" \
+  -d "Assess business viability and strategic fit for [TOPIC]" \
+  --ac "Complete market opportunity assessment (TAM/SAM/SOM)" \
+  --ac "Analyze financial viability (revenue model, cost structure, unit economics)" \
+  --ac "Assess operational feasibility (resources, capabilities, gaps)" \
+  --ac "Evaluate strategic fit (organizational alignment)" \
+  --ac "Complete risk analysis and mitigation (market, execution, financial risks)" \
+  --ac "Provide Go/No-Go/Proceed-with-Caution recommendation" \
+  -l validation,business \
+  --priority high
+```
+
+### Documenting Validation Results
+
+1. **Assign the task to yourself and set to In Progress:**
+   ```bash
+   backlog task edit <id> -s "In Progress" -a @business-validator
+   ```
+
+2. **Add your validation plan:**
+   ```bash
+   backlog task edit <id> --plan $'1. Review research findings\n2. Market opportunity assessment\n3. Financial viability analysis\n4. Operational feasibility check\n5. Strategic fit evaluation\n6. Risk analysis\n7. Formulate recommendation'
+   ```
+
+3. **Mark ACs as you complete each validation area:**
+   ```bash
+   backlog task edit <id> --check-ac 1  # After market assessment
+   backlog task edit <id> --check-ac 2  # After financial analysis
+   # etc.
+   ```
+
+4. **Add validation findings as implementation notes:**
+   ```bash
+   backlog task edit <id> --notes $'# Business Validation: [TOPIC]
+
+## Executive Assessment
+**Recommendation**: [Go/No-Go/Proceed with Caution]
+**Confidence Level**: [High/Medium/Low]
+
+## Opportunity Score
+- Market Opportunity: [1-10] - [justification]
+- Financial Viability: [1-10] - [justification]
+- Operational Feasibility: [1-10] - [justification]
+- Strategic Fit: [1-10] - [justification]
+**Overall Score**: [average]/10
+
+## Market Opportunity
+- TAM: [realistic estimate]
+- SAM: [realistic estimate]
+- SOM: [realistic 3-5 year target]
+- Market growth: [assessment]
+
+## Financial Viability
+- Revenue model: [description]
+- Unit economics: [LTV:CAC, margins]
+- Path to profitability: [timeline]
+
+## Operational Feasibility
+- Resource requirements: [list]
+- Capability gaps: [list]
+- Execution challenges: [list]
+
+## Strategic Fit
+- Organizational alignment: [assessment]
+- Portfolio strategy: [fit]
+
+## Risk Register
+| Risk | Probability | Impact | Mitigation |
+|------|------------|---------|------------|
+| [Risk 1] | [H/M/L] | [H/M/L] | [strategy] |
+| [Risk 2] | [H/M/L] | [H/M/L] | [strategy] |
+
+## Critical Assumptions
+1. [Assumption 1] - [validation method]
+2. [Assumption 2] - [validation method]
+
+## Recommendations
+[Specific next steps and decision criteria]'
+   ```
+
+5. **Mark task as Done after completing validation:**
+   ```bash
+   backlog task edit <id> -s Done
+   ```
 
 # TASK: Based on the research findings provided, conduct a comprehensive business validation assessment for: [USER INPUT TOPIC]
 
