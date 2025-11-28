@@ -1,4 +1,6 @@
+
 ---
+priority: high
 id: task-107
 title: Create shared backlog.md instructions template for agents
 status: To Do
@@ -12,7 +14,6 @@ labels:
   - template
 dependencies:
   - task-106
----
 
 ## Description
 

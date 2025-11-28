@@ -8,7 +8,7 @@ labels:
   - documentation
   - troubleshooting
 dependencies: []
-priority: low
+priority: high
 ---
 
 ## Description

@@ -8,7 +8,7 @@ labels:
   - documentation
   - claude-md
 dependencies: []
-priority: low
+priority: high
 ---
 
 ## Description

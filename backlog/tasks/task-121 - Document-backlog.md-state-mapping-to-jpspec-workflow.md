@@ -9,7 +9,7 @@ labels:
   - workflow
   - integration
 dependencies: []
-priority: medium
+priority: high
 ---
 
 ## Description

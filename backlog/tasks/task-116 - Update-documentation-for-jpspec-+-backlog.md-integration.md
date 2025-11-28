@@ -12,7 +12,7 @@ labels:
   - P2
 dependencies:
   - task-115
-priority: medium
+priority: high
 ---
 
 ## Description

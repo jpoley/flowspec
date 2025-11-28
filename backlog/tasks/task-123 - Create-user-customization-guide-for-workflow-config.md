@@ -8,7 +8,7 @@ labels:
   - documentation
   - user-guide
 dependencies: []
-priority: medium
+priority: high
 ---
 
 ## Description

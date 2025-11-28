@@ -11,7 +11,7 @@ labels:
   - git
   - developer-experience
 dependencies: []
-priority: medium
+priority: high
 ---
 
 ## Description

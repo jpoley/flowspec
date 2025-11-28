@@ -9,7 +9,7 @@ labels:
   - unit-tests
   - python
 dependencies: []
-priority: medium
+priority: high
 ---
 
 ## Description
