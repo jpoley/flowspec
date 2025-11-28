@@ -56,7 +56,9 @@ flowchart TD
         AGENT_SECURITY["Secure-by-Design Engineer<br/>(Security Assessment)"]
     end
 
-    AGENT_TECH_WRITER["Technical Writer<br/>(Documentation)"]
+    subgraph VAL_PHASE2["Phase 2: Documentation (Sequential)"]
+        AGENT_TECH_WRITER["Technical Writer<br/>(Documentation)"]
+    end
 
     subgraph VAL_PHASE3["Phase 3: Release Management"]
         AGENT_RELEASE["Release Manager<br/>(Production Deployment)"]
@@ -78,9 +80,8 @@ flowchart TD
     CMD_SPECIFY --> AGENT_PM
 
     %% Plan workflow (parallel)
-    CMD_PLAN --> PLAN_PARALLEL
-    PLAN_PARALLEL --> AGENT_ARCH
-    PLAN_PARALLEL --> AGENT_PLATFORM
+    CMD_PLAN --> AGENT_ARCH
+    CMD_PLAN --> AGENT_PLATFORM
     AGENT_ARCH --> PLAN_MERGE["Consolidate Architecture<br/>& Platform Designs"]
     AGENT_PLATFORM --> PLAN_MERGE
     PLAN_MERGE --> CONST["Build /speckit.constitution"]
@@ -109,9 +110,8 @@ flowchart TD
     REVIEW_COMPLETE --> ITERATION["Address Feedback<br/>& Integration Testing"]
 
     %% Validate workflow (multi-phase)
-    CMD_VALIDATE --> VAL_PHASE1
-    VAL_PHASE1 --> AGENT_QA
-    VAL_PHASE1 --> AGENT_SECURITY
+    CMD_VALIDATE --> AGENT_QA
+    CMD_VALIDATE --> AGENT_SECURITY
 
     AGENT_QA --> VAL_P1_COMPLETE["Phase 1 Complete"]
     AGENT_SECURITY --> VAL_P1_COMPLETE
@@ -133,7 +133,7 @@ flowchart TD
     class AGENT_FRONTEND,AGENT_BACKEND,AGENT_AIML,AGENT_FE_REVIEW,AGENT_BE_REVIEW agentStyle
     class AGENT_QA,AGENT_SECURITY,AGENT_TECH_WRITER,AGENT_RELEASE,AGENT_SRE agentStyle
     class PLAN_PARALLEL,IMPL_PHASE1,VAL_PHASE1 parallelStyle
-    class IMPL_PHASE2,VAL_PHASE3 sequentialStyle
+    class IMPL_PHASE2,VAL_PHASE2,VAL_PHASE3 sequentialStyle
     class IMPL_DECISION,REVIEW_DECISION decisionStyle
     class HUMAN_APPROVAL phaseStyle
 ```
