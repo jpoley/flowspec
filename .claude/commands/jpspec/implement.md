@@ -12,7 +12,40 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Execution Instructions
 
-This command implements features using specialized engineering agents with integrated code review. Determine which implementation paths are needed based on the feature requirements.
+This command implements features using specialized engineering agents with integrated code review. **Engineers work exclusively from backlog tasks.**
+
+### Step 0: REQUIRED - Discover Backlog Tasks
+
+**⚠️ CRITICAL: This command REQUIRES existing backlog tasks to work on.**
+
+Before launching any engineer agents, you MUST discover tasks:
+
+```bash
+# Search for implementation tasks related to this feature
+backlog search "$ARGUMENTS" --plain
+
+# List available tasks to work on
+backlog task list -s "To Do" --plain
+
+# List any in-progress tasks for context
+backlog task list -s "In Progress" --plain
+```
+
+**If no relevant tasks are found:**
+
+```
+⚠️ No backlog tasks found for: [FEATURE NAME]
+
+This command requires existing backlog tasks with defined acceptance criteria.
+Please run /jpspec:specify first to create implementation tasks, or create
+tasks manually using:
+
+  backlog task create "Implement [Feature]" --ac "Criterion 1" --ac "Criterion 2"
+
+Then re-run /jpspec:implement
+```
+
+**If tasks ARE found, proceed to Phase 1.**
 
 ### Phase 1: Implementation (Parallel Execution)
 
@@ -44,6 +77,24 @@ You are a Senior Frontend Engineer with deep expertise in React, React Native, m
 
 Context:
 [Include architecture, PRD, design specs, API contracts]
+[Include backlog task IDs discovered in Step 0]
+
+## Backlog Task Management (REQUIRED)
+
+**Your Agent Identity**: @frontend-engineer
+
+Before coding, you MUST:
+1. **Pick a task**: `backlog task <task-id> --plain` to review details
+2. **Assign yourself**: `backlog task edit <task-id> -s "In Progress" -a @frontend-engineer`
+3. **Add implementation plan**: `backlog task edit <task-id> --plan $'1. Step 1\n2. Step 2'`
+
+During implementation:
+- **Check ACs as you complete them**: `backlog task edit <task-id> --check-ac 1`
+- **Check multiple ACs**: `backlog task edit <task-id> --check-ac 1 --check-ac 2`
+
+After implementation:
+- **Add implementation notes**: `backlog task edit <task-id> --notes $'Implemented X with Y pattern\n\nKey changes:\n- File A modified\n- File B created'`
+- **Verify all ACs checked**: `backlog task <task-id> --plain` (all should show `[x]`)
 
 Implementation Requirements:
 
@@ -187,6 +238,24 @@ Before completing ANY implementation, you MUST:
 
 Context:
 [Include architecture, PRD, API specs, data models]
+[Include backlog task IDs discovered in Step 0]
+
+## Backlog Task Management (REQUIRED)
+
+**Your Agent Identity**: @backend-engineer
+
+Before coding, you MUST:
+1. **Pick a task**: `backlog task <task-id> --plain` to review details
+2. **Assign yourself**: `backlog task edit <task-id> -s "In Progress" -a @backend-engineer`
+3. **Add implementation plan**: `backlog task edit <task-id> --plan $'1. Step 1\n2. Step 2'`
+
+During implementation:
+- **Check ACs as you complete them**: `backlog task edit <task-id> --check-ac 1`
+- **Check multiple ACs**: `backlog task edit <task-id> --check-ac 1 --check-ac 2`
+
+After implementation:
+- **Add implementation notes**: `backlog task edit <task-id> --notes $'Implemented X with Y pattern\n\nKey changes:\n- File A modified\n- File B created'`
+- **Verify all ACs checked**: `backlog task <task-id> --plain` (all should show `[x]`)
 
 Implementation Requirements:
 
@@ -248,6 +317,24 @@ Implement AI/ML components for: [USER INPUT FEATURE]
 
 Context:
 [Include model requirements, data sources, performance targets]
+[Include backlog task IDs discovered in Step 0]
+
+## Backlog Task Management (REQUIRED)
+
+**Your Agent Identity**: @ai-ml-engineer
+
+Before coding, you MUST:
+1. **Pick a task**: `backlog task <task-id> --plain` to review details
+2. **Assign yourself**: `backlog task edit <task-id> -s "In Progress" -a @ai-ml-engineer`
+3. **Add implementation plan**: `backlog task edit <task-id> --plan $'1. Step 1\n2. Step 2'`
+
+During implementation:
+- **Check ACs as you complete them**: `backlog task edit <task-id> --check-ac 1`
+- **Check multiple ACs**: `backlog task edit <task-id> --check-ac 1 --check-ac 2`
+
+After implementation:
+- **Add implementation notes**: `backlog task edit <task-id> --notes $'Implemented X with Y pattern\n\nKey changes:\n- File A modified\n- File B created'`
+- **Verify all ACs checked**: `backlog task <task-id> --plain` (all should show `[x]`)
 
 Implementation Requirements:
 
@@ -303,6 +390,22 @@ You are a Principal Frontend Engineer conducting thorough code reviews for React
 
 Code to review:
 [PASTE FRONTEND CODE FROM PHASE 1]
+
+## Backlog AC Verification (REQUIRED)
+
+**Your Agent Identity**: @frontend-code-reviewer
+
+Before approving code, you MUST:
+1. **Review task ACs**: `backlog task <task-id> --plain`
+2. **Verify AC completion matches code**: For each checked AC, confirm the code implements it
+3. **Uncheck ACs if not satisfied**: `backlog task edit <task-id> --uncheck-ac <N>`
+4. **Add review notes**: `backlog task edit <task-id> --append-notes $'Code Review:\n- Issue: ...\n- Suggestion: ...'`
+
+**AC Verification Checklist**:
+- [ ] Each checked AC has corresponding code changes
+- [ ] Implementation notes accurately describe changes
+- [ ] No undocumented functionality added
+- [ ] Tests cover AC requirements
 
 Conduct comprehensive review covering:
 
@@ -370,6 +473,23 @@ You are a Principal Backend Engineer conducting thorough code reviews for Go, Ty
 
 Code to review:
 [PASTE BACKEND CODE FROM PHASE 1]
+
+## Backlog AC Verification (REQUIRED)
+
+**Your Agent Identity**: @backend-code-reviewer
+
+Before approving code, you MUST:
+1. **Review task ACs**: `backlog task <task-id> --plain`
+2. **Verify AC completion matches code**: For each checked AC, confirm the code implements it
+3. **Uncheck ACs if not satisfied**: `backlog task edit <task-id> --uncheck-ac <N>`
+4. **Add review notes**: `backlog task edit <task-id> --append-notes $'Code Review:\n- Issue: ...\n- Suggestion: ...'`
+
+**AC Verification Checklist**:
+- [ ] Each checked AC has corresponding code changes
+- [ ] Implementation notes accurately describe changes
+- [ ] No undocumented functionality added
+- [ ] Tests cover AC requirements
+- [ ] Security requirements met
 
 Conduct comprehensive review covering:
 

@@ -1,8 +1,9 @@
 ---
 id: task-112
 title: 'Update /jpspec:implement to use backlog.md CLI'
-status: To Do
-assignee: []
+status: Done
+assignee:
+  - '@claude-opus'
 created_date: '2025-11-28 16:56'
 updated_date: '2025-11-28 20:20'
 labels:

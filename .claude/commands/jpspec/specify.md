@@ -111,6 +111,20 @@ Every idea, hypothesis, or proposed solution must be evaluated against:
 
 Context:
 [Include any research findings, business validation, or context from previous phases]
+[Include existing task IDs found in Step 1 if any]
+
+## Backlog.md CLI Integration
+
+You have access to the backlog.md CLI for task management. Use it to create implementation tasks as you define the PRD.
+
+**Your Agent Identity**: @pm-planner
+
+**Key Commands**:
+- Search tasks: `backlog search "keyword" --plain`
+- Create task: `backlog task create "Title" -d "Description" --ac "Criterion" -a @pm-planner -l label1,label2`
+- View task: `backlog task <id> --plain`
+
+**CRITICAL**: When creating tasks in section 6, use the backlog CLI to actually create them, then reference the generated task IDs in the PRD.
 
 Your deliverables should include:
 
@@ -219,34 +233,21 @@ The agent will produce a comprehensive PRD that integrates with /speckit.tasks a
 
 ### ⚠️ MANDATORY: Design→Implement Workflow
 
-**This is a DESIGN command. Design tasks MUST create implementation tasks before completion.**
+**This is a DESIGN command. The agent creates implementation tasks as part of section 6.**
 
-After the PRD agent completes its work:
+The PM Planner agent is responsible for:
+1. Creating implementation tasks via backlog CLI during PRD development
+2. Assigning itself (@pm-planner) to created tasks
+3. Including task IDs in the PRD for traceability
 
-1. **Create implementation tasks** for each major deliverable:
-   ```bash
-   # Example: Create tasks from PRD sections
-   backlog task create "Implement [Feature Core Functionality]" \
-     -d "Implementation based on PRD from /jpspec:specify" \
-     --ac "Implement core feature per PRD section 4" \
-     --ac "Add validation per NFR section" \
-     --ac "Write unit tests" \
-     -l implement,backend \
-     --priority high
+After the PRD agent completes its work, verify:
 
-   backlog task create "Implement [Feature UI Components]" \
-     -d "Frontend implementation per PRD user stories" \
-     --ac "Build UI components per PRD wireframes" \
-     --ac "Implement accessibility per WCAG 2.1 AA" \
-     --ac "Add integration tests" \
-     -l implement,frontend
-   ```
+```bash
+# Verify tasks were created
+backlog task list --plain | grep -i "<feature-keyword>"
 
-2. **Update specification task notes** with follow-up references:
-   ```bash
-   backlog task edit <spec-task-id> --append-notes $'Follow-up Implementation Tasks:\n- task-XXX: Implement core functionality\n- task-YYY: Implement UI components'
-   ```
-
-3. **Only then mark the specification task as Done**
+# If tasks exist, the PRD is complete
+# If not, the PRD is incomplete - tasks must be created
+```
 
 **Failure to create implementation tasks means the specification work is incomplete.**
