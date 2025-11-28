@@ -14,6 +14,30 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 This command creates comprehensive architectural and platform planning using two specialized agents working in parallel, building out /speckit.constitution.
 
+### Step 0: Backlog Task Discovery
+
+Before launching the planning agents, discover existing backlog tasks related to the feature being planned:
+
+```bash
+# Search for tasks related to the current feature
+backlog search "<feature-name>" --plain
+
+# List all planning-related tasks
+backlog task list -l planning --plain
+backlog task list -l architecture --plain
+backlog task list -l infrastructure --plain
+
+# List tasks currently in progress
+backlog task list -s "In Progress" --plain
+```
+
+Review the discovered tasks to understand:
+- What planning work is already tracked
+- What tasks the agents should update vs. create new
+- Dependencies between tasks
+
+This context will be shared with both agents to ensure coordinated task management.
+
 ### Parallel Phase: Architecture & Platform Planning
 
 **IMPORTANT**: Launch both agents in parallel using a single message with two Task tool calls for maximum efficiency.
@@ -23,6 +47,10 @@ This command creates comprehensive architectural and platform planning using two
 Use the Task tool to launch a **general-purpose** agent with the following prompt (includes full Software Architect context):
 
 ```
+<!--BACKLOG-INSTRUCTIONS-START-->
+{{INCLUDE:.claude/commands/jpspec/_backlog-instructions.md}}
+<!--BACKLOG-INSTRUCTIONS-END-->
+
 # AGENT CONTEXT: Enterprise Software Architect - Hohpe's Principles Expert
 
 You are a Senior IT Strategy Architect operating according to the comprehensive architectural philosophy synthesized from Gregor Hohpe's seminal works: The Software Architect Elevator, Enterprise Integration Patterns, Cloud Strategy, and Platform Strategy.
@@ -66,6 +94,43 @@ Evaluate any platform design against:
 
 Context:
 [Include PRD, requirements, constraints from previous phases]
+[Include discovered backlog tasks from Step 0]
+
+## Backlog Task Management Requirements
+
+As you work through the architecture planning, you MUST create tasks in the backlog to track your deliverables:
+
+**Architecture Tasks to Create:**
+1. **Architecture Decision Records (ADRs)** - One task per major decision
+   - Title: "ADR: [Decision topic]"
+   - ACs: Document context, options, decision, consequences
+   - Labels: architecture, adr
+
+2. **Design Documentation** - Tasks for each major design artifact
+   - Title: "Design: [Component/System name]"
+   - ACs: Component design, integration patterns, data flow
+   - Labels: architecture, design
+
+3. **Pattern Implementation** - Tasks for key architectural patterns
+   - Title: "Implement [Pattern name] pattern"
+   - ACs: Pattern implementation, documentation, examples
+   - Labels: architecture, pattern
+
+**Create tasks using:**
+```bash
+backlog task create "Task title" \
+  -d "Description" \
+  --ac "Acceptance criterion 1" \
+  --ac "Acceptance criterion 2" \
+  -l architecture,adr \
+  --priority high
+```
+
+**Update existing tasks** if discovered in Step 0:
+```bash
+backlog task edit <id> -s "In Progress" -a @software-architect
+backlog task edit <id> --plan $'1. Step one\n2. Step two'
+```
 
 Apply Gregor Hohpe's architectural principles and create:
 
@@ -109,6 +174,10 @@ Deliver comprehensive architecture documentation ready for implementation.
 Use the Task tool to launch a **general-purpose** agent with the following prompt (includes full Platform Engineer context):
 
 ```
+<!--BACKLOG-INSTRUCTIONS-START-->
+{{INCLUDE:.claude/commands/jpspec/_backlog-instructions.md}}
+<!--BACKLOG-INSTRUCTIONS-END-->
+
 # AGENT CONTEXT: Platform Engineer - DevSecOps and CI/CD Excellence
 
 You are the Chief Architect and Principal Platform Engineer, specializing in high-performance DevOps, cloud-native systems, and regulatory compliance (NIST/SSDF). Your architectural recommendations are grounded in the foundational principles established by Patrick Debois, Gene Kim (The Three Ways), Jez Humble (Continuous Delivery), Nicole Forsgren (DORA Metrics), Kelsey Hightower, and Charity Majors (Production-First Observability).
@@ -186,6 +255,48 @@ Design for observability, not just monitoring:
 
 Context:
 [Include PRD, requirements, constraints from previous phases]
+[Include discovered backlog tasks from Step 0]
+
+## Backlog Task Management Requirements
+
+As you work through the platform planning, you MUST create tasks in the backlog to track your deliverables:
+
+**Infrastructure Tasks to Create:**
+1. **CI/CD Pipeline Setup** - Tasks for pipeline stages
+   - Title: "Setup [Pipeline stage] in CI/CD"
+   - ACs: Pipeline configuration, testing, documentation
+   - Labels: infrastructure, cicd
+
+2. **Observability Implementation** - Tasks for observability components
+   - Title: "Implement [Metrics/Logging/Tracing] for [Component]"
+   - ACs: Setup, configuration, dashboards, alerts
+   - Labels: infrastructure, observability
+
+3. **Security Controls** - Tasks for security implementation
+   - Title: "Implement [Security control]"
+   - ACs: Configuration, testing, documentation
+   - Labels: infrastructure, security, devsecops
+
+4. **Infrastructure as Code** - Tasks for IaC components
+   - Title: "IaC: [Infrastructure component]"
+   - ACs: Terraform/manifests, validation, documentation
+   - Labels: infrastructure, iac
+
+**Create tasks using:**
+```bash
+backlog task create "Task title" \
+  -d "Description" \
+  --ac "Acceptance criterion 1" \
+  --ac "Acceptance criterion 2" \
+  -l infrastructure,cicd \
+  --priority high
+```
+
+**Update existing tasks** if discovered in Step 0:
+```bash
+backlog task edit <id> -s "In Progress" -a @platform-engineer
+backlog task edit <id> --plan $'1. Step one\n2. Step two'
+```
 
 Apply DevOps/Platform Engineering best practices and create:
 
@@ -256,38 +367,3 @@ After both agents complete:
    - Updated /speckit.constitution
    - ADRs for key decisions
    - Implementation readiness assessment
-
-### ⚠️ MANDATORY: Design→Implement Workflow
-
-**This is a DESIGN command. Design tasks MUST create implementation tasks before completion.**
-
-After the architecture and platform agents complete their work:
-
-1. **Create implementation tasks** for each architectural component:
-   ```bash
-   # Example: Create tasks from architecture decisions
-   backlog task create "Implement [Component Name] Service" \
-     -d "Implementation based on architecture from /jpspec:plan" \
-     --ac "Implement service per architecture doc section X" \
-     --ac "Follow integration patterns from ADR-001" \
-     --ac "Add observability per platform requirements" \
-     --ac "Write integration tests" \
-     -l implement,architecture,backend \
-     --priority high
-
-   backlog task create "Implement [Infrastructure Component]" \
-     -d "Infrastructure implementation per platform design" \
-     --ac "Configure CI/CD per platform architecture" \
-     --ac "Set up monitoring per observability requirements" \
-     --ac "Implement security controls per ADR" \
-     -l implement,infrastructure,devops
-   ```
-
-2. **Update planning task notes** with follow-up references:
-   ```bash
-   backlog task edit <plan-task-id> --append-notes $'Follow-up Implementation Tasks:\n- task-XXX: Implement service A\n- task-YYY: Implement infrastructure\n- task-ZZZ: Configure CI/CD pipeline'
-   ```
-
-3. **Only then mark the planning task as Done**
-
-**Architecture without implementation tasks is incomplete design work.**
