@@ -22,8 +22,8 @@ This audit examines all 6 jpspec commands to document their current task managem
 
 | Command | Purpose | Sub-Agents | Current Task Handling |
 |---------|---------|------------|----------------------|
-| `/jpspec:specify` | Create/update feature specs | 1 (PM Planner) | References `/speckit.tasks` integration (section 6 of PRD) but no CLI calls |
-| `/jpspec:plan` | Architecture & platform planning | 2 (Architect, Platform Engineer) | References `/speckit.constitution` but no task tracking |
+| `/jpspec:specify` | Create/update feature specs | 1 (PM Planner) | Creates task breakdown in PRD (section 6) but no CLI calls |
+| `/jpspec:plan` | Architecture & platform planning | 2 (Architect, Platform Engineer) | Creates architectural principles but no task tracking |
 | `/jpspec:research` | Research & business validation | 2 (Researcher, Business Validator) | Sequential execution, no task tracking |
 | `/jpspec:implement` | Feature implementation | 3-5 (Frontend, Backend, AI/ML Engineers + Code Reviewers) | No task tracking, manual coordination |
 | `/jpspec:validate` | QA, security, docs, release | 4 (Quality Guardian, Security, Tech Writer, Release Manager) | Manual checklist in Release Manager, no CLI integration |
@@ -40,7 +40,7 @@ This audit examines all 6 jpspec commands to document their current task managem
 **File**: `.claude/commands/jpspec/specify.md`
 
 #### Current Task Handling
-- **Section 6 of PRD Template**: "Task Breakdown for /speckit.tasks"
+- **Section 6 of PRD Template**: "Task Breakdown"
   - Epics and user stories
   - Task dependencies
   - Priority ordering (P0, P1, P2)
@@ -94,7 +94,7 @@ backlog task edit <id> -s Done
 
 #### Current Task Handling
 - **Parallel execution model**: Two agents work simultaneously
-- **Builds `/speckit.constitution`**: Architectural and platform principles
+- **Builds constitution**: Architectural and platform principles
 - **No task tracking**: Manual coordination between agents
 
 #### Sub-Agents
@@ -118,6 +118,11 @@ backlog task edit <id> -s Done
 backlog task edit <id> -s "In Progress" -a @architect,@platform-engineer
 backlog task edit <id> --plan "1. Parallel architecture & platform planning\n2. Consolidate findings\n3. Build constitution"
 ```
+
+> **Note on `--plan` flag**: This is an existing backlog.md CLI feature for adding implementation plans to tasks. For multi-line plans, use shell-appropriate quoting:
+> - **Bash/Zsh**: `--plan $'Step 1\nStep 2\nStep 3'` (ANSI-C quoting)
+> - **POSIX**: `--plan "$(printf 'Step 1\nStep 2')"` (printf subshell)
+> - **PowerShell**: `--plan "Step 1\`nStep 2"` (backtick-n)
 
 **During Execution (Within Agents)**:
 - Each agent could track subtasks:
@@ -259,6 +264,8 @@ backlog task edit <id> --check-ac 3  # Code reviews complete
 backlog task edit <id> --append-notes "Review feedback: X critical, Y high priority items"
 ```
 
+> **⚠️ BLOCKED**: Automatic code review phase tracking requires backlog.md CLI integration to be implemented first. See task-107 (Entry/Exit Hooks) and task-108 (Progress Tracking) as prerequisites.
+
 **Post-Execution (Exit Point)**:
 ```bash
 # After all phases complete
@@ -277,6 +284,8 @@ backlog task edit <id> -s Done
 - [ ] Final: `backlog task edit <id> --check-ac 4 --check-ac 5`
 - [ ] Exit: `backlog task edit <id> --notes "<final summary>"`
 - [ ] Exit: `backlog task edit <id> -s Done`
+
+> **📋 AC Prerequisite**: Acceptance criteria must be defined in the task **before** using `--check-ac`. The indices (1-5 in this example) correspond to the order ACs were added via `backlog task edit <id> --ac "criterion"`. Tasks should be created with complete ACs upfront, or ACs added during entry phase before checking begins.
 
 ---
 
@@ -362,7 +371,16 @@ backlog task edit <id> -s Done
 - [ ] Post-approval: `backlog task edit <id> --append-notes "Approval: <details>"`
 - [ ] Exit: `backlog task edit <id> -s Done`
 
-**Special Note**: This command has a **mandatory human approval gate** that must not be bypassed.
+> **🔒 CRITICAL: Human Approval Gate**
+>
+> This command has a **mandatory human approval checkpoint** before release. The Release Manager agent:
+> 1. Generates a release readiness report with go/no-go recommendation
+> 2. **MUST** pause execution and notify the human operator
+> 3. Human reviews: security findings, test results, documentation completeness
+> 4. Human explicitly approves (via comment, CLI, or designated channel)
+> 5. Only after documented approval can the task be marked Done
+>
+> **Never** mark a validate task as Done without explicit human sign-off. This ensures production deployments are human-verified.
 
 ---
 
@@ -467,9 +485,31 @@ All commands follow similar patterns that can be standardized:
 | specify | `@pm-planner` | None (single-agent) |
 | plan | `@architect,@platform-engineer` | None (parallel agents) |
 | research | `@researcher` → `@business-validator` | Sequential transition |
-| implement | `@frontend,@backend` → reviewers | Implementation → Review transition |
-| validate | `@qa,@security` → `@tech-writer` → `@release-manager` | 3-phase sequential |
+| implement | `@frontend-eng,@backend-eng` → `@frontend-reviewer,@backend-reviewer` | Implementation (parallel) → Code Review (sequential) |
+| validate | `@qa-guardian,@security-eng` → `@tech-writer` → `@release-mgr` | 3-phase sequential |
 | operate | `@sre-agent` | None (single-agent, multi-phase deliverables) |
+
+### Standard Agent Naming Convention
+
+All agent assignees use a consistent naming pattern: `@<role>[-<specialty>]`
+
+| Agent | Standard Name | Description |
+|-------|--------------|-------------|
+| Product Requirements Manager | `@pm-planner` | PRD creation, SVPG methodology |
+| Software Architect | `@architect` | Architecture design, ADRs |
+| Platform Engineer | `@platform-engineer` | CI/CD, infrastructure |
+| Researcher | `@researcher` | Market/technical research |
+| Business Validator | `@business-validator` | Financial/strategic validation |
+| Frontend Engineer | `@frontend-eng` | React/React Native implementation |
+| Backend Engineer | `@backend-eng` | Go/TypeScript/Python APIs |
+| AI/ML Engineer | `@aiml-eng` | Model development, MLOps |
+| Frontend Code Reviewer | `@frontend-reviewer` | Frontend quality review |
+| Backend Code Reviewer | `@backend-reviewer` | Backend security/performance review |
+| Quality Guardian | `@qa-guardian` | Comprehensive testing |
+| Secure-by-Design Engineer | `@security-eng` | Security assessment |
+| Technical Writer | `@tech-writer` | Documentation creation |
+| Release Manager | `@release-mgr` | Release coordination |
+| SRE Agent | `@sre-agent` | Operations, observability |
 
 ---
 
@@ -596,8 +636,6 @@ No changes required to:
 | 14 | Release Manager | General-purpose | validate | Release coordination, human approval |
 | 15 | SRE Agent | General-purpose | operate | Operations, CI/CD, observability, incident mgmt |
 
-**Note**: implement command spawns 3-5 agents conditionally based on feature requirements (frontend, backend, AI/ML, and their reviewers).
-
 ---
 
 ## Conclusion
@@ -608,7 +646,7 @@ Key findings:
 - ✅ Clear integration points at command boundaries
 - ✅ Standardized agent spawn patterns
 - ✅ Well-defined lifecycle hooks
-- ✅ Existing task awareness (references to `/speckit.tasks`, `/speckit.constitution`)
+- ✅ Existing task awareness in PRD task breakdown and constitution outputs
 - ❌ Zero current CLI integration (manual task management)
 - ❌ No automated task creation from agent outputs
 
