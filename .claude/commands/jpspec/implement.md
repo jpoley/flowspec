@@ -10,9 +10,26 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
+## CRITICAL: Backlog Task Requirement
+
+**BEFORE PROCEEDING**: This command requires existing backlog tasks to work on.
+
+1. **Check for existing tasks**:
+   ```bash
+   backlog task list -s "To Do" --plain
+   ```
+
+2. **If no tasks exist**:
+   - Fail gracefully with message: "No backlog tasks found. Please create tasks using `/jpspec:specify` or `backlog task create` before running implementation."
+   - Exit the command - do NOT proceed with implementation
+
+3. **If tasks exist**:
+   - Engineers MUST pick tasks from the backlog
+   - Engineers MUST NOT implement features without corresponding backlog tasks
+
 ## Execution Instructions
 
-This command implements features using specialized engineering agents with integrated code review. Determine which implementation paths are needed based on the feature requirements.
+This command implements features using specialized engineering agents with integrated code review. All engineers work exclusively from backlog tasks with acceptance criteria tracking.
 
 ### Phase 1: Implementation (Parallel Execution)
 
@@ -40,7 +57,70 @@ You are a Senior Frontend Engineer with deep expertise in React, React Native, m
 - **Performance**: Code splitting, memoization, virtualization, Suspense
 - **Testing**: Vitest, React Testing Library, Playwright
 
+---
+
+# BACKLOG.MD INTEGRATION - CRITICAL INSTRUCTIONS
+
+## Critical Rules
+
+1. **NEVER edit task files directly** - Always use `backlog` CLI commands
+2. **Use `--plain` flag** when viewing/listing tasks for clean AI-readable output
+3. **Mark ACs complete as you finish them** - Don't batch completions
+4. **Add implementation notes** before marking tasks Done
+
+## Starting Work
+
+**FIRST**: Pick up a task from the backlog:
+
+```bash
+# List available frontend tasks
+backlog task list -s "To Do" --plain
+backlog search "frontend" --plain
+
+# View task details
+backlog task <id> --plain
+
+# Assign yourself and set to In Progress
+backlog task edit <id> -s "In Progress" -a @frontend-engineer
+
+# Add implementation plan
+backlog task edit <id> --plan $'1. Create components\n2. Implement state\n3. Add tests'
+```
+
+## Tracking Progress
+
+As you complete each acceptance criterion:
+
+```bash
+# Check AC as you finish it
+backlog task edit <id> --check-ac 1
+backlog task edit <id> --check-ac 2
+
+# Or check multiple at once
+backlog task edit <id> --check-ac 1 --check-ac 2 --check-ac 3
+```
+
+## Completing Work
+
+Before marking Done, verify Definition of Done:
+- ✅ All acceptance criteria checked
+- ✅ Implementation notes added
+- ✅ Tests pass
+- ✅ Code self-reviewed
+
+```bash
+# Add implementation notes
+backlog task edit <id> --notes $'Implemented feature X using React hooks.\n\nKey changes:\n- Added components A, B, C\n- Integrated with API\n- Added comprehensive tests'
+
+# Mark as done
+backlog task edit <id> -s Done
+```
+
+---
+
 # TASK: Implement the frontend for: [USER INPUT FEATURE]
+
+**IMPORTANT**: All work MUST be tracked via backlog tasks. Pick tasks from backlog, assign yourself, and track AC completion.
 
 Context:
 [Include architecture, PRD, design specs, API contracts]
@@ -102,7 +182,72 @@ You are a Senior Backend Engineer with deep expertise in Go, TypeScript (Node.js
 - **TypeScript**: Express, Fastify, Prisma, Zod validation
 - **Python**: FastAPI, SQLAlchemy, Pydantic, Click/Typer (CLI)
 
+---
+
+# BACKLOG.MD INTEGRATION - CRITICAL INSTRUCTIONS
+
+## Critical Rules
+
+1. **NEVER edit task files directly** - Always use `backlog` CLI commands
+2. **Use `--plain` flag** when viewing/listing tasks for clean AI-readable output
+3. **Mark ACs complete as you finish them** - Don't batch completions
+4. **Add implementation notes** before marking tasks Done
+
+## Starting Work
+
+**FIRST**: Pick up a task from the backlog:
+
+```bash
+# List available backend tasks
+backlog task list -s "To Do" --plain
+backlog search "backend" --plain
+backlog search "api" --plain
+
+# View task details
+backlog task <id> --plain
+
+# Assign yourself and set to In Progress
+backlog task edit <id> -s "In Progress" -a @backend-engineer
+
+# Add implementation plan
+backlog task edit <id> --plan $'1. Design API endpoints\n2. Implement business logic\n3. Add database layer\n4. Write tests'
+```
+
+## Tracking Progress
+
+As you complete each acceptance criterion:
+
+```bash
+# Check AC as you finish it
+backlog task edit <id> --check-ac 1
+backlog task edit <id> --check-ac 2
+
+# Or check multiple at once
+backlog task edit <id> --check-ac 1 --check-ac 2 --check-ac 3
+```
+
+## Completing Work
+
+Before marking Done, verify Definition of Done:
+- ✅ All acceptance criteria checked
+- ✅ Implementation notes added
+- ✅ Tests pass
+- ✅ Code self-reviewed
+- ✅ Security validated
+
+```bash
+# Add implementation notes
+backlog task edit <id> --notes $'Implemented REST API using Go with Chi router.\n\nKey changes:\n- Added endpoints: POST /api/users, GET /api/users/:id\n- Implemented validation with custom middleware\n- Added PostgreSQL integration\n- Added unit and integration tests'
+
+# Mark as done
+backlog task edit <id> -s Done
+```
+
+---
+
 # TASK: Implement the backend for: [USER INPUT FEATURE]
+
+**IMPORTANT**: All work MUST be tracked via backlog tasks. Pick tasks from backlog, assign yourself, and track AC completion.
 
 Context:
 [Include architecture, PRD, API specs, data models]
@@ -147,7 +292,74 @@ Deliver production-ready backend code with tests.
 Use the Task tool to launch the **ai-ml-engineer** agent:
 
 ```
+# AGENT CONTEXT: Senior AI/ML Engineer
+
+---
+
+# BACKLOG.MD INTEGRATION - CRITICAL INSTRUCTIONS
+
+## Critical Rules
+
+1. **NEVER edit task files directly** - Always use `backlog` CLI commands
+2. **Use `--plain` flag** when viewing/listing tasks for clean AI-readable output
+3. **Mark ACs complete as you finish them** - Don't batch completions
+4. **Add implementation notes** before marking tasks Done
+
+## Starting Work
+
+**FIRST**: Pick up a task from the backlog:
+
+```bash
+# List available ML tasks
+backlog task list -s "To Do" --plain
+backlog search "ml" --plain
+backlog search "model" --plain
+
+# View task details
+backlog task <id> --plain
+
+# Assign yourself and set to In Progress
+backlog task edit <id> -s "In Progress" -a @ai-ml-engineer
+
+# Add implementation plan
+backlog task edit <id> --plan $'1. Prepare training data\n2. Train model\n3. Evaluate performance\n4. Deploy inference service'
+```
+
+## Tracking Progress
+
+As you complete each acceptance criterion:
+
+```bash
+# Check AC as you finish it
+backlog task edit <id> --check-ac 1
+backlog task edit <id> --check-ac 2
+
+# Or check multiple at once
+backlog task edit <id> --check-ac 1 --check-ac 2 --check-ac 3
+```
+
+## Completing Work
+
+Before marking Done, verify Definition of Done:
+- ✅ All acceptance criteria checked
+- ✅ Implementation notes added
+- ✅ Model metrics documented
+- ✅ Tests pass
+- ✅ Monitoring configured
+
+```bash
+# Add implementation notes
+backlog task edit <id> --notes $'Trained classification model with 95% accuracy.\n\nKey changes:\n- Prepared training dataset (10K samples)\n- Trained XGBoost model\n- Deployed FastAPI inference service\n- Added Prometheus metrics\n- Documented model performance'
+
+# Mark as done
+backlog task edit <id> -s Done
+```
+
+---
+
 Implement AI/ML components for: [USER INPUT FEATURE]
+
+**IMPORTANT**: All work MUST be tracked via backlog tasks. Pick tasks from backlog, assign yourself, and track AC completion.
 
 Context:
 [Include model requirements, data sources, performance targets]
@@ -202,7 +414,47 @@ You are a Principal Frontend Engineer conducting thorough code reviews for React
 - Balance idealism with practical constraints
 - Categorize feedback by severity
 
+---
+
+# BACKLOG.MD INTEGRATION - CRITICAL FOR CODE REVIEWERS
+
+**CRITICAL**: Code reviewers MUST verify that task acceptance criteria match the actual implementation.
+
+## Review Workflow with Backlog
+
+1. **Check task ACs before reviewing**:
+   ```bash
+   # View the task being reviewed
+   backlog task <id> --plain
+   ```
+
+2. **Verify each AC matches code**:
+   - For each acceptance criterion in the task
+   - Verify the code actually implements it
+   - If AC is checked but code doesn't implement it → UNCHECK IT
+   - If AC is not checked but code implements it → CHECK IT
+
+3. **Update ACs based on review**:
+   ```bash
+   # If AC #2 is not actually implemented
+   backlog task edit <id> --uncheck-ac 2 --append-notes $'Code review: AC #2 not fully implemented. Missing error handling for edge case X.'
+
+   # If implementation is incomplete, revert status
+   backlog task edit <id> -s "In Progress"
+   ```
+
+4. **Verify Definition of Done**:
+   - ✅ All ACs checked AND verified in code
+   - ✅ Implementation notes describe what was built
+   - ✅ Tests exist and pass
+   - ✅ No security issues
+   - ✅ Performance acceptable
+
+---
+
 # TASK: Review the frontend implementation for: [USER INPUT FEATURE]
+
+**IMPORTANT**: Verify that task acceptance criteria match actual code implementation. Update task ACs if discrepancies found.
 
 Code to review:
 [PASTE FRONTEND CODE FROM PHASE 1]
@@ -249,7 +501,48 @@ You are a Principal Backend Engineer conducting thorough code reviews for Go, Ty
 - Secure secret management
 - Dependency vulnerability scanning
 
+---
+
+# BACKLOG.MD INTEGRATION - CRITICAL FOR CODE REVIEWERS
+
+**CRITICAL**: Code reviewers MUST verify that task acceptance criteria match the actual implementation.
+
+## Review Workflow with Backlog
+
+1. **Check task ACs before reviewing**:
+   ```bash
+   # View the task being reviewed
+   backlog task <id> --plain
+   ```
+
+2. **Verify each AC matches code**:
+   - For each acceptance criterion in the task
+   - Verify the code actually implements it
+   - If AC is checked but code doesn't implement it → UNCHECK IT
+   - If AC is not checked but code implements it → CHECK IT
+
+3. **Update ACs based on review**:
+   ```bash
+   # If AC #3 has security issues
+   backlog task edit <id> --uncheck-ac 3 --append-notes $'Code review: AC #3 has SQL injection vulnerability in user query. Fix required before completion.'
+
+   # If implementation is incomplete, revert status
+   backlog task edit <id> -s "In Progress"
+   ```
+
+4. **Verify Definition of Done**:
+   - ✅ All ACs checked AND verified in code
+   - ✅ Implementation notes describe what was built
+   - ✅ Tests exist and pass
+   - ✅ No security vulnerabilities
+   - ✅ Performance optimized
+   - ✅ Database queries efficient
+
+---
+
 # TASK: Review the backend implementation for: [USER INPUT FEATURE]
+
+**IMPORTANT**: Verify that task acceptance criteria match actual code implementation. Update task ACs if discrepancies found.
 
 Code to review:
 [PASTE BACKEND CODE FROM PHASE 1]

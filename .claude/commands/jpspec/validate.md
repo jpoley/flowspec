@@ -10,6 +10,27 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
+## Backlog Task Discovery
+
+Before starting validation, discover tasks that are ready for validation:
+
+```bash
+# Find tasks In Progress or Done that need validation
+backlog task list -s "In Progress" --plain
+backlog task list -s "Done" --plain
+
+# View specific task details for validation context
+backlog task <id> --plain
+```
+
+**Validation Context**: Each validator agent will receive the backlog task details to validate acceptance criteria completion and update task status accordingly.
+
+## Backlog Instructions Template
+
+Each validator agent context below includes `{{BACKLOG_INSTRUCTIONS}}` which must be replaced with the content from `.claude/commands/jpspec/_backlog-instructions.md`. This ensures all agents have consistent backlog task management instructions.
+
+**When executing this command, include the full content of `_backlog-instructions.md` in place of each `{{BACKLOG_INSTRUCTIONS}}` marker.**
+
 ## Execution Instructions
 
 This command executes comprehensive validation using multiple specialized agents, ensuring production readiness with human approval gates.
@@ -47,15 +68,22 @@ You are the Quality Guardian, a vigilant protector of system integrity, user tru
 - User: Usability issues, adoption barriers, accessibility
 - Operational: Maintenance burden, monitoring, debugging
 
+{{BACKLOG_INSTRUCTIONS}}
+
 # TASK: Conduct comprehensive quality validation for: [USER INPUT FEATURE]
 
 Code and Artifacts:
 [Include implementation code, API specs, test coverage reports]
 
+Backlog Context:
+[Include backlog task details from discovery phase if applicable]
+
 Validation Requirements:
 
-1. **Functional Testing**
-   - Verify all acceptance criteria met
+1. **Functional Testing & Acceptance Criteria Validation**
+   - **Verify all backlog task acceptance criteria are met**
+   - Cross-reference test results with AC requirements
+   - **Mark ACs complete via backlog CLI as validation succeeds**
    - Test user workflows end-to-end
    - Validate edge cases and boundary conditions
    - Test error handling and recovery
@@ -131,14 +159,21 @@ You are a Secure-by-Design Engineer, an experienced security specialist focused 
 - **Medium**: Information disclosure, DoS, weak crypto
 - **Low**: Config issues, missing headers
 
+{{BACKLOG_INSTRUCTIONS}}
+
 # TASK: Conduct comprehensive security assessment for: [USER INPUT FEATURE]
 
 Code and Infrastructure:
 [Include implementation code, infrastructure configs, dependencies]
 
+Backlog Context:
+[Include backlog task details from discovery phase if applicable]
+
 Security Validation Requirements:
 
-1. **Code Security Review**
+1. **Code Security Review & Security AC Validation**
+   - **Validate security-related acceptance criteria from backlog tasks**
+   - **Mark security ACs complete via backlog CLI upon verification**
    - Authentication and authorization implementation
    - Input validation and sanitization
    - SQL/NoSQL injection prevention
@@ -215,12 +250,28 @@ You are a Senior Technical Writer with deep expertise in creating clear, accurat
 - Searchable and navigable
 - Accessible (alt text, headings, etc.)
 
+{{BACKLOG_INSTRUCTIONS}}
+
 # TASK: Create comprehensive documentation for: [USER INPUT FEATURE]
 
 Context:
 [Include feature description, implementation details, API specs, test results, security findings]
 
+Backlog Context:
+[Include backlog task details from discovery phase if applicable]
+
 Documentation Deliverables:
+
+**IMPORTANT: Create backlog tasks for major documentation work using backlog CLI:**
+```bash
+# Create documentation task
+backlog task create "Documentation: <feature-name>" \
+  -d "Create comprehensive documentation for <feature>" \
+  --ac "API documentation complete" \
+  --ac "User guide published" \
+  --ac "Technical docs updated" \
+  -l documentation,tech-writer
+```
 
 1. **API Documentation** (if API changes)
    - Endpoint documentation
@@ -262,6 +313,8 @@ Ensure all documentation is:
 - Well-formatted with proper structure
 - Accessible (alt text, headings, etc.)
 - Ready for publication
+
+**Track documentation completion in backlog tasks via backlog CLI.**
 ```
 
 ### Phase 3: Release Management (Final gate with Human Approval)
@@ -303,14 +356,26 @@ You are a Senior Release Manager responsible for ensuring safe, reliable softwar
 - Automated rollback on failure detection
 - Post-deployment validation
 
+{{BACKLOG_INSTRUCTIONS}}
+
 # TASK: Conduct release readiness assessment for: [USER INPUT FEATURE]
 
 Validation Artifacts:
 [Include QA test report, security assessment, documentation, code review results]
 
+Backlog Context:
+[Include backlog task details from discovery phase if applicable]
+
 Release Management Requirements:
 
-1. **Pre-Release Validation**
+1. **Pre-Release Validation & Definition of Done Verification**
+   - **Verify backlog task Definition of Done is satisfied:**
+     - All acceptance criteria checked (via backlog CLI)
+     - Implementation notes added
+     - Tests pass
+     - Code reviewed
+     - No regressions
+   - **Mark tasks as Done ONLY after complete DoD verification**
    - Review all quality gates status
    - Verify all critical/high issues resolved
    - Confirm test coverage meets threshold
