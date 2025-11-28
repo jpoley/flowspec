@@ -9,7 +9,7 @@ labels:
   - integration
 dependencies:
   - task-090
-priority: medium
+priority: high
 ---
 
 ## Description

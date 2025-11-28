@@ -9,7 +9,7 @@ labels:
   - cli
   - validation
 dependencies: []
-priority: medium
+priority: high
 ---
 
 ## Description

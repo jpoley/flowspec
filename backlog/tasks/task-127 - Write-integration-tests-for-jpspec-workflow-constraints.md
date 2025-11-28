@@ -9,7 +9,7 @@ labels:
   - integration-tests
   - jpspec
 dependencies: []
-priority: medium
+priority: high
 ---
 
 ## Description

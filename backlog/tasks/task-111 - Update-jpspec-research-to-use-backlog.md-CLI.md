@@ -13,7 +13,7 @@ labels:
 dependencies:
   - task-107
   - task-108
-priority: medium
+priority: high
 ---
 
 ## Description

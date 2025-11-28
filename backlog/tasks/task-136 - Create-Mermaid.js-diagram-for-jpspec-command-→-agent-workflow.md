@@ -1,5 +1,5 @@
 ---
-id: task-088
+id: task-136
 title: Create Mermaid.js diagram for /jpspec command → agent workflow
 status: To Do
 assignee: []
