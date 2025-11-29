@@ -76,6 +76,31 @@ After initialization, you should see the following commands available in your AI
 
 The `.specify/scripts` directory will contain both `.sh` and `.ps1` scripts.
 
+### VS Code / GitHub Copilot Setup
+
+If you're using GitHub Copilot in VS Code, the initialization process automatically configures `.vscode/settings.json` with the required settings for prompt files. The key settings are:
+
+```json
+{
+    "chat.promptFiles": true,
+    "chat.promptFilesRecommendations": {
+        "speckit.constitution": true,
+        "speckit.specify": true,
+        "speckit.plan": true,
+        "speckit.tasks": true,
+        "speckit.implement": true
+    }
+}
+```
+
+**Prompt files location:** After initialization, prompt files are created in `.github/prompts/` with the `.prompt.md` extension.
+
+**If prompts don't appear in Copilot Chat:**
+1. Ensure VS Code is version 1.96 or later (VS Code Insiders may have newer features)
+2. Verify that `chat.promptFiles` is set to `true` in your workspace settings
+3. Open the Command Palette (Ctrl+Shift+P / Cmd+Shift+P) and run "Developer: Reload Window"
+4. Check that `.github/prompts/` directory contains files with `.prompt.md` extension
+
 ## Troubleshooting
 
 ### Private assets or API rate limits (authenticated downloads)

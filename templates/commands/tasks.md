@@ -1,4 +1,5 @@
 ---
+mode: agent
 description: Generate an actionable, dependency-ordered task backlog for the feature based on available design artifacts.
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json

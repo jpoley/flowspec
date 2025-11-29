@@ -1,4 +1,5 @@
 ---
+mode: agent
 description: Create or update the feature specification from a natural language feature description.
 scripts:
   sh: scripts/bash/create-new-feature.sh --json "{ARGS}"

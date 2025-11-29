@@ -1,4 +1,5 @@
 ---
+mode: agent
 description: Execute planning workflow using project architect and platform engineer agents (builds out /speckit.constitution).
 ---
 

@@ -1,4 +1,5 @@
 {
+    "chat.promptFiles": true,
     "chat.promptFilesRecommendations": {
         "speckit.constitution": true,
         "speckit.specify": true,

@@ -1,4 +1,5 @@
 ---
+mode: agent
 description: Execute the implementation planning workflow using the plan template to generate design artifacts.
 scripts:
   sh: scripts/bash/setup-plan.sh --json

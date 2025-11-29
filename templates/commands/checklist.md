@@ -1,4 +1,5 @@
 ---
+mode: agent
 description: Generate a custom checklist for the current feature based on user requirements.
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json

@@ -1,4 +1,5 @@
 ---
+mode: agent
 description: Execute validation and quality assurance using QA, security, documentation, and release management agents.
 ---
 

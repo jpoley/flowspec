@@ -1,4 +1,5 @@
 ---
+mode: agent
 description: Execute implementation using specialized frontend and backend engineer agents with code review.
 ---
 

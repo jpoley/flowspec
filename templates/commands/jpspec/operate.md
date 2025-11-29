@@ -1,4 +1,5 @@
 ---
+mode: agent
 description: Execute operations workflow using SRE and operations management agents for CICD, DevSecOps, and resilience.
 ---
 

@@ -1,4 +1,5 @@
 ---
+mode: agent
 description: Execute research and business validation workflow using specialized agents.
 ---
 

@@ -1,4 +1,5 @@
 ---
+mode: agent
 description: Execute the implementation plan by processing and executing all tasks defined in tasks.md
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks
