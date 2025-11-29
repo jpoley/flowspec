@@ -1,11 +1,11 @@
 <div align="center">
     <img src="./images/jp-spec-kit.jpeg"/>
     <h1>JP Spec Kit</h1>
-    <h3><em>Spec-Driven Development meets AI-Powered Task Management</em></h3>
+    <h3><em>Spec-Driven Development with AI-Powered Task Management</em></h3>
 </div>
 
 <p align="center">
-    <strong>Unify your planning and execution workflow. Define specs, generate tasks, track progress - all in one seamless system.</strong>
+    <strong>Plan features with specialized AI agents. Track progress in backlog.md. Ship with confidence.</strong>
 </p>
 
 <p align="center">
@@ -18,230 +18,293 @@
 
 ## What is JP Spec Kit?
 
-JP Spec Kit brings together two powerful ideas:
+JP Spec Kit combines **Spec-Driven Development** with **[Backlog.md](https://github.com/MrLesk/Backlog.md)** task management through a suite of AI-powered slash commands. Each command launches specialized agents (PM planners, architects, engineers, SREs) that create and track tasks in your backlog.
 
-1. **Spec-Driven Development** (from [GitHub's spec-kit](https://github.com/github/spec-kit)) - Transform requirements into executable specifications, plans, and tasks
-2. **Backlog.md** - AI-powered task management with visual Kanban boards, MCP integration, and git-native tracking
-
-The result: a unified workflow where **specs generate tasks that flow directly into a managed backlog**, trackable via CLI, web UI, or AI assistants.
-
-```
-Requirements → Spec → Plan → Tasks → Backlog.md
-     ↓          ↓      ↓       ↓         ↓
-   /specify  /plan  /tasks  generate  → board, browser, AI
-```
+**The key insight**: AI agents work from backlog tasks, not loose instructions. Every `/jpspec` command discovers existing tasks, creates new ones with acceptance criteria, and tracks progress through the backlog CLI.
 
 ## Quick Start
-(assuuming you have uv and pnpm installed)
-
-### 1. Install
 
 ```bash
-uv tool install specify-cli --from git+https://github.com/jpoley/jp-spec-kit.git && pnpm i -g backlog.md
-```
+# Install the tools
+uv tool install specify-cli --from git+https://github.com/jpoley/jp-spec-kit.git
+pnpm i -g backlog.md
 
-### 2. Initialize a Project
-
-```bash
+# Initialize a project
 specify init my-project --ai claude
 cd my-project
-backlog init `basename "$PWD"`
+backlog init "$(basename "$PWD")"
+
+# Assess complexity first (optional but recommended)
+/jpspec:assess Build a REST API with authentication
+
+# Create specification with tasks
+/jpspec:specify Build a REST API for task management with JWT authentication
+
+# View and work on tasks
+backlog board
+backlog task list --plain
 ```
 
-### 3. Define What You Want to Build
+## The /jpspec Workflow
 
-```bash
-/speckit.specify Build a REST API for task management with user authentication
+The `/jpspec` commands form a complete development lifecycle, each backed by specialized AI agents:
+
+```
+/jpspec:assess   →  Is SDD appropriate? (Full/Light/Skip)
+       ↓
+/jpspec:specify  →  PRD + backlog tasks (PM Planner agent)
+       ↓
+/jpspec:research →  Market & technical validation (Researcher + Business Validator)
+       ↓
+/jpspec:plan     →  Architecture + infrastructure design (Architect + Platform Engineer)
+       ↓
+/jpspec:implement → Code with review (Frontend/Backend Engineers + Code Reviewers)
+       ↓
+/jpspec:validate →  QA, security, docs, release (Multiple validation agents)
+       ↓
+/jpspec:operate  →  CI/CD, K8s, observability (SRE agent)
 ```
 
-### 4. Create a Technical Plan
+### Command Reference
+
+| Command | Purpose | Subagents | Execution |
+|---------|---------|-----------|-----------|
+| `/jpspec:assess` | Evaluate feature complexity (8-question scoring) | Interactive | Single |
+| `/jpspec:specify` | Create PRD with implementation tasks | Product Requirements Manager | Single |
+| `/jpspec:research` | Market research + business validation | Research Analyst → Business Validator | Sequential |
+| `/jpspec:plan` | System architecture + platform design | Software Architect + Platform Engineer | Parallel |
+| `/jpspec:implement` | Implementation with code review | Frontend/Backend/ML Engineers + Code Reviewers | Multi-phase |
+| `/jpspec:validate` | QA, security, docs, release readiness | Quality Guardian + Security Engineer → Tech Writer → Release Manager | Multi-phase |
+| `/jpspec:operate` | CI/CD, Kubernetes, observability setup | Site Reliability Engineer | Single |
+| `/jpspec:prune-branch` | Clean up merged local branches | — | Utility |
+
+See **[JP Spec Workflow Diagram](docs/diagrams/jpspec-workflow.md)** for the complete visual workflow with all 15 specialized agents.
+
+### Subagent Details
+
+<details>
+<summary><strong>/jpspec:specify</strong> — 1 agent</summary>
+
+- **Product Requirements Manager** (SVPG Principles Expert)
+  - Creates comprehensive PRD with user stories
+  - Applies DVF+V risk framework (Desirability, Usability, Feasibility, Viability)
+  - Creates backlog tasks with acceptance criteria
+</details>
+
+<details>
+<summary><strong>/jpspec:plan</strong> — 2 agents (parallel)</summary>
+
+- **Software Architect** (Hohpe's Principles Expert)
+  - System architecture and component design
+  - Enterprise Integration Patterns
+  - Architecture Decision Records (ADRs)
+
+- **Platform Engineer** (DevSecOps & CI/CD Excellence)
+  - DORA metrics optimization
+  - CI/CD pipeline architecture
+  - Infrastructure and observability design
+</details>
+
+<details>
+<summary><strong>/jpspec:research</strong> — 2 agents (sequential)</summary>
+
+1. **Senior Research Analyst**
+   - Market intelligence (TAM/SAM/SOM)
+   - Competitive analysis
+   - Technical feasibility assessment
+
+2. **Business Analyst & Strategic Advisor**
+   - Financial viability analysis
+   - Go/No-Go recommendation
+   - Risk assessment with mitigations
+</details>
+
+<details>
+<summary><strong>/jpspec:implement</strong> — 3-5 agents (multi-phase)</summary>
+
+**Phase 1 — Implementation (parallel):**
+- **Frontend Engineer** (React/React Native, TypeScript)
+- **Backend Engineer** (Go, TypeScript/Node.js, Python)
+- **AI/ML Engineer** (MLOps, model deployment) — conditional
+
+**Phase 2 — Code Review (sequential):**
+- **Frontend Code Reviewer** (Principal Engineer)
+- **Backend Code Reviewer** (Principal Engineer)
+</details>
+
+<details>
+<summary><strong>/jpspec:validate</strong> — 4 agents (multi-phase with human gate)</summary>
+
+**Phase 1 — Testing (parallel):**
+- **Quality Guardian** (QA, risk analysis, failure modes)
+- **Secure-by-Design Engineer** (security assessment, threat modeling)
+
+**Phase 2 — Documentation (sequential):**
+- **Technical Writer** (API docs, user guides, release notes)
+
+**Phase 3 — Release (sequential with human approval):**
+- **Release Manager** (deployment coordination)
+- **Human Approval Gate** — manual checkpoint required
+</details>
+
+<details>
+<summary><strong>/jpspec:operate</strong> — 1 agent</summary>
+
+- **Site Reliability Engineer** (SRE)
+  - CI/CD pipelines (GitHub Actions)
+  - Kubernetes deployment manifests
+  - Observability stack (metrics, logs, traces)
+  - SLI/SLO definitions
+  - Runbooks and incident response
+</details>
+
+### Backlog Integration
+
+Every `/jpspec` command:
+1. **Discovers** existing tasks: `backlog search "<feature>" --plain`
+2. **Creates** tasks with acceptance criteria via CLI
+3. **Assigns** agent identity (e.g., `@pm-planner`, `@sre-agent`)
+4. **Tracks** progress by checking ACs: `backlog task edit <id> --check-ac 1`
+5. **Marks** tasks done only when Definition of Done is met
+
+## Complexity Assessment
+
+Not every feature needs full SDD. Use `/jpspec:assess` first:
+
+| Score | Classification | Recommendation |
+|-------|----------------|----------------|
+| 8-12 | Simple | **Skip SDD** - Just create a task and implement |
+| 13-20 | Medium | **Spec-Light** - Use `/jpspec:specify` + `/jpspec:implement` |
+| 21-32 | Complex | **Full SDD** - Use all `/jpspec` phases |
+
+## Working with Tasks
 
 ```bash
-/speckit.plan Use FastAPI with PostgreSQL, JWT auth, and Docker deployment
-```
-
-### 5. Generate Tasks
-
-```bash
-/speckit.tasks
-```
-
-Tasks are automatically created in Backlog.md format, ready for tracking.
-
-### 6. Track Progress
-
-```bash
-# Terminal Kanban board
+# View kanban board
 backlog board
 
-# Web UI
-backlog browser
+# List tasks (AI-friendly output)
+backlog task list --plain
+backlog task list -s "To Do" --plain
 
-# Or ask your AI assistant
-"Show me all tasks labeled backend"
+# Search for tasks
+backlog search "authentication" --plain
+
+# View task details
+backlog task 42 --plain
+
+# Start work on a task
+backlog task edit 42 -s "In Progress" -a @myself
+
+# Check off acceptance criteria as you work
+backlog task edit 42 --check-ac 1
+backlog task edit 42 --check-ac 2
+
+# Add implementation notes
+backlog task edit 42 --notes $'Implemented JWT auth using jose library\n\nChanges:\n- Added auth middleware\n- Created token service'
+
+# Complete task
+backlog task edit 42 -s Done
 ```
 
-## The Workflow
+## Installation
 
-### From Spec to Done
+### Prerequisites
 
-| Phase | Command | Output |
-|-------|---------|--------|
-| **Define** | `/speckit.specify` | `spec.md` - User stories and requirements |
-| **Plan** | `/speckit.plan` | `plan.md` - Technical architecture |
-| **Break Down** | `/speckit.tasks` | `backlog/tasks/` - Individual task files |
-| **Execute** | `/speckit.implement` | Working code |
-| **Track** | `backlog board` | Visual progress |
+- Python 3.11+
+- [uv](https://docs.astral.sh/uv/) for Python package management
+- Node.js 18+ with pnpm
+- Git
+- A supported AI coding agent
 
-### Task Management with Backlog.md
-
-Once tasks are generated, you have multiple ways to manage them:
-
-**CLI**
-```bash
-backlog task list --plain           # List all tasks
-backlog task edit 1 -s "In Progress" # Update status
-backlog overview                     # Project stats
-```
-
-**AI Assistant (via MCP)**
-```
-"Create a task for implementing user registration"
-"Mark task-5 as done"
-"What tasks are blocking the auth feature?"
-```
-
-**Web UI**
-```bash
-backlog browser   # Opens Kanban board in browser
-```
-
-## Installation Options
-
-### Persistent Install (Recommended)
+### Install Both Tools
 
 ```bash
+# Specify CLI (project initialization)
 uv tool install specify-cli --from git+https://github.com/jpoley/jp-spec-kit.git
-```
 
-### One-time Run
-
-```bash
-uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init my-project
+# Backlog.md (task management)
+pnpm i -g backlog.md
 ```
 
 ### Upgrade
 
 ```bash
 uv tool install specify-cli --force --from git+https://github.com/jpoley/jp-spec-kit.git
+pnpm update -g backlog.md
 ```
-
-## Architecture
-
-JP Spec Kit is a **layered extension** of GitHub's spec-kit:
-
-```
-┌─────────────────────────────────────────┐
-│  Your Project                           │
-│  ┌───────────────────────────────────┐  │
-│  │ JP Spec Kit (Layer 2)            │  │
-│  │ • Backlog.md integration          │  │
-│  │ • Multi-language expertise        │  │
-│  │ • Advanced agent workflows        │  │
-│  └───────────────────────────────────┘  │
-│  ┌───────────────────────────────────┐  │
-│  │ Base Spec Kit (Layer 1)          │  │
-│  │ • /speckit.* commands             │  │
-│  │ • Core templates                  │  │
-│  └───────────────────────────────────┘  │
-└─────────────────────────────────────────┘
-```
-
-**Extension overrides base** where conflicts exist. Upgrade both with `specify upgrade`.
 
 ## Supported AI Agents
 
 | Agent | Support |
 |-------|---------|
-| [Claude Code](https://www.anthropic.com/claude-code) | Fully supported |
+| [Claude Code](https://www.anthropic.com/claude-code) | Fully supported (primary) |
 | [GitHub Copilot](https://code.visualstudio.com/) | Fully supported |
 | [Cursor](https://cursor.sh/) | Fully supported |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | Fully supported |
 | [Codex CLI](https://github.com/openai/codex) | Fully supported |
 | [Windsurf](https://windsurf.com/) | Fully supported |
 
-[See all supported agents →](docs/installation.md)
+### Multi-Agent Support
 
-## Commands Reference
+Initialize with multiple agents for teams using different tools:
 
-### Specify CLI
-
-| Command | Description |
-|---------|-------------|
-| `specify init <name>` | Initialize new project (supports multiple agents) |
-| `specify upgrade` | Upgrade to latest versions |
-| `specify check` | Verify tool installation |
-| `specify backlog migrate` | Convert tasks.md to Backlog.md format |
-
-#### Multi-Agent Support
-
-JP Spec Kit supports installing templates for multiple AI coding agents simultaneously. This is useful for teams using different agents or for developers who want to switch between agents.
-
-**Interactive Multi-Select:**
 ```bash
-# Launch interactive multi-select UI (use Space to toggle, Enter to confirm)
+# Interactive selection
 specify init my-project
+
+# Multiple agents via CLI
+specify init my-project --ai claude,copilot,cursor-agent
 ```
 
-**Command-Line Multi-Agent:**
-```bash
-# Single agent (backward compatible)
-specify init my-project --ai claude
-
-# Multiple agents (comma-separated)
-specify init my-project --ai claude,copilot
-specify init my-project --ai claude,cursor-agent,copilot
-
-# In current directory
-specify init . --ai claude,gemini,cursor-agent
-```
-
-**Benefits:**
-- Teams can use different agents for different tasks (e.g., Claude for backend, Copilot for frontend)
-- Agent directories (`.claude/`, `.github/`, etc.) don't conflict
-- All agent-specific slash commands are available
-- Security notices shown for all selected agents
-
-### Slash Commands
+## Specify CLI Commands
 
 | Command | Description |
 |---------|-------------|
-| `/speckit.specify` | Define requirements and user stories |
-| `/speckit.plan` | Create technical implementation plan |
-| `/speckit.tasks` | Generate actionable task breakdown |
-| `/speckit.implement` | Execute implementation |
-| `/speckit.clarify` | Clarify underspecified areas |
-| `/jpspec:assess` | Evaluate feature complexity and recommend workflow (Full SDD / Spec-light / Skip SDD) |
+| `specify init <name>` | Initialize new project with SDD templates |
+| `specify upgrade` | Upgrade to latest template versions |
+| `specify check` | Verify tool installation |
+| `specify backlog migrate` | Convert legacy tasks.md to backlog.md format |
 
 ## Documentation
 
-- **[Spec-Driven Development Guide](spec-driven.md)** - Complete methodology
-- **[Problem Sizing Assessment Guide](docs/guides/problem-sizing-assessment.md)** - When to use SDD vs traditional development
-- **[Backlog.md Quick Start](docs/guides/backlog-quickstart.md)** - Get started in 5 minutes
-- **[Backlog.md User Guide](docs/guides/backlog-user-guide.md)** - Full task management docs
-- **[Migration Guide](docs/guides/backlog-migration.md)** - Convert from tasks.md
-- **[Architecture Details](docs/architecture/LAYERED-EXTENSION-ARCHITECTURE.md)** - How layering works
+### Workflow & Architecture
+- **[JP Spec Workflow Diagram](docs/diagrams/jpspec-workflow.md)** - Visual workflow with all 15 subagents
+- **[Agent Loop Classification](docs/reference/agent-loop-classification.md)** - Which agents for which phases
+- **[Inner Loop Reference](docs/reference/inner-loop.md)** - Development cycle details
+- **[Outer Loop Reference](docs/reference/outer-loop.md)** - CI/CD and deployment
 
-## Prerequisites
+### Task Management
+- **[Backlog Quick Start](docs/guides/backlog-quickstart.md)** - Get started in 5 minutes
+- **[Backlog User Guide](docs/guides/backlog-user-guide.md)** - Complete task management guide
 
-- **Python 3.11+**
-- **[uv](https://docs.astral.sh/uv/)** for package management
-- **Git**
-- A [supported AI coding agent](#supported-ai-agents)
+### Guides
+- **[Problem Sizing Assessment](docs/guides/problem-sizing-assessment.md)** - When to use SDD
+
+## Legacy /speckit Commands
+
+The original `/speckit.*` commands from [GitHub's spec-kit](https://github.com/github/spec-kit) are still available but **do not integrate with backlog.md**:
+
+| Command | Status |
+|---------|--------|
+| `/speckit:specify` | Available (no backlog integration) |
+| `/speckit:plan` | Available (no backlog integration) |
+| `/speckit:tasks` | Available (generates tasks.md, not backlog) |
+| `/speckit:implement` | Available (no backlog integration) |
+| `/speckit:clarify` | Available (no backlog integration) |
+| `/speckit:constitution` | Available (no backlog integration) |
+| `/speckit:checklist` | Available (no backlog integration) |
+| `/speckit:analyze` | Available (no backlog integration) |
+
+**Recommendation**: Use `/jpspec` commands for the integrated backlog workflow. Use `/speckit` commands only if you prefer the traditional tasks.md approach.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. All commits require DCO sign-off:
+
+```bash
+git commit -s -m "feat: your feature"
+```
 
 ## License
 
@@ -250,5 +313,5 @@ MIT License - see [LICENSE](LICENSE) for details.
 ---
 
 <div align="center">
-    <p><em>Built on <a href="https://github.com/github/spec-kit">GitHub's spec-kit</a> • Powered by <a href="https://github.com/MrLesk/Backlog.md">Backlog.md</a></em></p>
+    <p><em>Built on <a href="https://github.com/github/spec-kit">GitHub's spec-kit</a> | Powered by <a href="https://github.com/MrLesk/Backlog.md">Backlog.md</a></em></p>
 </div>
