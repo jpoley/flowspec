@@ -283,7 +283,7 @@ specify init my-project --ai claude,copilot,cursor-agent
 
 ## Legacy /speckit Commands
 
-The original `/speckit.*` commands from [GitHub's spec-kit](https://github.com/github/spec-kit) are still available but **do not integrate with backlog.md**:
+The original `/speckit:*` commands from [GitHub's spec-kit](https://github.com/github/spec-kit) are still available but **do not integrate with backlog.md**:
 
 | Command | Status |
 |---------|--------|
