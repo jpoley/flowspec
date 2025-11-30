@@ -9,8 +9,15 @@ Key components:
 - TransitionSchema: Define input/output artifacts and validation modes
 - ValidationMode: Transition gate types (NONE, KEYWORD, PULL_REQUEST)
 - TransitionValidator: Engine for enforcing validation mode gates
+- PRDValidator: Validate PRD artifacts for transition gates
+- ADRValidator: Validate ADR artifacts for transition gates
 """
 
+from specify_cli.workflow.adr_validator import (
+    ADRValidationResult,
+    ADRValidator,
+    validate_adr_for_transition,
+)
 from specify_cli.workflow.config import WorkflowConfig
 from specify_cli.workflow.exceptions import (
     WorkflowConfigError,
@@ -18,6 +25,11 @@ from specify_cli.workflow.exceptions import (
     WorkflowConfigValidationError,
     WorkflowNotFoundError,
     WorkflowStateError,
+)
+from specify_cli.workflow.prd_validator import (
+    PRDValidationResult,
+    PRDValidator,
+    validate_prd_for_transition,
 )
 from specify_cli.workflow.transition import (
     WORKFLOW_TRANSITIONS,
@@ -66,6 +78,14 @@ __all__ = [
     # Validation Engine
     "TransitionValidator",
     "TransitionValidationResult",
+    # PRD Validation
+    "PRDValidator",
+    "PRDValidationResult",
+    "validate_prd_for_transition",
+    # ADR Validation
+    "ADRValidator",
+    "ADRValidationResult",
+    "validate_adr_for_transition",
     # Validation
     "ValidationSeverity",
     "ValidationIssue",
