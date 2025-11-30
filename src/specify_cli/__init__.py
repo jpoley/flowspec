@@ -3815,6 +3815,148 @@ def voice(
     console.print("[dim]Voice bot implementation coming in next phase...[/dim]")
 
 
+@app.command(name="ac-coverage")
+def ac_coverage_command(
+    feature: str = typer.Option(
+        None,
+        "--feature",
+        "-f",
+        help="Feature name (defaults to current feature from context)",
+    ),
+    prd_path: str = typer.Option(
+        None,
+        "--prd",
+        help="Path to PRD file (defaults to docs/prd/{feature}.md)",
+    ),
+    test_dirs: str = typer.Option(
+        "tests",
+        "--test-dirs",
+        help="Comma-separated list of test directories",
+    ),
+    output: str = typer.Option(
+        "tests/ac-coverage.json",
+        "--output",
+        "-o",
+        help="Output path for coverage report",
+    ),
+    check: bool = typer.Option(
+        False,
+        "--check",
+        help="Check coverage and exit with error if not 100%",
+    ),
+    allow_partial_coverage: bool = typer.Option(
+        False,
+        "--allow-partial-coverage",
+        help="Allow partial coverage (for exceptional cases)",
+    ),
+):
+    """Generate acceptance criteria test coverage report.
+
+    Scans PRD for acceptance criteria and checks that all have
+    corresponding test markers (@pytest.mark.ac).
+
+    Examples:
+        specify ac-coverage --check
+        specify ac-coverage --feature auth --output coverage.json
+        specify ac-coverage --allow-partial-coverage
+    """
+    from pathlib import Path
+
+    from specify_cli.workflow.ac_coverage import (
+        generate_coverage_report,
+        validate_ac_coverage,
+    )
+
+    # Determine feature name
+    if not feature:
+        from specify_cli.task_context import TaskContext
+
+        try:
+            context = TaskContext.detect()
+            feature = context.feature_name
+        except Exception:
+            console.print(
+                "[red]Error:[/red] Could not detect feature name. Use --feature option."
+            )
+            raise typer.Exit(1)
+
+    # Determine PRD path
+    if not prd_path:
+        prd_path = f"docs/prd/{feature}.md"
+
+    prd_file = Path(prd_path)
+    if not prd_file.exists():
+        console.print(f"[red]Error:[/red] PRD not found: {prd_path}")
+        raise typer.Exit(1)
+
+    # Parse test directories
+    test_dir_list = [Path(d.strip()) for d in test_dirs.split(",")]
+
+    # Generate coverage report
+    console.print(f"[cyan]Scanning PRD:[/cyan] {prd_path}")
+    console.print(
+        f"[cyan]Test directories:[/cyan] {', '.join(str(d) for d in test_dir_list)}"
+    )
+    console.print()
+
+    try:
+        report = generate_coverage_report(
+            feature=feature,
+            prd_path=prd_file,
+            test_dirs=test_dir_list,
+        )
+    except Exception as e:
+        console.print(f"[red]Error generating coverage report:[/red] {e}")
+        raise typer.Exit(1)
+
+    # Save report
+    output_path = Path(output)
+    report.save(output_path)
+    console.print(f"[green]✓[/green] Coverage report saved: {output_path}")
+    console.print()
+
+    # Display summary
+    summary = report.summary
+    console.print("[bold]Coverage Summary:[/bold]")
+    console.print(f"  Total ACs: {summary.total_acs}")
+    console.print(f"  Covered: {summary.covered}")
+    console.print(f"  Uncovered: {summary.uncovered}")
+
+    # Color code coverage percentage
+    coverage_color = "green" if summary.coverage_percent >= 100.0 else "yellow"
+    if summary.coverage_percent < 50.0:
+        coverage_color = "red"
+
+    console.print(
+        f"  Coverage: [{coverage_color}]{summary.coverage_percent:.1f}%[/{coverage_color}]"
+    )
+    console.print()
+
+    # Show uncovered ACs if any
+    if summary.uncovered > 0:
+        console.print("[yellow]Uncovered acceptance criteria:[/yellow]")
+        for ac in report.get_uncovered_acs():
+            console.print(f"  - [dim]{ac.id}:[/dim] {ac.description}")
+        console.print()
+
+        console.print("[dim]To fix:[/dim]")
+        console.print('  1. Add @pytest.mark.ac("ACX: Description") to test functions')
+        console.print("  2. Ensure tests are in configured test directories")
+        console.print("  3. Run: specify ac-coverage --check")
+        console.print()
+
+    # Validate coverage if --check flag is set
+    if check:
+        is_valid, error_msg = validate_ac_coverage(report, allow_partial_coverage)
+        if not is_valid:
+            console.print("[red]✗ Coverage check failed[/red]")
+            console.print()
+            console.print(error_msg)
+            raise typer.Exit(1)
+
+        console.print("[green]✓ All acceptance criteria are covered by tests[/green]")
+
+
 def main():
     app()
 
