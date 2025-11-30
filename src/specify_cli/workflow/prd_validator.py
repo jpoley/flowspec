@@ -229,7 +229,7 @@ class PRDValidator:
         # Read content
         try:
             content = prd_path.read_text(encoding="utf-8")
-        except Exception as e:
+        except (OSError, UnicodeDecodeError, PermissionError) as e:
             result.add_error(f"Failed to read PRD file: {e}")
             return result
 
