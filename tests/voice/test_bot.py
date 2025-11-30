@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
-
 import pytest
+
+# Skip entire module if pipecat is not available (voice extras not installed)
+pytest.importorskip("pipecat", reason="pipecat not installed (requires voice extras)")
+
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from specify_cli.voice.bot import VoiceBot, VoiceBotError
 
