@@ -8,6 +8,7 @@ Key components:
 - WorkflowValidator: Semantic validation of workflow configuration
 - TransitionSchema: Define input/output artifacts and validation modes
 - ValidationMode: Transition gate types (NONE, KEYWORD, PULL_REQUEST)
+- TransitionValidator: Engine for enforcing validation mode gates
 """
 
 from specify_cli.workflow.config import WorkflowConfig
@@ -29,6 +30,10 @@ from specify_cli.workflow.transition import (
     get_transitions_from_state,
     parse_validation_mode,
     validate_transition_schema,
+)
+from specify_cli.workflow.validation_engine import (
+    TransitionValidator,
+    ValidationResult as TransitionValidationResult,
 )
 from specify_cli.workflow.validator import (
     ValidationIssue,
@@ -58,6 +63,9 @@ __all__ = [
     "get_transitions_from_state",
     "parse_validation_mode",
     "validate_transition_schema",
+    # Validation Engine
+    "TransitionValidator",
+    "TransitionValidationResult",
     # Validation
     "ValidationSeverity",
     "ValidationIssue",
