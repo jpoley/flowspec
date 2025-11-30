@@ -5,6 +5,7 @@ from specify_cli.workflow.validator import (
     ValidationResult,
     ValidationSeverity,
     WorkflowValidator,
+    validate_workflow,
 )
 
 __all__ = [
@@ -12,4 +13,5 @@ __all__ = [
     "ValidationIssue",
     "ValidationResult",
     "WorkflowValidator",
+    "validate_workflow",
 ]

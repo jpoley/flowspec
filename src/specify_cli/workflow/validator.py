@@ -464,7 +464,7 @@ class WorkflowValidator:
                 continue
             from_state = transition.get("from")
             to_state = transition.get("to")
-            if from_state in graph and to_state:
+            if from_state in graph and to_state in self._states:
                 graph[from_state].append(to_state)
 
         # DFS cycle detection
@@ -528,7 +528,7 @@ class WorkflowValidator:
                 continue
             from_state = transition.get("from")
             to_state = transition.get("to")
-            if from_state in graph and to_state:
+            if from_state in graph and to_state in self._states:
                 graph[from_state].append(to_state)
 
         # BFS from initial state
@@ -584,7 +584,7 @@ class WorkflowValidator:
                 continue
             from_state = transition.get("from")
             to_state = transition.get("to")
-            if from_state in graph and to_state:
+            if from_state in graph and to_state in self._states:
                 graph[from_state].append(to_state)
 
         # Terminal states shouldn't have outgoing transitions
