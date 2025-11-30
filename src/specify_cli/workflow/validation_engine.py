@@ -192,7 +192,9 @@ class TransitionValidator:
             if artifact.multiple:
                 # For multiple artifacts, check if at least one matching file exists
                 parent = full_path.parent
-                if not parent.exists() or not any(parent.glob("*.md")):
+                # Derive glob pattern from resolved path
+                pattern = full_path.name if "*" in full_path.name else full_path.suffix and f"*{full_path.suffix}" or full_path.name
+                if not parent.exists() or not any(parent.glob(pattern)):
                     missing_artifacts.append(artifact.type)
             else:
                 # Single artifact - must exist
