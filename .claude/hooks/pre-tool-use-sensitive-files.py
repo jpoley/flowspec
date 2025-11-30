@@ -41,8 +41,8 @@ def is_sensitive_file(file_path: str) -> tuple[bool, str]:
     if path.name in [".env", ".secrets", "package-lock.json", "uv.lock", "CLAUDE.md"]:
         return True, f"Sensitive file: {path.name}"
 
-    # Check if path contains .git/
-    if ".git/" in file_path or "/.git/" in file_path:
+    # Check if .git is a path component
+    if ".git" in path.parts:
         return True, "Modifying .git/ directory"
 
     # Check for .env.* files
@@ -100,7 +100,7 @@ def main():
         print(json.dumps({
             "decision": "allow",
             "reason": f"Hook error (defaulting to allow): {str(e)}"
-        }), file=sys.stderr)
+        }))
         return 0
 
 

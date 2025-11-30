@@ -58,9 +58,9 @@ if output=$(ruff check --fix "$file_path" 2>&1); then
 else
     # ruff check returns non-zero if there are unfixable issues
     if echo "$output" | grep -q "fixed"; then
-        echo "{\"decision\": \"allow\", \"reason\": \"Auto-fixed some issues (manual fixes may be needed)\", \"additionalContext\": \"$output\"}"
+        echo "$output" | python3 -c "import json, sys; print(json.dumps({'decision': 'allow', 'reason': 'Auto-fixed some issues (manual fixes may be needed)', 'additionalContext': sys.stdin.read()}))"
     else
-        echo "{\"decision\": \"allow\", \"reason\": \"Linting issues detected (may require manual fixes)\", \"additionalContext\": \"$output\"}"
+        echo "$output" | python3 -c "import json, sys; print(json.dumps({'decision': 'allow', 'reason': 'Linting issues detected (may require manual fixes)', 'additionalContext': sys.stdin.read()}))"
     fi
 fi
 

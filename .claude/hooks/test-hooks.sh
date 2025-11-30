@@ -49,8 +49,22 @@ run_test() {
         return 1
     fi
 
-    # Extract decision from JSON output
-    decision=$(echo "$output" | python3 -c "import json, sys; print(json.load(sys.stdin).get('decision', ''))" 2>/dev/null || echo "")
+    # Extract decision from JSON output (handle non-JSON lines in output)
+    decision=$(echo "$output" | python3 -c "
+import json, sys
+try:
+    lines = sys.stdin.readlines()
+    for line in lines:
+        try:
+            data = json.loads(line.strip())
+            if 'decision' in data:
+                print(data['decision'])
+                break
+        except Exception:
+            continue
+except Exception:
+    pass
+" 2>/dev/null || echo "")
 
     # Verify decision matches expected
     if [[ "$decision" == "$expected_decision" ]]; then

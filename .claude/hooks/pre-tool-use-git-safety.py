@@ -118,7 +118,7 @@ def main():
         print(json.dumps({
             "decision": "allow",
             "reason": f"Hook error (defaulting to allow): {str(e)}"
-        }), file=sys.stderr)
+        }))
         return 0
 
 
