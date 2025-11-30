@@ -88,15 +88,38 @@ git worktree add ../work1 feature-auth         # Wrong
 jp-spec-kit/
 ├── src/specify_cli/        # CLI source code
 ├── tests/                  # Test suite (pytest)
-├── templates/              # Project templates
+├── templates/              # Project templates and workflow artifact templates
 ├── docs/                   # Documentation
 │   ├── guides/             # User guides
-│   └── reference/          # Reference docs
+│   ├── reference/          # Reference docs
+│   ├── assess/             # Assessment reports (from /jpspec:assess)
+│   ├── prd/                # Product Requirements Documents (from /jpspec:specify)
+│   ├── research/           # Research and validation reports (from /jpspec:research)
+│   ├── adr/                # Architecture Decision Records (from /jpspec:plan)
+│   ├── platform/           # Platform design docs (from /jpspec:plan)
+│   ├── qa/                 # QA reports (from /jpspec:validate)
+│   └── security/           # Security reports (from /jpspec:validate)
 ├── memory/                 # Constitution & specs
 ├── scripts/bash/           # Automation scripts
 ├── backlog/                # Task management
 └── .claude/commands/       # Slash command implementations
 ```
+
+### Workflow Artifact Directories
+
+The `docs/` directory contains standardized subdirectories for workflow artifacts. These are automatically created by `specify init`:
+
+| Directory | Purpose | Created By | Template |
+|-----------|---------|------------|----------|
+| `docs/assess/` | Feature assessment reports (Complexity/Risk/Impact) | `/jpspec:assess` | `templates/assessment-template.md` |
+| `docs/prd/` | Product Requirements Documents | `/jpspec:specify` | `templates/prd-template.md` |
+| `docs/research/` | Technical research and business validation | `/jpspec:research` | `templates/research-template.md`, `templates/business-validation-template.md` |
+| `docs/adr/` | Architecture Decision Records (Nygard format) | `/jpspec:plan` | `templates/adr-template.md` |
+| `docs/platform/` | Platform/infrastructure design documents | `/jpspec:plan` | (varies by platform) |
+| `docs/qa/` | QA test reports and coverage | `/jpspec:validate` | `templates/qa-report-template.md` |
+| `docs/security/` | Security assessment and vulnerability reports | `/jpspec:validate` | `templates/security-report-template.md` |
+
+Each directory contains a README.md explaining its purpose and usage within the workflow.
 
 ## Code Standards
 

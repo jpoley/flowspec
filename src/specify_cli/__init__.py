@@ -1579,6 +1579,46 @@ def ensure_executable_scripts(
                 console.print(f"  - {f}")
 
 
+def scaffold_artifact_directories(
+    project_path: Path, tracker: StepTracker | None = None
+) -> None:
+    """Create standard artifact directory structure for workflow outputs.
+
+    Creates docs/ subdirectories for workflow artifacts:
+    - docs/assess/    - Assessment reports
+    - docs/prd/       - Product Requirements Documents
+    - docs/research/  - Research and validation reports
+    - docs/platform/  - Platform design documents
+    - docs/qa/        - QA reports
+    - docs/security/  - Security reports
+
+    Each directory includes a README.md explaining its purpose.
+    """
+    artifact_dirs = [
+        "docs/assess",
+        "docs/prd",
+        "docs/research",
+        "docs/platform",
+        "docs/qa",
+        "docs/security",
+    ]
+
+    created = 0
+    for dir_path in artifact_dirs:
+        full_path = project_path / dir_path
+        if not full_path.exists():
+            full_path.mkdir(parents=True, exist_ok=True)
+            created += 1
+
+    if tracker:
+        if created > 0:
+            tracker.complete("scaffold-dirs", f"{created} directories created")
+        else:
+            tracker.complete("scaffold-dirs", "directories already exist")
+    elif created > 0:
+        console.print(f"[cyan]Created {created} artifact directories[/cyan]")
+
+
 @app.command()
 def init(
     project_name: str = typer.Argument(
@@ -1891,6 +1931,7 @@ def init(
             ("extract-extension", "Extract extension (overlay)"),
             ("merge", "Merge templates (extension overrides base)"),
             ("chmod", "Ensure scripts executable"),
+            ("scaffold-dirs", "Scaffold artifact directories"),
             ("cleanup", "Cleanup"),
             ("git", "Initialize git repository"),
             ("final", "Finalize"),
@@ -1904,6 +1945,7 @@ def init(
             ("zip-list", "Archive contents"),
             ("extracted-summary", "Extraction summary"),
             ("chmod", "Ensure scripts executable"),
+            ("scaffold-dirs", "Scaffold artifact directories"),
             ("cleanup", "Cleanup"),
             ("git", "Initialize git repository"),
             ("final", "Finalize"),
@@ -1955,6 +1997,9 @@ def init(
                 )
 
             ensure_executable_scripts(project_path, tracker=tracker)
+
+            tracker.start("scaffold-dirs")
+            scaffold_artifact_directories(project_path, tracker=tracker)
 
             if not no_git:
                 tracker.start("git")
