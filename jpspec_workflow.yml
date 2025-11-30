@@ -1,0 +1,145 @@
+# JP Spec Kit Workflow Configuration
+# This file defines the spec-driven development workflow phases,
+# state transitions, and agent assignments for /jpspec commands.
+
+version: "1.0"
+description: "Default JP Spec Kit specification-driven development workflow"
+
+# Custom backlog.md states (beyond default To Do/Done)
+# These states map to /jpspec command outputs
+states:
+  - name: "Specified"
+    description: "Feature specification created and validated"
+  - name: "Researched"
+    description: "Business viability and technical feasibility researched"
+  - name: "Planned"
+    description: "Technical architecture and implementation plan created"
+  - name: "In Implementation"
+    description: "Feature is being actively implemented"
+  - name: "Validated"
+    description: "Feature has passed QA, security, and documentation review"
+  - name: "Deployed"
+    description: "Feature has been deployed to production"
+
+# Workflow phases mapped to /jpspec commands
+# Each workflow specifies:
+#   - command: The /jpspec command that triggers this phase
+#   - agents: AI agents that participate in this phase
+#   - input_states: Valid task states from which this workflow can be executed
+#   - output_state: State the task transitions to after completion
+#   - description: Human-readable description
+#   - optional: Whether this phase can be skipped (default: false)
+workflows:
+  specify:
+    command: "/jpspec:specify"
+    agents:
+      - "product-requirements-manager"
+    input_states:
+      - "To Do"
+    output_state: "Specified"
+    description: "Create feature specification from requirements"
+    optional: false
+
+  research:
+    command: "/jpspec:research"
+    agents:
+      - "researcher"
+      - "business-validator"
+    input_states:
+      - "Specified"
+    output_state: "Researched"
+    description: "Validate business viability and research technical options"
+    optional: false
+
+  plan:
+    command: "/jpspec:plan"
+    agents:
+      - "software-architect"
+      - "platform-engineer"
+    input_states:
+      - "Researched"
+    output_state: "Planned"
+    description: "Create technical architecture and implementation plan"
+    optional: false
+
+  implement:
+    command: "/jpspec:implement"
+    agents:
+      - "frontend-engineer"
+      - "backend-engineer"
+      - "code-reviewer"
+    input_states:
+      - "Planned"
+    output_state: "In Implementation"
+    description: "Implement feature with code review"
+    optional: false
+
+  validate:
+    command: "/jpspec:validate"
+    agents:
+      - "quality-guardian"
+      - "secure-by-design-engineer"
+      - "tech-writer"
+      - "release-manager"
+    input_states:
+      - "In Implementation"
+    output_state: "Validated"
+    description: "Validate implementation through QA, security, and documentation review"
+    optional: false
+
+  operate:
+    command: "/jpspec:operate"
+    agents:
+      - "sre-agent"
+    input_states:
+      - "Validated"
+    output_state: "Deployed"
+    description: "Deploy feature to production and configure operations"
+    optional: true
+
+# State transitions (forms a DAG)
+# Each transition specifies:
+#   - from: Source state
+#   - to: Destination state
+#   - via: Workflow that triggers this transition
+transitions:
+  - from: "To Do"
+    to: "Specified"
+    via: "specify"
+  - from: "Specified"
+    to: "Researched"
+    via: "research"
+  - from: "Researched"
+    to: "Planned"
+    via: "plan"
+  - from: "Planned"
+    to: "In Implementation"
+    via: "implement"
+  - from: "In Implementation"
+    to: "Validated"
+    via: "validate"
+  - from: "Validated"
+    to: "Deployed"
+    via: "operate"
+  - from: "Deployed"
+    to: "Done"
+    via: "completion"
+
+# Agent classification by execution loop
+# - inner_loop: Agents that iterate on code/specs (frequent execution)
+# - outer_loop: Agents that manage operations (less frequent)
+agent_loops:
+  inner_loop:
+    - "product-requirements-manager"
+    - "software-architect"
+    - "platform-engineer"
+    - "researcher"
+    - "business-validator"
+    - "frontend-engineer"
+    - "backend-engineer"
+    - "quality-guardian"
+    - "secure-by-design-engineer"
+    - "tech-writer"
+  outer_loop:
+    - "sre-agent"
+    - "release-manager"
