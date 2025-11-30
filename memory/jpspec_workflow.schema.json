@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://jp-spec-kit/schemas/jpspec_workflow.schema.json",
   "title": "JP Spec Kit Workflow Configuration",
   "description": "Schema for validating jpspec_workflow.yml configuration files that define the spec-driven development workflow",
