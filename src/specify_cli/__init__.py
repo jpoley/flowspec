@@ -2550,8 +2550,10 @@ def dogfood(
 
     # Get list of template command files
     speckit_files = list(templates_dir.glob("*.md"))
-    jpspec_files = list(jpspec_templates_dir.glob("*.md")) if jpspec_templates_dir.exists() else []
-    
+    jpspec_files = (
+        list(jpspec_templates_dir.glob("*.md")) if jpspec_templates_dir.exists() else []
+    )
+
     if not speckit_files and not jpspec_files:
         console.print(
             f"[yellow]Warning:[/yellow] No command templates found in {templates_dir}"
@@ -2568,7 +2570,7 @@ def dogfood(
 
     # === Claude Code Setup ===
     tracker.add("claude", "Set up Claude Code commands")
-    
+
     speckit_commands_dir = project_path / ".claude" / "commands" / "speckit"
     speckit_commands_dir.mkdir(parents=True, exist_ok=True)
 
@@ -2600,11 +2602,13 @@ def dogfood(
         tracker.fail("claude", f"{len(claude_errors)} errors")
         all_errors.extend(claude_errors)
     else:
-        tracker.complete("claude", f"{claude_created} created, {claude_skipped} skipped")
+        tracker.complete(
+            "claude", f"{claude_created} created, {claude_skipped} skipped"
+        )
 
     # === VS Code Copilot Setup ===
     tracker.add("copilot", "Set up VS Code Copilot prompts")
-    
+
     prompts_dir = project_path / ".github" / "prompts"
     prompts_dir.mkdir(parents=True, exist_ok=True)
 
@@ -2662,15 +2666,17 @@ def dogfood(
         tracker.fail("copilot", f"{len(copilot_errors)} errors")
         all_errors.extend(copilot_errors)
     else:
-        tracker.complete("copilot", f"{copilot_created} created, {copilot_skipped} skipped")
+        tracker.complete(
+            "copilot", f"{copilot_created} created, {copilot_skipped} skipped"
+        )
 
     # === VS Code Settings Setup ===
     tracker.add("vscode", "Configure VS Code settings")
-    
+
     vscode_dir = project_path / ".vscode"
     vscode_dir.mkdir(parents=True, exist_ok=True)
     settings_file = vscode_dir / "settings.json"
-    
+
     try:
         # Read existing settings or start fresh
         existing_settings = {}
@@ -2678,23 +2684,26 @@ def dogfood(
             try:
                 with open(settings_file, "r") as f:
                     import json
+
                     content = f.read()
                     # Handle jsonc (with comments) by stripping single-line comments
                     import re
-                    content = re.sub(r'^\s*//.*$', '', content, flags=re.MULTILINE)
+
+                    content = re.sub(r"^\s*//.*$", "", content, flags=re.MULTILINE)
                     existing_settings = json.loads(content) if content.strip() else {}
             except (json.JSONDecodeError, ValueError):
                 existing_settings = {}
-        
+
         # Merge with required settings for Copilot prompt files
         existing_settings["chat.promptFiles"] = True
-        
+
         # Write updated settings
         with open(settings_file, "w") as f:
             import json
+
             json.dump(existing_settings, f, indent=4)
             f.write("\n")
-        
+
         tracker.complete("vscode", "chat.promptFiles enabled")
     except OSError as e:
         tracker.fail("vscode", str(e))
@@ -2705,7 +2714,7 @@ def dogfood(
 
     valid = 0
     broken = 0
-    
+
     # Check Claude symlinks
     for symlink_path in speckit_commands_dir.glob("*.md"):
         if symlink_path.is_symlink():
@@ -2713,7 +2722,7 @@ def dogfood(
                 valid += 1
             else:
                 broken += 1
-    
+
     # Check Copilot symlinks
     for symlink_path in prompts_dir.glob("*.prompt.md"):
         if symlink_path.is_symlink():
@@ -2733,18 +2742,24 @@ def dogfood(
     console.print(tracker.render())
 
     console.print("\n[bold green]Dogfood setup complete![/bold green]")
-    
-    console.print("\n[bold]Claude Code[/bold] - The following /speckit:* commands are now available:")
+
+    console.print(
+        "\n[bold]Claude Code[/bold] - The following /speckit:* commands are now available:"
+    )
     for template_file in sorted(speckit_files):
         console.print(f"  [cyan]/speckit:{template_file.stem}[/cyan]")
-    
-    console.print("\n[bold]VS Code Copilot[/bold] - The following prompts are now available:")
+
+    console.print(
+        "\n[bold]VS Code Copilot[/bold] - The following prompts are now available:"
+    )
     for template_file in sorted(speckit_files):
         console.print(f"  [cyan]/speckit.{template_file.stem}[/cyan]")
     for template_file in sorted(jpspec_files):
         console.print(f"  [cyan]/jpspec.{template_file.stem}[/cyan]")
-    
-    console.print("\n[dim]Note: Restart your AI assistant to pick up the new commands.[/dim]")
+
+    console.print(
+        "\n[dim]Note: Restart your AI assistant to pick up the new commands.[/dim]"
+    )
 
     if all_errors:
         console.print("\n[yellow]Warning:[/yellow] Some operations failed:")
