@@ -24,6 +24,10 @@ This documentation complements the programmatic workflow definition in `jpspec_w
 
 The JPSpec workflow is a state machine with 8 states and 12 valid transitions:
 
+These 12 transitions are distributed as follows:
+- **7 forward workflow transitions** (progressing through the main development lifecycle)
+- **3 terminal transitions to 'Done'** (manual completion from various states)
+- **3 backward transitions** (2 rework transitions and 1 rollback transition for handling failures)
 ```
 [To Do]
    |
