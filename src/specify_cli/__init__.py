@@ -1644,6 +1644,16 @@ def init(
         "--backlog-version",
         help="Specific version of backlog-md to install (default: recommended from compatibility matrix)",
     ),
+    validation_mode: str = typer.Option(
+        None,
+        "--validation-mode",
+        help="Set validation mode for all transitions: none, keyword, or pull-request (skips interactive prompts)",
+    ),
+    no_validation_prompts: bool = typer.Option(
+        False,
+        "--no-validation-prompts",
+        help="Skip validation mode configuration prompts and use NONE for all transitions",
+    ),
 ):
     """
     Initialize a new Specify project from the latest template.
@@ -2122,6 +2132,26 @@ def init(
             f"[dim]To change version: specify backlog upgrade --version {backlog_version}[/dim]"
         )
 
+    # Configure workflow validation modes
+    console.print()
+    from specify_cli.workflow.validation_config import configure_validation_modes
+
+    # Validate validation_mode if provided
+    if validation_mode:
+        valid_modes = ["none", "keyword", "pull-request"]
+        if validation_mode.lower() not in valid_modes:
+            console.print(
+                f"[red]Error:[/red] Invalid validation mode '{validation_mode}'. "
+                f"Choose from: {', '.join(valid_modes)}"
+            )
+            raise typer.Exit(1)
+
+    configure_validation_modes(
+        project_path,
+        batch_mode=validation_mode.lower() if validation_mode else None,
+        no_prompts=no_validation_prompts,
+    )
+
     steps_lines = []
     if not here:
         steps_lines.append(
@@ -2426,6 +2456,51 @@ def upgrade(
     console.print(
         f"  3. If needed, restore from backup: [cyan]cp -r {backup_dir}/* .[/cyan]"
     )
+
+
+@app.command()
+def config(
+    subcommand: str = typer.Argument(
+        ...,
+        help="Configuration subcommand: validation",
+    ),
+    validation_mode: str = typer.Option(
+        None,
+        "--validation-mode",
+        help="Set validation mode for all transitions: none, keyword, or pull-request",
+    ),
+):
+    """Configure project settings.
+
+    Available subcommands:
+      validation - Configure workflow transition validation modes
+
+    Examples:
+        specify config validation                    # Interactive configuration
+        specify config validation --validation-mode none
+        specify config validation --validation-mode keyword
+        specify config validation --validation-mode pull-request
+    """
+    if subcommand == "validation":
+        from specify_cli.workflow.validation_config import reconfigure_validation_modes
+
+        # Validate validation_mode if provided
+        if validation_mode:
+            valid_modes = ["none", "keyword", "pull-request"]
+            if validation_mode.lower() not in valid_modes:
+                console.print(
+                    f"[red]Error:[/red] Invalid validation mode '{validation_mode}'. "
+                    f"Choose from: {', '.join(valid_modes)}"
+                )
+                raise typer.Exit(1)
+
+        reconfigure_validation_modes(
+            batch_mode=validation_mode.lower() if validation_mode else None
+        )
+    else:
+        console.print(f"[red]Error:[/red] Unknown subcommand '{subcommand}'")
+        console.print("[cyan]Available subcommands:[/cyan] validation")
+        raise typer.Exit(1)
 
 
 @app.command()
