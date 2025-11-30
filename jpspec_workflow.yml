@@ -1,36 +1,42 @@
 # JP Spec Kit Workflow Configuration
-# ==================================
+# ==============================================================================
 #
 # This file defines the state machine for /jpspec command workflows in
-# Spec-Driven Development (SDD). It maps:
-#   - Task states: The progression of work items through the development lifecycle
-#   - Workflows: /jpspec slash commands with their agent assignments
-#   - Transitions: Valid state changes triggered by workflow execution
-#   - Agent loops: Classification for inner/outer loop execution model
+# Spec-Driven Development (SDD). It is the authoritative source for:
+#
+#   - Task states: Valid progression states in the development lifecycle
+#   - Workflows: /jpspec slash commands with agent assignments
+#   - Transitions: State changes triggered by workflow execution
+#   - Agent loops: Inner/outer loop classification for execution model
 #
 # Configuration Version: 1.0
 # Compatible with: jp-spec-kit v0.0.102+
 #
-# For documentation, see: docs/reference/agent-loop-classification.md
+# References:
+#   - docs/reference/agent-loop-classification.md
+#   - docs/reference/inner-loop.md
+#   - docs/reference/outer-loop.md
+#   - .claude/commands/jpspec/*.md
+#
+# ==============================================================================
 
 version: "1.0"
 
-# =============================================================================
+# ==============================================================================
 # TASK STATES
-# =============================================================================
-# Defines the valid states a task can be in during the development lifecycle.
-# States are listed in typical progression order, though not all tasks follow
-# a linear path through all states.
+# ==============================================================================
+# Valid states a task can occupy during the development lifecycle.
+# States progress forward via workflows, with manual transitions to "Done".
 #
 # State Descriptions:
-#   - To Do: Initial state, work has not started
-#   - Specified: Requirements captured and documented via /jpspec:specify
+#   - To Do: Initial state - work has not started
+#   - Specified: Requirements captured via /jpspec:specify
 #   - Researched: Technical and business research completed via /jpspec:research
 #   - Planned: Architecture and infrastructure planned via /jpspec:plan
 #   - In Implementation: Code actively being written via /jpspec:implement
 #   - Validated: QA, security, and documentation validated via /jpspec:validate
 #   - Deployed: Released to production via /jpspec:operate
-#   - Done: Work complete, ready for archive
+#   - Done: Work complete - ready for archive
 
 states:
   - "To Do"
@@ -42,45 +48,41 @@ states:
   - "Deployed"
   - "Done"
 
-# =============================================================================
+# ==============================================================================
 # WORKFLOW DEFINITIONS
-# =============================================================================
-# Each workflow corresponds to a /jpspec slash command. Workflows define:
-#   - command: The slash command that triggers this workflow
-#   - description: Human-readable description of the workflow purpose
-#   - agents: List of agents that execute work in this workflow
-#   - input_states: Valid states from which this workflow can be triggered
-#   - output_state: The state tasks transition to after successful completion
-#   - optional: Whether the workflow can be skipped in the lifecycle
+# ==============================================================================
+# Each workflow maps to a /jpspec slash command. Agents are assigned based on
+# the actual implementations in .claude/commands/jpspec/*.md
 
 workflows:
   # ---------------------------------------------------------------------------
-  # SPECIFY: Requirements and specification creation
+  # /jpspec:specify - Requirements and Specification Creation
   # ---------------------------------------------------------------------------
-  # Creates comprehensive Product Requirement Documents (PRDs) with user stories,
-  # acceptance criteria, and task breakdowns. First step in the SDD lifecycle.
+  # Creates comprehensive PRDs with user stories, acceptance criteria, and
+  # task breakdowns. Uses SVPG principles (Inspired, Empowered, Transformed).
   specify:
     command: "/jpspec:specify"
     description: "Create or update feature specifications using PM Planner agent"
     agents:
       - name: "product-requirements-manager"
         identity: "@pm-planner"
-        description: "Senior Product Strategy Advisor using SVPG principles (Inspired, Empowered, Transformed)"
+        description: "Senior Product Strategy Advisor using SVPG principles"
         responsibilities:
-          - "Create comprehensive PRDs"
+          - "Create comprehensive PRDs with 10 sections"
           - "Define user stories and acceptance criteria"
-          - "Conduct DUFV risk assessment (Desirability, Usability, Feasibility, Viability)"
-          - "Create implementation tasks in backlog"
+          - "Conduct DVF+V risk assessment (Desirability, Usability, Feasibility, Viability)"
+          - "Create implementation tasks in backlog via CLI"
     input_states:
       - "To Do"
     output_state: "Specified"
     optional: false
+    creates_backlog_tasks: true
 
   # ---------------------------------------------------------------------------
-  # RESEARCH: Technical and business validation
+  # /jpspec:research - Technical and Business Validation
   # ---------------------------------------------------------------------------
-  # Conducts comprehensive research including market analysis, competitive
-  # intelligence, technical feasibility, and business validation.
+  # Two-phase workflow: Research (market/competitive/technical analysis) then
+  # Business Validation (viability and strategic fit assessment).
   research:
     command: "/jpspec:research"
     description: "Execute research and business validation workflow"
@@ -89,15 +91,15 @@ workflows:
         identity: "@researcher"
         description: "Senior Research Analyst for market, competitive, and technical research"
         responsibilities:
-          - "Market analysis (TAM/SAM/SOM)"
+          - "Market analysis (TAM/SAM/SOM, growth trends)"
           - "Competitive landscape assessment"
           - "Technical feasibility evaluation"
-          - "Industry trend analysis"
+          - "Industry trend analysis with sources"
       - name: "business-validator"
         identity: "@business-validator"
         description: "Senior Business Analyst for viability and strategic fit assessment"
         responsibilities:
-          - "Financial viability analysis"
+          - "Financial viability analysis (revenue model, unit economics)"
           - "Operational feasibility assessment"
           - "Strategic alignment evaluation"
           - "Risk analysis and Go/No-Go recommendations"
@@ -105,21 +107,23 @@ workflows:
       - "Specified"
     output_state: "Researched"
     optional: true  # Some features may skip research phase
+    creates_backlog_tasks: true
 
   # ---------------------------------------------------------------------------
-  # PLAN: Architecture and infrastructure planning
+  # /jpspec:plan - Architecture and Infrastructure Planning
   # ---------------------------------------------------------------------------
-  # Creates system architecture using Hohpe's principles and platform/infrastructure
-  # design following DevOps/SRE best practices. Executed in parallel by two agents.
+  # Parallel execution of two agents: Software Architect (Hohpe's principles)
+  # and Platform Engineer (DevSecOps, DORA metrics, CI/CD).
   plan:
     command: "/jpspec:plan"
     description: "Execute planning workflow using architect and platform engineer agents"
+    execution_mode: "parallel"
     agents:
       - name: "software-architect"
         identity: "@software-architect"
         description: "Enterprise Software Architect using Gregor Hohpe's principles"
         responsibilities:
-          - "Strategic framing and business alignment"
+          - "Strategic framing (Penthouse-Engine Room continuum)"
           - "System architecture and component design"
           - "Architecture Decision Records (ADRs)"
           - "Platform Quality Framework (7 C's) assessment"
@@ -128,28 +132,29 @@ workflows:
         identity: "@platform-engineer"
         description: "Principal Platform Engineer for DevSecOps and CI/CD excellence"
         responsibilities:
-          - "DORA Elite metrics design"
+          - "DORA Elite metrics design (DF, LT, CFR, MTTR)"
           - "CI/CD pipeline architecture"
-          - "Infrastructure architecture"
-          - "DevSecOps integration"
+          - "Infrastructure architecture (Kubernetes, cloud)"
+          - "DevSecOps integration (SBOM, SLSA, security gates)"
           - "Observability architecture"
     input_states:
       - "Specified"
       - "Researched"
     output_state: "Planned"
     optional: false
+    creates_backlog_tasks: true
+    builds_constitution: true  # Contributes to /speckit.constitution
 
   # ---------------------------------------------------------------------------
-  # IMPLEMENT: Code development with review
+  # /jpspec:implement - Code Development with Review
   # ---------------------------------------------------------------------------
-  # Implements features using specialized frontend, backend, and AI/ML engineers.
-  # Includes integrated code review by senior reviewers. Requires existing backlog
-  # tasks - will not proceed without them.
+  # Implementation agents work from backlog tasks. Code reviewers validate
+  # work before completion. Requires existing backlog tasks.
   implement:
     command: "/jpspec:implement"
     description: "Execute implementation using specialized engineer agents with code review"
     agents:
-      # Implementation agents
+      # Implementation agents (parallel execution)
       - name: "frontend-engineer"
         identity: "@frontend-engineer"
         description: "Senior Frontend Engineer (React, React Native, TypeScript)"
@@ -165,7 +170,7 @@ workflows:
           - "API development (REST, GraphQL, gRPC)"
           - "Business logic implementation"
           - "Database integration"
-          - "Backend testing"
+          - "Backend testing with defensive coding"
       - name: "ai-ml-engineer"
         identity: "@ai-ml-engineer"
         description: "AI/ML Engineer for machine learning implementations"
@@ -174,7 +179,7 @@ workflows:
           - "MLOps infrastructure"
           - "Model deployment and serving"
           - "Performance monitoring"
-      # Code review agents
+      # Code review agents (sequential after implementation)
       - name: "frontend-code-reviewer"
         identity: "@frontend-code-reviewer"
         description: "Principal Frontend Code Reviewer"
@@ -195,34 +200,36 @@ workflows:
       - "Planned"
     output_state: "In Implementation"
     optional: false
-    requires_backlog_tasks: true  # Must have existing tasks to work on
+    requires_backlog_tasks: true  # Will not proceed without existing tasks
+    quality_gate: "specify gate"  # Must pass before implementation
 
   # ---------------------------------------------------------------------------
-  # VALIDATE: Quality assurance and documentation
+  # /jpspec:validate - Quality Assurance and Documentation
   # ---------------------------------------------------------------------------
-  # Comprehensive validation including QA testing, security assessment,
-  # documentation creation, and release readiness evaluation. Human approval
-  # required for production release.
+  # Comprehensive validation: QA testing, security assessment, documentation,
+  # and release readiness. Human approval required for production release.
   validate:
     command: "/jpspec:validate"
     description: "Execute validation using QA, security, documentation, and release management agents"
     agents:
+      # Phase 1: QA and Security (parallel)
       - name: "quality-guardian"
         identity: "@quality-guardian"
         description: "Quality Guardian for comprehensive QA validation"
         responsibilities:
           - "Functional and integration testing"
           - "API and contract testing"
-          - "Performance testing"
+          - "Performance testing (load, stress, latency)"
           - "Risk analysis and failure mode identification"
       - name: "secure-by-design-engineer"
         identity: "@secure-by-design-engineer"
         description: "Secure-by-Design Engineer for security assessment"
         responsibilities:
-          - "Code security review"
+          - "Code security review (auth, injection, XSS)"
           - "Dependency vulnerability scanning"
           - "Infrastructure security validation"
           - "Threat modeling and penetration testing"
+      # Phase 2: Documentation (after validation)
       - name: "tech-writer"
         identity: "@tech-writer"
         description: "Senior Technical Writer for documentation"
@@ -231,6 +238,7 @@ workflows:
           - "User guides and tutorials"
           - "Release notes"
           - "Operational documentation and runbooks"
+      # Phase 3: Release Management (final gate)
       - name: "release-manager"
         identity: "@release-manager"
         description: "Senior Release Manager for release coordination"
@@ -246,10 +254,10 @@ workflows:
     requires_human_approval: true  # Critical decisions require human sign-off
 
   # ---------------------------------------------------------------------------
-  # OPERATE: Production deployment and operations
+  # /jpspec:operate - Production Deployment and Operations
   # ---------------------------------------------------------------------------
-  # Establishes operational infrastructure including CI/CD, Kubernetes,
-  # observability, and incident management. Follows SRE best practices.
+  # Establishes operational infrastructure: CI/CD, Kubernetes, observability,
+  # and incident management. Follows SRE best practices.
   operate:
     command: "/jpspec:operate"
     description: "Execute operations workflow using SRE agent"
@@ -260,30 +268,24 @@ workflows:
         responsibilities:
           - "CI/CD pipeline implementation (GitHub Actions)"
           - "Kubernetes deployment and configuration"
-          - "DevSecOps integration (SBOM, SLSA)"
-          - "Observability stack setup"
+          - "DevSecOps integration (SBOM, SLSA compliance)"
+          - "Observability stack setup (metrics, logs, traces)"
           - "SLO/SLI definition and monitoring"
           - "Incident management and runbooks"
     input_states:
       - "Validated"
     output_state: "Deployed"
     optional: false
+    creates_backlog_tasks: true
 
-# =============================================================================
+# ==============================================================================
 # STATE TRANSITIONS
-# =============================================================================
-# Defines all valid state transitions in the workflow state machine.
-# Each transition specifies:
-#   - from: The source state
-#   - to: The destination state
-#   - via: The workflow that triggers this transition
-#   - description: Human-readable description of the transition
-#
-# Note: The "Done" state can be reached from multiple states, allowing
-# flexibility in workflow completion.
+# ==============================================================================
+# Valid state transitions in the workflow state machine.
+# Forward transitions via workflows, backward transitions for rework/rollback.
 
 transitions:
-  # Primary forward path through the lifecycle
+  # Primary forward path
   - from: "To Do"
     to: "Specified"
     via: "specify"
@@ -319,8 +321,7 @@ transitions:
     via: "operate"
     description: "Deployed to production"
 
-  # Terminal transitions to Done state
-  # Tasks can be marked Done from various states once their work is complete
+  # Terminal transitions to Done
   - from: "Deployed"
     to: "Done"
     via: "manual"
@@ -337,7 +338,6 @@ transitions:
     description: "Implementation complete, validation deferred"
 
   # Backward transitions for rework
-  # These allow returning to earlier states when issues are found
   - from: "In Implementation"
     to: "Planned"
     via: "rework"
@@ -353,86 +353,110 @@ transitions:
     via: "rollback"
     description: "Rollback from production due to issues"
 
-# =============================================================================
+# ==============================================================================
 # AGENT LOOP CLASSIFICATION
-# =============================================================================
-# Classifies agents into Inner Loop and Outer Loop based on their execution
-# model and frequency of use. This classification drives automation and
-# tooling decisions.
+# ==============================================================================
+# Classifies agents by execution model per docs/reference/agent-loop-classification.md
 #
-# Inner Loop: Fast, frequent execution within implementation
-#   - Optimized for developer velocity and rapid iteration
-#   - Runs locally, provides immediate feedback
-#   - Focused on code writing and local testing
+# Inner Loop: Fast, local iteration (edit -> run/tests -> debug -> repeat)
+#   - Developer velocity and rapid feedback
+#   - Pre-commit execution
+#   - Code writing, testing, review
 #
-# Outer Loop: Slower, governance-focused execution
-#   - Post-commit CI/CD pipeline
-#   - Focused on consistency, safety, and production reliability
-#   - Includes planning, validation, and operations
+# Outer Loop: Post-commit CI/CD pipeline
+#   - Governance, safety, production reliability
+#   - Planning, validation, operations
+#   - Build, package, attest, deploy
 
 agent_loops:
   inner:
-    description: "Fast, frequent execution within implementation - optimized for developer velocity"
+    description: "Fast, frequent execution - optimized for developer velocity"
     characteristics:
-      - "Immediate feedback (< 2s for hot reload)"
+      - "Immediate feedback (< 2s hot reload)"
       - "Local execution before commit"
       - "Code writing and testing focus"
       - "Pre-commit validation"
     agents:
+      # Implementation agents
       - "frontend-engineer"
       - "backend-engineer"
       - "ai-ml-engineer"
+      # Code review agents
       - "frontend-code-reviewer"
       - "backend-code-reviewer"
 
   outer:
-    description: "Slower, governance-focused execution - optimized for safety and reliability"
+    description: "Slower, governance-focused - optimized for safety and reliability"
     characteristics:
       - "Post-commit execution"
       - "CI/CD pipeline integration"
       - "Production deployment focus"
       - "Compliance and security gates"
     agents:
-      # Planning agents
+      # Planning phase
       - "product-requirements-manager"
-      - "software-architect"
-      - "platform-engineer"
       - "researcher"
       - "business-validator"
-      # Validation agents
+      - "software-architect"
+      - "platform-engineer"
+      # Validation phase
       - "quality-guardian"
       - "secure-by-design-engineer"
       - "tech-writer"
       - "release-manager"
-      # Operations agents
+      # Operations phase
       - "sre-agent"
 
-# =============================================================================
+# ==============================================================================
+# WORKFLOW SEQUENCE DIAGRAM
+# ==============================================================================
+# Visual representation of the workflow state machine:
+#
+#   [To Do]
+#      |
+#      v (specify)
+#   [Specified]
+#      |
+#      +----> (research) ----> [Researched]
+#      |                            |
+#      +----------------------------+
+#      |
+#      v (plan)
+#   [Planned]
+#      |
+#      v (implement)
+#   [In Implementation] <-----(rework)----+
+#      |                                   |
+#      v (validate)                        |
+#   [Validated] <---------(rework)---------+
+#      |                                   |
+#      v (operate)                         |
+#   [Deployed] <--------(rollback)---------+
+#      |
+#      v (manual)
+#   [Done]
+#
+# Note: Tasks can also transition directly to [Done] from [In Implementation]
+# or [Validated] states via manual transition.
+
+# ==============================================================================
 # METADATA
-# =============================================================================
-# Additional configuration metadata for tooling and validation
+# ==============================================================================
 
 metadata:
-  # Total number of defined states
+  schema_version: "1.0"
+  last_updated: "2025-11-30"
+
+  # Counts for validation
   state_count: 8
-
-  # Total number of defined workflows
   workflow_count: 6
-
-  # Total number of unique agents
   agent_count: 15
-
-  # Number of inner loop agents
   inner_loop_agent_count: 5
-
-  # Number of outer loop agents
   outer_loop_agent_count: 10
+  transition_count: 12
 
-  # Configuration last updated
-  last_updated: "2025-11-29"
-
-  # Related documentation
   documentation:
     - "docs/reference/agent-loop-classification.md"
     - "docs/reference/inner-loop.md"
     - "docs/reference/outer-loop.md"
+    - ".claude/commands/jpspec/*.md"
