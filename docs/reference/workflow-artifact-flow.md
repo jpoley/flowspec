@@ -1093,4 +1093,4 @@ backlog task edit 42 -s "Specified"
 ---
 
 **Version History**:
-- 1.0.0 (2025-11-30): Initial release with 8 states, 12 transitions, 3 validation modes
+- 1.0.0 (2025-11-30): Initial release with 8 states, 13 transitions, 3 validation modes
