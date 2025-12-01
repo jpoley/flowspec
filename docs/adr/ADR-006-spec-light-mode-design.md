@@ -35,7 +35,7 @@ Implement Spec-Light Mode with:
 ## Consequences
 
 ### Positive
-- 40-50% faster workflow for medium features
+- ~60% faster workflow for medium features (see [user guide](../guides/when-to-use-light-mode.md) for details)
 - Lower barrier to SDD adoption
 - Explicit mode choice (marker file)
 - Easy upgrade path to full mode
