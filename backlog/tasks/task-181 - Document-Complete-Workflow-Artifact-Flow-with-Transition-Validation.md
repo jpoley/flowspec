@@ -1,15 +1,27 @@
 ---
 id: task-181
 title: Document Complete Workflow Artifact Flow with Transition Validation
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-30 21:34'
+updated_date: '2025-12-01 01:53'
 labels:
   - workflow-artifacts
   - critical
 dependencies: []
 priority: high
 ---
+
+<!-- AC:BEGIN -->
+- [x] AC1: Create docs/reference/workflow-artifact-flow.md
+- [x] AC2: Include ASCII workflow diagram
+- [x] AC3: Document all 8 transitions with complete details
+- [x] AC4: Create artifact location reference table
+- [x] AC5: Document validation modes with examples
+- [x] AC6: Include rework/rollback transition handling
+- [x] AC7: Add troubleshooting section for validation failures
+- [x] AC8: Cross-reference jpspec_workflow.yml for programmatic lookup
+<!-- AC:END -->
 
 ## Implementation Notes
 
@@ -104,17 +116,5 @@ Create `docs/reference/workflow-artifact-flow.md`:
 | KEYWORD | `validation: KEYWORD["APPROVED"]` | User types keyword | Human approval |
 | PULL_REQUEST | `validation: PULL_REQUEST` | PR must be merged | Team review |
 
-## Acceptance Criteria
-- [ ] AC1: Create docs/reference/workflow-artifact-flow.md
-- [ ] AC2: Include ASCII workflow diagram
-- [ ] AC3: Document all 8 transitions with complete details
-- [ ] AC4: Create artifact location reference table
-- [ ] AC5: Document validation modes with examples
-- [ ] AC6: Include rework/rollback transition handling
-- [ ] AC7: Add troubleshooting section for validation failures
-- [ ] AC8: Cross-reference jpspec_workflow.yml for programmatic lookup
-
-## Dependencies
-- task-172 (Workflow Transition Validation Schema)
-- task-178 (State Machine Update)
+Completed via PR #138
 <!-- SECTION:NOTES:END -->

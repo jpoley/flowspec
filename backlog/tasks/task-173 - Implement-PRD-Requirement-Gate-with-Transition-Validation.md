@@ -1,15 +1,27 @@
 ---
 id: task-173
 title: Implement PRD Requirement Gate with Transition Validation
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-30 21:31'
+updated_date: '2025-12-01 01:53'
 labels:
   - workflow-artifacts
   - critical
 dependencies: []
 priority: high
 ---
+
+<!-- AC:BEGIN -->
+- [x] AC1: Create PRD template at templates/prd-template.md
+- [x] AC2: Update /jpspec:specify to output PRD to ./docs/prd/{feature}.md
+- [x] AC3: Add PRD existence check before transition to "Specified" state
+- [x] AC4: Implement PRD structural validation (required sections present)
+- [x] AC5: Support validation: NONE (default)
+- [x] AC6: Support validation: KEYWORD["<string>"] mode
+- [x] AC7: Support validation: PULL_REQUEST mode
+- [x] AC8: Update jpspec_workflow.yml with prd output artifact definition
+<!-- AC:END -->
 
 ## Implementation Notes
 
@@ -70,16 +82,5 @@ specified_to_researched:
 ## Out of Scope
 ```
 
-## Acceptance Criteria
-- [ ] AC1: Create PRD template at templates/prd-template.md
-- [ ] AC2: Update /jpspec:specify to output PRD to ./docs/prd/{feature}.md
-- [ ] AC3: Add PRD existence check before transition to "Specified" state
-- [ ] AC4: Implement PRD structural validation (required sections present)
-- [ ] AC5: Support validation: NONE (default)
-- [ ] AC6: Support validation: KEYWORD["<string>"] mode
-- [ ] AC7: Support validation: PULL_REQUEST mode
-- [ ] AC8: Update jpspec_workflow.yml with prd output artifact definition
-
-## Dependencies
-- task-172 (Workflow Transition Validation Schema)
+Completed via PR #133
 <!-- SECTION:NOTES:END -->

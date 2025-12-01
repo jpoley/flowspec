@@ -1,15 +1,28 @@
 ---
 id: task-178
 title: Update jpspec_workflow.yml with Transition Artifact Definitions
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-30 21:33'
+updated_date: '2025-12-01 01:53'
 labels:
   - workflow-artifacts
   - critical
 dependencies: []
 priority: high
 ---
+
+<!-- AC:BEGIN -->
+- [x] AC1: Add "Assessed" state to states array
+- [x] AC2: Add assess workflow with workflow-assessor agent
+- [x] AC3: Add input_artifacts and output_artifacts to all transitions
+- [x] AC4: Set validation: NONE for all transitions (default)
+- [x] AC5: Add validation field schema (NONE | KEYWORD["..."] | PULL_REQUEST)
+- [x] AC6: Update metadata counts
+- [x] AC7: Add workflow-assessor to agent_loops (outer loop)
+- [x] AC8: Run test_workflow_config_valid.py to verify schema
+- [x] AC9: Document transition artifact path variables ({feature}, {NNN}, {slug})
+<!-- AC:END -->
 
 ## Implementation Notes
 
@@ -176,17 +189,5 @@ transitions:
     validation: NONE
 ```
 
-## Acceptance Criteria
-- [ ] AC1: Add "Assessed" state to states array
-- [ ] AC2: Add assess workflow with workflow-assessor agent
-- [ ] AC3: Add input_artifacts and output_artifacts to all transitions
-- [ ] AC4: Set validation: NONE for all transitions (default)
-- [ ] AC5: Add validation field schema (NONE | KEYWORD["..."] | PULL_REQUEST)
-- [ ] AC6: Update metadata counts
-- [ ] AC7: Add workflow-assessor to agent_loops (outer loop)
-- [ ] AC8: Run test_workflow_config_valid.py to verify schema
-- [ ] AC9: Document transition artifact path variables ({feature}, {NNN}, {slug})
-
-## Dependencies
-- task-172 (Workflow Transition Validation Schema)
+Completed via PR #125
 <!-- SECTION:NOTES:END -->

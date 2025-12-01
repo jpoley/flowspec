@@ -1,15 +1,28 @@
 ---
 id: task-177
 title: 'Implement /jpspec:assess Command as Workflow Entry Point'
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-30 21:32'
+updated_date: '2025-12-01 01:53'
 labels:
   - workflow-artifacts
   - critical
 dependencies: []
 priority: high
 ---
+
+<!-- AC:BEGIN -->
+- [x] AC1: Create .claude/commands/jpspec/assess.md slash command template
+- [x] AC2: Implement complexity scoring (effort, components, integrations)
+- [x] AC3: Implement risk scoring (security, compliance, data sensitivity)
+- [x] AC4: Implement architecture impact scoring
+- [x] AC5: Generate assessment report at ./docs/assess/{feature}-assessment.md
+- [x] AC6: Output recommendation (Full SDD | Spec-Light | Skip SDD) with confidence
+- [x] AC7: Provide specific next-step commands based on recommendation
+- [x] AC8: Add "Assessed" state to workflow state machine
+- [x] AC9: Support --mode {full|light|skip} flag to override recommendation
+<!-- AC:END -->
 
 ## Implementation Notes
 
@@ -94,22 +107,5 @@ assess_to_specified:
   validation: NONE  # Always NONE for entry workflow
 ```
 
-## Acceptance Criteria
-- [ ] AC1: Create .claude/commands/jpspec/assess.md slash command template
-- [ ] AC2: Implement complexity scoring (effort, components, integrations)
-- [ ] AC3: Implement risk scoring (security, compliance, data sensitivity)
-- [ ] AC4: Implement architecture impact scoring
-- [ ] AC5: Generate assessment report at ./docs/assess/{feature}-assessment.md
-- [ ] AC6: Output recommendation (Full SDD | Spec-Light | Skip SDD) with confidence
-- [ ] AC7: Provide specific next-step commands based on recommendation
-- [ ] AC8: Add "Assessed" state to workflow state machine
-- [ ] AC9: Support --mode {full|light|skip} flag to override recommendation
-
-## Integration
-- Assessment report is required input for /jpspec:specify
-- Recommendation sets artifact requirements for downstream workflows
-- Spec-Light and Skip modes reduce required artifacts
-
-## Dependencies
-- task-172 (Workflow Transition Validation Schema)
+Completed via PR #117
 <!-- SECTION:NOTES:END -->

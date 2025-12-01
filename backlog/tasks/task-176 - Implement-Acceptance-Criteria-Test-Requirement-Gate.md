@@ -1,15 +1,28 @@
 ---
 id: task-176
 title: Implement Acceptance Criteria Test Requirement Gate
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-30 21:32'
+updated_date: '2025-12-01 01:53'
 labels:
   - workflow-artifacts
   - critical
 dependencies: []
 priority: high
 ---
+
+<!-- AC:BEGIN -->
+- [x] AC1: Create pytest marker @pytest.mark.ac("description") for Python
+- [x] AC2: Document test marking conventions for TypeScript and Go
+- [x] AC3: Implement AC scanner that parses PRD and extracts acceptance criteria
+- [x] AC4: Implement test scanner that finds AC markers in test files
+- [x] AC5: Generate ./tests/ac-coverage.json manifest
+- [x] AC6: Block transition if coverage_percent < 100%
+- [x] AC7: Report uncovered ACs with specific guidance
+- [x] AC8: Add `specify ac-coverage` CLI command for manual check
+- [x] AC9: Support --allow-partial-coverage flag for exceptional cases
+<!-- AC:END -->
 
 ## Implementation Notes
 
@@ -123,18 +136,5 @@ implementing_to_validated:
   validation: NONE  # Default
 ```
 
-## Acceptance Criteria
-- [ ] AC1: Create pytest marker @pytest.mark.ac("description") for Python
-- [ ] AC2: Document test marking conventions for TypeScript and Go
-- [ ] AC3: Implement AC scanner that parses PRD and extracts acceptance criteria
-- [ ] AC4: Implement test scanner that finds AC markers in test files
-- [ ] AC5: Generate ./tests/ac-coverage.json manifest
-- [ ] AC6: Block transition if coverage_percent < 100%
-- [ ] AC7: Report uncovered ACs with specific guidance
-- [ ] AC8: Add `specify ac-coverage` CLI command for manual check
-- [ ] AC9: Support --allow-partial-coverage flag for exceptional cases
-
-## Dependencies
-- task-172 (Workflow Transition Validation Schema)
-- task-173 (PRD Requirement Gate) - PRD contains ACs to validate against
+Completed via PR #123
 <!-- SECTION:NOTES:END -->

@@ -1,15 +1,29 @@
 ---
 id: task-179
 title: Scaffold Artifact Directory Structure and Templates
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-30 21:33'
+updated_date: '2025-12-01 01:53'
 labels:
   - workflow-artifacts
   - critical
 dependencies: []
 priority: high
 ---
+
+<!-- AC:BEGIN -->
+- [x] AC1: Create docs/assess/ with README
+- [x] AC2: Create docs/prd/ with README
+- [x] AC3: Create docs/research/ with README
+- [x] AC4: Create docs/adr/ with README and template.md
+- [x] AC5: Create docs/platform/ with README
+- [x] AC6: Create docs/qa/ with README
+- [x] AC7: Create docs/security/ with README
+- [x] AC8: Create all templates in templates/ directory
+- [x] AC9: Update `specify init` to scaffold these directories
+- [x] AC10: Add directory structure to CLAUDE.md documentation
+<!-- AC:END -->
 
 ## Implementation Notes
 
@@ -93,18 +107,5 @@ project/
 - Recommendations
 - Sign-off
 
-## Acceptance Criteria
-- [ ] AC1: Create docs/assess/ with README
-- [ ] AC2: Create docs/prd/ with README
-- [ ] AC3: Create docs/research/ with README
-- [ ] AC4: Create docs/adr/ with README and template.md
-- [ ] AC5: Create docs/platform/ with README
-- [ ] AC6: Create docs/qa/ with README
-- [ ] AC7: Create docs/security/ with README
-- [ ] AC8: Create all templates in templates/ directory
-- [ ] AC9: Update `specify init` to scaffold these directories
-- [ ] AC10: Add directory structure to CLAUDE.md documentation
-
-## Dependencies
-- task-172 (Workflow Transition Validation Schema)
+Completed via PR #137
 <!-- SECTION:NOTES:END -->

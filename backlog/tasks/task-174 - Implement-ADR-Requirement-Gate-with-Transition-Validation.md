@@ -1,15 +1,28 @@
 ---
 id: task-174
 title: Implement ADR Requirement Gate with Transition Validation
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-30 21:31'
+updated_date: '2025-12-01 01:53'
 labels:
   - workflow-artifacts
   - critical
 dependencies: []
 priority: high
 ---
+
+<!-- AC:BEGIN -->
+- [x] AC1: Create ADR template at templates/adr-template.md following Nygard format
+- [x] AC2: Update /jpspec:plan to output ADRs to ./docs/adr/ADR-{NNN}-{slug}.md
+- [x] AC3: Add ADR existence check before transition to "Planned" state
+- [x] AC4: Implement ADR structural validation (required sections present)
+- [x] AC5: Support validation: NONE (default)
+- [x] AC6: Support validation: KEYWORD["<string>"] mode
+- [x] AC7: Support validation: PULL_REQUEST mode
+- [x] AC8: Support multiple ADRs per feature (ADR-001, ADR-002, etc.)
+- [x] AC9: Implement ADR numbering auto-increment
+<!-- AC:END -->
 
 ## Implementation Notes
 
@@ -85,18 +98,5 @@ planned_to_implementing:
 - Why rejected: ...
 ```
 
-## Acceptance Criteria
-- [ ] AC1: Create ADR template at templates/adr-template.md following Nygard format
-- [ ] AC2: Update /jpspec:plan to output ADRs to ./docs/adr/ADR-{NNN}-{slug}.md
-- [ ] AC3: Add ADR existence check before transition to "Planned" state
-- [ ] AC4: Implement ADR structural validation (required sections present)
-- [ ] AC5: Support validation: NONE (default)
-- [ ] AC6: Support validation: KEYWORD["<string>"] mode
-- [ ] AC7: Support validation: PULL_REQUEST mode
-- [ ] AC8: Support multiple ADRs per feature (ADR-001, ADR-002, etc.)
-- [ ] AC9: Implement ADR numbering auto-increment
-
-## Dependencies
-- task-172 (Workflow Transition Validation Schema)
-- task-173 (PRD Requirement Gate)
+Completed via PR #132
 <!-- SECTION:NOTES:END -->

@@ -1,15 +1,28 @@
 ---
 id: task-175
 title: Implement Transition Validation Mode Engine (NONE/KEYWORD/PULL_REQUEST)
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-30 21:32'
+updated_date: '2025-12-01 01:53'
 labels:
   - workflow-artifacts
   - critical
 dependencies: []
 priority: high
 ---
+
+<!-- AC:BEGIN -->
+- [x] AC1: Implement NONE validation mode (immediate pass-through)
+- [x] AC2: Implement KEYWORD validation with exact string matching
+- [x] AC3: Implement PULL_REQUEST validation with GitHub API check
+- [x] AC4: Add validation mode parser for KEYWORD["<string>"] syntax
+- [x] AC5: Integrate validation engine into workflow transition logic
+- [x] AC6: Add CLI prompts for KEYWORD mode
+- [x] AC7: Add helpful error messages for failed validations
+- [x] AC8: Support --skip-validation flag for emergency override (with warning)
+- [x] AC9: Log all validation decisions for audit trail
+<!-- AC:END -->
 
 ## Implementation Notes
 
@@ -101,17 +114,5 @@ $ specify workflow transition --to "In Implementation"
   Hint: Create PR with: gh pr create --title "ADR: Feature X"
 ```
 
-## Acceptance Criteria
-- [ ] AC1: Implement NONE validation mode (immediate pass-through)
-- [ ] AC2: Implement KEYWORD validation with exact string matching
-- [ ] AC3: Implement PULL_REQUEST validation with GitHub API check
-- [ ] AC4: Add validation mode parser for KEYWORD["<string>"] syntax
-- [ ] AC5: Integrate validation engine into workflow transition logic
-- [ ] AC6: Add CLI prompts for KEYWORD mode
-- [ ] AC7: Add helpful error messages for failed validations
-- [ ] AC8: Support --skip-validation flag for emergency override (with warning)
-- [ ] AC9: Log all validation decisions for audit trail
-
-## Dependencies
-- task-172 (Workflow Transition Validation Schema)
+Completed via PR #156
 <!-- SECTION:NOTES:END -->

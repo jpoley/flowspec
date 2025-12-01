@@ -1,15 +1,28 @@
 ---
 id: task-180
 title: Update JPSpec Slash Commands for Standard Artifact Output Locations
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-11-30 21:33'
+updated_date: '2025-12-01 01:53'
 labels:
   - workflow-artifacts
   - critical
 dependencies: []
 priority: high
 ---
+
+<!-- AC:BEGIN -->
+- [x] AC1: Update /jpspec:assess to output to ./docs/assess/
+- [x] AC2: Update /jpspec:specify to output PRD to ./docs/prd/
+- [x] AC3: Update /jpspec:research to output to ./docs/research/
+- [x] AC4: Update /jpspec:plan to output ADRs to ./docs/adr/
+- [x] AC5: Update /jpspec:implement to generate ./tests/ac-coverage.json
+- [x] AC6: Update /jpspec:validate to output to ./docs/qa/ and ./docs/security/
+- [x] AC7: Add feature name slug derivation to all commands
+- [x] AC8: Add artifact verification step to all commands
+- [x] AC9: Add transition validation check to all commands
+<!-- AC:END -->
 
 ## Implementation Notes
 
@@ -76,19 +89,5 @@ If KEYWORD["X"]: Prompt user for keyword
 If PULL_REQUEST: Check for merged PR
 ```
 
-## Acceptance Criteria
-- [ ] AC1: Update /jpspec:assess to output to ./docs/assess/
-- [ ] AC2: Update /jpspec:specify to output PRD to ./docs/prd/
-- [ ] AC3: Update /jpspec:research to output to ./docs/research/
-- [ ] AC4: Update /jpspec:plan to output ADRs to ./docs/adr/
-- [ ] AC5: Update /jpspec:implement to generate ./tests/ac-coverage.json
-- [ ] AC6: Update /jpspec:validate to output to ./docs/qa/ and ./docs/security/
-- [ ] AC7: Add feature name slug derivation to all commands
-- [ ] AC8: Add artifact verification step to all commands
-- [ ] AC9: Add transition validation check to all commands
-
-## Dependencies
-- task-172 (Workflow Transition Validation Schema)
-- task-175 (Transition Validation Mode Engine)
-- task-179 (Directory Scaffolding)
+Completed via PR #144
 <!-- SECTION:NOTES:END -->
