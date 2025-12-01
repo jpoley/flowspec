@@ -44,4 +44,4 @@ See `templates/security-report-template.md` for the standard security report for
 ## Related Documentation
 
 - [Workflow Artifact Flow](../../reference/workflow-artifact-flow.md)
-- [Security Report Template](../../templates/security-report-template.md)
+- [Security Report Template](../../security-report-template.md)
