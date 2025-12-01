@@ -213,7 +213,7 @@ class TestGitHubAuthRetry:
         # Verify first call had Authorization header
         first_call_headers = mock_client.get.call_args_list[0][1]["headers"]
         assert "Authorization" in first_call_headers
-        assert "Bearer invalid_token" in first_call_headers["Authorization"]
+        assert first_call_headers["Authorization"] == "Bearer invalid_token"
 
         # Verify second call did NOT have Authorization header
         second_call_headers = mock_client.get.call_args_list[1][1]["headers"]
