@@ -268,8 +268,6 @@ Test connectivity for all configured MCP servers:
 
 **Example output:**
 ```
-MCP Server Health Check
-=======================
 [✓] github - Connected successfully
 [✓] serena - Connected successfully
 [✗] playwright-test - Failed: binary 'npx' not found
