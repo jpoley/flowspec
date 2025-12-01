@@ -112,7 +112,7 @@
         },
         "outer_loop": {
           "type": "array",
-          "description": "DEPRECATED: Use 'outer.agents' instead. Agents in the outer loop.",
+          "description": "DEPRECATED: Use 'outer.agents' instead. This property is retained for backward compatibility only and will be removed in a future version. Agents in the outer loop.",
           "items": {
             "type": "string",
             "minLength": 1
