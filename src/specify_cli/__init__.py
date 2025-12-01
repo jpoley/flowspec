@@ -2242,8 +2242,16 @@ def init(
 
     # Generate workflow configuration file with per-transition validation modes
     if no_validation_prompts:
-        # Use NONE for all transitions
-        transition_modes = {}
+        # Explicitly set all transitions to 'none'
+        transition_modes = {
+            "assess": "none",
+            "research": "none",
+            "specify": "none",
+            "plan": "none",
+            "implement": "none",
+            "validate": "none",
+            "operate": "none",
+        }
     else:
         # Build per-transition mode dict from CLI flags
         transition_modes = {
