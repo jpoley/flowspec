@@ -279,6 +279,45 @@ Automatically runs `ruff check --fix` on Python files after Edit/Write operation
 
 **Behavior**: Attempts to auto-fix linting issues and reports results. Manual fixes may be needed for complex issues.
 
+#### 5. Pre-Implementation Quality Gates
+
+**Hook**: `.claude/hooks/pre-implement.sh`
+
+Runs automated quality gates before `/jpspec:implement` can proceed. Ensures specifications are complete and high-quality before implementation begins.
+
+**Gates Enforced**:
+1. **Required Files**: Validates `spec.md`, `plan.md`, and `tasks.md` exist
+2. **Spec Completeness**: Detects unresolved markers (`NEEDS CLARIFICATION`, `[TBD]`, `[TODO]`, `???`, `PLACEHOLDER`, `<insert>`)
+3. **Constitutional Compliance**: Verifies DCO sign-off, testing requirements, and acceptance criteria are mentioned
+4. **Quality Threshold**: Requires spec quality score >= 70/100 using `specify quality` scorer
+
+**Override**: Use `--skip-quality-gates` flag to bypass (NOT RECOMMENDED).
+
+**Testing**: Run `.claude/hooks/test-pre-implement.sh` (14 comprehensive tests).
+
+**Documentation**: See `docs/adr/adr-pre-implementation-quality-gates.md` for full ADR.
+
+**Example Output**:
+```bash
+# Pass state
+✅ All quality gates passed. Proceeding with implementation.
+
+# Fail state with remediation
+❌ Quality gates failed:
+
+✗ Unresolved markers found in spec.md:
+  - Line 45: NEEDS CLARIFICATION: authentication method
+  → Resolve all markers before implementation
+
+✗ Quality score: 58/100 (threshold: 70)
+  Recommendations:
+  - Add missing section: ## User Story
+  - Reduce vague terms (currently: 12 instances)
+  → Improve spec quality using /speckit:clarify
+
+Run with --skip-quality-gates to bypass (NOT RECOMMENDED).
+```
+
 ### Testing Hooks
 
 Run the test suite to verify all hooks are working correctly:
