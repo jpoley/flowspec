@@ -1757,7 +1757,7 @@ def init(
     no_validation_prompts: bool = typer.Option(
         False,
         "--no-validation-prompts",
-        help="Skip validation prompts and use NONE for all transitions",
+        help="Use NONE validation mode for all transitions (no validation gates)",
     ),
 ):
     """
