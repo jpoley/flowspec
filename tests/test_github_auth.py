@@ -186,7 +186,12 @@ class TestGitHubAuthRetry:
         }
 
         mock_client = MagicMock()
-        mock_client.get.side_effect = [mock_response_401, mock_response_200]
+        def mock_get_side_effect(*args, **kwargs):
+            # Return 401 for first call, 200 for subsequent calls
+            if mock_client.get.call_count == 0:
+                return mock_response_401
+            return mock_response_200
+        mock_client.get.side_effect = mock_get_side_effect
 
         with patch.dict("os.environ", {"GITHUB_JPSPEC": "invalid_token"}, clear=True):
             try:
