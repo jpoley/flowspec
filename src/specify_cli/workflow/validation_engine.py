@@ -40,8 +40,8 @@ from specify_cli.workflow.transition import Artifact, TransitionSchema, Validati
 
 logger = logging.getLogger(__name__)
 
-# Pattern for valid feature names: alphanumeric, hyphens, and underscores only
-VALID_FEATURE_NAME_PATTERN = re.compile(r"^[\w-]+$")
+# Pattern for valid feature names: ASCII alphanumeric, hyphens, and underscores only
+VALID_FEATURE_NAME_PATTERN = re.compile(r"^[a-zA-Z0-9_-]+$")
 
 
 @dataclass
@@ -399,7 +399,7 @@ class TransitionValidator:
             TransitionValidationResult indicating whether a merged PR exists.
         """
         feature = context.get("feature", "")
-        if not feature:
+        if not feature or not feature.strip():
             logger.error("PULL_REQUEST validation requires 'feature' in context")
             return TransitionValidationResult(
                 passed=False,
