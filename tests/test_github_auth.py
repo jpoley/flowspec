@@ -320,18 +320,15 @@ class TestGitHubAuthRetry:
         mock_client.get.return_value = mock_response
 
         with patch.dict("os.environ", {"GITHUB_JPSPEC": "valid_token"}, clear=True):
-            try:
-                download_template_from_github(
-                    ai_assistant="claude",
-                    download_dir=temp_dir,
-                    repo_owner="test",
-                    repo_name="repo",
-                    version="latest",
-                    client=mock_client,
-                    verbose=False,
-                )
-            except Exception:
-                pass
+            download_template_from_github(
+                ai_assistant="claude",
+                download_dir=temp_dir,
+                repo_owner="test",
+                repo_name="repo",
+                version="latest",
+                client=mock_client,
+                verbose=False,
+            )
 
         # All calls should have Authorization header (no retry without auth needed)
         for call in mock_client.get.call_args_list:
