@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -38,6 +39,9 @@ from typing import Any
 from specify_cli.workflow.transition import Artifact, TransitionSchema, ValidationMode
 
 logger = logging.getLogger(__name__)
+
+# Pattern for valid feature names: alphanumeric, hyphens, and underscores only
+VALID_FEATURE_NAME_PATTERN = re.compile(r"^[\w-]+$")
 
 
 @dataclass
@@ -400,6 +404,15 @@ class TransitionValidator:
             return TransitionValidationResult(
                 passed=False,
                 message="Cannot validate PR: feature name not provided",
+                mode=ValidationMode.PULL_REQUEST,
+            )
+
+        # Validate feature name contains only allowed characters
+        if not VALID_FEATURE_NAME_PATTERN.match(feature):
+            logger.error(f"Invalid feature name: {feature}")
+            return TransitionValidationResult(
+                passed=False,
+                message="Invalid feature name format",
                 mode=ValidationMode.PULL_REQUEST,
             )
 

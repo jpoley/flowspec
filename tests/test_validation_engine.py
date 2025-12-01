@@ -337,6 +337,48 @@ class TestValidationModePullRequest:
         assert result.passed is False
         assert "feature" in result.message.lower()
 
+    def test_pull_request_validation_invalid_feature_name(
+        self,
+        validator: TransitionValidator,
+        pr_transition: TransitionSchema,
+    ) -> None:
+        """Test PR validation fails with invalid feature name."""
+        # Test with special characters that could manipulate search query
+        invalid_names = [
+            "feat; rm -rf",  # Command injection attempt
+            "auth' OR '1'='1",  # SQL-like injection
+            "test in:body",  # Search query manipulation
+            "feat<script>",  # XSS-like attempt
+            "auth OR repo:malicious",  # GitHub search manipulation
+        ]
+        for invalid_name in invalid_names:
+            result = validator.validate(pr_transition, {"feature": invalid_name})
+            assert result.passed is False
+            assert result.message == "Invalid feature name format"
+
+    def test_pull_request_validation_valid_feature_names(
+        self,
+        validator: TransitionValidator,
+        pr_transition: TransitionSchema,
+    ) -> None:
+        """Test PR validation accepts valid feature names."""
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        mock_result.stdout = "[]"  # No merged PRs, but validation passes format check
+
+        valid_names = [
+            "auth",
+            "user-authentication",
+            "feature_name",
+            "Feature123",
+            "my-feature_v2",
+        ]
+        with patch("subprocess.run", return_value=mock_result):
+            for valid_name in valid_names:
+                result = validator.validate(pr_transition, {"feature": valid_name})
+                # These should pass the format check but fail because no merged PRs
+                assert "Invalid feature name format" not in result.message
+
     def test_pull_request_validation_gh_cli_error(
         self,
         validator: TransitionValidator,
