@@ -365,15 +365,16 @@ class TransitionValidator:
                 f"✗ KEYWORD validation failed for '{transition.name}' "
                 f"(expected: {keyword}, got: {user_input})"
             )
-            print(f"\n✗ Incorrect keyword. Expected '{keyword}' but got '{user_input}'")
+            sanitized_input = user_input.encode('unicode_escape').decode('ascii')
+            print(f"\n✗ Incorrect keyword. Expected '{keyword}' but got '{sanitized_input}'")
             print("Transition blocked.\n")
             return TransitionValidationResult(
                 passed=False,
-                message=f"Incorrect keyword. Expected '{keyword}' but got '{user_input}'",
+                message=f"Incorrect keyword. Expected '{keyword}' but got '{sanitized_input}'",
                 mode=ValidationMode.KEYWORD,
                 details={
                     "expected": keyword,
-                    "provided": user_input,
+                    "provided": sanitized_input,
                 },
             )
 
