@@ -685,7 +685,13 @@ def generate_jpspec_workflow_yml(project_path: Path, validation_mode: str) -> No
         "keyword": 'KEYWORD["APPROVED"]',
         "pull-request": "PULL_REQUEST",
     }
-    yaml_mode = mode_map.get(validation_mode.lower(), "NONE")
+    valid_modes = mode_map.keys()
+    if validation_mode.lower() not in valid_modes:
+        raise ValueError(
+            f"Invalid validation_mode '{validation_mode}'. "
+            f"Expected one of: {', '.join(valid_modes)}."
+        )
+    yaml_mode = mode_map[validation_mode.lower()]
 
     # Define all workflow transitions
     transitions = [
