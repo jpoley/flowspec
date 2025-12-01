@@ -743,9 +743,15 @@ def generate_jpspec_workflow_yml(
 
     # Write the file
     workflow_file = project_path / "jpspec_workflow.yml"
+    if workflow_file.exists():
+        overwrite = typer.confirm(
+            f"[bold yellow]Warning:[/bold yellow] '{workflow_file}' already exists and will be overwritten. Continue?",
+            default=False,
+        )
+        if not overwrite:
+            console.print(f"[red]Aborted:[/red] Existing '{workflow_file.name}' was not overwritten.")
+            return
     workflow_file.write_text("\n".join(lines), encoding="utf-8")
-
-
 def show_banner():
     """Display the ASCII art banner."""
     banner_lines = BANNER.strip().split("\n")
