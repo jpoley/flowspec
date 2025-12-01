@@ -105,7 +105,9 @@ Analyze the feature request along three dimensions (1-10 scale):
 Calculate recommendation based on scores:
 
 ```
-Total Score = Complexity + Risk + Architecture Impact
+# Each score (Complexity, Risk, Architecture Impact) is the average of three sub-scores (range 1-10).
+# Total Score = Complexity + Risk + Architecture Impact
+# Total Score range: 3 (all scores = 1) to 30 (all scores = 10)
 
 IF any individual score >= 7 OR Total Score >= 18:
     Recommendation: Full SDD
