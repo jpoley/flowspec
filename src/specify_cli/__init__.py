@@ -2260,7 +2260,7 @@ def init(
     if non_default:
         console.print("[dim]Custom validation modes:[/dim]")
         for name, mode in non_default.items():
-            console.print(f"  [dim]{name}: {mode.upper()}[/dim]")
+            console.print(f"  [dim]{name}: {mode.replace('-', '_').upper()}[/dim]")
 
     steps_lines = []
     if not here:
