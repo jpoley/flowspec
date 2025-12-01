@@ -89,6 +89,16 @@ jp-spec-kit/
 ├── src/specify_cli/        # CLI source code
 ├── tests/                  # Test suite (pytest)
 ├── templates/              # Project templates
+│   ├── docs/               # Workflow artifact directories (copied to project docs/)
+│   │   ├── assess/         # Assessment reports (/jpspec:assess)
+│   │   ├── prd/            # Product Requirements Documents (/jpspec:specify)
+│   │   ├── research/       # Research reports (/jpspec:research)
+│   │   ├── adr/            # Architecture Decision Records (/jpspec:plan)
+│   │   ├── platform/       # Platform design docs (/jpspec:plan)
+│   │   ├── qa/             # QA reports (/jpspec:validate)
+│   │   └── security/       # Security reports (/jpspec:validate)
+│   ├── *-template.md       # Artifact templates
+│   └── commands/           # Slash command templates
 ├── docs/                   # Documentation
 │   ├── guides/             # User guides
 │   └── reference/          # Reference docs
