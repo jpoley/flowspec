@@ -130,7 +130,19 @@ class TestSharedBacklogInstructionsAC2:
         marker_count = content.count("{{BACKLOG_INSTRUCTIONS}}")
         # New phased workflows may not use the BACKLOG_INSTRUCTIONS template
         # but still handle backlog integration via explicit commands
-        has_phased_workflow = "Phase" in content and "backlog task" in content
+        # Look for Markdown headings indicating a phase, e.g., "## Phase" or "### Phase"
+        phase_heading_pattern = re.compile(r"^#{2,3}\s*Phase.*$", re.MULTILINE)
+        backlog_task_pattern = re.compile(r"backlog task", re.IGNORECASE)
+        has_structured_phase = False
+        for match in phase_heading_pattern.finditer(content):
+            # Check if "backlog task" appears within 20 lines after the phase heading
+            start = match.end()
+            end = content.find('\n', start)
+            section = content[start : start + 1000]  # Arbitrary window after heading
+            if backlog_task_pattern.search(section):
+                has_structured_phase = True
+                break
+        has_phased_workflow = has_structured_phase
 
         assert marker_count >= 4 or has_phased_workflow, (
             "Expected {{BACKLOG_INSTRUCTIONS}} markers or phased workflow"
