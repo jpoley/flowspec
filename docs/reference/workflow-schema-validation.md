@@ -88,7 +88,7 @@ Workflow definitions must include:
 
 | Field           | Required | Type    | Description                                    |
 |-----------------|----------|---------|------------------------------------------------|
-| `command`       | Yes      | string  | Slash command (pattern: `/jpspec:[a-z]+`)      |
+| `command`       | Yes      | string  | Slash command (pattern: `/jpspec:[a-z][a-z0-9_]*`)      |
 | `agents`        | Yes      | array   | Agent names or agent objects                   |
 | `input_states`  | Yes      | array   | Valid states to start this workflow            |
 | `output_state`  | Yes      | string  | State after workflow completes                 |
