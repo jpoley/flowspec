@@ -676,8 +676,8 @@ app = typer.Typer(
 # Each transition can have a different validation mode
 WORKFLOW_TRANSITIONS = [
     {"name": "assess", "from": "To Do", "to": "Assessed", "default": "NONE"},
-    {"name": "research", "from": "Assessed", "to": "Researched", "default": "NONE"},
-    {"name": "specify", "from": "Researched", "to": "Specified", "default": "NONE"},
+    {"name": "specify", "from": "Assessed", "to": "Specified", "default": "NONE"},
+    {"name": "research", "from": "Specified", "to": "Researched", "default": "NONE"},
     {"name": "plan", "from": "Specified", "to": "Planned", "default": "NONE"},
     {"name": "implement", "from": "Planned", "to": "Implemented", "default": "NONE"},
     {"name": "validate", "from": "Implemented", "to": "Validated", "default": "NONE"},
