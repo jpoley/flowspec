@@ -453,7 +453,7 @@ The statusline script is installed at: `~/.claude/statusline-command.sh`
 
 To customize the statusline, edit `~/.claude/statusline-command.sh`:
 
-1. **Change phase mapping**: Modify the `get_workflow_phase()` function `case` statement
+1. **Change phase mapping**: Modify the `get_phase()` function `case` statement
 2. **Adjust timeouts**: Change timeout values in the main execution block
 3. **Add components**: Extend `PARTS` array with new data sources
 4. **Disable features**: Comment out specific component extraction calls
