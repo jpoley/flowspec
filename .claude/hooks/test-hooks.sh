@@ -210,6 +210,27 @@ run_test \
     "allow" \
     "Should allow non-git commands"
 
+# Test 17: Pre-implementation quality gates
+echo ""
+echo "========================================"
+echo "Running Pre-Implementation Quality Gates Test Suite"
+echo "========================================"
+if [[ -f "$SCRIPT_DIR/test-pre-implement.sh" ]]; then
+    bash "$SCRIPT_DIR/test-pre-implement.sh"
+    gate_exit=$?
+    if [[ $gate_exit -eq 0 ]]; then
+        echo -e "${GREEN}Pre-implementation quality gates tests: PASSED${NC}"
+        TESTS_RUN=$((TESTS_RUN + 14))  # test-pre-implement.sh runs 14 tests
+        TESTS_PASSED=$((TESTS_PASSED + 14))
+    else
+        echo -e "${RED}Pre-implementation quality gates tests: FAILED${NC}"
+        TESTS_RUN=$((TESTS_RUN + 14))
+        TESTS_FAILED=$((TESTS_FAILED + 14))
+    fi
+else
+    echo -e "${YELLOW}Skipping pre-implementation quality gates tests (test-pre-implement.sh not found)${NC}"
+fi
+
 # Summary
 echo ""
 echo "========================================"
