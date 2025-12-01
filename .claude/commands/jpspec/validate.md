@@ -17,7 +17,9 @@ You **MUST** consider the user input before proceeding (if not empty).
 Before proceeding, validate that a task is in an allowed state for this workflow:
 
 ```bash
-# Discover current task (should be in "In Progress" state)
+# Discover current task (should be marked as "In Progress" in backlog)
+# Note: "In Progress" is a backlog status, not the workflow state
+# The task must also be in the "In Implementation" workflow state
 CURRENT_TASK=$(backlog task list -s "In Progress" --plain | head -1 | awk '{print $2}')
 
 if [ -z "$CURRENT_TASK" ]; then
