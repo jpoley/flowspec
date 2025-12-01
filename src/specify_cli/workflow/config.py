@@ -233,7 +233,17 @@ class WorkflowConfig:
         workflow_def = self._data.get("workflows", {}).get(workflow, {})
         agents = workflow_def.get("agents", [])
         # Handle both simple list of strings and list of agent objects
-        return [agent["name"] if isinstance(agent, dict) else agent for agent in agents]
+        result = []
+        for agent in agents:
+            if isinstance(agent, dict):
+                if "name" not in agent:
+                    raise WorkflowConfigError(
+                        f"Agent object in workflow '{workflow}' missing 'name' field"
+                    )
+                result.append(agent["name"])
+            else:
+                result.append(agent)
+        return result
 
     def get_next_state(self, current_state: str, workflow: str) -> str:
         """Get the output state for a workflow.
