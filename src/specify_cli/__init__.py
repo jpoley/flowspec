@@ -693,15 +693,25 @@ def generate_jpspec_workflow_yml(project_path: Path, validation_mode: str) -> No
         )
     yaml_mode = mode_map[validation_mode.lower()]
 
-    # Define all workflow transitions
+    # Define all workflow transitions (forward, terminal, backward, plan variants)
     transitions = [
+        # Forward path transitions
         {"name": "assess", "from": "To Do", "to": "Assessed"},
         {"name": "research", "from": "Assessed", "to": "Researched"},
         {"name": "specify", "from": "Researched", "to": "Specified"},
-        {"name": "plan", "from": "Specified", "to": "Planned"},
+        {"name": "plan_from_specified", "from": "Specified", "to": "Planned"},
+        {"name": "plan_from_researched", "from": "Researched", "to": "Planned"},
         {"name": "implement", "from": "Planned", "to": "Implemented"},
         {"name": "validate", "from": "Implemented", "to": "Validated"},
         {"name": "operate", "from": "Validated", "to": "Operated"},
+        # Terminal transitions
+        {"name": "complete_from_deployed", "from": "Operated", "to": "Completed"},
+        {"name": "complete_from_validated", "from": "Validated", "to": "Completed"},
+        {"name": "complete_from_implementation", "from": "Implemented", "to": "Completed"},
+        # Backward transitions
+        {"name": "rework_to_planned", "from": "Validated", "to": "Planned"},
+        {"name": "rework_to_implementation", "from": "Validated", "to": "Implemented"},
+        {"name": "rollback", "from": "Operated", "to": "Implemented"},
     ]
 
     # Build YAML content
