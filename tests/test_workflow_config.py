@@ -419,10 +419,9 @@ class TestWorkflowConfigQueries:
         assert "outer_loop" in loops
         assert isinstance(loops["inner_loop"], list)
         assert isinstance(loops["outer_loop"], list)
-        assert "product-requirements-manager" in loops["inner_loop"]
+        assert "frontend-engineer" in loops["inner_loop"]
+        assert "product-requirements-manager" in loops["outer_loop"]
         assert "sre-agent" in loops["outer_loop"]
-
-
 class TestWorkflowConfigProperties:
     """Tests for config property accessors."""
 
