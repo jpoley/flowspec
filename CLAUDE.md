@@ -455,7 +455,7 @@ To customize the statusline, edit `~/.claude/statusline-command.sh`:
 
 1. **Change phase mapping**: Modify the `get_workflow_phase()` function `case` statement
 2. **Adjust timeouts**: Change timeout values in the main execution block
-3. **Add components**: Extend `STATUS_PARTS` array with new data sources
+3. **Add components**: Extend `PARTS` array with new data sources
 4. **Disable features**: Comment out specific component extraction calls
 
 ### Disable Statusline
