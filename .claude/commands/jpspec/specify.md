@@ -49,6 +49,12 @@ TASK_STATE=$(backlog task view "$CURRENT_TASK" --plain | grep "^Status:" | awk '
 # This is a simplified check - production would use WorkflowConfig from Python
 ALLOWED_STATES="Assessed"
 
+if [[ "$TASK_STATE" != "$ALLOWED_STATES" ]]; then
+  echo "❌ Workflow state check failed"
+  echo "Current state: $TASK_STATE"
+  echo "Required state: $ALLOWED_STATES"
+  exit 1
+fi
 echo "✓ Workflow validation passed"
 echo "  Current task: $CURRENT_TASK"
 echo "  Workflow: specify (Assessed → Specified)"
