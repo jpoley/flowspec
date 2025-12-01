@@ -34,6 +34,10 @@ specify init my-project --ai claude
 cd my-project
 backlog init "$(basename "$PWD")"
 
+# Establish the principles
+
+/speckit.constitution Create principles focused on code quality, testing standards, user experience consistency, and performance requirements.  Only Humans merge PRs.
+
 # Assess complexity first (optional but recommended)
 /jpspec:assess Build a REST API with authentication
 

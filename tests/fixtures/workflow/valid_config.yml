@@ -58,10 +58,10 @@ transitions:
 
 agent_loops:
   inner_loop:
-    - "product-requirements-manager"
-    - "software-architect"
-    - "platform-engineer"
     - "frontend-engineer"
     - "backend-engineer"
   outer_loop:
+    - "product-requirements-manager"
+    - "software-architect"
+    - "platform-engineer"
     - "sre-agent"
