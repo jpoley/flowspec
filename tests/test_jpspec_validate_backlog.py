@@ -68,7 +68,17 @@ class TestTaskDiscoveryAC1:
         content = validate_md_path.read_text()
         # Accept old pattern or new phased workflow pattern
         has_done_discovery = 'backlog task list -s "Done" --plain' in content
-        has_done_marking = "-s Done" in content or '-s "Done"' in content
+        # More specific: check for actual command context
+        has_done_marking = any(
+            (
+                ("backlog task" in line)
+                and (
+                    "-s Done" in line
+                    or '-s "Done"' in line
+                )
+            )
+            for line in content.splitlines()
+        )
         assert has_done_discovery or has_done_marking, (
             "validate.md must reference Done status"
         )
