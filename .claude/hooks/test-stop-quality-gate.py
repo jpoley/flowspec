@@ -62,7 +62,6 @@ def test_pr_mention_no_tasks():
     response = run_hook("Now let's create a pull request for this feature")
 
     # Check if task-189 is In Progress
-    import subprocess
 
     result = subprocess.run(
         ["backlog", "task", "list", "--plain", "-s", "In Progress"],
