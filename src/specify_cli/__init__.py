@@ -2198,7 +2198,7 @@ def init(
         )
 
     # Generate workflow configuration file
-    # If --no-validation-prompts is set, use NONE mode regardless of --validation-mode
+    # Use NONE mode if --no-validation-prompts is set, otherwise use the --validation-mode value
     effective_mode = "none" if no_validation_prompts else validation_mode
     generate_jpspec_workflow_yml(project_path, effective_mode)
     console.print()
