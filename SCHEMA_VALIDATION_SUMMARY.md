@@ -119,7 +119,7 @@ Comprehensive guide covering:
 
 | Property       | Required | Type   | Validated Constraints                        |
 |----------------|----------|--------|----------------------------------------------|
-| `version`      | ✅       | string | Pattern: `\d+.\d+` (e.g., "1.0", "1.1")      |
+| `version`      | ✅       | string | Pattern: `\d+\.\d+` (e.g., "1.0", "1.1")     |
 | `states`       | ✅       | array  | Min 1, unique, strings or objects            |
 | `workflows`    | ✅       | object | Min 1 property, lowercase names              |
 | `transitions`  | ✅       | array  | Min 1, from/to/via required                  |
