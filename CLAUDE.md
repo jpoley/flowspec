@@ -75,13 +75,26 @@ workflows:
 ### Validate Workflow Configuration
 
 ```bash
+# Validate default jpspec_workflow.yml
 specify workflow validate
 
+# Validate custom workflow file
+specify workflow validate --file custom_workflow.yml
+
+# Show detailed output with warnings
+specify workflow validate --verbose
+
+# JSON output for CI/automation
+specify workflow validate --json
+
 # Example output:
-# ✓ Configuration structure valid (schema v1.1)
-# ✓ No cycles detected in state transitions
-# ✓ All states reachable from "To Do"
-# ✓ Terminal states configured
+# ✓ Schema validation passed
+# ✓ Validation passed: workflow configuration is valid
+
+# Exit codes:
+# 0 = validation passed
+# 1 = validation errors (schema or semantic)
+# 2 = file errors (not found, invalid YAML)
 ```
 
 ### Quick Reference: Commands and Workflow Phases
@@ -234,7 +247,31 @@ JP Spec Kit uses Claude Code hooks to provide automated safety checks and code q
 
 ### Implemented Hooks
 
-#### 1. Sensitive File Protection (PreToolUse)
+#### 1. SessionStart Hook (SessionStart)
+
+**Hook**: `.claude/hooks/session-start.sh`
+
+Runs when starting or resuming a Claude Code session to verify environment and display context:
+- Checks for `uv` (Python package manager)
+- Checks for `backlog` CLI (task management)
+- Displays versions of installed tools
+- Shows active "In Progress" backlog tasks
+- Provides warnings for missing dependencies
+
+**Output Example**:
+```json
+{
+  "decision": "allow",
+  "reason": "Session started - environment verified",
+  "additionalContext": "Session Context:\n  ✓ uv: uv 0.9.11\n  ✓ backlog: 1.22.0\n  ✓ Active tasks: 2 in progress"
+}
+```
+
+**Behavior**: Always returns `"decision": "allow"` with contextual information. Never blocks session startup (fail-open principle).
+
+**Performance**: Completes in <5 seconds typical, <60 seconds maximum (timeout configured).
+
+#### 2. Sensitive File Protection (PreToolUse)
 
 **Hook**: `.claude/hooks/pre-tool-use-sensitive-files.py`
 
@@ -248,7 +285,7 @@ Asks for confirmation before modifying sensitive files:
 
 **Behavior**: Returns `"decision": "ask"` for sensitive files, prompting Claude to get user confirmation.
 
-#### 2. Git Command Safety Validator (PreToolUse)
+#### 3. Git Command Safety Validator (PreToolUse)
 
 **Hook**: `.claude/hooks/pre-tool-use-git-safety.py`
 
@@ -263,7 +300,7 @@ Warns on dangerous Git commands:
 
 **Behavior**: Returns `"decision": "ask"` for dangerous commands, or `"decision": "deny"` for unsupported interactive commands.
 
-#### 3. Auto-format Python Files (PostToolUse)
+#### 4. Auto-format Python Files (PostToolUse)
 
 **Hook**: `.claude/hooks/post-tool-use-format-python.sh`
 
@@ -271,7 +308,7 @@ Automatically runs `ruff format` on Python files after Edit/Write operations.
 
 **Behavior**: Silently formats Python files and reports if formatting was applied.
 
-#### 4. Auto-lint Python Files (PostToolUse)
+#### 5. Auto-lint Python Files (PostToolUse)
 
 **Hook**: `.claude/hooks/post-tool-use-lint-python.sh`
 
@@ -279,7 +316,46 @@ Automatically runs `ruff check --fix` on Python files after Edit/Write operation
 
 **Behavior**: Attempts to auto-fix linting issues and reports results. Manual fixes may be needed for complex issues.
 
-#### 5. Backlog Task Quality Gate (Stop)
+#### 5. Pre-Implementation Quality Gates
+
+**Hook**: `.claude/hooks/pre-implement.sh`
+
+Runs automated quality gates before `/jpspec:implement` can proceed. Ensures specifications are complete and high-quality before implementation begins.
+
+**Gates Enforced**:
+1. **Required Files**: Validates `spec.md`, `plan.md`, and `tasks.md` exist
+2. **Spec Completeness**: Detects unresolved markers (`NEEDS CLARIFICATION`, `[TBD]`, `[TODO]`, `???`, `PLACEHOLDER`, `<insert>`)
+3. **Constitutional Compliance**: Verifies DCO sign-off, testing requirements, and acceptance criteria are mentioned
+4. **Quality Threshold**: Requires spec quality score >= 70/100 using `specify quality` scorer
+
+**Override**: Use `--skip-quality-gates` flag to bypass (NOT RECOMMENDED).
+
+**Testing**: Run `.claude/hooks/test-pre-implement.sh` (14 comprehensive tests).
+
+**Documentation**: See `docs/adr/adr-pre-implementation-quality-gates.md` for full ADR.
+
+**Example Output**:
+```bash
+# Pass state
+✅ All quality gates passed. Proceeding with implementation.
+
+# Fail state with remediation
+❌ Quality gates failed:
+
+✗ Unresolved markers found in spec.md:
+  - Line 45: NEEDS CLARIFICATION: authentication method
+  → Resolve all markers before implementation
+
+✗ Quality score: 58/100 (threshold: 70)
+  Recommendations:
+  - Add missing section: ## User Story
+  - Reduce vague terms (currently: 12 instances)
+  → Improve spec quality using /speckit:clarify
+
+Run with --skip-quality-gates to bypass (NOT RECOMMENDED).
+```
+
+#### 6. Backlog Task Quality Gate (Stop)
 
 **Hook**: `.claude/hooks/stop-quality-gate.py`
 
@@ -304,9 +380,15 @@ Run the test suite to verify all hooks are working correctly:
 # Run all hook tests
 .claude/hooks/test-hooks.sh
 
+# Test SessionStart hook
+.claude/hooks/test-session-start.sh
+
 # Test a specific hook manually
 echo '{"tool_name": "Write", "tool_input": {"file_path": ".env"}}' | \
   python .claude/hooks/pre-tool-use-sensitive-files.py
+
+# Test SessionStart hook manually
+.claude/hooks/session-start.sh | python3 -m json.tool
 ```
 
 ### Customizing Hook Behavior
