@@ -940,6 +940,13 @@ def download_template_from_github(
 
         For public repositories, if we get a 401 with authentication, retry without auth.
         This handles cases where an invalid/expired token is present.
+
+        Args:
+            url: The GitHub API URL to request.
+            retry_without_auth: If True (default), will retry the request without authentication if a 401 Unauthorized is received and a token was used. This is useful for public repositories where authentication is optional, and allows fallback if the token is invalid or expired. Set to False to disable this fallback, which may be necessary for private repositories or when authentication is strictly required.
+
+        Returns:
+            The HTTP response from the GitHub API.
         """
         response = client.get(
             url,
