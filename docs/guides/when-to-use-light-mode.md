@@ -2,7 +2,7 @@
 
 ## Overview
 
-Spec-Light Mode is a streamlined SDD workflow for medium-complexity features that reduces documentation overhead by 40-50% while maintaining constitutional compliance and quality gates.
+Spec-Light Mode is a streamlined SDD workflow for medium-complexity features that reduces documentation overhead and total workflow time by ~60%, while maintaining constitutional compliance and quality gates.
 
 ## When to Use Light Mode
 
