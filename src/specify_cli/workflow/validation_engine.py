@@ -183,7 +183,8 @@ class TransitionValidator:
         for artifact in artifacts:
             # Resolve the artifact path
             resolved_path = artifact.resolve_path(feature=feature)
-            full_path = base_path / resolved_path.lstrip("./")
+            path_without_prefix = resolved_path[2:] if resolved_path.startswith("./") else resolved_path
+            full_path = base_path / path_without_prefix
 
             # Check if artifact exists
             if artifact.multiple:
