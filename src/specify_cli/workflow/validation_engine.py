@@ -494,12 +494,13 @@ class TransitionValidator:
                 mode=ValidationMode.PULL_REQUEST,
             )
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse gh CLI output: {e}")
+            output_snippet = result.stdout[:200] + ("..." if len(result.stdout) > 200 else "")
+            logger.error(f"Failed to parse gh CLI output: {e}\nOutput received: {output_snippet}")
             return TransitionValidationResult(
                 passed=False,
-                message=f"Failed to parse gh CLI output: {e}",
+                message=f"Failed to parse gh CLI output: {e}\nOutput received: {output_snippet}",
                 mode=ValidationMode.PULL_REQUEST,
-                details={"error": str(e)},
+                details={"error": str(e), "output_snippet": output_snippet},
             )
         except Exception as e:
             logger.error(f"Unexpected error during PR validation: {e}")
