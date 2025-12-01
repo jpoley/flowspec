@@ -44,4 +44,4 @@ See `templates/qa-report-template.md` for the standard QA report format.
 ## Related Documentation
 
 - [Workflow Artifact Flow](../../reference/workflow-artifact-flow.md)
-- [QA Report Template](../../templates/qa-report-template.md)
+- [QA Report Template](../../qa-report-template.md)
