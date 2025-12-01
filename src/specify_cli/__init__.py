@@ -2250,13 +2250,8 @@ def init(
     else:
         # Build per-transition mode dict from CLI flags
         transition_modes = {
-            "assess": validation_assess,
-            "research": validation_research,
-            "specify": validation_specify,
-            "plan": validation_plan,
-            "implement": validation_implement,
-            "validate": validation_validate,
-            "operate": validation_operate,
+            t["name"]: locals()[f"validation_{t['name']}"]
+            for t in WORKFLOW_TRANSITIONS
         }
 
     generate_jpspec_workflow_yml(project_path, transition_modes)
