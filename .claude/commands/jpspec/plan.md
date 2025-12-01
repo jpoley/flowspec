@@ -38,6 +38,26 @@ fi
 # Allowed input states: ["Specified", "Researched"]
 # Output state: "Planned"
 
+# Validate that the current task's state is allowed
+CURRENT_STATE=$(backlog task show "$CURRENT_TASK" --plain | grep "^State:" | awk '{print $2}')
+if [ "$CURRENT_STATE" != "Specified" ] && [ "$CURRENT_STATE" != "Researched" ]; then
+  echo "❌ Workflow state check failed"
+  echo ""
+  echo "Current task: $CURRENT_TASK"
+  echo "Current state: $CURRENT_STATE (not allowed for planning)"
+  echo ""
+  echo "This workflow (/jpspec:plan) requires task state: Specified OR Researched"
+  echo ""
+  echo "Valid workflows from your current state:"
+  if [ "$CURRENT_STATE" = "Planned" ]; then
+    echo "  • /jpspec:implement (Planned → In Implementation)"
+  fi
+  echo ""
+  echo "Action required:"
+  echo "  1. Use one of the valid workflows above, OR"
+  echo "  2. Find a task in \"Specified\" or \"Researched\" state and set it to \"In Progress\""
+  exit 1
+fi
 echo "✓ Workflow validation passed"
 echo "  Current task: $CURRENT_TASK"
 echo "  Workflow: plan (Specified|Researched → Planned)"
