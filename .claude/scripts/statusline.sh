@@ -44,7 +44,7 @@ get_task_phase() {
     labels=$(echo "$details" | grep "^Labels:" | cut -d: -f2-)
 
     for label in $labels; do
-        label=$(echo "$label" | xargs | tr -d ',"'"'")
+        label=$(echo "$label" | xargs | tr -d ',"'"'"')
         if [[ "$label" == workflow:* ]]; then
             local state="${label#workflow:}"
             case "$state" in
