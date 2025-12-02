@@ -4,7 +4,7 @@
 Accepted
 
 ## Context
-User feedback (Böckeler) noted that full SDD workflow creates "a LOT of markdown files" which can be overwhelming for medium-complexity features. We need a streamlined option that maintains quality while reducing overhead.
+2024-06-11
 
 ## Decision
 Implement Spec-Light Mode with:
