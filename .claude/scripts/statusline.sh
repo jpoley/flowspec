@@ -64,8 +64,8 @@ get_task_phase() {
 
     # Count acceptance criteria (use wc -l for reliable counting)
     local checked total
-    checked=$(echo "$details" | grep -E '^\- \[x\]' | wc -l | tr -d ' ')
-    total=$(echo "$details" | grep -E '^\- \[[ x]\]' | wc -l | tr -d ' ')
+    checked=$(echo "$details" | grep -E '^\- \[x\]' | wc -l)
+    total=$(echo "$details" | grep -E '^\- \[[ x]\]' | wc -l)
 
     # Output phase and task info (pipe-delimited)
     local task_info="$task_id"
