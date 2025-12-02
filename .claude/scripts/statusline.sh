@@ -41,7 +41,7 @@ get_task_phase() {
     # Extract phase from workflow label
     local phase=""
     local labels
-    labels=$(echo "$details" | grep "^Labels:" | cut -d: -f2-) || true
+    labels=$(echo "$details" | grep "^Labels:" | cut -d: -f2-)
 
     for label in $labels; do
         label=$(echo "$label" | xargs | tr -d ',"'"'")
