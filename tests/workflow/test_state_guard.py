@@ -8,7 +8,7 @@ Tests cover all 8 acceptance criteria for task-096:
 - AC #5: Workflow suggestions for current state
 - AC #6: Support for multiple task systems
 - AC #7: No breaking changes (backward compatibility)
-- AC #8: All 6 commands implement checks
+- AC #8: All 7 commands implement checks
 """
 
 import tempfile
