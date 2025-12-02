@@ -253,26 +253,24 @@ test_server() {
     done < <(echo "$args" | jq -r '.[]')
 
     # Start server in background
-    (
-        timeout "$TIMEOUT" "$command" "${cmd_args[@]}" >/dev/null 2>&1 &
-        local server_pid=$!
-        SPAWNED_PIDS+=("$server_pid")
+    timeout "$TIMEOUT" "$command" "${cmd_args[@]}" >/dev/null 2>&1 &
+    local server_pid=$!
+    SPAWNED_PIDS+=("$server_pid")
 
-        # Wait briefly for server to start
-        sleep 2
+    # Wait briefly for server to start
+    sleep 2
 
-        # Check if process is still running
-        if kill -0 "$server_pid" 2>/dev/null; then
-            # Server started successfully
-            echo "success" > "$tmp_file"
-            kill -TERM "$server_pid" 2>/dev/null || true
-        else
-            # Server crashed immediately
-            echo "failed" > "$tmp_file"
-        fi
-    ) &
+    # Check if process is still running
+    if kill -0 "$server_pid" 2>/dev/null; then
+        # Server started successfully
+        echo "success" > "$tmp_file"
+        kill -TERM "$server_pid" 2>/dev/null || true
+    else
+        # Server crashed immediately
+        echo "failed" > "$tmp_file"
+    fi
 
-    local test_pid=$!
+    local test_pid=$server_pid
 
     # Wait for test to complete or timeout
     if wait "$test_pid" 2>/dev/null; then
