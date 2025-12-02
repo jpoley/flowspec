@@ -151,18 +151,18 @@ class TestConfigLoading:
         assert not guard.has_config
         assert guard.config == {}
 
-    def test_handles_empty_config_file(self):
+    def test_handles_empty_config_file(self, tmp_path):
         """Guard handles empty config file."""
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".yml", delete=False) as f:
-            f.write("")
-        guard = WorkflowStateGuard(Path(f.name))
+        config_file = tmp_path / "empty_config.yml"
+        config_file.write_text("")
+        guard = WorkflowStateGuard(config_file)
         assert not guard.has_config
 
-    def test_handles_invalid_yaml(self):
+    def test_handles_invalid_yaml(self, tmp_path):
         """Guard handles invalid YAML gracefully."""
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".yml", delete=False) as f:
-            f.write("invalid: yaml: [\n")
-        guard = WorkflowStateGuard(Path(f.name))
+        config_file = tmp_path / "invalid_config.yml"
+        config_file.write_text("invalid: yaml: [\n")
+        guard = WorkflowStateGuard(config_file)
         assert guard.config == {}
 
     def test_searches_multiple_default_paths(self, sample_config):
