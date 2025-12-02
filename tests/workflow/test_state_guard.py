@@ -97,15 +97,12 @@ def config_file(sample_config, tmp_path):
         yaml.dump(sample_config, f)
     return config_path
 @pytest.fixture
-def config_dir(sample_config):
+def config_dir(sample_config, tmp_path):
     """Create temp directory with config file for default path testing."""
-    import tempfile as tf
-
-    tmpdir = Path(tf.mkdtemp())
-    config_path = tmpdir / "jpspec_workflow.yml"
+    config_path = tmp_path / "jpspec_workflow.yml"
     with open(config_path, "w") as f:
         yaml.dump(sample_config, f)
-    return tmpdir
+    return tmp_path
 
 
 class MockTaskSystem:
