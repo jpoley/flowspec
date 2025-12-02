@@ -90,13 +90,12 @@ def sample_config():
 
 
 @pytest.fixture
-def config_file(sample_config):
+def config_file(sample_config, tmp_path):
     """Create temporary config file."""
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".yml", delete=False) as f:
+    config_path = tmp_path / "config.yml"
+    with open(config_path, "w") as f:
         yaml.dump(sample_config, f)
-        return Path(f.name)
-
-
+    return config_path
 @pytest.fixture
 def config_dir(sample_config):
     """Create temp directory with config file for default path testing."""
