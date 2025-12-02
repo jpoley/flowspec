@@ -177,7 +177,7 @@ class TestSharedBacklogInstructionsAC2:
         marker_count = content.count("{{BACKLOG_INSTRUCTIONS}}")
         # New phased workflows may not use the BACKLOG_INSTRUCTIONS template
         # but still handle backlog integration via explicit commands
-        has_phased_workflow = "Phase" in content and "backlog task" in content
+        has_phased_workflow = _has_phased_workflow(content)
 
         assert marker_count >= 4 or has_phased_workflow, (
             "Expected {{BACKLOG_INSTRUCTIONS}} markers or phased workflow"
