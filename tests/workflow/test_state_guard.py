@@ -474,7 +474,7 @@ class TestBackwardCompatibility:
 
 
 class TestAllCommandsCovered:
-    """Tests for AC #8: All 6 commands implement checks."""
+    """Tests for AC #8: All 7 commands implement checks."""
 
     JPSPEC_COMMANDS = [
         "assess",
