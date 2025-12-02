@@ -3,11 +3,17 @@
 ## Status
 Accepted
 
-## Context
+## Date
 2024-06-11
 
-## Decision
+## Author
 Jane Doe
+
+## Context
+User feedback (Böckeler) noted that full SDD workflow creates "a LOT of markdown files" which can be overwhelming for medium-complexity features. We need a streamlined option that maintains quality while reducing overhead.
+
+## Decision
+Implement Spec-Light Mode with:
 
 1. **`--light` flag on `specify init`**: Creates `.jpspec-light-mode` marker file
 2. **Simplified templates**: `spec-light.md` (combined stories + AC) and `plan-light.md` (high-level only)
