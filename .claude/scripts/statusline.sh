@@ -82,13 +82,13 @@ main() {
     git_info=$(get_git_info 2>/dev/null || echo "")
 
     # Get task/phase info (single call for both)
-    phase_task=$(get_task_phase 2>/dev/null || printf "|")
+    phase_task=$(get_task_phase 2>/dev/null || printf "none|none")
     phase="${phase_task%%|*}"
     task="${phase_task#*|}"
 
     # Build output
-    [[ -n "$phase" ]] && output="[$phase]"
-    [[ -n "$task" ]] && output="${output:+$output }$task"
+    [[ -n "$phase" && "$phase" != "none" ]] && output="[$phase]"
+    [[ -n "$task" && "$task" != "none" ]] && output="${output:+$output }$task"
     [[ -n "$git_info" ]] && output="${output:+$output | }$git_info"
 
     echo "$output"
