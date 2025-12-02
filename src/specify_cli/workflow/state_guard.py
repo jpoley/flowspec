@@ -22,7 +22,7 @@ class StateCheckResult(Enum):
     BLOCKED = "blocked"
     SKIPPED = "skipped"
     NO_CONFIG = "no_config"
-    NO_TASK = "no_task"
+    NO_TASK = "no_task"  # Reserved for future use: when task ID cannot be found or is not applicable
 
 
 @dataclass
