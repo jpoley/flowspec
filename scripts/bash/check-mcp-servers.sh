@@ -18,7 +18,8 @@
 #   0 - All servers healthy
 #   1 - Some servers failed health checks
 #   2 - Configuration error (missing/invalid .mcp.json)
-#   3 - Prerequisites missing (jq, npx, etc.)
+#   3 - Prerequisites missing (jq)
+#       (Note: Server-specific binaries are checked per-server and result in exit code 1 if missing.)
 
 set -euo pipefail
 
