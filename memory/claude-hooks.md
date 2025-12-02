@@ -112,6 +112,44 @@ Runs automated quality gates before `/jpspec:implement` can proceed. Ensures spe
 Run with --skip-quality-gates to bypass (NOT RECOMMENDED).
 ```
 
+### 7. Backlog Task Quality Gate (Stop)
+
+**Hook**: `.claude/hooks/stop-quality-gate.py`
+
+Enforces backlog task quality gate before session ends when PR creation is detected:
+- Detects PR creation intent in conversation context (e.g., "create PR", "gh pr create")
+- Checks for In Progress tasks via `backlog task list --plain -s "In Progress"`
+- Blocks session end if incomplete tasks exist with clear guidance
+- Provides list of incomplete tasks and remediation steps
+- Supports bypass with force/skip keywords
+
+**Behavior**: Returns `"continue": false` when PR detected with In Progress tasks. Returns `"continue": true` on errors (fail-open) or when quality gate passes.
+
+**Bypass**: Include "force stop" or "skip quality gate" in conversation to bypass.
+
+**Test**: Run `.claude/hooks/test-stop-quality-gate.py` to verify all edge cases.
+
+**Documentation**: See `docs/adr/ADR-003-stop-hook-quality-gate.md` for full ADR.
+
+**Example Output (blocking)**:
+```
+Quality Gate: Incomplete Backlog Tasks Detected
+
+You have 2 task(s) still marked as "In Progress":
+
+  - task-189: Create Stop Hook for Backlog Task Quality Gate
+  - task-190: Another task
+
+Before creating a PR, please:
+
+1. Complete all acceptance criteria for each task
+2. Mark tasks as Done using:
+   backlog task edit <task-id> -s Done --check-ac 1 --check-ac 2 ...
+
+To bypass this quality gate (not recommended):
+- Use force stop or explicitly request to skip the quality gate
+```
+
 ## Testing Hooks
 
 Run the test suite to verify all hooks are working correctly:
@@ -129,6 +167,9 @@ echo '{"tool_name": "Write", "tool_input": {"file_path": ".env"}}' | \
 
 # Test SessionStart hook manually
 .claude/hooks/session-start.sh | python3 -m json.tool
+
+# Test Stop quality gate hook
+python .claude/hooks/test-stop-quality-gate.py
 ```
 
 ## Customizing Hook Behavior

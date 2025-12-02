@@ -68,6 +68,13 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "python .claude/hooks/stop-quality-gate.py",
+        "timeout": 5
+      }
     ]
   }
 }
