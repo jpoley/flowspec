@@ -237,8 +237,12 @@ test_server() {
         return 1
     fi
 
-    # Create temporary file for server output
-    local tmp_file="/tmp/mcp-health-${server_name}-$$.tmp"
+    # Create secure temporary directory and sanitized temp file name
+    local safe_name
+    safe_name=$(printf '%s' "$server_name" | tr -c 'A-Za-z0-9._-' '_')
+    local tmpdir
+    tmpdir=$(mktemp -d -t mcp-health.XXXXXXXX) || exit 1
+    local tmp_file="${tmpdir}/${safe_name}.tmp"
 
     # Attempt to start server with timeout
     # We spawn the server and check if it starts successfully
