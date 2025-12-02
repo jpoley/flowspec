@@ -24,7 +24,7 @@ get_git_info() {
 
 # Get workflow phase from task labels
     local task_details="$1"
-    local state=""
+    local state
     for label in $labels; do
         label=$(echo "$label" | xargs | tr -d ',')
         if [[ "$label" == workflow:* ]]; then
