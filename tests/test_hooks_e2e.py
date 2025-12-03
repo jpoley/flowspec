@@ -130,20 +130,12 @@ hooks:
 
     # Create failing script
     quality_script = hooks_dir / "quality-check.sh"
-    quality_script.write_text(
-        "#!/bin/bash\n"
-        "echo 'Quality check failed' >&2\n"
-        "exit 1\n"
-    )
+    quality_script.write_text("#!/bin/bash\necho 'Quality check failed' >&2\nexit 1\n")
     quality_script.chmod(0o755)
 
     # Create success script (should not run due to fail_mode: stop)
     notify_script = hooks_dir / "notify.sh"
-    notify_script.write_text(
-        "#!/bin/bash\n"
-        "echo 'Notification sent'\n"
-        "exit 0\n"
-    )
+    notify_script.write_text("#!/bin/bash\necho 'Notification sent'\nexit 0\n")
     notify_script.chmod(0o755)
 
     return config_file
@@ -210,19 +202,11 @@ hooks:
 
     # Create scripts
     task_script = hooks_dir / "task-handler.sh"
-    task_script.write_text(
-        "#!/bin/bash\n"
-        "echo 'Task event handled'\n"
-        "exit 0\n"
-    )
+    task_script.write_text("#!/bin/bash\necho 'Task event handled'\nexit 0\n")
     task_script.chmod(0o755)
 
     spec_script = hooks_dir / "spec-handler.sh"
-    spec_script.write_text(
-        "#!/bin/bash\n"
-        "echo 'Spec event handled'\n"
-        "exit 0\n"
-    )
+    spec_script.write_text("#!/bin/bash\necho 'Spec event handled'\nexit 0\n")
     spec_script.chmod(0o755)
 
     return config_file
@@ -478,7 +462,7 @@ class TestTimeoutEnforcement:
         """Test that hooks exceeding timeout are killed."""
         start_time = time.time()
 
-        result = runner.invoke(
+        runner.invoke(
             hooks_app,
             [
                 "emit",

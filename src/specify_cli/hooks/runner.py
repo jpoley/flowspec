@@ -216,7 +216,9 @@ class HookRunner:
                 warnings = self.security_validator.validate_script_content(script_path)
                 if warnings:
                     for warning in warnings:
-                        logger.warning(f"Security warning for hook '{hook.name}': {warning}")
+                        logger.warning(
+                            f"Security warning for hook '{hook.name}': {warning}"
+                        )
 
                 command = [str(script_path)]
             elif method_type == "command":

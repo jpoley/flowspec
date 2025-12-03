@@ -1,9 +1,9 @@
 ---
-id: task-230
+id: task-241
 title: Create tiered constitution templates (light/medium/heavy)
 status: To Do
 assignee: []
-created_date: '2025-12-03 02:30'
+created_date: '2025-12-03 02:36'
 labels:
   - cli
   - templates

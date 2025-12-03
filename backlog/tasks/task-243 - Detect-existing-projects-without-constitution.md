@@ -1,14 +1,15 @@
 ---
-id: task-232
+id: task-243
 title: Detect existing projects without constitution
 status: To Do
 assignee: []
-created_date: '2025-12-03 02:30'
+created_date: '2025-12-03 02:38'
 labels:
   - cli
   - detection
   - constitution
-dependencies: []
+dependencies:
+  - task-242
 priority: high
 ---
 

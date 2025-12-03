@@ -1,14 +1,15 @@
 ---
-id: task-235
+id: task-246
 title: Integration tests for constitution template system
 status: To Do
 assignee: []
-created_date: '2025-12-03 02:31'
+created_date: '2025-12-03 02:45'
 labels:
   - testing
   - integration-tests
   - constitution
-dependencies: []
+dependencies:
+  - task-245
 priority: medium
 ---
 

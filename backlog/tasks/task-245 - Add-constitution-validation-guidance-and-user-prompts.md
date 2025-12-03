@@ -1,15 +1,16 @@
 ---
-id: task-234
+id: task-245
 title: Add constitution validation guidance and user prompts
 status: To Do
 assignee: []
-created_date: '2025-12-03 02:31'
+created_date: '2025-12-03 02:43'
 labels:
   - cli
   - validation
   - constitution
   - docs
-dependencies: []
+dependencies:
+  - task-244
 priority: medium
 ---
 
@@ -23,7 +24,7 @@ Ensure users are clearly informed when constitution needs validation and provide
 <!-- AC:BEGIN -->
 - [ ] #1 Add NEEDS_VALIDATION marker format documentation
 - [ ] #2 Create validation checklist output after constitution generation
-- [ ] #3 Add 'specify constitution validate' command to check for unvalidated sections
+- [ ] #3 Add specify constitution validate command to check for unvalidated sections
 - [ ] #4 Warn user if they try to use /jpspec commands with unvalidated constitution
 - [ ] #5 Document constitution validation process in docs/guides/
 <!-- AC:END -->

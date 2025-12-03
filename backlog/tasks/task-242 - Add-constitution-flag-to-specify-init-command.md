@@ -1,14 +1,15 @@
 ---
-id: task-231
+id: task-242
 title: Add --constitution flag to specify init command
 status: To Do
 assignee: []
-created_date: '2025-12-03 02:30'
+created_date: '2025-12-03 02:36'
 labels:
   - cli
   - init
   - constitution
-dependencies: []
+dependencies:
+  - task-241
 priority: high
 ---
 

@@ -1,14 +1,16 @@
 ---
-id: task-233
+id: task-244
 title: 'Implement /speckit:constitution LLM customization command'
 status: To Do
 assignee: []
-created_date: '2025-12-03 02:31'
+created_date: '2025-12-03 02:40'
 labels:
   - slash-command
   - llm
   - constitution
-dependencies: []
+dependencies:
+  - task-241
+  - task-243
 priority: high
 ---
 
@@ -24,7 +26,7 @@ Create slash command that analyzes repo and customizes constitution template wit
 - [ ] #2 Command scans repo for: languages, frameworks, CI configs, test setup, linting tools
 - [ ] #3 Command detects existing patterns: security scanning, code review requirements, etc.
 - [ ] #4 Command customizes selected tier template with repo-specific findings
-- [ ] #5 Output includes <\!-- NEEDS_VALIDATION --> markers on auto-generated sections
-- [ ] #6 Command outputs clear message: 'Constitution generated - please review and validate'
+- [ ] #5 Output includes NEEDS_VALIDATION markers on auto-generated sections
+- [ ] #6 Command outputs clear message: Constitution generated - please review and validate
 - [ ] #7 Supports --tier {light|medium|heavy} flag to override detection
 <!-- AC:END -->
