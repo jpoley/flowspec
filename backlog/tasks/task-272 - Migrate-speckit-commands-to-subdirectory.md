@@ -1,9 +1,11 @@
 ---
 id: task-272
 title: Migrate speckit commands to subdirectory
-status: To Do
-assignee: []
+status: Done
+assignee:
+  - '@template-migrator'
 created_date: '2025-12-03 14:01'
+updated_date: '2025-12-03 14:14'
 labels:
   - architecture
   - migration
@@ -25,3 +27,9 @@ Move speckit template commands into templates/commands/speckit/ subdirectory for
 - [ ] #4 Update dogfood command to handle speckit subdirectory
 - [ ] #5 Test dogfood creates correct speckit symlinks
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Moved speckit commands into subdirectory
+<!-- SECTION:NOTES:END -->

@@ -1,9 +1,11 @@
 ---
 id: task-271
 title: Migrate jpspec commands to templates
-status: To Do
-assignee: []
+status: Done
+assignee:
+  - '@template-migrator'
 created_date: '2025-12-03 14:01'
+updated_date: '2025-12-03 14:14'
 labels:
   - architecture
   - migration
@@ -25,3 +27,9 @@ Move enhanced jpspec commands from .claude/commands/jpspec/ to templates/command
 - [ ] #4 Verify content is complete with backlog integration
 - [ ] #5 Update documentation referencing new locations
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Copied enhanced jpspec commands from .claude to templates
+<!-- SECTION:NOTES:END -->
