@@ -254,12 +254,15 @@ PROGRESS=$(echo "$HOOK_EVENT" | jq -r '.context.progress_percent // "n/a"')
 MESSAGE=$(echo "$HOOK_EVENT" | jq -r '.context.status_message // ""')
 TIMESTAMP=$(echo "$HOOK_EVENT" | jq -r '.timestamp')
 
-# Append to progress summary
+# Append to progress summary with file locking for concurrent safety
 SUMMARY_FILE=".specify/hooks/progress-summary.log"
-echo "[$TIMESTAMP] $MACHINE: $EVENT_TYPE | $AGENT_ID | $TASK_ID | ${PROGRESS}% | $MESSAGE" >> "$SUMMARY_FILE"
-
-# Keep only last 100 entries
-tail -100 "$SUMMARY_FILE" > "$SUMMARY_FILE.tmp" && mv "$SUMMARY_FILE.tmp" "$SUMMARY_FILE"
+LOCK_FILE="$SUMMARY_FILE.lock"
+(
+  flock -x 200
+  echo "[$TIMESTAMP] $MACHINE: $EVENT_TYPE | $AGENT_ID | $TASK_ID | ${PROGRESS}% | $MESSAGE" >> "$SUMMARY_FILE"
+  # Keep only last 100 entries
+  tail -100 "$SUMMARY_FILE" > "$SUMMARY_FILE.tmp" && mv "$SUMMARY_FILE.tmp" "$SUMMARY_FILE"
+) 200>"$LOCK_FILE"
 ```
 
 Emitting agent progress events:

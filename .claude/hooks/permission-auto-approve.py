@@ -32,7 +32,8 @@ SAFE_READ_DIRECTORIES = [
 
 # Bash command patterns that are safe to auto-approve
 SAFE_BASH_PATTERNS = [
-    r"^backlog\s+",  # Any backlog CLI command
+    r"^backlog\s+(task\s+)?(list|show|view|search|get)\b",  # Read-only backlog commands
+    r"^backlog\s+task\s+\d+\s+--plain\b",  # View task details (read-only)
     r"^specify\s+hooks\s+(list|audit|validate)",  # Read-only hooks commands
     r"^git\s+status",  # Git status is read-only
     r"^git\s+log\b",  # Git log is read-only
@@ -60,15 +61,34 @@ def pass_through(reason: str = "") -> None:
 
 
 def is_safe_read_path(file_path: str) -> bool:
-    """Check if the file path is in a safe directory for reading."""
+    """Check if the file path is in a safe directory for reading.
+
+    Includes path traversal protection to prevent access outside safe directories.
+    """
+    import os
+
     # Normalize path - remove leading ./ but keep leading . for hidden dirs
     normalized = file_path
     if normalized.startswith("./"):
         normalized = normalized[2:]
     normalized = normalized.lstrip("/")
 
+    # Resolve path traversal attempts
+    normalized = os.path.normpath(normalized)
+
+    # Block paths that escape upward
+    if normalized.startswith(".."):
+        return False
+
+    # Check if path is within safe directories
+    # Add trailing slash to both for proper prefix matching
+    normalized_with_slash = normalized if normalized.endswith("/") else normalized + "/"
+
     for safe_dir in SAFE_READ_DIRECTORIES:
-        if normalized.startswith(safe_dir):
+        # Check both exact match and prefix match (for files/dirs within safe_dir)
+        if normalized == safe_dir.rstrip("/") or normalized_with_slash.startswith(
+            safe_dir
+        ):
             return True
 
     return False

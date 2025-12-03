@@ -56,15 +56,15 @@ def extract_feature_id(text: str, is_command: bool = False) -> str | None:
     - Feature: feature-name (output only)
     """
     # Always check explicit flag first
-    flag_match = re.search(r"--spec-id\s+([a-zA-Z0-9_-]+)", text)
+    flag_match = re.search(r"--spec-id\s+(\S+)", text)
     if flag_match:
         return flag_match.group(1)
 
     # Only check output patterns if not parsing a command
     if not is_command:
         patterns = [
-            r"spec:\s*([a-zA-Z0-9_-]+)",
-            r"[Ff]eature:\s*([a-zA-Z0-9_-]+)",
+            r"spec:\s*(\S+)",
+            r"[Ff]eature:\s*(\S+)",
         ]
         for pattern in patterns:
             match = re.search(pattern, text)
@@ -83,14 +83,12 @@ def extract_task_id(text: str) -> str | None:
     """
     patterns = [
         r"--task-id\s+(task-\d+)",
-        r"\btask-(\d+)\b",
+        r"\b(task-\d+)\b",
     ]
     for pattern in patterns:
         match = re.search(pattern, text)
         if match:
-            if match.group(0).startswith("--task-id"):
-                return match.group(1)
-            return f"task-{match.group(1)}"
+            return match.group(1)
     return None
 
 
