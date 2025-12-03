@@ -180,7 +180,7 @@ class TestLightModeTemplates:
 
         # Light should be at most MAX_LIGHT_TEMPLATE_SIZE_RATIO of full
         assert light_lines < full_lines * MAX_LIGHT_TEMPLATE_SIZE_RATIO, (
-            f"Light template ({light_lines} lines) should be <{MAX_LIGHT_TEMPLATE_SIZE_RATIO*100:.0f}% "
+            f"Light template ({light_lines} lines) should be <{MAX_LIGHT_TEMPLATE_SIZE_RATIO * 100:.0f}% "
             f"of full template ({full_lines} lines)"
         )
 
@@ -206,7 +206,7 @@ class TestLightModeTemplates:
 
         # Light should be at most MAX_LIGHT_TEMPLATE_SIZE_RATIO of full
         assert light_lines < full_lines * MAX_LIGHT_TEMPLATE_SIZE_RATIO, (
-            f"Light template ({light_lines} lines) should be <{MAX_LIGHT_TEMPLATE_SIZE_RATIO*100:.0f}% "
+            f"Light template ({light_lines} lines) should be <{MAX_LIGHT_TEMPLATE_SIZE_RATIO * 100:.0f}% "
             f"of full template ({full_lines} lines)"
         )
 
@@ -241,11 +241,9 @@ class TestLightModeWorkflow:
 
         # Should have light mode detection with actual conditional check
         # Pattern matches: if [ -f ".jpspec-light-mode" ] or similar conditional
-        light_mode_conditional = re.search(
-            r'if\s+\[.*\.jpspec-light-mode.*\]', content
-        )
+        light_mode_conditional = re.search(r"if\s+\[.*\.jpspec-light-mode.*\]", content)
         assert light_mode_conditional is not None, (
-            "Missing conditional check for .jpspec-light-mode (expected: if [ -f \".jpspec-light-mode\" ])"
+            'Missing conditional check for .jpspec-light-mode (expected: if [ -f ".jpspec-light-mode" ])'
         )
         assert "LIGHT MODE" in content or "Light Mode" in content, (
             "Missing light mode text"
@@ -265,11 +263,9 @@ class TestLightModeWorkflow:
         assert content is not None, f"Could not read {plan_cmd}"
 
         # Should have light mode detection with actual conditional check
-        light_mode_conditional = re.search(
-            r'if\s+\[.*\.jpspec-light-mode.*\]', content
-        )
+        light_mode_conditional = re.search(r"if\s+\[.*\.jpspec-light-mode.*\]", content)
         assert light_mode_conditional is not None, (
-            "Missing conditional check for .jpspec-light-mode (expected: if [ -f \".jpspec-light-mode\" ])"
+            'Missing conditional check for .jpspec-light-mode (expected: if [ -f ".jpspec-light-mode" ])'
         )
         assert "LIGHT MODE" in content or "Light Mode" in content, (
             "Missing light mode text"
@@ -288,11 +284,9 @@ class TestLightModeWorkflow:
         assert content is not None, f"Could not read {specify_cmd}"
 
         # Should have light mode detection with actual conditional check
-        light_mode_conditional = re.search(
-            r'if\s+\[.*\.jpspec-light-mode.*\]', content
-        )
+        light_mode_conditional = re.search(r"if\s+\[.*\.jpspec-light-mode.*\]", content)
         assert light_mode_conditional is not None, (
-            "Missing conditional check for .jpspec-light-mode (expected: if [ -f \".jpspec-light-mode\" ])"
+            'Missing conditional check for .jpspec-light-mode (expected: if [ -f ".jpspec-light-mode" ])'
         )
         assert "LIGHT MODE" in content or "Light Mode" in content, (
             "Missing light mode text"
