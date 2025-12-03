@@ -5,6 +5,7 @@ status: To Do
 assignee:
   - '@pm-planner'
 created_date: '2025-12-03 00:42'
+updated_date: '2025-12-03 00:58'
 labels:
   - testing
   - hooks
@@ -27,3 +28,44 @@ Comprehensive E2E tests covering full workflow: event emission -> hook matching 
 - [ ] #5 E2E test: security controls prevent malicious scripts
 - [ ] #6 All tests pass on clean install with example hooks
 <!-- AC:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+1. Create test hook scripts
+   - run-tests.sh: Execute pytest with coverage
+   - update-docs.py: Append to CHANGELOG.md
+   - notify-slack.sh: Mock Slack webhook
+   - quality-gate.sh: Multi-step validation
+   - Store in tests/e2e/fixtures/hooks/
+
+2. Write command → event tests
+   - Test: /jpspec:implement → implement.completed event
+   - Test: /jpspec:specify → spec.created event
+   - Test: backlog task edit → task.status_changed event
+   - Verify event payload structure and fields
+
+3. Write event → hook dispatch tests
+   - Test: implement.completed → run-tests hook
+   - Test: spec.created → update-docs hook
+   - Test: Filtered events (priority, labels)
+   - Test: Wildcard matchers (task.*, *.completed)
+
+4. Write security boundary tests
+   - Test: Path traversal rejected at validation
+   - Test: Dangerous commands trigger warnings
+   - Test: Environment sanitization blocks LD_PRELOAD
+   - Test: Security events logged to audit.log
+
+5. Write timeout enforcement tests
+   - Test: Infinite loop killed after timeout
+   - Test: SIGTERM → SIGKILL escalation
+   - Test: Timeout status recorded in audit log
+   - Test: Exit code 124 for timeouts
+
+6. Add CI integration
+   - Run E2E tests in GitHub Actions
+   - Test on Ubuntu 22.04 and macOS 14
+   - Verify clean install with example hooks
+   - Publish test coverage report
+<!-- SECTION:PLAN:END -->
