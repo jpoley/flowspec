@@ -588,7 +588,7 @@ transitions:
 **Why it's critical**: Workflows must be a Directed Acyclic Graph (DAG). Cycles cause infinite loops and prevent workflow execution.
 
 **How to avoid**:
-- Draw your state diagram before implementing
+- Draw your state diagram on paper or using a diagramming tool before implementing
 - Use `via: "rework"` for legitimate backward transitions (e.g., returning to planning after failed validation)
 - Run `specify workflow validate` after every change
 
