@@ -885,7 +885,7 @@ class TestCLICallSequenceDocumentation:
 
         # ===== PLAN PHASE =====
         # Create architecture task (task is created for CLI call documentation)
-        backlog.task_create(
+        _ = backlog.task_create(
             title="Design feature X architecture",
             labels=["architecture"],
             acceptance_criteria=["ADR created"],
