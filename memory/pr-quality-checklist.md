@@ -82,11 +82,19 @@ echo "=== Tests ==="
 pytest tests/ -q
 
 echo "=== DCO Check ==="
-if git log -1 | grep -q "Signed-off-by:"; then
-    echo "✓ DCO signed"
-else
+# Check all commits not yet pushed to origin/main
+missing_dco=0
+git log origin/main..HEAD --format="%H %s" | while read hash subject; do
+    if ! git log -1 $hash | grep -q "Signed-off-by:"; then
+        echo "✗ Missing DCO in commit: $hash $subject"
+        missing_dco=1
+    fi
+done
+if [ "$missing_dco" -eq 1 ]; then
     echo "✗ MISSING DCO - use: git commit --amend -s"
     exit 1
+else
+    echo "✓ All commits DCO signed"
 fi
 
 echo "=== Variable Consistency ==="
