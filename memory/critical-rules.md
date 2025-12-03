@@ -77,15 +77,37 @@ git worktree add ../feature-auth feature-auth  # Correct
 git worktree add ../work1 feature-auth         # Wrong
 ```
 
-## Code Quality Standards (from PR #349 learnings)
+## Code Quality Standards
 
-### Configuration Fields
+### Imports (PR #342)
+All imports MUST be at module level, never inside functions/methods.
+
+### Configuration Fields (PR #349)
 Every configuration field MUST be used somewhere in the code. Before adding a config option, implement its functionality first or remove the field entirely.
 
-### Output Formats
+### Output Formats (PR #349)
 Output format methods MUST produce properly formatted content for their target format. No placeholder implementations that output raw/unconverted content.
 
-### Variable Naming
+### Variable Naming (PR #349)
 Never use variable names that shadow imported modules (`html`, `json`, `re`, `os`, `sys`). Use descriptive names like `html_output`, `json_data`.
 
-See: `memory/learnings/pr-349-audit-report.md` for detailed examples.
+### Pattern Matching in Security Code (PR #342)
+When writing heuristic classifiers:
+1. Consider what ELSE could match the pattern (adversarial examples)
+2. Add context requirements (same line, specific surrounding patterns)
+3. Use negative patterns to exclude known false matches
+4. NEVER return early on a single pattern - check for conflicting patterns
+
+### Exception Handling (PR #342)
+Exception handlers MUST:
+1. Log the actual exception with context using `logger.warning()` or `logger.error()`
+2. Include relevant data (truncated to reasonable size)
+3. Return error details in user-facing messages when appropriate
+
+### File Path Operations (PR #342)
+For file-system operations:
+1. Use absolute paths resolved from a known root
+2. Find the actual git root, don't assume it's the file's parent
+3. Use paths relative to git root for git commands
+
+See: `memory/learnings/` for detailed examples from each PR.
