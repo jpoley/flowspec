@@ -47,8 +47,8 @@ Before risky operations, note: "If this doesn't work, I can Esc Esc to undo."
 
 ```
 1. Checkpoint: Try experimental change
-2. If good → git commit
-3. If bad → Esc Esc to undo
+2. If good -> git commit
+3. If bad -> Esc Esc to undo
 ```
 
 ### 3. Checkpoint Before Large Changes
