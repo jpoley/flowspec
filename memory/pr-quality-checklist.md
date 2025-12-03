@@ -101,11 +101,12 @@ else
 fi
 
 echo "=== Variable Consistency ==="
-if grep -r "FEATURE_NAME" templates/commands/jpspec/ 2>/dev/null; then
-    echo "✗ Found FEATURE_NAME - should be FEATURE_ID"
-    exit 1
-fi
-echo "✓ Variable names consistent"
+echo "ℹ Customize this check for your project's naming conventions"
+# Example: Check for inconsistent feature variable names
+# if grep -r "FEATURE_NAME" templates/ 2>/dev/null; then
+#     echo "✗ Found FEATURE_NAME - should be FEATURE_ID"
+#     exit 1
+echo "✓ Variable names check (customize for your project)"
 
 echo ""
 echo "✓ All checks passed - ready for PR"
