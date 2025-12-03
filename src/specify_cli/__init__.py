@@ -2151,6 +2151,22 @@ def init(
                 tracker.add("light-mode", "Light mode enabled")
                 tracker.complete("light-mode", "marker created")
 
+            # Scaffold hooks directory structure
+            tracker.start("hooks")
+            try:
+                from .hooks.scaffold import scaffold_hooks
+
+                created_files = scaffold_hooks(project_path)
+                if created_files:
+                    tracker.complete(
+                        "hooks", f"created {len(created_files)} example hook files"
+                    )
+                else:
+                    tracker.complete("hooks", "hooks already configured")
+            except Exception as hook_error:
+                # Non-fatal error - continue with project initialization
+                tracker.error("hooks", f"scaffolding failed: {hook_error}")
+
             tracker.complete("final", "project ready")
         except Exception as e:
             tracker.error("final", str(e))
