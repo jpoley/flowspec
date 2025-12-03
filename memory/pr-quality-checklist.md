@@ -51,7 +51,7 @@ if not full_path.startswith(base_dir):
 
 ### 3. Regex Capturing Too Much
 **Wrong**: `r"Feature:\s*(\S+)"` - captures "feature." including period
-**Right**: `r"Feature:\s*([\w.-]+)"` - only word chars, dots, hyphens
+**Right**: `r"Feature:\s*([\w.-]+)"` - only word characters, dots, hyphens
 
 ### 4. Inconsistent Variable Names
 **Wrong**: Using `$FEATURE_NAME` in one file and `$FEATURE_ID` in others
