@@ -14,6 +14,35 @@ Spec-Driven Development **flips the script** on traditional software development
 - [Quick Start Guide](quickstart.md)
 - [Local Development](local-development.md)
 
+## Workflow Configuration
+
+Customize and extend the Spec-Driven Development workflow to match your organization's needs.
+
+### Understanding Workflows
+
+- [Workflow Architecture](guides/workflow-architecture.md) - Overall workflow system design and components
+- [JP Spec Workflow Guide](guides/jpspec-workflow-guide.md) - Comprehensive guide to the workflow system
+- [Workflow State Mapping](guides/workflow-state-mapping.md) - How workflow states map to backlog task states
+
+### Customization
+
+- [Workflow Customization Guide](guides/workflow-customization.md) - How to modify and extend workflows
+- [Workflow Troubleshooting](guides/workflow-troubleshooting.md) - Common issues and solutions
+
+### Examples
+
+- [Minimal Workflow](examples/workflows/minimal-workflow.md) - Simple two-phase workflow (specify + implement)
+- [Security Audit Workflow](examples/workflows/security-audit-workflow.md) - Extended workflow with security audit phase
+- [Parallel Workflows](examples/workflows/parallel-workflows.md) - Multiple feature tracks running in parallel
+- [Custom Agents Workflow](examples/workflows/custom-agents-workflow.md) - Adding organization-specific agents
+
+### Reference
+
+- [Workflow Schema](reference/workflow-schema.md) - Complete schema reference for jpspec_workflow.yml
+- [Workflow Schema Validation](reference/workflow-schema-validation.md) - Validation rules and constraints
+- [Workflow Artifact Flow](reference/workflow-artifact-flow.md) - How artifacts flow between workflow phases
+- [Workflow Step Principles](reference/workflow-step-principles.md) - Design principles for workflow steps
+
 ## Core Philosophy
 
 Spec-Driven Development is a structured process that emphasizes:
