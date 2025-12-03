@@ -267,7 +267,7 @@ MAX_PLACEHOLDER_COUNT = 20
 # Minimum placeholders expected in template for customization guidance
 MIN_TEMPLATE_PLACEHOLDERS = 10
 
-# Regex for two-digit naming convention (e.g., 01-name.md, 02-name.md)
+# Regex pattern to validate two-digit prefixed filenames (e.g., 01-name.md, 02-name.md)
 CASE_STUDY_NAMING_PATTERN = re.compile(r"^\d{2}-[a-z0-9-]+$")
 ```
 
