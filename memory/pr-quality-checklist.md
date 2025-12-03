@@ -35,7 +35,7 @@ Learnings from agent-hooks feature development (PRs #279, #300, #313, #333, #348
 
 ### 1. Overly Permissive Auto-Approval
 **Wrong**: `r"^backlog\s+"` - approves ALL backlog commands including destructive ones
-**Right**: `r"^backlog\s+(task\s+)?(list|show|view)\b"` - only read-only commands
+**Right**: `r"^backlog\s+(task\s+)?(list|show|view)\b"`  # Matches both "backlog list" and "backlog task list" (only read-only commands)
 
 ### 2. Path Traversal Vulnerabilities
 **Wrong**: Direct use of user-provided paths
