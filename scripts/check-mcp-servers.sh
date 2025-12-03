@@ -247,10 +247,12 @@ check_server() {
                 fi
                 ;;
             backlog)
-                # Check backlog is properly installed
-                if ! backlog --version &>/dev/null; then
-                    log_warning "$server_name: backlog command exists but may not be properly installed"
-                    ((WARNINGS++))
+                # Check backlog is properly installed (only in verbose mode for consistency)
+                if [[ "$VERBOSE" == "true" ]]; then
+                    if ! backlog --version &>/dev/null; then
+                        log_warning "$server_name: backlog command exists but may not be properly installed"
+                        ((WARNINGS++))
+                    fi
                 fi
                 ;;
         esac
