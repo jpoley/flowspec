@@ -1,5 +1,5 @@
 ---
-id: task-213
+id: task-229
 title: >-
   Create agent progress tracking via event emission (multi-machine
   observability)

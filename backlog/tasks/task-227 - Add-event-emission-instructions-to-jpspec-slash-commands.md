@@ -1,5 +1,5 @@
 ---
-id: task-211
+id: task-227
 title: Add event emission instructions to /jpspec slash commands
 status: To Do
 assignee: []

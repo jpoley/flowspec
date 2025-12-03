@@ -1,5 +1,5 @@
 ---
-id: task-212
+id: task-228
 title: Create Claude Code hook to auto-emit events on /jpspec completion
 status: To Do
 assignee: []
