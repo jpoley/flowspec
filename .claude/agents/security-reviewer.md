@@ -161,16 +161,20 @@ trivy image myapp:latest
 ### Input Validation
 ```python
 # Good: Validate and constrain input
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 class UserInput(BaseModel):
-    email: str = Field(..., pattern=r"^[\w\.-]+@[\w\.-]+\.\w+$")
+    email: str = Field(..., pattern=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
     age: int = Field(..., ge=0, le=150)
 
-    @validator('email')
-    def email_domain_allowed(cls, v):
+    @field_validator('email')
+    @classmethod
+    def email_domain_allowed(cls, v: str) -> str:
         allowed = ['company.com', 'partner.com']
-        domain = v.split('@')[1]
+        parts = v.split('@')
+        if len(parts) != 2:
+            raise ValueError('Invalid email format')
+        domain = parts[1]
         if domain not in allowed:
             raise ValueError('Email domain not allowed')
         return v
