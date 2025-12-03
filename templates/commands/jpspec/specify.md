@@ -19,6 +19,10 @@ Check if this project is in light mode:
 # Check for light mode marker
 if [ -f ".jpspec-light-mode" ]; then
   echo "LIGHT MODE DETECTED - Using streamlined specification"
+  # Use spec-light-template.md for output
+else
+  echo "FULL MODE - Using complete specification"
+  # Use spec-template.md for detailed PRD output
 fi
 ```
 

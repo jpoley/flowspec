@@ -4,10 +4,16 @@ These tests validate the light mode workflow feature which provides a streamline
 ~60% faster workflow by skipping the research phase for medium-complexity features.
 """
 
+import re
 from pathlib import Path
 from typing import Optional
 
 import pytest
+
+# Constants for template size validation
+# Light templates should be at most 50% the size of full templates
+# to ensure they provide meaningful time savings (~60% workflow reduction)
+MAX_LIGHT_TEMPLATE_SIZE_RATIO = 0.5
 
 
 def get_project_root() -> Path:
@@ -23,7 +29,8 @@ def safe_read_file(file_path: Path) -> Optional[str]:
         if file_path.exists() and file_path.is_file():
             return file_path.read_text(encoding="utf-8")
     except (OSError, IOError, PermissionError):
-        # Intentionally ignore file read errors; function returns None if file can't be read
+        # Intentionally ignore file read errors (missing files, permission denied, I/O failures)
+        # Returns None to signal caller that file content is unavailable
         pass
     return None
 
@@ -171,10 +178,10 @@ class TestLightModeTemplates:
         full_lines = len(full_content.splitlines())
         light_lines = len(light_content.splitlines())
 
-        # Light should be at most 50% of full
-        assert light_lines < full_lines * 0.5, (
-            f"Light template ({light_lines} lines) should be much shorter "
-            f"than full template ({full_lines} lines)"
+        # Light should be at most MAX_LIGHT_TEMPLATE_SIZE_RATIO of full
+        assert light_lines < full_lines * MAX_LIGHT_TEMPLATE_SIZE_RATIO, (
+            f"Light template ({light_lines} lines) should be <{MAX_LIGHT_TEMPLATE_SIZE_RATIO*100:.0f}% "
+            f"of full template ({full_lines} lines)"
         )
 
     def test_plan_light_template_is_shorter_than_full(
@@ -197,10 +204,10 @@ class TestLightModeTemplates:
         full_lines = len(full_content.splitlines())
         light_lines = len(light_content.splitlines())
 
-        # Light should be at most 50% of full
-        assert light_lines < full_lines * 0.5, (
-            f"Light template ({light_lines} lines) should be much shorter "
-            f"than full template ({full_lines} lines)"
+        # Light should be at most MAX_LIGHT_TEMPLATE_SIZE_RATIO of full
+        assert light_lines < full_lines * MAX_LIGHT_TEMPLATE_SIZE_RATIO, (
+            f"Light template ({light_lines} lines) should be <{MAX_LIGHT_TEMPLATE_SIZE_RATIO*100:.0f}% "
+            f"of full template ({full_lines} lines)"
         )
 
 
@@ -232,8 +239,14 @@ class TestLightModeWorkflow:
         content = safe_read_file(research_cmd)
         assert content is not None, f"Could not read {research_cmd}"
 
-        # Should have light mode detection
-        assert ".jpspec-light-mode" in content, "Missing light mode marker check"
+        # Should have light mode detection with actual conditional check
+        # Pattern matches: if [ -f ".jpspec-light-mode" ] or similar conditional
+        light_mode_conditional = re.search(
+            r'if\s+\[.*\.jpspec-light-mode.*\]', content
+        )
+        assert light_mode_conditional is not None, (
+            "Missing conditional check for .jpspec-light-mode (expected: if [ -f \".jpspec-light-mode\" ])"
+        )
         assert "LIGHT MODE" in content or "Light Mode" in content, (
             "Missing light mode text"
         )
@@ -251,8 +264,13 @@ class TestLightModeWorkflow:
         content = safe_read_file(plan_cmd)
         assert content is not None, f"Could not read {plan_cmd}"
 
-        # Should have light mode detection
-        assert ".jpspec-light-mode" in content, "Missing light mode marker check"
+        # Should have light mode detection with actual conditional check
+        light_mode_conditional = re.search(
+            r'if\s+\[.*\.jpspec-light-mode.*\]', content
+        )
+        assert light_mode_conditional is not None, (
+            "Missing conditional check for .jpspec-light-mode (expected: if [ -f \".jpspec-light-mode\" ])"
+        )
         assert "LIGHT MODE" in content or "Light Mode" in content, (
             "Missing light mode text"
         )
@@ -269,8 +287,13 @@ class TestLightModeWorkflow:
         content = safe_read_file(specify_cmd)
         assert content is not None, f"Could not read {specify_cmd}"
 
-        # Should have light mode detection
-        assert ".jpspec-light-mode" in content, "Missing light mode marker check"
+        # Should have light mode detection with actual conditional check
+        light_mode_conditional = re.search(
+            r'if\s+\[.*\.jpspec-light-mode.*\]', content
+        )
+        assert light_mode_conditional is not None, (
+            "Missing conditional check for .jpspec-light-mode (expected: if [ -f \".jpspec-light-mode\" ])"
+        )
         assert "LIGHT MODE" in content or "Light Mode" in content, (
             "Missing light mode text"
         )

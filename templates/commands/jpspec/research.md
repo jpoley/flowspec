@@ -18,6 +18,10 @@ You **MUST** consider the user input before proceeding (if not empty).
 # Check for light mode marker
 if [ -f ".jpspec-light-mode" ]; then
   echo "LIGHT MODE DETECTED"
+  # Stop here - research is skipped in light mode
+else
+  echo "FULL MODE - Proceeding with research"
+  # Continue with standard research workflow
 fi
 ```
 
