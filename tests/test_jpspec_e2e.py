@@ -5,7 +5,7 @@ workflow phases, ensuring backlog.md integration works correctly from
 specification through deployment.
 
 Test Scenarios:
-- Full workflow lifecycle (specify → plan → implement → validate → operate)
+- Full workflow lifecycle (assess → specify → plan → implement → validate → operate)
 - Task creation and tracking through phases
 - State transitions and validation
 - AC verification and completion tracking
@@ -253,6 +253,8 @@ class MockBacklogCLI:
         cmd = f"backlog task edit {task_id}"
         if status is not None:
             cmd += f" -s '{status}'"
+        if assignee is not None:
+            cmd += f" -a '{assignee}'"
         if check_ac is not None:
             for ac_num in check_ac:
                 cmd += f" --check-ac {ac_num}"
@@ -398,7 +400,7 @@ class E2ETaskSystem:
 class TestFullWorkflowLifecycle:
     """Test complete feature lifecycle through all phases.
 
-    AC #1: Full feature lifecycle (specify → plan → implement → validate → operate)
+    AC #1: Full feature lifecycle (assess → specify → plan → implement → validate → operate)
     """
 
     def test_full_lifecycle_state_transitions(
@@ -749,7 +751,6 @@ class TestValidationPhaseChecks:
         acceptance_criteria = task.get("acceptance_criteria", [])
         unchecked = [ac for ac in acceptance_criteria if not ac.get("checked", False)]
         assert len(unchecked) == 1, "Should have 1 unchecked AC"
-        assert len(unchecked) > 0, "Should have at least one unchecked AC"
         assert "Second criterion" in unchecked[0].get("text", "")
 
     def test_validation_passes_when_complete(self, e2e_temp_backlog: Path) -> None:
@@ -912,7 +913,7 @@ class TestCLICallSequenceDocumentation:
             # Plan phase
             "backlog task create 'Design feature X architecture'",
             # Implement phase - pick up task
-            f"backlog task edit {task1} -s 'In Progress'",
+            f"backlog task edit {task1} -s 'In Progress' -a '@backend-engineer'",
             # Implement phase - check ACs
             f"backlog task edit {task1} --check-ac 1 --check-ac 2",
             # Implement phase - mark done
@@ -923,7 +924,7 @@ class TestCLICallSequenceDocumentation:
         ]
 
         # Verify CLI calls match expected sequence
-        for i, expected in enumerate(expected_sequence):
+        for expected in expected_sequence:
             assert expected in backlog.cli_calls, (
                 f"Expected CLI call not found: {expected}"
             )
@@ -960,11 +961,13 @@ class TestE2ESummary:
             "AC #6": "TestWorkflowCompletion.test_all_tasks_done_after_workflow",
             "AC #7": "TestCICompatibility - Temporary directory usage",
             "AC #8": "TestCLICallSequenceDocumentation - CLI call sequence",
-            "AC #9": "This test - All tests passing",
+            "AC #9": "TestE2ESummary.test_ac_coverage - All tests passing",
         }
 
         for ac, coverage in ac_coverage.items():
-            assert coverage, f"{ac} must have test coverage"
+            assert "Test" in coverage or "test_" in coverage, (
+                f"{ac} coverage must reference a test class or function, got: '{coverage}'"
+            )
 
         print("\n=== E2E TEST AC COVERAGE ===")
         for ac, coverage in ac_coverage.items():
