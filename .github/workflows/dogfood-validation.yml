@@ -1,0 +1,176 @@
+name: Dogfood Validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'templates/commands/**'
+      - '.claude/commands/**'
+      - 'src/specify_cli/__init__.py'
+      - 'tests/test_dogfood_*.py'
+  pull_request:
+    paths:
+      - 'templates/commands/**'
+      - '.claude/commands/**'
+      - 'src/specify_cli/__init__.py'
+      - 'tests/test_dogfood_*.py'
+
+jobs:
+  validate-dogfood:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync
+
+      # VALIDATION STEP 1: Check for non-symlink files
+      - name: Check for non-symlink .md files in .claude/commands
+        run: |
+          echo "Checking for non-symlink .md files in .claude/commands..."
+
+          # Find all .md files that are NOT symlinks
+          NON_SYMLINKS=$(find .claude/commands -name "*.md" -type f 2>/dev/null || true)
+
+          if [ -n "$NON_SYMLINKS" ]; then
+            echo "❌ ERROR: Found non-symlink .md files in .claude/commands/"
+            echo ""
+            echo "Files that should be symlinks:"
+            echo "$NON_SYMLINKS"
+            echo ""
+            echo "All command files in .claude/commands/ must be symlinks to templates/"
+            echo ""
+            echo "To fix:"
+            echo "  1. Move enhanced content to templates/commands/"
+            echo "  2. Run: specify dogfood --force"
+            echo "  3. Or use: make dogfood-fix (if Makefile exists)"
+            exit 1
+          fi
+
+          echo "✓ All .md files in .claude/commands/ are symlinks"
+
+      # VALIDATION STEP 2: Verify all symlinks resolve
+      - name: Validate symlink targets exist
+        run: |
+          echo "Validating all symlinks resolve correctly..."
+
+          BROKEN_SYMLINKS=""
+          while IFS= read -r symlink; do
+            if [ ! -e "$symlink" ]; then
+              BROKEN_SYMLINKS="${BROKEN_SYMLINKS}${symlink}\n"
+            fi
+          done < <(find .claude/commands -type l 2>/dev/null || true)
+
+          if [ -n "$BROKEN_SYMLINKS" ]; then
+            echo "❌ ERROR: Found broken symlinks in .claude/commands/"
+            echo ""
+            echo "Broken symlinks:"
+            echo -e "$BROKEN_SYMLINKS"
+            echo ""
+            echo "To fix:"
+            echo "  1. Ensure corresponding files exist in templates/commands/"
+            echo "  2. Run: specify dogfood --force"
+            exit 1
+          fi
+
+          echo "✓ All symlinks resolve correctly"
+
+      # VALIDATION STEP 3: Verify speckit commands are symlinks
+      - name: Verify speckit commands structure
+        run: |
+          echo "Checking speckit commands..."
+
+          SPECKIT_DIR=".claude/commands/speckit"
+          if [ ! -d "$SPECKIT_DIR" ]; then
+            echo "❌ ERROR: $SPECKIT_DIR directory does not exist"
+            exit 1
+          fi
+
+          # Count symlinks in speckit
+          SYMLINK_COUNT=$(find "$SPECKIT_DIR" -type l -name "*.md" | wc -l)
+          TOTAL_MD=$(find "$SPECKIT_DIR" -name "*.md" | wc -l)
+
+          if [ "$SYMLINK_COUNT" -ne "$TOTAL_MD" ]; then
+            echo "❌ ERROR: Not all speckit commands are symlinks"
+            echo "Expected: $TOTAL_MD symlinks, Found: $SYMLINK_COUNT"
+            exit 1
+          fi
+
+          echo "✓ All speckit commands are symlinks ($SYMLINK_COUNT files)"
+
+      # VALIDATION STEP 4: Run dogfood command and verify
+      - name: Test dogfood command execution
+        run: |
+          echo "Testing specify dogfood command..."
+
+          # Run dogfood (should be idempotent)
+          uv run specify dogfood --force
+
+          # Verify expected structure exists
+          if [ ! -d ".claude/commands/speckit" ]; then
+            echo "❌ ERROR: dogfood did not create speckit directory"
+            exit 1
+          fi
+
+          if [ ! -d ".claude/commands/jpspec" ]; then
+            echo "❌ ERROR: dogfood did not create jpspec directory"
+            exit 1
+          fi
+
+          echo "✓ Dogfood command executed successfully"
+
+      # VALIDATION STEP 5: Run test suite
+      - name: Run dogfood validation test suite
+        run: |
+          echo "Running dogfood validation tests..."
+          uv run pytest tests/test_dogfood_validation.py -v --tb=short
+
+          echo "Running dogfood-init equivalence tests..."
+          uv run pytest tests/test_dogfood_init_equivalence.py -v --tb=short
+
+      # VALIDATION STEP 6: Report status
+      - name: Report validation status
+        if: success()
+        run: |
+          echo ""
+          echo "=========================================="
+          echo "✓ DOGFOOD VALIDATION PASSED"
+          echo "=========================================="
+          echo ""
+          echo "All checks passed:"
+          echo "  ✓ No non-symlink .md files in .claude/commands/"
+          echo "  ✓ All symlinks resolve correctly"
+          echo "  ✓ Speckit commands are symlinks"
+          echo "  ✓ Dogfood command executes successfully"
+          echo "  ✓ Test suite passes"
+          echo ""
+
+      # Failure reporting
+      - name: Report validation failure
+        if: failure()
+        run: |
+          echo ""
+          echo "=========================================="
+          echo "❌ DOGFOOD VALIDATION FAILED"
+          echo "=========================================="
+          echo ""
+          echo "See above for specific failure details."
+          echo ""
+          echo "Quick fixes:"
+          echo "  - Run 'specify dogfood --force' to recreate symlinks"
+          echo "  - Check that all templates exist in templates/commands/"
+          echo "  - Ensure no direct edits were made to .claude/commands/"
+          echo ""
+          exit 1

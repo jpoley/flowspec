@@ -1,0 +1,48 @@
+# Pre-commit hooks for JP Spec Kit
+# See https://pre-commit.com for more information
+
+repos:
+  # Dogfood consistency validation
+  - repo: local
+    hooks:
+      - id: dogfood-validation
+        name: Dogfood Consistency Check
+        entry: ./scripts/bash/pre-commit-dogfood.sh
+        language: system
+        pass_filenames: false
+        always_run: false
+        files: ^(\.claude/commands/.*\.md|templates/commands/.*\.md)$
+
+  # Python code quality
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.4
+    hooks:
+      # Run the linter
+      - id: ruff
+        args: [--fix]
+      # Run the formatter
+      - id: ruff-format
+
+  # Markdown linting
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^(backlog/.*\.md)$
+      - id: end-of-file-fixer
+        exclude: ^(backlog/.*\.md)$
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: check-merge-conflict
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+
+  # DCO sign-off check
+  - repo: local
+    hooks:
+      - id: dco-check
+        name: DCO Sign-off Check
+        entry: bash -c 'if ! git log -1 --format=%B | grep -q "^Signed-off-by:"; then echo "Error: Commit must include DCO sign-off. Use git commit -s"; exit 1; fi'
+        language: system
+        stages: [commit-msg]
