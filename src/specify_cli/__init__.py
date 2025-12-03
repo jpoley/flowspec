@@ -3144,8 +3144,8 @@ def check():
         )
 
 
-@app.command()
-def dogfood(
+@app.command(name="dev-setup")
+def dev_setup(
     force: bool = typer.Option(
         False,
         "--force",
@@ -3153,23 +3153,14 @@ def dogfood(
     ),
 ):
     """
-    Set up jp-spec-kit source repository for dogfooding.
+    Set up jp-spec-kit source repository for development.
 
-    This command prepares the jp-spec-kit source repository to use its own
-    /speckit.* and /jpspec.* commands during development. It creates symlinks
-    for multiple AI agents:
-
-    - Claude Code: .claude/commands/speckit/ (symlinks to templates/commands/)
-    - VS Code Copilot: .github/prompts/ (symlinks as speckit.*.prompt.md and jpspec.*.prompt.md)
-
-    It also creates .vscode/settings.json with chat.promptFiles enabled for Copilot.
-
-    This is only useful when developing jp-spec-kit itself. For normal
-    projects, use 'specify init' instead.
+    Creates symlinks from .claude/commands/ to templates/commands/ so that
+    changes to templates are immediately available during development.
 
     Examples:
-        specify dogfood           # Set up dogfooding in current directory
-        specify dogfood --force   # Recreate symlinks if they exist
+        specify dev-setup           # Set up development environment
+        specify dev-setup --force   # Recreate symlinks if they exist
     """
     show_banner()
 
@@ -3184,196 +3175,109 @@ def dogfood(
         console.print(
             f"[yellow]Tip:[/yellow] The '{SOURCE_REPO_MARKER}' marker file was not found."
         )
-        console.print(
-            "[yellow]Tip:[/yellow] If this IS the jp-spec-kit repo, create the marker file first."
-        )
         raise typer.Exit(1)
 
-    templates_dir = project_path / "templates" / "commands"
-    jpspec_templates_dir = templates_dir / "jpspec"
-    if not templates_dir.exists():
+    # Template directories (single source of truth)
+    jpspec_templates_dir = project_path / "templates" / "commands" / "jpspec"
+    speckit_templates_dir = project_path / "templates" / "commands" / "speckit"
+
+    if not jpspec_templates_dir.exists() or not speckit_templates_dir.exists():
         console.print(
-            f"[red]Error:[/red] Templates directory not found: {templates_dir}"
+            "[red]Error:[/red] Template directories not found. Expected:"
         )
+        console.print(f"  templates/commands/jpspec/")
+        console.print(f"  templates/commands/speckit/")
         raise typer.Exit(1)
 
-    # Get list of template command files
-    speckit_files = list(templates_dir.glob("*.md"))
-    jpspec_files = (
-        list(jpspec_templates_dir.glob("*.md")) if jpspec_templates_dir.exists() else []
-    )
+    console.print("[cyan]Setting up development environment...[/cyan]\n")
 
-    if not speckit_files and not jpspec_files:
-        console.print(
-            f"[yellow]Warning:[/yellow] No command templates found in {templates_dir}"
-        )
-        raise typer.Exit(1)
-
-    console.print("[cyan]Setting up dogfooding for jp-spec-kit...[/cyan]\n")
-
-    tracker = StepTracker("Dogfood Setup")
+    tracker = StepTracker("Dev Setup")
     tracker.add("check", "Check prerequisites")
     tracker.complete("check", "jp-spec-kit source repository detected")
 
-    all_errors = []
+    all_errors: list[str] = []
 
-    # === Claude Code Setup ===
-    tracker.add("claude", "Set up Claude Code commands")
-
+    # Target directories for symlinks
+    jpspec_commands_dir = project_path / ".claude" / "commands" / "jpspec"
     speckit_commands_dir = project_path / ".claude" / "commands" / "speckit"
+    jpspec_commands_dir.mkdir(parents=True, exist_ok=True)
     speckit_commands_dir.mkdir(parents=True, exist_ok=True)
 
-    claude_created = 0
-    claude_skipped = 0
-    claude_errors = []
+    # === Create jpspec symlinks ===
+    tracker.add("jpspec", "Create jpspec command symlinks")
+    jpspec_created = 0
+    jpspec_skipped = 0
+    jpspec_errors: list[str] = []
 
+    jpspec_files = [f for f in jpspec_templates_dir.glob("*.md") if not f.name.startswith("_")]
+    for template_file in jpspec_files:
+        symlink_path = jpspec_commands_dir / template_file.name
+        relative_target = Path("..") / ".." / ".." / "templates" / "commands" / "jpspec" / template_file.name
+
+        try:
+            if symlink_path.exists() or symlink_path.is_symlink():
+                if force:
+                    symlink_path.unlink()
+                    symlink_path.symlink_to(relative_target)
+                    jpspec_created += 1
+                else:
+                    jpspec_skipped += 1
+            else:
+                symlink_path.symlink_to(relative_target)
+                jpspec_created += 1
+        except OSError as e:
+            jpspec_errors.append(f"jpspec/{template_file.name}: {e}")
+
+    if jpspec_errors:
+        tracker.fail("jpspec", f"{len(jpspec_errors)} errors")
+        all_errors.extend(jpspec_errors)
+    else:
+        tracker.complete("jpspec", f"{jpspec_created} created, {jpspec_skipped} skipped")
+
+    # === Create speckit symlinks ===
+    tracker.add("speckit", "Create speckit command symlinks")
+    speckit_created = 0
+    speckit_skipped = 0
+    speckit_errors: list[str] = []
+
+    speckit_files = list(speckit_templates_dir.glob("*.md"))
     for template_file in speckit_files:
         symlink_path = speckit_commands_dir / template_file.name
-        relative_target = (
-            Path("..") / ".." / ".." / "templates" / "commands" / template_file.name
-        )
+        relative_target = Path("..") / ".." / ".." / "templates" / "commands" / "speckit" / template_file.name
 
         try:
             if symlink_path.exists() or symlink_path.is_symlink():
                 if force:
                     symlink_path.unlink()
                     symlink_path.symlink_to(relative_target)
-                    claude_created += 1
+                    speckit_created += 1
                 else:
-                    claude_skipped += 1
+                    speckit_skipped += 1
             else:
                 symlink_path.symlink_to(relative_target)
-                claude_created += 1
+                speckit_created += 1
         except OSError as e:
-            claude_errors.append(f"speckit/{template_file.name}: {e}")
+            speckit_errors.append(f"speckit/{template_file.name}: {e}")
 
-    if claude_errors:
-        tracker.fail("claude", f"{len(claude_errors)} errors")
-        all_errors.extend(claude_errors)
+    if speckit_errors:
+        tracker.fail("speckit", f"{len(speckit_errors)} errors")
+        all_errors.extend(speckit_errors)
     else:
-        tracker.complete(
-            "claude", f"{claude_created} created, {claude_skipped} skipped"
-        )
-
-    # === VS Code Copilot Setup ===
-    tracker.add("copilot", "Set up VS Code Copilot prompts")
-
-    prompts_dir = project_path / ".github" / "prompts"
-    prompts_dir.mkdir(parents=True, exist_ok=True)
-
-    copilot_created = 0
-    copilot_skipped = 0
-    copilot_errors = []
-
-    # Create speckit.*.prompt.md symlinks for speckit commands
-    for template_file in speckit_files:
-        # VS Code Copilot uses speckit.*.prompt.md format
-        prompt_name = f"speckit.{template_file.stem}.prompt.md"
-        symlink_path = prompts_dir / prompt_name
-        relative_target = (
-            Path("..") / ".." / "templates" / "commands" / template_file.name
-        )
-
-        try:
-            if symlink_path.exists() or symlink_path.is_symlink():
-                if force:
-                    symlink_path.unlink()
-                    symlink_path.symlink_to(relative_target)
-                    copilot_created += 1
-                else:
-                    copilot_skipped += 1
-            else:
-                symlink_path.symlink_to(relative_target)
-                copilot_created += 1
-        except OSError as e:
-            copilot_errors.append(f"{prompt_name}: {e}")
-
-    # Create jpspec.*.prompt.md symlinks for jpspec commands
-    for template_file in jpspec_files:
-        # VS Code Copilot uses jpspec.*.prompt.md format
-        prompt_name = f"jpspec.{template_file.stem}.prompt.md"
-        symlink_path = prompts_dir / prompt_name
-        relative_target = (
-            Path("..") / ".." / "templates" / "commands" / "jpspec" / template_file.name
-        )
-
-        try:
-            if symlink_path.exists() or symlink_path.is_symlink():
-                if force:
-                    symlink_path.unlink()
-                    symlink_path.symlink_to(relative_target)
-                    copilot_created += 1
-                else:
-                    copilot_skipped += 1
-            else:
-                symlink_path.symlink_to(relative_target)
-                copilot_created += 1
-        except OSError as e:
-            copilot_errors.append(f"{prompt_name}: {e}")
-
-    if copilot_errors:
-        tracker.fail("copilot", f"{len(copilot_errors)} errors")
-        all_errors.extend(copilot_errors)
-    else:
-        tracker.complete(
-            "copilot", f"{copilot_created} created, {copilot_skipped} skipped"
-        )
-
-    # === VS Code Settings Setup ===
-    tracker.add("vscode", "Configure VS Code settings")
-
-    vscode_dir = project_path / ".vscode"
-    vscode_dir.mkdir(parents=True, exist_ok=True)
-    settings_file = vscode_dir / "settings.json"
-
-    try:
-        # Read existing settings or start fresh
-        existing_settings = {}
-        if settings_file.exists():
-            try:
-                with open(settings_file, "r") as f:
-                    import json
-
-                    content = f.read()
-                    # Handle jsonc (with comments) by stripping single-line comments
-                    import re
-
-                    content = re.sub(r"^\s*//.*$", "", content, flags=re.MULTILINE)
-                    existing_settings = json.loads(content) if content.strip() else {}
-            except (json.JSONDecodeError, ValueError):
-                existing_settings = {}
-
-        # Merge with required settings for Copilot prompt files
-        existing_settings["chat.promptFiles"] = True
-
-        # Write updated settings
-        with open(settings_file, "w") as f:
-            import json
-
-            json.dump(existing_settings, f, indent=4)
-            f.write("\n")
-
-        tracker.complete("vscode", "chat.promptFiles enabled")
-    except OSError as e:
-        tracker.fail("vscode", str(e))
-        all_errors.append(f"settings.json: {e}")
+        tracker.complete("speckit", f"{speckit_created} created, {speckit_skipped} skipped")
 
     # === Verify Symlinks ===
     tracker.add("verify", "Verify symlinks")
-
     valid = 0
     broken = 0
 
-    # Check Claude symlinks
-    for symlink_path in speckit_commands_dir.glob("*.md"):
+    for symlink_path in jpspec_commands_dir.glob("*.md"):
         if symlink_path.is_symlink():
             if symlink_path.resolve().exists():
                 valid += 1
             else:
                 broken += 1
 
-    # Check Copilot symlinks
-    for symlink_path in prompts_dir.glob("*.prompt.md"):
+    for symlink_path in speckit_commands_dir.glob("*.md"):
         if symlink_path.is_symlink():
             if symlink_path.resolve().exists():
                 valid += 1
@@ -3385,38 +3289,21 @@ def dogfood(
     else:
         tracker.complete("verify", f"{valid} valid symlinks")
 
-    tracker.add("final", "Dogfood setup complete")
+    tracker.add("final", "Setup complete")
     tracker.complete("final", "ready for development")
 
     console.print(tracker.render())
 
-    console.print("\n[bold green]Dogfood setup complete![/bold green]")
-
-    console.print(
-        "\n[bold]Claude Code[/bold] - The following /speckit:* commands are now available:"
-    )
-    for template_file in sorted(speckit_files):
-        console.print(f"  [cyan]/speckit:{template_file.stem}[/cyan]")
-
-    console.print(
-        "\n[bold]VS Code Copilot[/bold] - The following prompts are now available:"
-    )
-    for template_file in sorted(speckit_files):
-        console.print(f"  [cyan]/speckit.{template_file.stem}[/cyan]")
-    for template_file in sorted(jpspec_files):
-        console.print(f"  [cyan]/jpspec.{template_file.stem}[/cyan]")
-
-    console.print(
-        "\n[dim]Note: Restart your AI assistant to pick up the new commands.[/dim]"
-    )
+    console.print("\n[bold green]Development setup complete![/bold green]")
+    console.print("\nAvailable commands:")
+    console.print(f"  jpspec: {len(jpspec_files)} commands")
+    console.print(f"  speckit: {len(speckit_files)} commands")
+    console.print("\n[dim]Note: Restart Claude Code to pick up the new commands.[/dim]")
 
     if all_errors:
         console.print("\n[yellow]Warning:[/yellow] Some operations failed:")
         for error in all_errors:
             console.print(f"  [red]•[/red] {error}")
-        console.print(
-            "[yellow]On Windows, you may need to enable Developer Mode or run as Administrator.[/yellow]"
-        )
         raise typer.Exit(1)
 
 
