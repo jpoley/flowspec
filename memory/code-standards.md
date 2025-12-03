@@ -68,12 +68,60 @@ Never use Python built-in names as parameters or variables:
 
 Follow conventional commits: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`
 
+## Consistency is Non-Negotiable
+
+**If a standard applies, it applies EVERYWHERE:**
+- Production code
+- Test code
+- Example code in docstrings
+- Template examples (in "after" sections)
+
+**Common failures (from PR #376/#377 learnings):**
+- Fixed encoding in production but not tests
+- Fixed some `write_text()` calls but not all
+- Fixed code but not example templates
+
+## Imports
+
+- All imports at **module level** (top of file)
+- Never inline imports inside functions:
+  ```python
+  # Bad
+  def parse_response(data: str):
+      import json  # Inline import
+      return json.loads(data)
+
+  # Good
+  import json  # At module level
+
+  def parse_response(data: str):
+      return json.loads(data)
+  ```
+
+## Pre-PR Verification (Critical)
+
+**Run these grep commands before every PR:**
+
+```bash
+# Find file I/O without encoding (should return nothing)
+grep -rn "write_text\|read_text\|open(" src/ tests/ | grep -v "encoding=" | grep -v "\.pyc"
+
+# Find shadowed built-ins
+grep -rn "def.*\b(id|type|list|dict|input|filter|map|hash)\s*[=:]" src/ tests/
+
+# Find inline imports
+grep -rn "^\s*import " src/ | grep -v "^[^:]*:1:" | head -20
+```
+
 ## Pre-PR Checklist
 
 Before creating a PR, verify:
-- [ ] `encoding="utf-8"` on all file operations
+- [ ] `encoding="utf-8"` on ALL file operations (production AND tests)
 - [ ] No Python built-in names shadowed
 - [ ] All temp files cleaned up properly
 - [ ] External inputs validated/clamped
 - [ ] No unused config fields or dead code
 - [ ] Explicit type conversions where needed
+- [ ] All imports at module level
+- [ ] Example templates show best practices
+- [ ] Ran grep verification commands above
