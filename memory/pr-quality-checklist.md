@@ -41,8 +41,11 @@ Learnings from agent-hooks feature development (PRs #279, #300, #313, #333, #348
 **Wrong**: Direct use of user-provided paths
 **Right**:
 ```python
+import os
+base_dir = os.path.abspath('/safe/base')
 normalized = os.path.normpath(path)
-if normalized.startswith(".."):
+full_path = os.path.abspath(os.path.join(base_dir, normalized))
+if not full_path.startswith(base_dir):
     return False
 ```
 
