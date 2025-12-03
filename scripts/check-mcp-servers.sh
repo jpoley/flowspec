@@ -320,7 +320,7 @@ main() {
         if [[ -f "${PROJECT_ROOT}/${CONFIG_FILE}" ]]; then
             CONFIG_FILE="${PROJECT_ROOT}/${CONFIG_FILE}"
         elif [[ -f "${CONFIG_FILE}" ]]; then
-            CONFIG_FILE="${CONFIG_FILE}"
+            : # File exists in current directory, use as-is
         fi
     fi
 
