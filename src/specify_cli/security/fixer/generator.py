@@ -213,6 +213,7 @@ Respond in JSON format:
             fixed_code = data.get("fixed_code", "")
             explanation = data.get("explanation", "")
             confidence = float(data.get("confidence", 0.5))
+            confidence = max(0.0, min(1.0, confidence))  # Clamp to [0.0, 1.0]
             warnings = data.get("warnings", [])
 
             if not fixed_code:
