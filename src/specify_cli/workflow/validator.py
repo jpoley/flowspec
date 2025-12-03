@@ -222,6 +222,9 @@ class WorkflowValidator:
     # Valid terminal/end states for workflows
     TERMINAL_STATES: set[str] = {"Done", "Deployed", "Cancelled", "Archived"}
 
+    # Special transition types that are not workflows (manual state changes, rework, rollback)
+    SPECIAL_TRANSITIONS: set[str] = {"manual", "rework", "rollback"}
+
     def __init__(self, config_data: dict[str, Any] | None = None):
         """Initialize validator with workflow configuration data.
 
@@ -302,8 +305,14 @@ class WorkflowValidator:
             return self._graph
 
         self._graph = {state: [] for state in self._states}
+        # Exclude special transitions (manual, rework, rollback) from graph
+        # These are exception paths and shouldn't count towards cycle detection
         for transition in self._transitions:
             if not isinstance(transition, dict):
+                continue
+            via = transition.get("via")
+            # Skip special transitions - they're allowed to create cycles
+            if via in self.SPECIAL_TRANSITIONS:
                 continue
             from_state = transition.get("from")
             to_state = transition.get("to")
@@ -451,7 +460,12 @@ class WorkflowValidator:
                 continue  # Already reported in state_references check
 
             via = transition.get("via")
-            if via and via not in self._workflows:
+            # Allow special transition types that are not workflows
+            if (
+                via
+                and via not in self.SPECIAL_TRANSITIONS
+                and via not in self._workflows
+            ):
                 result.add_error(
                     "UNDEFINED_WORKFLOW_REFERENCE",
                     f"Transition references undefined workflow '{via}'.",
@@ -584,6 +598,25 @@ class WorkflowValidator:
                 cycle=cycle,
             )
 
+    def _build_complete_graph(self) -> dict[str, list[str]]:
+        """Build adjacency list including ALL transitions (including special ones).
+
+        This is used for reachability checks where we want to ensure all states
+        are reachable (including via special manual/rework/rollback transitions).
+
+        Returns:
+            Dictionary mapping state names to lists of successor state names
+        """
+        graph = {state: [] for state in self._states}
+        for transition in self._transitions:
+            if not isinstance(transition, dict):
+                continue
+            from_state = transition.get("from")
+            to_state = transition.get("to")
+            if from_state in graph and to_state in self._states:
+                graph[from_state].append(to_state)
+        return graph
+
     def _check_reachability(self, result: ValidationResult) -> None:
         """Check all states are reachable from initial state using BFS.
 
@@ -596,7 +629,8 @@ class WorkflowValidator:
         if self.INITIAL_STATE not in self._states:
             return  # Already reported in states_defined check
 
-        graph = self._build_graph()
+        # Use complete graph (including special transitions) for reachability
+        graph = self._build_complete_graph()
 
         # BFS from initial state
         reachable: set[str] = {self.INITIAL_STATE}

@@ -873,3 +873,185 @@ class TestWorkflowValidatorStateExtraction:
         result = WorkflowValidator(config).validate()
         state_warnings = [w for w in result.warnings if w.code.startswith("STATE_")]
         assert len(state_warnings) == 0
+
+
+class TestSpecialTransitions:
+    """Tests for special transition types (manual, rework, rollback).
+
+    Special transitions are exception paths that:
+    - Don't require workflow definitions
+    - Are excluded from cycle detection (allowed to create "cycles")
+    - Are included in reachability analysis
+    """
+
+    def test_manual_transition_no_workflow_required(self):
+        """Transitions with via='manual' don't need a workflow definition."""
+        config = {
+            "states": ["To Do", "In Progress", "Done"],
+            "workflows": {
+                "start": {"command": "/jpspec:start", "input_states": ["To Do"]},
+            },
+            "transitions": [
+                {"from": "To Do", "to": "In Progress", "via": "start"},
+                {"from": "In Progress", "to": "Done", "via": "manual"},  # No workflow
+            ],
+        }
+        result = WorkflowValidator(config).validate()
+        assert result.is_valid
+        error_codes = [e.code for e in result.errors]
+        assert "UNDEFINED_WORKFLOW_REFERENCE" not in error_codes
+
+    def test_rework_transition_no_workflow_required(self):
+        """Transitions with via='rework' don't need a workflow definition."""
+        config = {
+            "states": ["To Do", "In Progress", "Review", "Done"],
+            "workflows": {
+                "start": {"command": "/jpspec:start", "input_states": ["To Do"]},
+                "review": {
+                    "command": "/jpspec:review",
+                    "input_states": ["In Progress"],
+                },
+            },
+            "transitions": [
+                {"from": "To Do", "to": "In Progress", "via": "start"},
+                {"from": "In Progress", "to": "Review", "via": "review"},
+                {"from": "Review", "to": "In Progress", "via": "rework"},  # No workflow
+                {"from": "Review", "to": "Done", "via": "manual"},
+            ],
+        }
+        result = WorkflowValidator(config).validate()
+        assert result.is_valid
+        error_codes = [e.code for e in result.errors]
+        assert "UNDEFINED_WORKFLOW_REFERENCE" not in error_codes
+
+    def test_rollback_transition_no_workflow_required(self):
+        """Transitions with via='rollback' don't need a workflow definition."""
+        config = {
+            "states": ["To Do", "In Progress", "Deployed", "Done"],
+            "workflows": {
+                "start": {"command": "/jpspec:start", "input_states": ["To Do"]},
+                "deploy": {
+                    "command": "/jpspec:deploy",
+                    "input_states": ["In Progress"],
+                },
+            },
+            "transitions": [
+                {"from": "To Do", "to": "In Progress", "via": "start"},
+                {"from": "In Progress", "to": "Deployed", "via": "deploy"},
+                {
+                    "from": "Deployed",
+                    "to": "In Progress",
+                    "via": "rollback",
+                },  # No workflow
+                {"from": "Deployed", "to": "Done", "via": "manual"},
+            ],
+        }
+        result = WorkflowValidator(config).validate()
+        assert result.is_valid
+        error_codes = [e.code for e in result.errors]
+        assert "UNDEFINED_WORKFLOW_REFERENCE" not in error_codes
+
+    def test_rollback_transition_no_cycle_detected(self):
+        """Rollback transitions (backward) don't trigger cycle detection."""
+        config = {
+            "states": ["To Do", "Validated", "Deployed"],
+            "workflows": {
+                "validate": {"command": "/jpspec:validate", "input_states": ["To Do"]},
+                "deploy": {"command": "/jpspec:deploy", "input_states": ["Validated"]},
+            },
+            "transitions": [
+                {"from": "To Do", "to": "Validated", "via": "validate"},
+                {"from": "Validated", "to": "Deployed", "via": "deploy"},
+                # This would be a cycle, but rollback is special
+                {"from": "Deployed", "to": "Validated", "via": "rollback"},
+            ],
+        }
+        result = WorkflowValidator(config).validate()
+        assert result.is_valid
+        error_codes = [e.code for e in result.errors]
+        assert "CYCLE_DETECTED" not in error_codes
+
+    def test_rework_transition_no_cycle_detected(self):
+        """Rework transitions (backward) don't trigger cycle detection."""
+        config = {
+            "states": ["To Do", "In Progress", "Review"],
+            "workflows": {
+                "start": {"command": "/jpspec:start", "input_states": ["To Do"]},
+                "review": {
+                    "command": "/jpspec:review",
+                    "input_states": ["In Progress"],
+                },
+            },
+            "transitions": [
+                {"from": "To Do", "to": "In Progress", "via": "start"},
+                {"from": "In Progress", "to": "Review", "via": "review"},
+                # This would be a cycle, but rework is special
+                {"from": "Review", "to": "In Progress", "via": "rework"},
+            ],
+        }
+        result = WorkflowValidator(config).validate()
+        assert result.is_valid
+        error_codes = [e.code for e in result.errors]
+        assert "CYCLE_DETECTED" not in error_codes
+
+    def test_state_reachable_via_special_transition(self):
+        """States reachable only via special transitions are not flagged as unreachable."""
+        config = {
+            "states": ["To Do", "In Progress", "Done"],
+            "workflows": {
+                "start": {"command": "/jpspec:start", "input_states": ["To Do"]},
+            },
+            "transitions": [
+                {"from": "To Do", "to": "In Progress", "via": "start"},
+                # Done is only reachable via manual
+                {"from": "In Progress", "to": "Done", "via": "manual"},
+            ],
+        }
+        result = WorkflowValidator(config).validate()
+        assert result.is_valid
+        error_codes = [e.code for e in result.errors]
+        assert "UNREACHABLE_STATE" not in error_codes
+
+    def test_undefined_non_special_via_still_errors(self):
+        """Non-special via values that aren't defined workflows still error."""
+        config = {
+            "states": ["To Do", "Done"],
+            "workflows": {},
+            "transitions": [
+                {"from": "To Do", "to": "Done", "via": "undefined_workflow"},
+            ],
+        }
+        result = WorkflowValidator(config).validate()
+        assert not result.is_valid
+        error_codes = [e.code for e in result.errors]
+        assert "UNDEFINED_WORKFLOW_REFERENCE" in error_codes
+
+    def test_special_transitions_class_constant(self):
+        """SPECIAL_TRANSITIONS is defined as a class constant."""
+        assert hasattr(WorkflowValidator, "SPECIAL_TRANSITIONS")
+        assert WorkflowValidator.SPECIAL_TRANSITIONS == {"manual", "rework", "rollback"}
+
+    def test_all_special_transitions_in_one_config(self):
+        """Config using all special transition types validates successfully."""
+        config = {
+            "states": ["To Do", "In Progress", "Review", "Deployed", "Done"],
+            "workflows": {
+                "start": {"command": "/jpspec:start", "input_states": ["To Do"]},
+                "review": {
+                    "command": "/jpspec:review",
+                    "input_states": ["In Progress"],
+                },
+                "deploy": {"command": "/jpspec:deploy", "input_states": ["Review"]},
+            },
+            "transitions": [
+                {"from": "To Do", "to": "In Progress", "via": "start"},
+                {"from": "In Progress", "to": "Review", "via": "review"},
+                {"from": "Review", "to": "In Progress", "via": "rework"},  # rework
+                {"from": "Review", "to": "Deployed", "via": "deploy"},
+                {"from": "Deployed", "to": "Review", "via": "rollback"},  # rollback
+                {"from": "Deployed", "to": "Done", "via": "manual"},  # manual
+            ],
+        }
+        result = WorkflowValidator(config).validate()
+        assert result.is_valid
+        assert len(result.errors) == 0
