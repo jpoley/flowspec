@@ -163,6 +163,12 @@ AGENT_CONFIG = {
 
 SCRIPT_TYPE_CHOICES = {"sh": "POSIX Shell (bash/zsh)", "ps": "PowerShell"}
 
+CONSTITUTION_TIER_CHOICES = {
+    "light": "Minimal controls for startups/hobby projects",
+    "medium": "Standard controls for typical business projects",
+    "heavy": "Enterprise controls for regulated environments",
+}
+
 CLAUDE_LOCAL_PATH = Path.home() / ".claude" / "local" / "claude"
 
 BANNER = """
@@ -1814,6 +1820,11 @@ def init(
         "--light",
         help="Use spec-light mode for medium-complexity features (~60% faster workflow)",
     ),
+    constitution: str = typer.Option(
+        None,
+        "--constitution",
+        help="Constitution tier: light (startup), medium (business), heavy (enterprise). Omit to be prompted.",
+    ),
 ):
     """
     Initialize a new Specify project from the latest template.
@@ -1840,6 +1851,9 @@ def init(
         specify init --here --ai codebuddy,claude
         specify init --here
         specify init --here --force  # Skip confirmation when current directory not empty
+        specify init my-project --constitution medium  # Specific constitution tier
+        specify init my-project --ai claude --constitution light  # Startup tier
+        specify init my-project --ai claude --constitution heavy  # Enterprise tier
     """
 
     show_banner()
@@ -2033,6 +2047,26 @@ def init(
         else:
             selected_script = default_script
 
+    # Handle constitution tier selection
+    if constitution:
+        if constitution not in CONSTITUTION_TIER_CHOICES:
+            console.print(
+                f"[red]Error:[/red] Invalid constitution tier '{constitution}'. "
+                f"Choose from: {', '.join(CONSTITUTION_TIER_CHOICES.keys())}"
+            )
+            raise typer.Exit(1)
+        selected_constitution = constitution
+    else:
+        default_constitution = "medium"
+        if sys.stdin.isatty():
+            selected_constitution = select_with_arrows(
+                CONSTITUTION_TIER_CHOICES,
+                "Choose constitution tier (or press Enter for medium)",
+                default_constitution,
+            )
+        else:
+            selected_constitution = default_constitution
+
     # Display selected agents
     agents_display = ", ".join(selected_agents)
     if len(selected_agents) == 1:
@@ -2040,6 +2074,7 @@ def init(
     else:
         console.print(f"[cyan]Selected AI assistants:[/cyan] {agents_display}")
     console.print(f"[cyan]Selected script type:[/cyan] {selected_script}")
+    console.print(f"[cyan]Selected constitution tier:[/cyan] {selected_constitution}")
 
     tracker = StepTracker("Initialize Specify Project")
 
@@ -2051,6 +2086,8 @@ def init(
     tracker.complete("ai-select", f"{agents_display}")
     tracker.add("script-select", "Select script type")
     tracker.complete("script-select", selected_script)
+    tracker.add("constitution-select", "Select constitution tier")
+    tracker.complete("constitution-select", selected_constitution)
 
     # Different tracking keys based on layered mode
     if layered:
@@ -2063,6 +2100,8 @@ def init(
             ("chmod", "Ensure scripts executable"),
             ("cleanup", "Cleanup"),
             ("git", "Initialize git repository"),
+            ("hooks", "Scaffold hooks"),
+            ("constitution", "Set up constitution"),
             ("final", "Finalize"),
         ]:
             tracker.add(key, label)
@@ -2076,6 +2115,8 @@ def init(
             ("chmod", "Ensure scripts executable"),
             ("cleanup", "Cleanup"),
             ("git", "Initialize git repository"),
+            ("hooks", "Scaffold hooks"),
+            ("constitution", "Set up constitution"),
             ("final", "Finalize"),
         ]:
             tracker.add(key, label)
@@ -2166,6 +2207,33 @@ def init(
             except Exception as hook_error:
                 # Non-fatal error - continue with project initialization
                 tracker.error("hooks", f"scaffolding failed: {hook_error}")
+
+            # Set up constitution template
+            tracker.start("constitution")
+            try:
+                constitution_src = (
+                    project_path
+                    / "templates"
+                    / "constitutions"
+                    / f"constitution-{selected_constitution}.md"
+                )
+                memory_dir = project_path / "memory"
+                constitution_dest = memory_dir / "constitution.md"
+
+                if constitution_src.exists():
+                    memory_dir.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(constitution_src, constitution_dest)
+                    tracker.complete(
+                        "constitution",
+                        f"{selected_constitution} tier → memory/constitution.md",
+                    )
+                else:
+                    tracker.error(
+                        "constitution",
+                        f"template not found: {constitution_src.name}",
+                    )
+            except Exception as const_error:
+                tracker.error("constitution", f"setup failed: {const_error}")
 
             tracker.complete("final", "project ready")
         except Exception as e:
