@@ -623,7 +623,7 @@ transitions:
 **Why it's critical**: Tasks can never enter unreachable states, making them useless configuration bloat.
 
 **How to avoid**:
-- Every state (except "To Do") must have at least one incoming transition
+- Every state (except the initial state) must have at least one incoming transition (Note: "To Do" is the default initial state, but you may configure a different one)
 - Every state (except terminal states) must have at least one outgoing transition
 - Use `specify workflow validate` to detect unreachable states
 
