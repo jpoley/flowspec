@@ -181,6 +181,8 @@ jp-spec-kit/
 
 @import memory/code-standards.md
 
+@import memory/test-quality-standards.md
+
 ## Documentation References
 
 | Topic | Location |
