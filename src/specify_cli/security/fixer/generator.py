@@ -120,7 +120,7 @@ class FixGenerator:
             return None
 
         try:
-            with open(file_path) as f:
+            with open(file_path, encoding="utf-8") as f:
                 lines = f.readlines()
 
             start = max(0, finding.location.line_start - self.config.context_lines - 1)
