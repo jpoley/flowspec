@@ -11,6 +11,37 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
+## Light Mode Detection
+
+Check if this project is in light mode:
+
+```bash
+# Check for light mode marker
+if [ -f ".jpspec-light-mode" ]; then
+  echo "LIGHT MODE DETECTED - Using streamlined specification"
+  # Use spec-light-template.md for output
+else
+  echo "FULL MODE - Using complete specification"
+  # Use spec-template.md for detailed PRD output
+fi
+```
+
+**If `.jpspec-light-mode` exists**, use light mode specification:
+
+| Aspect | Full Mode | Light Mode |
+|--------|-----------|------------|
+| Output template | `spec.md` (detailed PRD) | `spec-light.md` (combined) |
+| User stories | Detailed with scenarios | Brief format |
+| Acceptance criteria | Extensive | Essential only |
+| Data requirements | Detailed models | Brief notes |
+| API requirements | Full contracts | Endpoint list |
+
+Continue with the workflow below, but:
+- Use `templates/spec-light-template.md` as the output format
+- Combine user stories and acceptance criteria into a single section
+- Focus on essential requirements only
+- Skip detailed data models and API contracts
+
 ## Execution Instructions
 
 This command creates comprehensive feature specifications using the PM Planner agent, integrating with backlog.md for task management.

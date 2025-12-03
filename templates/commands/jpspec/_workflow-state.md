@@ -4,6 +4,35 @@
 
 **CRITICAL**: This command requires a task to be in the correct workflow state before execution.
 
+### Light Mode Detection
+
+First, check if this project is in light mode:
+
+```bash
+# Check for light mode marker
+if [ -f ".jpspec-light-mode" ]; then
+  echo "Project is in LIGHT MODE (~60% faster workflow)"
+fi
+```
+
+**Light Mode Behavior**:
+- `/jpspec:research` → **SKIPPED** (inform user and suggest `/jpspec:plan` instead)
+- `/jpspec:plan` → Uses `plan-light.md` template (high-level only)
+- `/jpspec:specify` → Uses `spec-light.md` template (combined stories + AC)
+
+If in light mode and the current command is `/jpspec:research`, inform the user:
+```text
+ℹ️ This project is in Light Mode
+
+Light mode skips the research phase for faster iteration.
+Current state: workflow:Specified
+
+Suggestions:
+  - Run /jpspec:plan to proceed directly to planning
+  - To enable research, delete .jpspec-light-mode and use full mode
+  - See docs/guides/when-to-use-light-mode.md for details
+```
+
 ### 1. Get Current Task and State
 
 ```bash

@@ -10,6 +10,34 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
+## Light Mode Detection
+
+Check if this project is in light mode:
+
+```bash
+# Check for light mode marker
+if [ -f ".jpspec-light-mode" ]; then
+  echo "LIGHT MODE DETECTED - Using streamlined planning"
+else
+  echo "FULL MODE - Using complete planning"
+fi
+```
+
+**If `.jpspec-light-mode` exists**, use light mode planning:
+
+| Aspect | Full Mode | Light Mode |
+|--------|-----------|------------|
+| Output template | `plan.md` (detailed) | `plan-light.md` (high-level) |
+| Data models | Detailed ERD/schemas | Brief mention only |
+| API contracts | Full OpenAPI spec | Endpoint list only |
+| ADRs | Full ADR format | Decision summary |
+| Agents | Both Architect + Platform | Architect only (simplified) |
+
+Continue with the workflow below, but:
+- Use `templates/plan-light-template.md` as the output format
+- Skip detailed data modeling and API contract generation
+- Focus on high-level approach, key components, and risks
+
 ## Execution Instructions
 
 This command creates comprehensive architectural and platform planning using two specialized agents working in parallel, building out /speckit.constitution.

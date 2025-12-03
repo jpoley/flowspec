@@ -10,6 +10,39 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
+## Light Mode Check
+
+**IMPORTANT**: First check if this project is in light mode:
+
+```bash
+# Check for light mode marker
+if [ -f ".jpspec-light-mode" ]; then
+  echo "LIGHT MODE DETECTED"
+  # Stop here - research is skipped in light mode
+else
+  echo "FULL MODE - Proceeding with research"
+  # Continue with standard research workflow
+fi
+```
+
+**If `.jpspec-light-mode` exists**, inform the user and DO NOT proceed:
+
+```text
+ℹ️ This project is in Light Mode - /jpspec:research is SKIPPED
+
+Light mode provides a streamlined ~60% faster workflow by skipping the research
+phase. This is appropriate for medium-complexity features (4-6/10).
+
+Your options:
+  1. Run /jpspec:plan to proceed directly to planning
+  2. To enable research, delete .jpspec-light-mode and use full mode
+     (See docs/guides/when-to-use-light-mode.md for upgrade instructions)
+
+Current workflow path: Specified → Planned (skipping Researched)
+```
+
+**If NOT in light mode**, continue with the standard research workflow below.
+
 ## Execution Instructions
 
 This command orchestrates comprehensive research and business validation using two specialized agents working sequentially.
