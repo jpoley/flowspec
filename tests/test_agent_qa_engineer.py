@@ -34,6 +34,7 @@ def safe_read_file(file_path: Path) -> Optional[str]:
         if file_path.exists() and file_path.is_file():
             return file_path.read_text(encoding="utf-8")
     except (OSError, IOError, PermissionError):
+        # Intentionally ignore file read errors; function returns None if file can't be read
         pass
     return None
 
@@ -73,7 +74,7 @@ EXPECTED_TOOLS = ["Read", "Write", "Edit", "Glob", "Grep", "Bash"]
 REQUIRED_FRONTMATTER_FIELDS = ["name", "description", "tools", "color"]
 REQUIRED_CONTENT_SECTIONS = [
     "## Core Testing Stack",
-    "## Test Implementation",
+    "## Test Implementation Standards",
     "## Quality Checklist",
 ]
 
