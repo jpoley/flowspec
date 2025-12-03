@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - '@pm-planner'
 created_date: '2025-12-03 00:41'
-updated_date: '2025-12-03 01:41'
+updated_date: '2025-12-03 02:18'
 labels:
   - implement
   - integration
@@ -17,7 +17,16 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Add event emission to backlog task lifecycle events (created, updated, status changed, completed). Enables automation based on task state changes.
+**PARENT TASK** - Integrate event emission with backlog task operations.
+
+This task has been broken into sub-tasks because backlog.md is a third-party MCP server (MrLesk/Backlog.md) that we cannot modify directly.
+
+**Sub-tasks**:
+- task-214: Git hook to emit events on task file changes
+- task-215: Backlog CLI wrapper with auto-emit
+- task-216: Contribute hooks feature to upstream backlog.md
+
+See sub-tasks for implementation details.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
@@ -32,35 +41,22 @@ Add event emission to backlog task lifecycle events (created, updated, status ch
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
-## CLI Event Emission Capability
+## Analysis
 
-Created hooks CLI that enables manual task event emission:
-- `specify hooks emit task.completed --task-id task-123`
-- `specify hooks emit task.status_changed --task-id task-123`
-- All task events from EventType enum are supported
+Backlog.md is a third-party package: https://github.com/MrLesk/Backlog.md
 
-## Backlog Integration Challenges
+We cannot modify it directly, so we need alternative integration approaches.
 
-Direct integration with backlog.md is not possible because:
-1. Backlog is managed by external MCP server (mcp__backlog__*)
-2. Cannot modify MCP server code to add emit_event() calls
-3. Must rely on external triggers (git hooks, user commands, shell aliases)
+## Sub-tasks Created
 
-## Implementation Alternatives
+- task-214: Git hook approach (automatic, parses file changes)
+- task-215: CLI wrapper approach (explicit, user calls wrapper)
+- task-216: Upstream contribution (long-term, proper integration)
 
-Users can emit events manually or via git hooks:
+## Current Capability
+
+Users can already emit events manually:
 ```bash
-# Manual emission after task completion
-backlog task edit 123 -s Done
-specify hooks emit task.completed --task-id task-123
-
-# Or create post-commit hook to auto-emit
-# .git/hooks/post-commit:
-#!/bin/bash
-# Parse backlog.md changes and emit events
+backlog task edit 123 -s Done && specify hooks emit task.completed --task-id task-123
 ```
-
-## Files Created
-- src/specify_cli/hooks/cli.py - Includes task event emission commands
-- tests/test_hooks_cli.py - Task event emission tests included
 <!-- SECTION:NOTES:END -->
