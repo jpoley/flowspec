@@ -100,26 +100,27 @@ backlog task create "Task title" \
 This is a blocking gate. Do NOT create a PR until ALL checks pass.
 
 ```bash
-# 1. Run lint check - MUST pass with ZERO errors
+# 1. Format code first
+uv run ruff format .
+
+# 2. Verify format passes (CI runs this check)
+uv run ruff format --check .
+
+# 3. Run lint check - MUST pass with ZERO errors
 uv run ruff check .
 
-# 2. Run test suite - MUST pass with ZERO failures
+# 4. Run test suite - MUST pass with ZERO failures
 uv run pytest tests/ -x -q
 
-# 3. Check for unused imports/variables
-uv run ruff check --select F401,F841 .
-
-# 4. Format code
-uv run ruff format .
+# Combined command to run all checks:
+uv run ruff format . && uv run ruff format --check . && uv run ruff check . && uv run pytest tests/ -x -q
 ```
 
 ### Pre-PR Validation Checklist (ALL REQUIRED)
 
+- [ ] `ruff format --check .` passes (no files need reformatting)
 - [ ] `ruff check .` passes with zero errors
 - [ ] `pytest tests/ -x -q` passes with zero failures
-- [ ] No unused imports (`ruff check --select F401`)
-- [ ] No unused variables (`ruff check --select F841`)
-- [ ] Code is formatted (`ruff format .`)
 
 **⚠️ DO NOT proceed to create a PR if ANY checklist item fails.**
 

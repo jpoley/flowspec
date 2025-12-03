@@ -2,19 +2,24 @@
 
 ## Pre-PR Validation (MANDATORY - NO EXCEPTIONS)
 
-**BEFORE creating any PR, you MUST run and pass:**
+**BEFORE creating any PR, you MUST run and pass ALL THREE:**
 
 ```bash
-# 1. Lint check - MUST pass with zero errors
+# 1. Format check - MUST pass (no files needing reformatting)
+uv run ruff format --check .
+
+# 2. Lint check - MUST pass with zero errors
 uv run ruff check .
 
-# 2. Tests - MUST pass with zero failures
+# 3. Tests - MUST pass with zero failures
 uv run pytest tests/ -x -q
 
-# 3. Only after BOTH pass, create PR
+# Run format first if needed, then verify:
+uv run ruff format .  # Fix formatting
+uv run ruff format --check . && uv run ruff check . && uv run pytest tests/ -x -q
 ```
 
-**DO NOT create a PR if lint or tests fail.** Fix issues first.
+**DO NOT create a PR if ANY check fails.** Fix issues first.
 
 This is NON-NEGOTIABLE. PRs that fail CI waste time and create noise.
 
