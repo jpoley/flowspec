@@ -658,7 +658,7 @@ Run these when troubleshooting:
 specify workflow validate
 
 # 2. Check YAML syntax
-python -c "import yaml; yaml.safe_load(open('jpspec_workflow.yml'))"
+python -c "import yaml; with open('jpspec_workflow.yml') as f: yaml.safe_load(f)"
 
 # 3. View current task state
 backlog task view task-123
