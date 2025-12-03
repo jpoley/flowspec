@@ -529,7 +529,7 @@ The root cause of these issues is claiming code is complete without actually run
 - YES: "I ran `pytest` and saw all tests pass"
 - YES: "I ran `ruff check` and there were no errors"
 
-### Common Lies to Avoid
+### Common Mistakes to Avoid
 
 - "All 28 tests pass" (without running them)
 - "Lint passes" (without running ruff)
