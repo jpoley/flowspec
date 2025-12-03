@@ -1,6 +1,26 @@
 {
   "description": "Claude Code settings for JP Spec Kit project",
   "projectName": "JP Spec Kit",
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(./**/.env)",
+      "Read(./**/.env.*)",
+      "Write(./CLAUDE.md)",
+      "Write(./memory/constitution.md)",
+      "Write(./uv.lock)",
+      "Write(./package-lock.json)",
+      "Write(./yarn.lock)",
+      "Bash(sudo:*)",
+      "Bash(rm:-rf:*)",
+      "Bash(rm:-fr:*)",
+      "Bash(chmod:777:*)",
+      "Bash(curl:|:*)",
+      "Bash(wget:|:*)"
+    ]
+  },
   "allowedTools": [
     "Read",
     "Write",
