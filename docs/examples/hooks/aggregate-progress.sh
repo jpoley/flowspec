@@ -23,8 +23,9 @@ MESSAGE=$(echo "$HOOK_EVENT" | jq -r '.context.status_message // ""')
 FEATURE=$(echo "$HOOK_EVENT" | jq -r '.feature // "unknown"')
 TIMESTAMP=$(echo "$HOOK_EVENT" | jq -r '.timestamp')
 
-# Determine project root from event
-PROJECT_ROOT=$(echo "$HOOK_EVENT" | jq -r '.project_root')
+# Determine project root from trusted source (current working directory)
+# Do not trust event-provided paths to prevent path traversal attacks
+PROJECT_ROOT="$PWD"
 SUMMARY_FILE="$PROJECT_ROOT/.specify/hooks/progress-summary.log"
 
 # Create summary directory if needed
@@ -43,13 +44,16 @@ if [ -n "$MESSAGE" ]; then
     LOG_ENTRY="$LOG_ENTRY | $MESSAGE"
 fi
 
-# Append to progress summary
-echo "$LOG_ENTRY" >> "$SUMMARY_FILE"
-
-# Keep only last 100 entries to prevent unbounded growth
-if [ -f "$SUMMARY_FILE" ]; then
-    tail -100 "$SUMMARY_FILE" > "$SUMMARY_FILE.tmp" && mv "$SUMMARY_FILE.tmp" "$SUMMARY_FILE"
-fi
+# Use flock to ensure atomic append and truncate operations
+LOCK_FILE="$SUMMARY_FILE.lock"
+(
+    flock -x 200
+    echo "$LOG_ENTRY" >> "$SUMMARY_FILE"
+    # Keep only last 100 entries to prevent unbounded growth
+    if [ -f "$SUMMARY_FILE" ]; then
+        tail -100 "$SUMMARY_FILE" > "$SUMMARY_FILE.tmp" && mv "$SUMMARY_FILE.tmp" "$SUMMARY_FILE"
+    fi
+) 200>"$LOCK_FILE"
 
 # Optional: Print to stdout for debugging
 echo "Logged: $EVENT_TYPE from $MACHINE"

@@ -127,12 +127,24 @@ class TestPermissionAutoApprove(unittest.TestCase):
         self.assertEqual(output["decision"], "allow")
         self.assertIn("safe command", output.get("reason", ""))
 
-    def test_backlog_task_edit_approved(self):
-        """backlog task edit should be auto-approved."""
+    def test_backlog_task_edit_passes(self):
+        """backlog task edit should use normal approval (write operation)."""
         exit_code, output = run_hook(
             {
                 "tool_name": "Bash",
                 "tool_input": {"command": "backlog task edit 123 -s Done"},
+            }
+        )
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(output["decision"], "pass")
+
+    def test_backlog_task_show_approved(self):
+        """backlog task show should be auto-approved (read-only)."""
+        exit_code, output = run_hook(
+            {
+                "tool_name": "Bash",
+                "tool_input": {"command": "backlog task show 123"},
             }
         )
 
