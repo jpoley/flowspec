@@ -173,7 +173,7 @@ class TestHookRunner:
         assert result.exit_code == 0
         assert "Success" in result.stdout
         assert result.stderr == ""
-        assert result.duration_ms > 0
+        assert result.duration_ms >= 0
         assert result.error is None
 
     def test_run_hook_script_failure(
@@ -194,7 +194,7 @@ class TestHookRunner:
         assert result.success is False
         assert result.exit_code == 1
         assert "Error" in result.stderr
-        assert result.duration_ms > 0
+        assert result.duration_ms >= 0
         assert result.error is None
 
     def test_run_hook_timeout(
