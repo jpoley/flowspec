@@ -135,7 +135,7 @@ Use environment variables or secret management systems (AWS Secrets Manager, Has
 - Ambiguous context
 - Missing dataflow information
 
-Mark findings with <70% confidence as NEEDS_INVESTIGATION.
+Mark findings with below 70% confidence as NEEDS_INVESTIGATION.
 
 ---
 

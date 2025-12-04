@@ -23,7 +23,7 @@ Classify as NI when:
 - Insufficient context to determine if sanitization exists
 - Complex dataflow requiring human analysis
 - Partial mitigations present but uncertain if complete
-- Confidence below 70%
+- Confidence < 0.70
 
 ## Risk Scoring Formula
 
@@ -57,7 +57,7 @@ Consider:
 - If git unavailable, default to 30 days
 
 **Example:**
-- SQL injection (impact=8) + easy exploit (exploitability=9) + 90 days old = (8 × 9) / 90 = 0.8
+- SQL injection (impact=8) + easy exploit (exploitability=9) + 10 days old = (8 × 9) / 10 = 7.2
 - XSS (impact=7) + medium exploit (exploitability=6) + 10 days old = (7 × 6) / 10 = 4.2
 
 ## Clustering Strategy
@@ -134,4 +134,4 @@ When confirming AI decisions:
 - Overall accuracy >85% on benchmark dataset
 - Per-classifier accuracy >80% for specialized classifiers
 - Confidence calibration: predictions with 90%+ confidence should be correct 90%+ of the time
-- Low-confidence findings (50-70%) should be marked NEEDS_INVESTIGATION
+- Findings below 70% confidence should be marked NEEDS_INVESTIGATION

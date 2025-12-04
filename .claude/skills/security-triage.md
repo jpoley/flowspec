@@ -55,7 +55,7 @@ line_end = finding["location"]["line_end"] + 5
 
 ### Step 2: Classify as TP/FP/NI
 
-Apply classification rules from [triage-guidelines.md](memory/security/triage-guidelines.md):
+Apply classification rules from `memory/security/triage-guidelines.md`:
 
 **TRUE_POSITIVE (TP)** when:
 - User input flows to dangerous sink without sanitization
@@ -82,7 +82,7 @@ Apply classification rules from [triage-guidelines.md](memory/security/triage-gu
 Use the risk scoring formula: **risk_score = (impact × exploitability) / detection_time**
 
 #### Impact (0-10)
-Map from severity or CWE (see [cwe-knowledge.md](memory/security/cwe-knowledge.md)):
+Map from severity or CWE (see `memory/security/cwe-knowledge.md`):
 - CRITICAL: 9-10 (RCE, auth bypass)
 - HIGH: 7-8 (SQL injection, XSS)
 - MEDIUM: 4-6 (info disclosure)
@@ -106,7 +106,7 @@ Calculate days since commit. If git unavailable, default to 30 days.
 
 ### Step 5: Generate Plain-English Explanation
 
-Create 4-part explanation (see [triage-guidelines.md](memory/security/triage-guidelines.md)):
+Create 4-part explanation (see `memory/security/triage-guidelines.md`):
 
 **What** (1 sentence):
 - Clear description for junior developers
@@ -211,8 +211,8 @@ If user requests interactive confirmation:
 
 Reference the following files for CWE patterns and triage guidelines:
 
-- [memory/security/triage-guidelines.md](memory/security/triage-guidelines.md) - Classification rules and explanation format
-- [memory/security/cwe-knowledge.md](memory/security/cwe-knowledge.md) - CWE patterns and remediation guidance
+- `memory/security/triage-guidelines.md` - Classification rules and explanation format
+- `memory/security/cwe-knowledge.md` - CWE patterns and remediation guidance
 
 ## Success Criteria
 
