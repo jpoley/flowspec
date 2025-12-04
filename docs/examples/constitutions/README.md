@@ -175,13 +175,6 @@ To add a new example:
 [How to use this example]
 ```
 
-## Additional Resources
-
-- [Constitution Overview](../../guides/constitution.md)
-- [Validation Guide](../../guides/constitution-validation.md)
-- [Section Reference](../../reference/constitution-sections.md)
-- [JP Spec Workflow](../../reference/jpspec-workflow.md)
-
 ## FAQ
 
 ### Q: Can I have multiple constitutions?
