@@ -400,6 +400,11 @@ Auto-detect project name from common sources (in priority order):
 5. **Java**: `pom.xml` → `<artifactId>` or `build.gradle` → `rootProject.name`
 6. **Git**: Repository directory name as fallback
 
+**Sanitize and validate the detected project name:**
+- Remove or replace special characters that are not alphanumeric, dash (-), or underscore (_).
+- Replace spaces with dashes (-) or underscores (_).
+- Trim leading and trailing whitespace.
+- Ensure the name is suitable for use in a constitution document and does not contain formatting that could cause issues in markdown or automation.
 If multiple sources exist, prefer the primary language's package manifest.
 
 #### 4.3 Format Tech Stack Section
