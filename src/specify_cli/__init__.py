@@ -5522,6 +5522,7 @@ def constitution_merge(
         raise typer.Exit(0)
 
     # Write merged file
+    output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(merged_content)
     console.print(f"[green]✓[/green] Merged constitution written to {output}")
     console.print()
