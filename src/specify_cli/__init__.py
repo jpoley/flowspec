@@ -1208,6 +1208,38 @@ def check_tool(tool: str, tracker: StepTracker = None) -> bool:
     return found
 
 
+def is_existing_project(path: Path) -> bool:
+    """Check if path contains markers of an existing project.
+
+    Args:
+        path: Path to check for project markers
+
+    Returns:
+        True if any project markers are found, False otherwise
+    """
+    markers = [
+        ".git",
+        "package.json",
+        "pyproject.toml",
+        "Cargo.toml",
+        "go.mod",
+        "pom.xml",
+    ]
+    return any((path / marker).exists() for marker in markers)
+
+
+def has_constitution(path: Path) -> bool:
+    """Check if project has a constitution file.
+
+    Args:
+        path: Path to check for constitution
+
+    Returns:
+        True if memory/constitution.md exists, False otherwise
+    """
+    return (path / "memory" / "constitution.md").exists()
+
+
 def is_git_repo(path: Path = None) -> bool:
     """Check if the specified path is inside a git repository."""
     if path is None:
@@ -2412,6 +2444,14 @@ def init(
             selected_script = default_script
 
     # Handle constitution tier selection
+    # Check if this is an existing project without a constitution
+    is_existing_proj = here and is_existing_project(project_path)
+    has_existing_constitution = has_constitution(project_path)
+
+    if is_existing_proj and not has_existing_constitution:
+        console.print("\n[yellow]No constitution found in existing project.[/yellow]")
+        console.print("[cyan]Select a tier to create one:[/cyan]")
+
     if constitution:
         if constitution not in CONSTITUTION_TIER_CHOICES:
             console.print(
@@ -2574,6 +2614,7 @@ def init(
 
             # Set up constitution template
             tracker.start("constitution")
+            constitution_created_for_existing = False
             try:
                 # Get constitution template from embedded templates
                 if selected_constitution in CONSTITUTION_TEMPLATES:
@@ -2587,6 +2628,9 @@ def init(
                         "constitution",
                         f"{selected_constitution} tier → memory/constitution.md",
                     )
+                    # Track if we created constitution for existing project
+                    if is_existing_proj and not has_existing_constitution:
+                        constitution_created_for_existing = True
                 else:
                     tracker.error(
                         "constitution",
@@ -2671,6 +2715,20 @@ def init(
         )
         console.print()
         console.print(security_notice)
+
+    # Show constitution customization message if we created one for existing project
+    if constitution_created_for_existing:
+        console.print()
+        constitution_panel = Panel(
+            "Constitution template created at [cyan]memory/constitution.md[/cyan]\n\n"
+            "[yellow]Next step:[/yellow] Customize it for your repository using:\n"
+            "[cyan]/speckit:constitution[/cyan]\n\n"
+            "This will tailor the constitution to your project's specific needs.",
+            title="[green]Constitution Created[/green]",
+            border_style="green",
+            padding=(1, 2),
+        )
+        console.print(constitution_panel)
 
     # Check for backlog-md and offer to install if missing
     current_backlog_version = check_backlog_installed_version()
@@ -2927,6 +2985,36 @@ def upgrade(
     console.print(f"  AI Assistant: [green]{ai_assistant}[/green]")
     console.print(f"  Script Type:  [green]{script_type}[/green]")
     console.print()
+
+    # Check for missing constitution
+    if not has_constitution(project_path):
+        console.print("[yellow]No constitution found.[/yellow]")
+        if sys.stdin.isatty():
+            add_constitution = typer.confirm("Would you like to add one?", default=True)
+            if add_constitution:
+                console.print()
+                selected_constitution = select_with_arrows(
+                    CONSTITUTION_TIER_CHOICES,
+                    "Choose constitution tier (or press Enter for medium)",
+                    "medium",
+                )
+                # Create memory directory and constitution file
+                memory_dir = project_path / "memory"
+                memory_dir.mkdir(parents=True, exist_ok=True)
+                constitution_dest = memory_dir / "constitution.md"
+                constitution_dest.write_text(
+                    CONSTITUTION_TEMPLATES[selected_constitution]
+                )
+                console.print(
+                    f"[green]✓[/green] Constitution created: [cyan]memory/constitution.md[/cyan] ({selected_constitution} tier)"
+                )
+                console.print(
+                    "[dim]Tip: Run /speckit:constitution to customize it for your repo[/dim]\n"
+                )
+        else:
+            console.print(
+                "[dim]Run 'specify init --here' in interactive mode to add a constitution[/dim]\n"
+            )
 
     if dry_run:
         console.print("[yellow]DRY RUN MODE - No changes will be made[/yellow]\n")

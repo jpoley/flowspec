@@ -1,11 +1,11 @@
 ---
 id: task-243
 title: Detect existing projects without constitution
-status: To Do
+status: In Progress
 assignee:
-  - '@kinsale'
+  - '@galway'
 created_date: '2025-12-03 02:38'
-updated_date: '2025-12-04 16:31'
+updated_date: '2025-12-04 17:11'
 labels:
   - constitution-cleanup
 dependencies:
