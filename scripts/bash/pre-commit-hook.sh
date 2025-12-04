@@ -51,8 +51,76 @@ else
 fi
 echo ""
 
-# 3. Quick test run (only fast tests if marked)
-echo -e "${BLUE}3. Running quick tests...${NC}"
+# 3. Code quality validation (staged Python files only)
+echo -e "${BLUE}3. Running code quality validation on staged files...${NC}"
+
+# Get list of staged Python files
+STAGED_PY_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.py$' || true)
+
+if [ -n "$STAGED_PY_FILES" ]; then
+    # Check for file I/O without encoding in staged files
+    ENCODING_ISSUES=""
+    for file in $STAGED_PY_FILES; do
+        if [ -f "$file" ]; then
+            # Check write_text/read_text without encoding
+            ISSUES=$(git show ":$file" 2>/dev/null | grep -n "write_text\|read_text" | grep -v "encoding=" || true)
+            if [ -n "$ISSUES" ]; then
+                ENCODING_ISSUES="${ENCODING_ISSUES}${file}:\n${ISSUES}\n"
+            fi
+        fi
+    done
+
+    if [ -n "$ENCODING_ISSUES" ]; then
+        echo -e "${RED}✗ File I/O missing encoding=\"utf-8\":${NC}"
+        echo -e "$ENCODING_ISSUES"
+        STATUS=1
+    else
+        echo -e "${GREEN}✓ All write_text/read_text have encoding${NC}"
+    fi
+
+    # Check for open() without encoding in staged files (text mode only)
+    OPEN_ISSUES=""
+    for file in $STAGED_PY_FILES; do
+        if [ -f "$file" ]; then
+            # Check open() without encoding, excluding binary mode ("rb", "wb")
+            ISSUES=$(git show ":$file" 2>/dev/null | grep -n "open(" | grep -v "encoding=" | grep -v '"[rw]b"' | grep -v "'[rw]b'" | grep -v "#" | grep -v "def open" || true)
+            if [ -n "$ISSUES" ]; then
+                OPEN_ISSUES="${OPEN_ISSUES}${file}:\n${ISSUES}\n"
+            fi
+        fi
+    done
+
+    if [ -n "$OPEN_ISSUES" ]; then
+        echo -e "${RED}✗ open() calls missing encoding=\"utf-8\":${NC}"
+        echo -e "$OPEN_ISSUES"
+        STATUS=1
+    else
+        echo -e "${GREEN}✓ All open() calls have encoding${NC}"
+    fi
+
+    # Check for shadowed Python built-ins in staged files (warning only)
+    SHADOW_ISSUES=""
+    for file in $STAGED_PY_FILES; do
+        if [ -f "$file" ]; then
+            ISSUES=$(git show ":$file" 2>/dev/null | grep -n "def.*[( ,]\(id\|type\|list\|dict\|input\|filter\|map\|hash\)[,):]" || true)
+            if [ -n "$ISSUES" ]; then
+                SHADOW_ISSUES="${SHADOW_ISSUES}${file}:\n${ISSUES}\n"
+            fi
+        fi
+    done
+
+    if [ -n "$SHADOW_ISSUES" ]; then
+        echo -e "${YELLOW}⚠ Possible shadowed Python built-ins (review manually):${NC}"
+        echo -e "$SHADOW_ISSUES"
+    fi
+else
+    echo -e "${GREEN}✓ No Python files staged, skipping validation${NC}"
+fi
+
+echo ""
+
+# 4. Quick test run (only fast tests if marked)
+echo -e "${BLUE}4. Running quick tests...${NC}"
 if command -v pytest &> /dev/null; then
     # Run tests marked as 'quick' or all tests if no markers
     if pytest tests/ -m quick --tb=short > /dev/null 2>&1; then
