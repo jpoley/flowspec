@@ -1,10 +1,10 @@
 ---
 id: task-286
 title: Constitution Enforcement in /jpspec Commands
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-12-04 16:08'
-updated_date: '2025-12-04 16:31'
+updated_date: '2025-12-04 22:45'
 labels:
   - constitution-cleanup
 dependencies:
@@ -20,9 +20,15 @@ Add constitution checks to all /jpspec slash commands before execution
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Before command execution, check memory/constitution.md existence
-- [ ] #2 Check for NEEDS_VALIDATION markers in constitution
-- [ ] #3 Warn if missing or unvalidated
-- [ ] #4 Respect tier-specific enforcement (light = warn, medium = confirm, heavy = block)
-- [ ] #5 Add --skip-validation flag for emergencies
+- [x] #1 Before command execution, check memory/constitution.md existence
+- [x] #2 Check for NEEDS_VALIDATION markers in constitution
+- [x] #3 Warn if missing or unvalidated
+- [x] #4 Respect tier-specific enforcement (light = warn, medium = confirm, heavy = block)
+- [x] #5 Add --skip-validation flag for emergencies
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Already implemented - `_constitution-check.md` included in all jpspec commands. Branch merged to main.
+<!-- SECTION:NOTES:END -->

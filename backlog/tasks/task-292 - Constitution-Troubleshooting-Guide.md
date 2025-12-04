@@ -1,10 +1,10 @@
 ---
 id: task-292
 title: Constitution Troubleshooting Guide
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-12-04 16:18'
-updated_date: '2025-12-04 16:31'
+updated_date: '2025-12-04 22:45'
 labels:
   - constitution-cleanup
 dependencies:
@@ -21,9 +21,15 @@ Help users resolve common constitution issues and validation problems
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Issue: LLM generated incorrect language detection
-- [ ] #2 Issue: Constitution validation stuck on unresolvable NEEDS_VALIDATION
-- [ ] #3 Issue: /jpspec command blocked by unvalidated constitution
-- [ ] #4 Issue: Constitution version mismatch after upgrade
-- [ ] #5 Each issue includes symptoms, cause, resolution
+- [x] #1 Issue: LLM generated incorrect language detection
+- [x] #2 Issue: Constitution validation stuck on unresolvable NEEDS_VALIDATION
+- [x] #3 Issue: /jpspec command blocked by unvalidated constitution
+- [x] #4 Issue: Constitution version mismatch after upgrade
+- [x] #5 Each issue includes symptoms, cause, resolution
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Already implemented - `docs/guides/constitution-troubleshooting.md` exists. Branch merged to main.
+<!-- SECTION:NOTES:END -->
