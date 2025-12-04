@@ -270,7 +270,7 @@ def calculate_quality_score(content: str) -> int:
     score += min(25, headings * 5)  # 5 points per heading, max 25
 
     # Lists/structure (25 points max)
-    list_items = len(re.findall(r"^[\s]*[-*]\s+", content, re.MULTILINE))
+    list_items = len(re.findall(r"^\s*[-*]\s+", content, re.MULTILINE))
     score += min(25, list_items * 2)  # 2 points per item, max 25
 
     # Specificity indicators (25 points max)
