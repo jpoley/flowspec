@@ -514,7 +514,7 @@ CI/CD:
 
 Selected Tier: [tier name]
 # If tier was auto-detected:
-Complexity Score: X/15 (auto-detected)
+Complexity Score: X/14 (auto-detected)
 # If tier was specified by user:
 User specified via --tier flag
 
