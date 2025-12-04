@@ -1,0 +1,226 @@
+# Security Configuration Schema
+# This is an example configuration file showing all available options
+# with inline documentation. Place this file at .jpspec/security-config.yml
+# to customize security scanning behavior.
+
+# Scanner Configuration
+# Configure which scanners to run and their settings
+scanners:
+  # Semgrep - Fast SAST scanner supporting 30+ languages
+  semgrep:
+    enabled: true  # Enable/disable this scanner
+
+    # Registry rulesets from Semgrep Registry (https://semgrep.dev/explore)
+    registry_rulesets:
+      - p/default            # Comprehensive security rules
+      - p/owasp-top-ten     # OWASP Top 10 vulnerabilities
+      - p/cwe-top-25        # CWE Top 25 dangerous software weaknesses
+
+    # Local ruleset files (if you have custom rules)
+    rulesets: []
+
+    # Directory containing custom Semgrep rules (.yml files)
+    custom_rules_dir: .security/rules/
+
+    # Maximum time (seconds) for Semgrep to run
+    timeout: 300  # 5 minutes
+
+    # Additional command-line arguments to pass to Semgrep
+    extra_args: []
+
+  # CodeQL - GitHub's semantic code analysis engine
+  codeql:
+    enabled: false  # Disabled by default (requires database setup)
+
+    # Languages to scan (leave empty to auto-detect)
+    languages:
+      - python
+      - javascript
+      - go
+
+    # CodeQL query suites to run
+    query_suites:
+      - security-extended    # Extended security queries
+      - security-and-quality # Security + code quality
+
+    # Path to CodeQL database (must be created first)
+    database_path: .codeql/database/
+
+    # Local query files
+    rulesets: []
+
+    # Additional command-line arguments
+    extra_args: []
+
+  # Bandit - Python security linter
+  bandit:
+    enabled: true  # Enable by default for Python projects
+
+    # Confidence level: low, medium, high
+    # Lower = more findings, more false positives
+    # Higher = fewer findings, fewer false positives
+    confidence_level: medium
+
+    # Bandit test IDs to skip (e.g., ["B101", "B201"])
+    # B101 = assert_used, B201 = flask_debug_true
+    skips: []
+
+    # Local Bandit config files
+    rulesets: []
+
+    # Additional command-line arguments
+    extra_args: []
+
+# Severity Threshold
+# Determines which findings cause scan to fail
+# Options: critical, high, medium, low, none
+fail_on: high  # Fail on high and critical findings
+
+# Path and Pattern Exclusions
+# Files/directories to exclude from scanning
+exclusions:
+  # Exact directory paths
+  paths:
+    - node_modules/      # JavaScript dependencies
+    - .venv/            # Python virtual environment
+    - venv/
+    - vendor/           # Go dependencies
+    - dist/             # Build output
+    - build/
+    - .git/             # Git directory
+    - __pycache__/      # Python cache
+    - .pytest_cache/
+    - .mypy_cache/
+    - coverage/         # Test coverage output
+    - .coverage/
+
+  # Glob patterns
+  patterns:
+    - "*.min.js"        # Minified JavaScript
+    - "*.min.css"       # Minified CSS
+    - "*.bundle.js"     # Bundled JavaScript
+    - "*.bundle.css"
+    - "*_test.go"       # Go test files
+    - "*_test.py"       # Python test files
+    - "test_*.py"
+    - "*.generated.*"   # Generated code
+    - "*.pb.go"         # Protobuf generated Go
+    - "*.pb.py"         # Protobuf generated Python
+    - "**/migrations/*" # Database migrations
+    - "**/fixtures/*"   # Test fixtures
+
+  # File extensions to exclude
+  file_extensions:
+    - .map              # Source maps
+    - .lock             # Lock files (package-lock.json, Pipfile.lock)
+    - .sum              # Checksum files (go.sum)
+    - .svg              # SVG files
+    - .png
+    - .jpg
+    - .gif
+    - .ico
+
+# AI Triage Configuration
+# Settings for AI-powered finding analysis
+triage:
+  enabled: true  # Enable AI triage to reduce false positives
+
+  # Confidence threshold (0.0 - 1.0)
+  # Findings with AI confidence below this are flagged as uncertain
+  # 0.7 = 70% confidence minimum (recommended balance)
+  confidence_threshold: 0.7
+
+  # Auto-dismiss false positives
+  # If true, findings with very low confidence are automatically dismissed
+  # If false, humans review all findings (recommended)
+  auto_dismiss_fp: false
+
+  # Cluster similar findings together
+  # Groups findings with similar root causes
+  cluster_similar: true
+
+# Report Generation
+# Configure output format and content
+reporting:
+  # Output format: markdown, html, json, sarif
+  format: markdown
+
+  # Output directory (null = stdout)
+  output_dir: docs/security/reports/
+
+  # Include findings marked as false positives in report
+  include_false_positives: false
+
+  # Maximum number of AI-generated remediation suggestions
+  # Limits AI output to avoid overwhelming developers
+  max_remediations: 10
+
+# Top-Level Options
+
+# Run scanners in parallel (faster, uses more CPU)
+parallel_scans: true
+
+# Maximum number of findings to report
+# Prevents overwhelming output when there are many issues
+max_findings: 1000
+
+# Example Profiles for Different Use Cases
+# (Remove or comment out the sections above and use one of these)
+
+# --- DEVELOPMENT PROFILE (Fast, Local Scans) ---
+# scanners:
+#   semgrep:
+#     enabled: true
+#     registry_rulesets: [p/default]
+#   bandit:
+#     enabled: true
+# fail_on: high
+# parallel_scans: true
+
+# --- CI/CD PROFILE (Comprehensive, Blocks PRs) ---
+# scanners:
+#   semgrep:
+#     enabled: true
+#     registry_rulesets: [p/default, p/owasp-top-ten, p/cwe-top-25]
+#     timeout: 600
+#   codeql:
+#     enabled: true
+#   bandit:
+#     enabled: true
+# fail_on: high
+# triage:
+#   auto_dismiss_fp: true
+# reporting:
+#   format: sarif
+#   output_dir: .security/results/
+
+# --- AUDIT PROFILE (Deep Analysis, Review Everything) ---
+# scanners:
+#   semgrep:
+#     enabled: true
+#     registry_rulesets: [p/default, p/owasp-top-ten, p/cwe-top-25, p/security-audit]
+#   codeql:
+#     enabled: true
+#     query_suites: [security-extended]
+#   bandit:
+#     enabled: true
+#     confidence_level: low
+# fail_on: medium
+# triage:
+#   confidence_threshold: 0.5
+#   auto_dismiss_fp: false
+# reporting:
+#   include_false_positives: true
+
+# --- MINIMAL PROFILE (Quick Pre-Commit Checks) ---
+# scanners:
+#   semgrep:
+#     enabled: true
+#     registry_rulesets: [p/security-audit]
+#     timeout: 60
+#   codeql:
+#     enabled: false
+#   bandit:
+#     enabled: false
+# fail_on: critical
+# max_findings: 100
