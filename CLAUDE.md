@@ -37,55 +37,6 @@ backlog task edit 42 -s Done     # Complete task
 /jpspec:operate   # SRE operations (CI/CD, K8s)
 ```
 
-## Engineering Subagents
-
-JP Spec Kit includes 4 specialized engineering subagents for implementation work. These agents are invoked using the Task tool with the `subagent_type` parameter.
-
-### Available Subagents
-
-| Subagent | Expertise | Tools | Color |
-|----------|-----------|-------|-------|
-| **backend-engineer** | Python, APIs, databases, FastAPI/Flask, SQLAlchemy, server-side logic | Read, Write, Edit, Glob, Grep, Bash | Green |
-| **frontend-engineer** | React, Next.js, TypeScript, UI components, styling, accessibility | Read, Write, Edit, Glob, Grep, Bash | Cyan |
-| **qa-engineer** | Testing, coverage, E2E tests, pytest, Playwright, quality assurance | Read, Write, Edit, Glob, Grep, Bash | Yellow |
-| **security-reviewer** | Security review, vulnerability assessment, SLSA compliance, OWASP | Read, Glob, Grep, Bash | Red |
-
-### When to Use Subagents
-
-**Use the Task tool with subagents when you need**:
-- Specialized expertise (e.g., backend API design, frontend accessibility)
-- Isolated context for complex tasks
-- Parallel execution of independent work
-- Domain-specific quality checks
-
-**Examples**:
-```
-# Backend API implementation
-Task: "Implement user authentication endpoint"
-Subagent: backend-engineer
-
-# Frontend component work
-Task: "Create responsive navbar component"
-Subagent: frontend-engineer
-
-# Test coverage
-Task: "Add comprehensive tests for payment module"
-Subagent: qa-engineer
-
-# Security review
-Task: "Review authentication module for vulnerabilities"
-Subagent: security-reviewer
-```
-
-### Subagent Tool Restrictions
-
-- **backend-engineer, frontend-engineer, qa-engineer**: Full code access (Read, Write, Edit, Glob, Grep, Bash)
-- **security-reviewer**: Read-only (Read, Glob, Grep, Bash) - provides remediation guidance, doesn't make changes
-
-### Complementary Agent
-
-- **project-manager-backlog**: Task management, backlog.md CLI operations, task creation/editing
-
 ## Workflow Configuration
 
 JP Spec Kit uses a configurable workflow system defined in `jpspec_workflow.yml` at the project root.

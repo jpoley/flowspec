@@ -1,1 +1,1 @@
-../../../templates/commands/speckit/specify.md
+../../../templates/commands/specify.md

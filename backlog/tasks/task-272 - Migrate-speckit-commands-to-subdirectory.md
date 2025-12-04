@@ -1,11 +1,11 @@
 ---
 id: task-272
 title: Migrate speckit commands to subdirectory
-status: Done
+status: To Do
 assignee:
   - '@galway'
 created_date: '2025-12-03 14:01'
-updated_date: '2025-12-04 23:12'
+updated_date: '2025-12-04 04:01'
 labels:
   - architecture
   - migration
@@ -21,11 +21,11 @@ Move speckit template commands into templates/commands/speckit/ subdirectory for
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [x] #1 Create templates/commands/speckit/ directory
-- [x] #2 Move all 8 speckit command files into subdirectory (implement, analyze, checklist, clarify, constitution, plan, specify, tasks)
-- [x] #3 Verify no flat files remain in templates/commands/
-- [x] #4 Update dogfood command to handle speckit subdirectory
-- [x] #5 Test dogfood creates correct speckit symlinks
+- [ ] #1 Create templates/commands/speckit/ directory
+- [ ] #2 Move all 8 speckit command files into subdirectory (implement, analyze, checklist, clarify, constitution, plan, specify, tasks)
+- [ ] #3 Verify no flat files remain in templates/commands/
+- [ ] #4 Update dogfood command to handle speckit subdirectory
+- [ ] #5 Test dogfood creates correct speckit symlinks
 <!-- AC:END -->
 
 ## Implementation Notes

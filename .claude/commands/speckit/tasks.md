@@ -1,1 +1,1 @@
-../../../templates/commands/speckit/tasks.md
+../../../templates/commands/tasks.md

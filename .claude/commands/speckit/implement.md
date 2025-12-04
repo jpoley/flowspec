@@ -1,1 +1,1 @@
-../../../templates/commands/speckit/implement.md
+../../../templates/commands/implement.md
