@@ -26,7 +26,7 @@ Prioritize working software over documentation. Code that runs is better than pe
 - Feature branches encouraged for all changes
 - Direct commits to main allowed if you prefer ("yolo mode")
 - Commit messages should be descriptive
-- DCO sign-off recommended: `git commit -s`
+- DCO sign-off required (automated via git hooks): `git commit -s`
 <!-- SECTION:GIT:END -->
 
 ### Task Management

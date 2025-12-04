@@ -911,9 +911,10 @@ These rules MUST appear in all constitution tiers:
 
 1. **Artifact Progression**: PRD → Functional Spec → Technical Spec → ADR → Implementation → Runbook
 2. **Implementation = Code + Docs + Tests**: All three required for completion
-3. **DCO Sign-off**: `git commit -s` on all commits
-4. **Task Quality**: Acceptance criteria required on all tasks
-6. **PR-Task Synchronization**: PRs reference tasks, tasks reference PRs
+3. **DCO Sign-off**: `git commit -s` on all commits (automated via git hooks)
+4. **PR-Task Synchronization**: PRs reference tasks, tasks reference PRs
+
+Note: Git workflow and task quality rules are tier-specific (see Appendix B).
 
 ## Appendix B: Tier-Specific Rules
 
@@ -922,6 +923,7 @@ These rules MUST appear in all constitution tiers:
 - **Git**: Feature branches encouraged. Direct commits to main are allowed ("yolo mode"); PRs are optional.
 - **Review**: Code review when time permits
 - **Testing**: Tests for critical paths
+- **Task Quality**: Acceptance criteria when scope is unclear
 - **Enforcement**: Warnings only, can proceed
 
 ### Medium Tier
@@ -929,6 +931,7 @@ These rules MUST appear in all constitution tiers:
 - **Git**: All changes must go through Pull Requests (PRs) via feature branches; direct commits to main are not allowed.
 - **Review**: Minimum one reviewer required
 - **Testing**: Unit + integration tests, 70% coverage target
+- **Task Quality**: Acceptance criteria required on all tasks
 - **Enforcement**: Warning + confirmation prompt
 
 ### Heavy Tier
@@ -936,6 +939,7 @@ These rules MUST appear in all constitution tiers:
 - **Git**: Protected branches, minimum 2 reviewers, force push disabled
 - **Review**: Minimum two reviewers including one senior engineer
 - **Testing**: Unit + integration + E2E tests, 80% coverage minimum, security scans required
+- **Task Quality**: Acceptance criteria required on all tasks, with validation gates
 - **Enforcement**: Hard block, cannot proceed without validation
 
 ## Appendix C: Template Placeholder Tokens
