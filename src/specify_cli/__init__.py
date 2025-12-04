@@ -4979,6 +4979,144 @@ def security_audit(
         console.print(f"Output: {output}")
 
 
+@security_app.command("tools")
+def security_tools(
+    action: str = typer.Argument(
+        "status",
+        help="Action to perform: status, install, clear-cache",
+    ),
+    tool: Optional[str] = typer.Option(
+        None,
+        "--tool",
+        "-t",
+        help="Specific tool (semgrep, codeql). If not specified, applies to all.",
+    ),
+    version: Optional[str] = typer.Option(
+        None,
+        "--version",
+        "-v",
+        help="Version to install (e.g., 1.50.0). Defaults to latest.",
+    ),
+    offline: bool = typer.Option(
+        False,
+        "--offline",
+        help="Enable offline mode (use cached tools only)",
+    ),
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Output as JSON",
+    ),
+):
+    """Manage security scanner tool dependencies.
+
+    Actions:
+        status      - Show installation status of tools
+        install     - Install or update tools
+        clear-cache - Clear the tool cache
+
+    Examples:
+        specify security tools                        # Show all tool status
+        specify security tools status                 # Same as above
+        specify security tools install                # Install all tools
+        specify security tools install --tool semgrep # Install only Semgrep
+        specify security tools install --version 1.50.0 # Specific version
+        specify security tools clear-cache            # Clear cached downloads
+    """
+    import json
+
+    from specify_cli.security.tools import ToolManager, ToolConfig, ToolStatus
+
+    # Initialize manager
+    config = ToolConfig(offline_mode=offline)
+    manager = ToolManager(config)
+
+    if action == "status":
+        # Show status of all tools
+        tools = [tool] if tool else ["semgrep", "codeql"]
+        statuses = [manager.get_status(t) for t in tools]
+
+        if json_output:
+            output = {
+                "tools": [
+                    {
+                        "name": s.name,
+                        "status": s.status.value,
+                        "version": s.version,
+                        "path": s.path,
+                        "error": s.error,
+                    }
+                    for s in statuses
+                ],
+                "cache_size_mb": manager.get_cache_size(),
+                "cache_warning": manager.check_cache_size(),
+            }
+            console.print(json.dumps(output, indent=2))
+        else:
+            console.print("[bold]Security Tool Status[/bold]\n")
+
+            table = Table(show_header=True, header_style="bold cyan")
+            table.add_column("Tool", width=15)
+            table.add_column("Status", width=15)
+            table.add_column("Version", width=25)
+            table.add_column("Path", width=40)
+
+            for s in statuses:
+                status_str = {
+                    ToolStatus.INSTALLED: "[green]Installed[/green]",
+                    ToolStatus.NOT_INSTALLED: "[yellow]Not Installed[/yellow]",
+                    ToolStatus.OUTDATED: "[yellow]Outdated[/yellow]",
+                    ToolStatus.ERROR: f"[red]Error: {s.error}[/red]",
+                }.get(s.status, s.status.value)
+
+                table.add_row(
+                    s.name,
+                    status_str,
+                    s.version or "-",
+                    s.path or "-",
+                )
+
+            console.print(table)
+
+            # Cache info
+            cache_size = manager.get_cache_size()
+            console.print(f"\n[dim]Cache size: {cache_size:.1f} MB[/dim]")
+
+            warning = manager.check_cache_size()
+            if warning:
+                console.print(f"[yellow]⚠️  {warning}[/yellow]")
+
+    elif action == "install":
+        tools_to_install = [tool] if tool else ["semgrep", "codeql"]
+
+        for tool_name in tools_to_install:
+            console.print(f"[cyan]Installing {tool_name}...[/cyan]")
+            result = manager.ensure_installed(tool_name, version)
+
+            if result.status == ToolStatus.INSTALLED:
+                console.print(
+                    f"[green]✓ {tool_name} installed[/green] (v{result.version})"
+                )
+            else:
+                console.print(f"[red]✗ {tool_name} failed: {result.error}[/red]")
+
+        # Show cache warning if applicable
+        warning = manager.check_cache_size()
+        if warning:
+            console.print(f"\n[yellow]⚠️  {warning}[/yellow]")
+
+    elif action == "clear-cache":
+        console.print("[cyan]Clearing tool cache...[/cyan]")
+        old_size = manager.get_cache_size()
+        manager.clear_cache()
+        console.print(f"[green]✓ Cache cleared[/green] ({old_size:.1f} MB freed)")
+
+    else:
+        console.print(f"[red]Unknown action: {action}[/red]")
+        console.print("Valid actions: status, install, clear-cache")
+        raise typer.Exit(1)
+
+
 @workflow_app.command("validate")
 def workflow_validate(
     file: Optional[str] = typer.Option(
