@@ -349,7 +349,7 @@ class ToolManager:
             with urlopen(url, timeout=self.DOWNLOAD_TIMEOUT_SECONDS) as response:
                 with open(dest, "wb") as f:
                     # Read in chunks to handle large files
-                    chunk_size = 8192
+                    chunk_size = 65536  # Increased from 8192 for better performance
                     while True:
                         chunk = response.read(chunk_size)
                         if not chunk:
