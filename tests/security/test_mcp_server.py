@@ -163,7 +163,9 @@ class TestSecurityScanTool:
     @pytest.mark.asyncio
     async def test_security_scan_includes_fail_on_result(self, mock_orchestrator):
         """Test that scan includes should_fail and fail_on in result."""
-        result = await mcp_server.security_scan(target=".", fail_on=["high", "critical"])
+        result = await mcp_server.security_scan(
+            target=".", fail_on=["high", "critical"]
+        )
 
         # Verify fail_on fields are included
         assert "should_fail" in result
