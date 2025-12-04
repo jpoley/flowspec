@@ -5,14 +5,12 @@ status: To Do
 assignee:
   - '@kinsale'
 created_date: '2025-12-03 02:45'
-updated_date: '2025-12-04 04:01'
+updated_date: '2025-12-04 16:31'
 labels:
-  - testing
-  - integration-tests
-  - constitution
+  - constitution-cleanup
 dependencies:
   - task-245
-priority: medium
+priority: high
 ---
 
 ## Description
