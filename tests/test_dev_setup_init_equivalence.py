@@ -75,10 +75,7 @@ class TestDevSetupInitEquivalence:
         if not speckit_commands_dir.exists():
             pytest.skip("No .claude/commands/speckit directory")
 
-        speckit_templates = templates_dir / "speckit"
-        if not speckit_templates.exists():
-            pytest.skip("No templates/commands/speckit directory")
-        template_files = {f.name for f in speckit_templates.glob("*.md") if f.is_file()}
+        template_files = {f.name for f in templates_dir.glob("*.md") if f.is_file()}
         symlink_files = {
             f.name for f in speckit_commands_dir.glob("*.md") if f.is_symlink()
         }
@@ -116,11 +113,9 @@ class TestDevSetupInitEquivalence:
                 if template.is_file():
                     init_files.add(f"jpspec/{template.name}")
 
-        speckit_templates = templates_dir / "speckit"
-        if speckit_templates.exists():
-            for template in speckit_templates.glob("*.md"):
-                if template.is_file():
-                    init_files.add(f"speckit/{template.name}")
+        for template in templates_dir.glob("*.md"):
+            if template.is_file():
+                init_files.add(f"speckit/{template.name}")
 
         assert dev_setup_files == init_files, (
             f"File set mismatch between dev-setup and init.\n"
@@ -400,10 +395,9 @@ class TestTemplateCompleteness:
             )
 
         # Check speckit
-        speckit_templates = templates_dir / "speckit"
         speckit_commands = claude_commands_dir / "speckit"
-        if speckit_templates.exists() and speckit_commands.exists():
-            template_files = {f.name for f in speckit_templates.glob("*.md")}
+        if speckit_commands.exists():
+            template_files = {f.name for f in templates_dir.glob("*.md")}
             symlink_files = {f.name for f in speckit_commands.glob("*.md")}
             orphan_symlinks.extend(
                 f"speckit/{n}" for n in symlink_files - template_files
