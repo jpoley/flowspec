@@ -1,5 +1,5 @@
 ---
-description: Analyze repository and write findings to memory/repo-facts.md with detected tech stack
+description: Analyze repository and create customized constitution.md based on detected tech stack
 ---
 
 ## User Input
@@ -12,7 +12,11 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 ## Execution Instructions
 
-This command analyzes the repository structure to detect languages, frameworks, CI/CD systems, testing tools, linting configurations, and security tools. It writes findings to `memory/repo-facts.md` in a structured format that LLM agents can reference for project context.
+This command analyzes the repository structure to detect languages, frameworks, CI/CD systems, testing tools, linting configurations, and security tools. It:
+1. Writes findings to `memory/repo-facts.md` for LLM agent reference
+2. Auto-selects or accepts a tier (light/medium/heavy) via `--tier` flag
+3. Customizes the tier-appropriate constitution template with detected technologies
+4. Writes `memory/constitution.md` with NEEDS_VALIDATION markers for user review
 
 ### Overview
 
@@ -20,7 +24,10 @@ The `/speckit:constitution` command:
 1. Scans repository for technology stack indicators
 2. Detects languages, frameworks, tooling, and development practices
 3. Writes structured findings to `memory/repo-facts.md`
-4. Outputs clear summary of detected technologies
+4. Auto-detects or accepts constitution tier via `--tier` flag
+5. Customizes constitution template with detected tech stack
+6. Writes `memory/constitution.md` with NEEDS_VALIDATION markers
+7. Outputs validation checklist and summary
 
 ### Step 1: Repository Structure Analysis
 
@@ -167,7 +174,82 @@ Perform a comprehensive repository scan to detect:
 - Note build automation tools
 - Check for infrastructure as code
 
-### Step 2: Create Repository Facts Document
+### Step 2: Determine Constitution Tier
+
+Parse the `$ARGUMENTS` user input for a `--tier` flag:
+
+**Flag format**: `--tier {light|medium|heavy}`
+
+**If flag is provided**:
+- Validate the tier value is one of: `light`, `medium`, `heavy`
+- Use the specified tier
+- Note in output that tier was user-specified
+
+**If flag is NOT provided (auto-detection)**:
+
+Use this scoring algorithm to determine tier:
+
+```
+SCORE = 0
+
+# Language complexity
+languages_detected = count of detected languages
+if languages_detected >= 3: SCORE += 3
+elif languages_detected == 2: SCORE += 2
+elif languages_detected == 1: SCORE += 1
+
+# CI/CD presence
+if CI/CD detected: SCORE += 2
+
+# Testing infrastructure
+if test_framework detected: SCORE += 1
+if coverage_tool detected: SCORE += 1
+
+# Security tools
+security_tools_count = count of detected security tools
+if security_tools_count >= 3: SCORE += 3
+elif security_tools_count >= 1: SCORE += 2
+
+# Container/orchestration
+if Kubernetes manifests detected: SCORE += 2
+elif Docker detected: SCORE += 1
+
+# Linting/formatting
+if linter detected: SCORE += 1
+if type_checker detected: SCORE += 1
+
+TIER MAPPING:
+- SCORE 0-4: light
+- SCORE 5-9: medium
+- SCORE 10+: heavy
+```
+
+**Tier characteristics**:
+
+- **light**: Minimal controls for startups/hobby projects
+  - Small team (1-2 people)
+  - Simple tech stack (1-2 languages)
+  - Basic or no CI/CD
+  - Minimal tooling
+
+- **medium**: Standard controls for typical business projects
+  - Team size 3-10
+  - Multiple languages/frameworks
+  - CI/CD present
+  - Standard testing and linting
+
+- **heavy**: Strict controls for enterprise/regulated environments
+  - Large team (10+) or regulatory requirements
+  - Complex tech stack
+  - Multiple security tools
+  - Orchestration platforms (Kubernetes)
+  - Comprehensive testing, SAST, dependency scanning
+
+**Output tier decision**:
+- Store selected tier in a variable for later use
+- Log tier and score to console for transparency
+
+### Step 3: Create Repository Facts Document
 
 Write findings to `memory/repo-facts.md` with YAML frontmatter and structured content:
 
@@ -296,13 +378,97 @@ This document contains automatically detected repository characteristics. LLM ag
 - Keep descriptions concise and factual
 - Use consistent tool naming (official names)
 
-### Step 3: Generate Summary Report
+### Step 4: Customize Constitution Template
 
-Output a comprehensive summary to the user:
+After creating `memory/repo-facts.md`, customize the constitution template based on the selected tier:
+
+#### 4.1 Read Constitution Template
+
+Read the tier-appropriate template file:
+- **light tier**: `templates/constitutions/constitution-light.md`
+- **medium tier**: `templates/constitutions/constitution-medium.md`
+- **heavy tier**: `templates/constitutions/constitution-heavy.md`
+
+#### 4.2 Detect Project Name
+
+Auto-detect project name from common sources (in priority order):
+
+1. **Node.js**: `package.json` → `name` field
+2. **Python**: `pyproject.toml` → `[project].name` or `[tool.poetry].name`
+3. **Go**: `go.mod` → module name (last path segment)
+4. **Rust**: `Cargo.toml` → `[package].name`
+5. **Java**: `pom.xml` → `<artifactId>` or `build.gradle` → `rootProject.name`
+6. **Git**: Repository directory name as fallback
+
+If multiple sources exist, prefer the primary language's package manifest.
+
+#### 4.3 Format Tech Stack Section
+
+Create formatted tech stack content replacing `[LANGUAGES_AND_FRAMEWORKS]`:
+
+**Format**:
+```markdown
+### Languages & Frameworks
+- **[Language]** ([Version if detected])
+  - Framework: [Framework Name]
+  - Package Manager: [Package Manager]
+
+### Build & Tooling
+- **[Tool Category]**: [Tool Names]
+
+### Testing
+- **Framework**: [Test Framework]
+- **Coverage**: [Coverage Tool]
+
+### Code Quality
+- **Linter**: [Linter Name]
+- **Formatter**: [Formatter Name]
+- **Type Checker**: [Type Checker if applicable]
+```
+
+**For medium and heavy tiers**, also populate:
+- `[LINTING_TOOLS]` - List of detected linters and formatters
+- `[CI_CD_TOOLS]` - Detected CI/CD platforms
+
+**For heavy tier only**, populate:
+- `[COMPLIANCE_FRAMEWORKS]` - Leave as NEEDS_VALIDATION placeholder (user must specify)
+- `[RETENTION_PERIOD]` - Leave as NEEDS_VALIDATION placeholder
+- `[APPROVAL_AUTHORITY]` - Leave as NEEDS_VALIDATION placeholder
+- `[REPORTING_WINDOW]` - Leave as NEEDS_VALIDATION placeholder
+
+#### 4.4 Perform Template Replacements
+
+Replace these placeholders in the template:
+
+1. `[PROJECT_NAME]` → Detected project name (from Step 4.2)
+2. `[LANGUAGES_AND_FRAMEWORKS]` → Formatted tech stack (from Step 4.3)
+3. `[LINTING_TOOLS]` → Linting tools list (medium/heavy only)
+4. `[CI_CD_TOOLS]` → CI/CD platform details (heavy only)
+5. `[DATE]` → Current date in YYYY-MM-DD format
+
+**IMPORTANT**: Keep ALL existing `<!-- NEEDS_VALIDATION: ... -->` markers from the template. Do NOT remove them.
+
+#### 4.5 Write Constitution File
+
+Write the customized content to `memory/constitution.md`:
+
+**Pre-write checks**:
+1. Ensure `memory/` directory exists (create if needed)
+2. Validate all placeholders were replaced (no remaining `[PLACEHOLDER]` text except in NEEDS_VALIDATION comments)
+3. Verify NEEDS_VALIDATION markers are preserved
+
+**If `memory/constitution.md` already exists**:
+- Warn user that existing constitution will be overwritten
+- Suggest backing up if it contains custom edits
+- Proceed with write (user can restore from git if needed)
+
+### Step 5: Generate Summary Report and Validation Checklist
+
+Output a comprehensive summary to the user with tier information and validation checklist:
 
 ```
 ╔══════════════════════════════════════════════════════════════╗
-║         Repository Analysis Complete                         ║
+║         Constitution Generated Successfully                  ║
 ╚══════════════════════════════════════════════════════════════╝
 
 📊 DETECTED TECHNOLOGIES
@@ -334,29 +500,67 @@ Security:
 CI/CD:
   ✓ GitHub Actions (.github/workflows/)
 
+🏛️ CONSTITUTION TIER
+
+Selected Tier: [tier name]
+[If auto-detected: Complexity Score: X/15]
+[If user-specified: User specified via --tier flag]
+
+Template: templates/constitutions/constitution-[tier].md
+
 📝 OUTPUT
 
 Files Created:
   ✓ memory/repo-facts.md
+  ✓ memory/constitution.md
+
+📋 VALIDATION CHECKLIST
+
+Review your constitution at memory/constitution.md and verify:
+
+□ Project name is correct
+□ Technology stack is complete and accurate
+□ Team size matches your actual team (if mentioned)
+□ Deployment frequency is accurate (if mentioned)
+□ Quality standards reflect your practices
+□ Git workflow matches your process
+□ Testing requirements are achievable
+□ Security controls are appropriate
+
+Look for NEEDS_VALIDATION markers in the constitution file and update them:
+- Search for: <!-- NEEDS_VALIDATION:
+- Each marker indicates a section requiring manual review
+
+Run this to find all validation markers:
+  grep -n "NEEDS_VALIDATION" memory/constitution.md
 
 🎯 NEXT STEPS
 
-1. Review findings: memory/repo-facts.md
-2. Validate detected technologies are accurate
-3. Update if tools were missed or misidentified
-4. Commit changes:
+1. Review constitution: memory/constitution.md
+2. Resolve all NEEDS_VALIDATION markers
+3. Adjust tier if needed: Re-run with --tier {light|medium|heavy}
+4. Commit both files:
 
-   git add memory/repo-facts.md
-   git commit -s -m "docs: add repo facts from constitution analysis
+   git add memory/repo-facts.md memory/constitution.md
+   git commit -s -m "docs: add constitution and repo facts
 
-   - Detected languages, frameworks, and tooling
-   - Documented testing, CI/CD, and security setup
-   - Created structured reference for LLM agents
+   - Auto-detected [tier] tier based on project complexity
+   - Customized constitution with detected tech stack
+   - Created structured repository facts for LLM agents
 
    Generated via /speckit:constitution command"
+
+💡 TIP: If tier seems wrong, override with:
+   /speckit:constitution --tier {light|medium|heavy}
 ```
 
-### Step 4: Edge Cases & Error Handling
+**Adapt summary to actual findings**:
+- Replace example technologies with actually detected ones
+- Omit sections with no findings
+- Show actual tier and score
+- Include tier override tip if auto-detected tier might not fit project needs
+
+### Step 6: Edge Cases & Error Handling
 
 **Scenario: memory/ directory not found**
 - Create `memory/` directory automatically
@@ -387,17 +591,49 @@ Files Created:
 **Scenario: Minimal repository**
 - If very few technologies detected, still create repo-facts.md
 - Note that analysis found limited tooling
+- Default to "light" tier
 - Suggest running `/speckit:constitution` again after setup
+
+**Scenario: Invalid --tier flag value**
+- If user provides `--tier` with invalid value (not light/medium/heavy)
+- Output error message explaining valid values
+- Do not proceed with generation
+- Example error: "Invalid tier 'basic'. Valid tiers: light, medium, heavy"
+
+**Scenario: Cannot detect project name**
+- If no package manifests found
+- Use repository directory name
+- Add NEEDS_VALIDATION marker to project name in constitution
+- Warn user in output to verify project name
+
+**Scenario: Constitution template not found**
+- If `templates/constitutions/constitution-{tier}.md` does not exist
+- Output clear error message
+- Suggest checking JP Spec Kit installation
+- Do not create incomplete constitution file
+
+**Scenario: Existing constitution.md present**
+- Warn user before overwriting
+- Display message: "Existing constitution.md will be overwritten. Backup is available via git history."
+- Proceed with write (user controls via git)
+
+**Scenario: templates/ directory not accessible**
+- If running outside of JP Spec Kit structure
+- Output error explaining command must be run in project with JP Spec Kit installed
+- Provide guidance: "Ensure templates/constitutions/ exists in your project or JP Spec Kit installation"
 
 ## Important Notes
 
-1. **Read-only analysis**: This command analyzes but does not modify code or configs
+1. **Dual file output**: Creates both `repo-facts.md` (analysis) and `constitution.md` (governance)
 2. **Version sensitivity**: Include version numbers where detected (Python 3.11+, FastAPI 0.104+)
 3. **Tool precedence**: Prefer modern tools when conflicts exist
 4. **CI/CD awareness**: Check workflow files for additional tool detection
 5. **Multi-language projects**: Clearly distinguish primary vs secondary languages
 6. **Framework specificity**: Be precise (Next.js vs React, FastAPI vs Flask)
 7. **LLM-friendly format**: Structure content for easy parsing by AI agents
+8. **NEEDS_VALIDATION markers**: Always preserve markers from templates - never remove them
+9. **Tier selection**: Auto-detection is a starting point - users can override with `--tier` flag
+10. **Template integrity**: Keep all template sections intact, only replace placeholders
 
 ## Validation Before Writing
 
@@ -408,6 +644,15 @@ Before writing `memory/repo-facts.md`:
 3. Check all file paths mentioned actually exist
 4. Confirm tool names are official (not aliases or abbreviations)
 5. Validate date format (YYYY-MM-DD)
+
+Before writing `memory/constitution.md`:
+
+1. Verify tier is valid (light, medium, or heavy)
+2. Confirm template file exists and is readable
+3. Ensure all placeholders are replaced (except those in NEEDS_VALIDATION comments)
+4. Verify NEEDS_VALIDATION markers are preserved from template
+5. Validate project name was detected or defaults to directory name
+6. Check date format is YYYY-MM-DD
 
 ## Output Format
 
