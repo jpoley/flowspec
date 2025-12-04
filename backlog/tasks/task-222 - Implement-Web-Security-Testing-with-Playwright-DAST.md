@@ -3,8 +3,9 @@ id: task-222
 title: Implement Web Security Testing with Playwright DAST
 status: To Do
 assignee:
-  - '@pm-planner'
+  - '@muckross'
 created_date: '2025-12-03 02:15'
+updated_date: '2025-12-04 04:00'
 labels:
   - security
   - dast

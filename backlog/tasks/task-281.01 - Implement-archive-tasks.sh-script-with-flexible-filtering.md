@@ -2,8 +2,10 @@
 id: task-281.01
 title: Implement archive-tasks.sh script with flexible filtering
 status: To Do
-assignee: []
+assignee:
+  - '@galway'
 created_date: '2025-12-04 03:32'
+updated_date: '2025-12-04 04:01'
 labels:
   - backend
   - infrastructure

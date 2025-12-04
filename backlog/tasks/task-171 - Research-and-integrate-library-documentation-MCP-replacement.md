@@ -2,8 +2,10 @@
 id: task-171
 title: Research and integrate library documentation MCP replacement
 status: To Do
-assignee: []
+assignee:
+  - '@kinsale'
 created_date: '2025-11-30 19:40'
+updated_date: '2025-12-04 04:01'
 labels:
   - research
   - mcp

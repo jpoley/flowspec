@@ -2,8 +2,10 @@
 id: task-243
 title: Detect existing projects without constitution
 status: To Do
-assignee: []
+assignee:
+  - '@kinsale'
 created_date: '2025-12-03 02:38'
+updated_date: '2025-12-04 04:01'
 labels:
   - cli
   - detection

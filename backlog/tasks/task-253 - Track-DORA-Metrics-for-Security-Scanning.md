@@ -2,8 +2,10 @@
 id: task-253
 title: Track DORA Metrics for Security Scanning
 status: To Do
-assignee: []
+assignee:
+  - '@muckross'
 created_date: '2025-12-03 02:26'
+updated_date: '2025-12-04 04:00'
 labels:
   - infrastructure
   - metrics

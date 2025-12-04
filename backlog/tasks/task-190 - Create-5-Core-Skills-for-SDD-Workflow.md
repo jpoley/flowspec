@@ -2,9 +2,10 @@
 id: task-190
 title: Create 5 Core Skills for SDD Workflow
 status: To Do
-assignee: []
+assignee:
+  - '@galway'
 created_date: '2025-12-01 05:04'
-updated_date: '2025-12-01 05:29'
+updated_date: '2025-12-04 04:01'
 labels:
   - claude-code
   - skills

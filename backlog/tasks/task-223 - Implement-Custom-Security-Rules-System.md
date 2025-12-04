@@ -3,8 +3,9 @@ id: task-223
 title: Implement Custom Security Rules System
 status: To Do
 assignee:
-  - '@pm-planner'
+  - '@muckross'
 created_date: '2025-12-03 02:16'
+updated_date: '2025-12-04 04:00'
 labels:
   - security
   - customization

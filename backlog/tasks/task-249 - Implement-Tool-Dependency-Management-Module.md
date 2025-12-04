@@ -2,8 +2,10 @@
 id: task-249
 title: Implement Tool Dependency Management Module
 status: To Do
-assignee: []
+assignee:
+  - '@kinsale'
 created_date: '2025-12-03 02:26'
+updated_date: '2025-12-04 04:01'
 labels:
   - infrastructure
   - tooling

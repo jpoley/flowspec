@@ -2,8 +2,10 @@
 id: task-204.02
 title: Create backlog CLI wrapper with auto-emit events
 status: To Do
-assignee: []
+assignee:
+  - '@galway'
 created_date: '2025-12-03 02:19'
+updated_date: '2025-12-04 04:01'
 labels:
   - hooks
   - cli

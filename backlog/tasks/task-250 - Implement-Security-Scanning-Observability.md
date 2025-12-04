@@ -2,8 +2,10 @@
 id: task-250
 title: Implement Security Scanning Observability
 status: To Do
-assignee: []
+assignee:
+  - '@muckross'
 created_date: '2025-12-03 02:26'
+updated_date: '2025-12-04 04:00'
 labels:
   - infrastructure
   - observability

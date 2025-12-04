@@ -2,9 +2,10 @@
 id: task-087
 title: Production Case Studies Documentation
 status: To Do
-assignee: []
+assignee:
+  - '@galway'
 created_date: '2025-11-27 21:55'
-updated_date: '2025-11-29 05:37'
+updated_date: '2025-12-04 04:01'
 labels:
   - documentation
   - validation

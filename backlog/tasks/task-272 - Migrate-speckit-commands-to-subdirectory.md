@@ -3,9 +3,9 @@ id: task-272
 title: Migrate speckit commands to subdirectory
 status: To Do
 assignee:
-  - '@template-migrator'
+  - '@galway'
 created_date: '2025-12-03 14:01'
-updated_date: '2025-12-04 01:24'
+updated_date: '2025-12-04 04:01'
 labels:
   - architecture
   - migration

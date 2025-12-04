@@ -2,9 +2,10 @@
 id: task-081
 title: Claude Plugin Architecture
 status: To Do
-assignee: []
+assignee:
+  - '@kinsale'
 created_date: '2025-11-27 21:53'
-updated_date: '2025-11-29 05:37'
+updated_date: '2025-12-04 04:01'
 labels:
   - specify-cli
   - claude-code

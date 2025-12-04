@@ -2,8 +2,10 @@
 id: task-279
 title: Update documentation for new architecture
 status: To Do
-assignee: []
+assignee:
+  - '@galway'
 created_date: '2025-12-03 14:01'
+updated_date: '2025-12-04 04:01'
 labels:
   - documentation
 dependencies: []

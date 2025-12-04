@@ -2,9 +2,10 @@
 id: task-191
 title: Create 4 Engineering Subagents
 status: To Do
-assignee: []
+assignee:
+  - '@galway'
 created_date: '2025-12-01 05:04'
-updated_date: '2025-12-01 05:29'
+updated_date: '2025-12-04 04:01'
 labels:
   - claude-code
   - subagents

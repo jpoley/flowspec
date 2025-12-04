@@ -2,9 +2,10 @@
 id: task-195
 title: Create JP Spec Kit Plugin Package
 status: To Do
-assignee: []
+assignee:
+  - '@kinsale'
 created_date: '2025-12-01 05:05'
-updated_date: '2025-12-01 05:31'
+updated_date: '2025-12-04 04:01'
 labels:
   - claude-code
   - plugin

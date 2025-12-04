@@ -3,8 +3,9 @@ id: task-213
 title: Implement Automated Fix Generation and Patch Application
 status: To Do
 assignee:
-  - '@pm-planner'
+  - '@muckross'
 created_date: '2025-12-03 01:58'
+updated_date: '2025-12-04 04:00'
 labels:
   - security
   - implement

@@ -2,8 +2,10 @@
 id: task-134
 title: Integrate diagrams and documentation into project structure
 status: To Do
-assignee: []
+assignee:
+  - '@galway'
 created_date: '2025-11-28 17:17'
+updated_date: '2025-12-04 04:01'
 labels:
   - documentation
   - integration

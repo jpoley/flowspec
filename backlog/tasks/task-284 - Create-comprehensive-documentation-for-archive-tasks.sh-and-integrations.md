@@ -2,8 +2,10 @@
 id: task-284
 title: Create comprehensive documentation for archive-tasks.sh and integrations
 status: To Do
-assignee: []
+assignee:
+  - '@galway'
 created_date: '2025-12-04 03:32'
+updated_date: '2025-12-04 04:01'
 labels:
   - documentation
 dependencies:

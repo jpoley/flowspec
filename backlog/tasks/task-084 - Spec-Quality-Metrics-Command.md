@@ -2,9 +2,10 @@
 id: task-084
 title: Spec Quality Metrics Command
 status: To Do
-assignee: []
+assignee:
+  - '@kinsale'
 created_date: '2025-11-27 21:54'
-updated_date: '2025-11-30 16:53'
+updated_date: '2025-12-04 04:01'
 labels:
   - specify-cli
   - feature

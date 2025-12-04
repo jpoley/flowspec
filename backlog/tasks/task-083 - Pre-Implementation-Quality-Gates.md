@@ -2,9 +2,10 @@
 id: task-083
 title: Pre-Implementation Quality Gates
 status: To Do
-assignee: []
+assignee:
+  - '@kinsale'
 created_date: '2025-11-27 21:54'
-updated_date: '2025-11-29 05:37'
+updated_date: '2025-12-04 04:01'
 labels:
   - jpspec
   - feature

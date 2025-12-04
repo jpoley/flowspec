@@ -2,8 +2,10 @@
 id: task-245
 title: Add constitution validation guidance and user prompts
 status: To Do
-assignee: []
+assignee:
+  - '@kinsale'
 created_date: '2025-12-03 02:43'
+updated_date: '2025-12-04 04:01'
 labels:
   - cli
   - validation

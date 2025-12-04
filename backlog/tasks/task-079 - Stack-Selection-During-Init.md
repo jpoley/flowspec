@@ -2,9 +2,10 @@
 id: task-079
 title: Stack Selection During Init
 status: To Do
-assignee: []
+assignee:
+  - '@kinsale'
 created_date: '2025-11-27 21:53'
-updated_date: '2025-11-29 05:38'
+updated_date: '2025-12-04 04:01'
 labels:
   - specify-cli
   - feature

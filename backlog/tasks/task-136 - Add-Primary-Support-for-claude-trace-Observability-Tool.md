@@ -2,8 +2,10 @@
 id: task-136
 title: Add Primary Support for claude-trace Observability Tool
 status: To Do
-assignee: []
+assignee:
+  - '@kinsale'
 created_date: '2025-11-28 22:03'
+updated_date: '2025-12-04 04:01'
 labels:
   - observability
   - documentation

@@ -2,8 +2,10 @@
 id: task-246
 title: Integration tests for constitution template system
 status: To Do
-assignee: []
+assignee:
+  - '@kinsale'
 created_date: '2025-12-03 02:45'
+updated_date: '2025-12-04 04:01'
 labels:
   - testing
   - integration-tests

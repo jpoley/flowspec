@@ -2,9 +2,10 @@
 id: task-281
 title: Create archive-tasks.sh script for agent hooks
 status: To Do
-assignee: []
+assignee:
+  - '@galway'
 created_date: '2025-12-04 03:26'
-updated_date: '2025-12-04 03:33'
+updated_date: '2025-12-04 04:01'
 labels:
   - backend
   - script
