@@ -18,8 +18,8 @@ Edit only if LLM detection was incorrect.
 ## Languages
 <!-- Detected languages will be listed here -->
 
-## Build & Package Management
-<!-- Package managers and build tools -->
+## Frameworks
+<!-- Detected frameworks will be listed here -->
 
 ## Testing
 <!-- Test frameworks and coverage tools -->
