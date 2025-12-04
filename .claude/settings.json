@@ -1,6 +1,45 @@
 {
   "description": "Claude Code settings for JP Spec Kit project",
   "projectName": "JP Spec Kit",
+  "permissions": {
+    "deny": [
+      ".env",
+      ".env.*",
+      "**/.env",
+      "**/.env.*",
+      "**/secrets/**",
+      "**/credentials/**",
+      "**/*.pem",
+      "**/*.key",
+      "**/*_rsa",
+      "**/*_rsa.pub",
+      "**/id_ed25519",
+      "**/id_ed25519.pub"
+    ],
+    "denyWrite": [
+      "package-lock.json",
+      "uv.lock",
+      "yarn.lock",
+      "pnpm-lock.yaml",
+      "Gemfile.lock",
+      "poetry.lock",
+      "Cargo.lock",
+      "go.sum"
+    ],
+    "denyCommands": [
+      "sudo *",
+      "rm -rf /",
+      "rm -rf ~",
+      "rm -rf /*",
+      "dd if=*",
+      "mkfs*",
+      "chmod 777 *",
+      "curl * | bash",
+      "wget * | bash",
+      "curl * | sh",
+      "wget * | sh"
+    ]
+  },
   "allowedTools": [
     "Read",
     "Write",
