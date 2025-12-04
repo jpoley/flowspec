@@ -2,6 +2,16 @@
 <!-- TIER: Heavy - Strict controls for enterprise/regulated environments -->
 <!-- NEEDS_VALIDATION: Project name -->
 
+<!--
+VALIDATION REQUIRED: This constitution contains NEEDS_VALIDATION markers that indicate
+sections requiring manual review and customization. Run `specify constitution validate`
+to see which sections need attention.
+
+NEEDS_VALIDATION marker format: <!-- NEEDS_VALIDATION: Description of what to validate -->
+
+After reviewing and updating a section, remove the entire NEEDS_VALIDATION comment line.
+-->
+
 ## Core Principles (NON-NEGOTIABLE)
 
 ### Production-Grade Quality

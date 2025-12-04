@@ -1,11 +1,11 @@
 ---
 id: task-244
 title: 'Implement /speckit:constitution LLM customization command'
-status: In Progress
+status: Done
 assignee:
   - '@galway'
 created_date: '2025-12-03 02:40'
-updated_date: '2025-12-04 17:20'
+updated_date: '2025-12-04 17:21'
 labels:
   - constitution-cleanup
 dependencies:
@@ -71,4 +71,17 @@ Validation:
 - Supports --tier override flag as required
 - Outputs validation checklist as required
 - Includes NEEDS_VALIDATION markers as required
+
+Completed via PR #420
+
+Status: Pending CI verification
+
+Changes:
+- Created templates/commands/speckit/constitution.md with full repo analysis logic
+- Created symlink .claude/commands/speckit/constitution.md
+- Command detects languages, frameworks, testing, linting, CI/CD, security tools
+- Auto-selects constitution tier based on project complexity
+- Supports --tier override flag
+- Outputs NEEDS_VALIDATION markers and validation checklist
+- All 9 acceptance criteria completed
 <!-- SECTION:NOTES:END -->

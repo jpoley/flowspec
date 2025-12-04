@@ -1,11 +1,11 @@
 ---
 id: task-243
 title: Detect existing projects without constitution
-status: In Progress
+status: Done
 assignee:
   - '@galway'
 created_date: '2025-12-03 02:38'
-updated_date: '2025-12-04 17:11'
+updated_date: '2025-12-04 17:18'
 labels:
   - constitution-cleanup
 dependencies:
@@ -21,9 +21,9 @@ Add logic to detect when specify init/upgrade runs on existing project missing a
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Detect existing project (has .git, package.json, pyproject.toml, etc.)
-- [ ] #2 Check for missing memory/constitution.md
-- [ ] #3 Prompt user: 'No constitution found. Select tier: light/medium/heavy'
-- [ ] #4 Trigger LLM constitution customization flow after tier selection
-- [ ] #5 Works with both specify init --here and specify upgrade
+- [x] #1 Detect existing project (has .git, package.json, pyproject.toml, etc.)
+- [x] #2 Check for missing memory/constitution.md
+- [x] #3 Prompt user: 'No constitution found. Select tier: light/medium/heavy'
+- [x] #4 Trigger LLM constitution customization flow after tier selection
+- [x] #5 Works with both specify init --here and specify upgrade
 <!-- AC:END -->

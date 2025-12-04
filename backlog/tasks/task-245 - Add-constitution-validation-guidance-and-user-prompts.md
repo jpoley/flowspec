@@ -1,11 +1,11 @@
 ---
 id: task-245
 title: Add constitution validation guidance and user prompts
-status: To Do
+status: In Progress
 assignee:
-  - '@kinsale'
+  - '@galway'
 created_date: '2025-12-03 02:43'
-updated_date: '2025-12-04 16:31'
+updated_date: '2025-12-04 17:22'
 labels:
   - constitution-cleanup
 dependencies:

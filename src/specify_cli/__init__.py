@@ -175,6 +175,16 @@ CONSTITUTION_TEMPLATES = {
 <!-- TIER: Light - Minimal controls for startups/hobby projects -->
 <!-- NEEDS_VALIDATION: Project name -->
 
+<!--
+VALIDATION REQUIRED: This constitution contains NEEDS_VALIDATION markers that indicate
+sections requiring manual review and customization. Run `specify constitution validate`
+to see which sections need attention.
+
+NEEDS_VALIDATION marker format: <!-- NEEDS_VALIDATION: Description of what to validate -->
+
+After reviewing and updating a section, remove the entire NEEDS_VALIDATION comment line.
+-->
+
 ## Core Principles
 
 ### Simplicity First
@@ -226,6 +236,16 @@ This constitution is a living document. Update it as the project evolves.
     "medium": """# [PROJECT_NAME] Constitution
 <!-- TIER: Medium - Standard controls for typical business projects -->
 <!-- NEEDS_VALIDATION: Project name -->
+
+<!--
+VALIDATION REQUIRED: This constitution contains NEEDS_VALIDATION markers that indicate
+sections requiring manual review and customization. Run `specify constitution validate`
+to see which sections need attention.
+
+NEEDS_VALIDATION marker format: <!-- NEEDS_VALIDATION: Description of what to validate -->
+
+After reviewing and updating a section, remove the entire NEEDS_VALIDATION comment line.
+-->
 
 ## Core Principles
 
@@ -322,6 +342,16 @@ This constitution guides team practices. Changes require team consensus.
     "heavy": """# [PROJECT_NAME] Constitution
 <!-- TIER: Heavy - Strict controls for enterprise/regulated environments -->
 <!-- NEEDS_VALIDATION: Project name -->
+
+<!--
+VALIDATION REQUIRED: This constitution contains NEEDS_VALIDATION markers that indicate
+sections requiring manual review and customization. Run `specify constitution validate`
+to see which sections need attention.
+
+NEEDS_VALIDATION marker format: <!-- NEEDS_VALIDATION: Description of what to validate -->
+
+After reviewing and updating a section, remove the entire NEEDS_VALIDATION comment line.
+-->
 
 ## Core Principles (NON-NEGOTIABLE)
 
