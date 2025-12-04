@@ -5238,6 +5238,69 @@ def constitution_validate_cmd(
     raise typer.Exit(1)
 
 
+@constitution_app.command("version")
+def constitution_version_cmd(
+    path: Optional[Path] = typer.Option(
+        None,
+        "--path",
+        help="Path to constitution file (default: memory/constitution.md)",
+    ),
+) -> None:
+    """Show constitution version information."""
+    import re
+
+    show_banner()
+
+    constitution_path = path or Path.cwd() / "memory" / "constitution.md"
+
+    if not constitution_path.exists():
+        console.print(
+            f"[red]Error:[/red] Constitution not found at {constitution_path}"
+        )
+        console.print("\n[yellow]Run 'specify init --here' to create one[/yellow]")
+        raise typer.Exit(1)
+
+    content = constitution_path.read_text()
+
+    # Extract version information
+    version_match = re.search(r"\*\*Version\*\*:\s*(\S+)", content)
+    ratified_match = re.search(r"\*\*Ratified\*\*:\s*(.+?)(?:\n|$)", content)
+    amended_match = re.search(r"\*\*Last Amended\*\*:\s*(.+?)(?:\n|$)", content)
+
+    # Detect tier from comment
+    tier = "Medium"
+    if "<!-- TIER: Light" in content:
+        tier = "Light"
+    elif "<!-- TIER: Heavy" in content:
+        tier = "Heavy"
+
+    # Build version info table
+    table = Table(show_header=False, box=None, padding=(0, 2))
+    table.add_column("Field", style="cyan", no_wrap=True)
+    table.add_column("Value", style="green")
+
+    table.add_row("Version", version_match.group(1) if version_match else "Unknown")
+    table.add_row("Tier", tier)
+    table.add_row(
+        "Ratified", ratified_match.group(1).strip() if ratified_match else "Unknown"
+    )
+    table.add_row(
+        "Last Amended", amended_match.group(1).strip() if amended_match else "Unknown"
+    )
+    table.add_row("Template Version", CONSTITUTION_VERSION)
+
+    console.print(Panel(table, title="[cyan]Constitution Version[/cyan]"))
+
+    # Check for upgrade available
+    if version_match and version_match.group(1) != CONSTITUTION_VERSION:
+        console.print(
+            f"\n[yellow]⚠  Template version {CONSTITUTION_VERSION} is available[/yellow]"
+        )
+        console.print(
+            "[dim]Consider reviewing template updates at templates/constitutions/[/dim]"
+        )
+
+
 @workflow_app.command("validate")
 def workflow_validate(
     file: Optional[str] = typer.Option(
