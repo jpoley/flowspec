@@ -106,11 +106,21 @@ validate_date() {
         return 1
     fi
 
-    # Validate with GNU date command
-    if ! date -d "$date_str" &>/dev/null; then
-        print_color "${RED}" "ERROR: Invalid date: ${date_str}"
-        print_color "${RED}" "Date must be a valid calendar date"
-        return 1
+    # Platform-specific date validation
+    if date --version &>/dev/null; then
+        # GNU date
+        if ! date -d "$date_str" &>/dev/null; then
+            print_color "${RED}" "ERROR: Invalid date: ${date_str}"
+            print_color "${RED}" "Date must be a valid calendar date"
+            return 1
+        fi
+    else
+        # BSD/macOS date
+        if ! date -j -f "%Y-%m-%d" "$date_str" "+%Y-%m-%d" &>/dev/null; then
+            print_color "${RED}" "ERROR: Invalid date: ${date_str}"
+            print_color "${RED}" "Date must be a valid calendar date"
+            return 1
+        fi
     fi
 
     return 0
