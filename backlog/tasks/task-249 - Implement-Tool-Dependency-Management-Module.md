@@ -5,11 +5,11 @@ status: To Do
 assignee:
   - '@kinsale'
 created_date: '2025-12-03 02:26'
-updated_date: '2025-12-04 04:01'
+updated_date: '2025-12-04 16:32'
 labels:
-  - infrastructure
-  - tooling
-  - security
+  - 'workflow:Specified'
+  - platform
+  - tools
 dependencies: []
 priority: high
 ---
@@ -29,3 +29,24 @@ Build tool installation, version management, and caching system for Semgrep and 
 - [ ] #5 Support offline mode (use cached tools only, no network)
 - [ ] #6 Test installation flow on Linux, macOS, Windows
 <!-- AC:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+1. Design ToolDependencyManager architecture (ADR-013)
+2. Implement tool discovery chain (PATH → venv → cache → download)
+3. Implement PipInstallStrategy for Semgrep
+4. Implement BinaryDownloadStrategy for CodeQL and act
+5. Implement cache size monitoring with 500MB alert threshold
+6. Implement LRU eviction policy for cache management
+7. Create versions.lock.json for version pinning
+8. Add offline mode support (use cached tools only)
+9. Test installation flow on Linux, macOS, Windows
+10. Document tool registry and installation strategies
+<!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Specification created: docs/prd/platform-devsecops-prd.md (FR-008, FR-009, FR-010, FR-011, FR-012)
+<!-- SECTION:NOTES:END -->

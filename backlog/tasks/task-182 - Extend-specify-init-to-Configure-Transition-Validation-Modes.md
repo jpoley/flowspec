@@ -5,15 +5,27 @@ status: To Do
 assignee:
   - '@kinsale'
 created_date: '2025-11-30 21:34'
-updated_date: '2025-12-04 04:01'
+updated_date: '2025-12-04 16:32'
 labels:
-  - workflow-artifacts
-  - critical
+  - 'workflow:Specified'
 dependencies: []
 priority: high
 ---
 
-<!-- AC:END -->
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+1. Add interactive prompts to specify init for validation mode selection
+2. Implement NONE mode selection (default, press Enter)
+3. Implement KEYWORD mode with custom keyword input prompt
+4. Implement PULL_REQUEST mode selection
+5. Generate jpspec_workflow.yml with configured validation modes
+6. Add --validation-mode CLI flag for batch configuration
+7. Add --no-validation-prompts flag to skip questions (use NONE)
+8. Display summary of configured validation modes at end of init
+9. Implement specify config validation command for reconfiguration
+10. Test interactive and non-interactive flows
+<!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
 
@@ -181,4 +193,17 @@ specify config validation --transition specify --mode KEYWORD["APPROVED"]
 - task-172 (Workflow Transition Validation Schema)
 - task-175 (Transition Validation Mode Engine)
 - task-179 (Directory Scaffolding)
+
+PRD and Functional Spec created:
+- docs/prd/architecture-enhancements-prd.md
+- docs/specs/architecture-enhancements-functional.md
+
+This task is part of the JP Spec Kit Architecture Enhancements feature group.
 <!-- SECTION:NOTES:END -->
+
+<!-- AC:END -->
+
+<!-- AC:END -->
+<!-- AC:END -->
+<!-- AC:END -->
+<!-- AC:END -->
