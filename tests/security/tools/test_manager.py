@@ -143,10 +143,7 @@ class TestOfflineMode:
     """Test offline mode behavior."""
 
     def test_offline_uses_cache_only(self, tmp_path):
-        """Offline mode only uses cached tools.
-
-        FIX #3: Proper mocking for offline mode test.
-        """
+        """Offline mode only uses cached tools."""
         # Create a fake cached executable
         cache_dir = tmp_path / "tools"
         tool_cache = cache_dir / "semgrep" / "1.45.0"
