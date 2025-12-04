@@ -98,8 +98,17 @@ Assess based on:
 #### Detection Time (days)
 Use git blame to find when code was written:
 
-```bash
-git blame -L {line_start},{line_end} {file} --porcelain | grep "^committer-time" | head -1
+```python
+import subprocess
+result = subprocess.run(
+    ["git", "blame", f"-L{line_start},{line_end}", "--porcelain", file_path],
+    capture_output=True, text=True, check=True
+)
+committer_time = next(
+    (line for line in result.stdout.splitlines() if line.startswith("committer-time")),
+    None
+)
+# If needed, extract the timestamp from committer_time
 ```
 
 Calculate days since commit. If git unavailable, default to 30 days.
