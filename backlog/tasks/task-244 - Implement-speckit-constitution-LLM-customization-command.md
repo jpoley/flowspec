@@ -5,11 +5,9 @@ status: To Do
 assignee:
   - '@kinsale'
 created_date: '2025-12-03 02:40'
-updated_date: '2025-12-04 04:01'
+updated_date: '2025-12-04 16:31'
 labels:
-  - slash-command
-  - llm
-  - constitution
+  - constitution-cleanup
 dependencies:
   - task-241
   - task-243
@@ -31,4 +29,7 @@ Create slash command that analyzes repo and customizes constitution template wit
 - [ ] #5 Output includes NEEDS_VALIDATION markers on auto-generated sections
 - [ ] #6 Command outputs clear message: Constitution generated - please review and validate
 - [ ] #7 Supports --tier {light|medium|heavy} flag to override detection
+
+- [ ] #8 Command outputs validation checklist after generation
+- [ ] #9 Command supports --tier override flag
 <!-- AC:END -->

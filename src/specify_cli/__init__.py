@@ -196,9 +196,10 @@ Prioritize working software over documentation. Code that runs is better than pe
 ### Git Practices
 <!-- SECTION:GIT:BEGIN -->
 <!-- NEEDS_VALIDATION: Git workflow matches team size -->
-- Use feature branches for larger changes
-- Direct commits to main acceptable for small fixes
+- Feature branches encouraged for all changes
+- Direct commits to main allowed if you prefer ("yolo mode")
 - Commit messages should be descriptive
+- DCO sign-off recommended: `git commit -s`
 <!-- SECTION:GIT:END -->
 
 ### Task Management
