@@ -102,9 +102,9 @@ stateDiagram-v2
                               └──────┬──────┘
                                      │ /jpspec:implement
                                      ▼
-                              ┌─────────────┐
-        ┌──── Rework ◄────────│IN IMPLEMENT.│ ◄── Code written
-        │                     └──────┬──────┘
+                              ┌──────────────────┐
+        ┌──── Rework ◄────────│IN IMPLEMENTATION│ ◄── Code written
+        │                     └──────┬──────────┘
         │                            │ /jpspec:validate
         │                            ▼
         │                     ┌─────────────┐
