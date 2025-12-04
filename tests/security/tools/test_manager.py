@@ -282,7 +282,7 @@ class TestCacheInfo:
         bad_dir = tmp_path / "unreadable"
         bad_dir.mkdir()
 
-        with patch.object(Path, "iterdir", side_effect=PermissionError("denied")):
+        with patch.object(bad_dir, "iterdir", side_effect=PermissionError("denied")):
             info = manager.get_cache_info()
             assert info.tool_count == 0
 
