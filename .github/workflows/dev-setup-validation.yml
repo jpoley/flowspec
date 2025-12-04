@@ -60,8 +60,7 @@ jobs:
           MISPOINTED=0
           for SYMLINK in $(find .claude/commands -name "*.md" -type l 2>/dev/null); do
             TARGET=$(readlink -f "$SYMLINK")
-            REPO_ROOT=$(pwd)
-            if [[ ! "$TARGET" == "$REPO_ROOT"/templates/commands/* ]]; then
+            if [[ ! "$TARGET" =~ ^$(pwd)/templates/commands/ ]]; then
               echo "❌ Symlink points outside templates/commands/: $SYMLINK -> $TARGET"
               MISPOINTED=1
             fi

@@ -1,10 +1,10 @@
 ---
 id: task-266
 title: Create dev-setup operational runbook
-status: In Progress
+status: Done
 assignee: []
 created_date: '2025-12-03 13:55'
-updated_date: '2025-12-04 01:39'
+updated_date: '2025-12-04 02:26'
 labels:
   - documentation
   - operations
@@ -32,16 +32,10 @@ Operational runbook for when dogfood validation fails. Provides SRE team with re
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
-PARTIALLY COMPLETE:
+Runbook completed in PR #394.
 
-Operational runbook created at docs/runbooks/dev-setup-recovery.md (renamed from dogfood-recovery.md)
+Files updated:
+- docs/runbooks/dev-setup-recovery.md
 
-✓ Common failure scenarios documented (5 scenarios)
-✓ Step-by-step recovery procedures with Option A/B
-✓ Quick reference table with fixes
-✗ Rollback procedures for production - N/A for dev tool
-✗ Escalation paths not defined
-✗ Monitoring and alerting thresholds not defined
-
-Most critical runbook content is complete.
+Added escalation paths and monitoring guidance.
 <!-- SECTION:NOTES:END -->
