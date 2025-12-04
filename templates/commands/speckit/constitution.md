@@ -513,8 +513,10 @@ CI/CD:
 🏛️ CONSTITUTION TIER
 
 Selected Tier: [tier name]
-[If auto-detected: Complexity Score: X/15]
-[If user-specified: User specified via --tier flag]
+# If tier was auto-detected:
+Complexity Score: X/15 (auto-detected)
+# If tier was specified by user:
+User specified via --tier flag
 
 Template: templates/constitutions/constitution-[tier].md
 
