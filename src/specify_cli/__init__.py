@@ -533,6 +533,45 @@ Changes to this constitution require:
 """,
 }
 
+# Project detection markers for existing project identification
+PROJECT_MARKERS = [
+    ".git",
+    "package.json",
+    "pyproject.toml",
+    "Cargo.toml",
+    "go.mod",
+    "pom.xml",
+]
+
+
+def is_existing_project(path: Path) -> bool:
+    """Check if a directory is an existing project by looking for common project markers.
+
+    Args:
+        path: Directory to check
+
+    Returns:
+        True if any project marker is found
+    """
+    for marker in PROJECT_MARKERS:
+        if (path / marker).exists():
+            return True
+    return False
+
+
+def has_constitution(path: Path) -> bool:
+    """Check if a project has a constitution file.
+
+    Args:
+        path: Project directory to check
+
+    Returns:
+        True if memory/constitution.md exists
+    """
+    constitution_path = path / "memory" / "constitution.md"
+    return constitution_path.exists()
+
+
 CLAUDE_LOCAL_PATH = Path.home() / ".claude" / "local" / "claude"
 
 BANNER = """
@@ -2278,6 +2317,47 @@ def init(
                 if not response:
                     console.print("[yellow]Operation cancelled[/yellow]")
                     raise typer.Exit(0)
+
+            # Check if this is an existing project without a constitution
+            if is_existing_project(project_path) and not has_constitution(project_path):
+                console.print()
+                console.print(
+                    "[yellow]⚠ No constitution found in existing project[/yellow]"
+                )
+                console.print()
+
+                # Check if --constitution was provided or prompt user
+                if not constitution:
+                    # Interactive mode: prompt for tier
+                    if sys.stdin.isatty():
+                        tier_choices = list(CONSTITUTION_TIER_CHOICES.keys())
+
+                        console.print(
+                            "[cyan]Select a constitution tier for your project:[/cyan]"
+                        )
+                        for i, (tier, desc) in enumerate(
+                            CONSTITUTION_TIER_CHOICES.items()
+                        ):
+                            console.print(f"  {i + 1}. [green]{tier}[/green] - {desc}")
+
+                        # Simple input for tier selection
+                        tier_input = typer.prompt(
+                            "Enter tier number (1-3)", default="2"
+                        )
+                        try:
+                            tier_idx = int(tier_input) - 1
+                            if 0 <= tier_idx < len(tier_choices):
+                                constitution = tier_choices[tier_idx]
+                            else:
+                                constitution = "medium"
+                        except ValueError:
+                            constitution = "medium"
+                    else:
+                        # Non-interactive: use default
+                        console.print(
+                            "[yellow]Non-interactive mode: using 'medium' constitution tier[/yellow]"
+                        )
+                        constitution = "medium"
     else:
         project_path = Path(project_name).resolve()
         if project_path.exists():
@@ -2487,6 +2567,7 @@ def init(
 
     # Track git error message outside Live context so it persists
     git_error_message = None
+    constitution_was_created = False
 
     with Live(
         tracker.render(), console=console, refresh_per_second=8, transient=True
@@ -2583,6 +2664,7 @@ def init(
                     constitution_dest.write_text(
                         CONSTITUTION_TEMPLATES[selected_constitution]
                     )
+                    constitution_was_created = True
                     tracker.complete(
                         "constitution",
                         f"{selected_constitution} tier → memory/constitution.md",
@@ -2629,6 +2711,20 @@ def init(
 
     console.print(tracker.render())
     console.print("\n[bold green]Project ready.[/bold green]")
+
+    # Show constitution customization message if we created a constitution for an existing project
+    if here and constitution_was_created and is_existing_project(project_path):
+        console.print()
+        constitution_panel = Panel(
+            "Constitution template created at [cyan]memory/constitution.md[/cyan]\n\n"
+            "[yellow]Next step:[/yellow] Customize it for your repository using:\n"
+            "[green]/speckit:constitution[/green]\n\n"
+            "This will tailor the constitution to your project's specific needs.",
+            title="[green]Constitution Created[/green]",
+            border_style="green",
+            padding=(1, 2),
+        )
+        console.print(constitution_panel)
 
     # Show git error details if initialization failed
     if git_error_message:
@@ -2927,6 +3023,62 @@ def upgrade(
     console.print(f"  AI Assistant: [green]{ai_assistant}[/green]")
     console.print(f"  Script Type:  [green]{script_type}[/green]")
     console.print()
+
+    # Check for missing constitution in existing project
+    if is_existing_project(project_path) and not has_constitution(project_path):
+        console.print()
+        console.print("[yellow]⚠ No constitution found in this project[/yellow]")
+
+        if sys.stdin.isatty():
+            # Interactive mode: offer to add constitution
+            add_constitution = typer.confirm(
+                "Would you like to add a constitution now?", default=True
+            )
+
+            if add_constitution:
+                tier_choices = list(CONSTITUTION_TIER_CHOICES.keys())
+
+                console.print("[cyan]Select a constitution tier:[/cyan]")
+                for i, (tier, desc) in enumerate(CONSTITUTION_TIER_CHOICES.items()):
+                    console.print(f"  {i + 1}. [green]{tier}[/green] - {desc}")
+
+                tier_input = typer.prompt("Enter tier number (1-3)", default="2")
+                try:
+                    tier_idx = int(tier_input) - 1
+                    if 0 <= tier_idx < len(tier_choices):
+                        selected_tier = tier_choices[tier_idx]
+                    else:
+                        selected_tier = "medium"
+                except ValueError:
+                    selected_tier = "medium"
+
+                # Create constitution
+                memory_dir = project_path / "memory"
+                memory_dir.mkdir(parents=True, exist_ok=True)
+                constitution_path = memory_dir / "constitution.md"
+
+                template = CONSTITUTION_TEMPLATES.get(
+                    selected_tier, CONSTITUTION_TEMPLATES["medium"]
+                )
+                constitution_path.write_text(template)
+
+                console.print()
+                constitution_panel = Panel(
+                    "Constitution template created at [cyan]memory/constitution.md[/cyan]\n\n"
+                    "[yellow]Next step:[/yellow] Customize it for your repository using:\n"
+                    "[green]/speckit:constitution[/green]\n\n"
+                    "This will tailor the constitution to your project's specific needs.",
+                    title="[green]Constitution Created[/green]",
+                    border_style="green",
+                    padding=(1, 2),
+                )
+                console.print(constitution_panel)
+                console.print()
+        else:
+            console.print(
+                "[yellow]Run 'specify init --here' in interactive mode to add a constitution[/yellow]"
+            )
+        console.print()
 
     if dry_run:
         console.print("[yellow]DRY RUN MODE - No changes will be made[/yellow]\n")
