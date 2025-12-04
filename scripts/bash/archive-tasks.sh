@@ -223,7 +223,7 @@ get_tasks_to_archive() {
                 task_date=$(get_task_updated_date "$task_id")
 
                 if [[ -z "$task_date" ]]; then
-                    # Skip tasks without updated date
+                    print_color "${YELLOW}" "WARNING: Task file for '${task_id}' not found. Skipping task." >&2
                     continue
                 fi
 
