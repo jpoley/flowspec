@@ -11,6 +11,9 @@ Validation Rules:
 - R5: No orphan symlinks (target exists in templates)
 - R7: Subdirectory structure matches (jpspec/, speckit/)
 
+Note:
+- R6 ("dev-setup creates same file set as init would copy") is tested in
+  test_dev_setup_init_equivalence.py and is out of scope for this file.
 References:
 - docs/architecture/command-single-source-of-truth.md
 - docs/architecture/adr-001-single-source-of-truth.md
