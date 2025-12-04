@@ -14,6 +14,72 @@ This document defines the **CORRECTED** architecture that adheres to the fundame
 >
 > All AI capabilities MUST be implemented as **skills/prompts** that native AI coding tools (Claude Code, Cursor, GitHub Copilot) execute directly.
 
+## Command Naming Convention
+
+All security slash commands follow the `/jpspec:security_*` pattern with underscores:
+
+- `/jpspec:security_scan` - Run security scanners
+- `/jpspec:security_triage` - AI-powered vulnerability triage
+- `/jpspec:security_fix` - Generate and apply security patches
+- `/jpspec:security_report` - Generate security audit reports
+
+**NOT** `/jpspec:security-scan` (dashes are incorrect).
+
+## Command Types: CLI vs Agentic
+
+This system provides two types of commands:
+
+| Type | Location | Execution | Example | Use Case |
+|------|----------|-----------|---------|----------|
+| **CLI (Deterministic)** | `src/specify_cli/commands/` | Python code, no LLM | `specify security scan` | Scanner orchestration, data parsing |
+| **Agentic (LLM-Powered)** | `.claude/commands/` | AI coding tool executes | `/jpspec:security_triage` | Vulnerability analysis, fix generation |
+
+**CLI Commands (`specify security *`):**
+- Written in Python
+- Deterministic behavior
+- No AI/LLM involvement
+- Execute scanners, parse outputs, format data
+- Example: `specify security scan` runs Semgrep/Bandit
+
+**Agentic Commands (`/jpspec:security_*`):**
+- Written as markdown prompts
+- Executed by AI coding tools (Claude Code, Cursor, etc.)
+- Invoke skills for analysis, triage, reporting
+- Example: `/jpspec:security_triage` invokes `.claude/skills/security-triage.md`
+
+## Workflow Independence
+
+**This is NOT part of the core jpspec workflow.**
+
+The security commands are **optional capabilities** that any developer or security engineer can run independently:
+
+- **Not gated by workflow state** - No required input states
+- **Runs anytime** - Can be invoked on any repository at any time
+- **Independent of `/jpspec:specify → /jpspec:plan → /jpspec:implement`** - Does not require prior workflow steps
+- **Optional integration** - Can optionally integrate with backlog.md for task tracking
+
+This is a standalone security analysis toolkit, not a required step in the SDD workflow.
+
+## Security Memory Directory
+
+Persistent security context is stored in `memory/security/` for consistent agent/skill/command behavior:
+
+```
+memory/security/
+├── security-facts.md        # Key security facts, thresholds, policies
+├── cwe-knowledge.md         # CWE categories and remediation patterns
+├── scanner-config.md        # Scanner defaults and customizations
+├── triage-guidelines.md     # Classification rules and examples
+└── compliance-mapping.md    # OWASP, CWE, NIST mappings
+```
+
+These files are `@import`ed by skills and slash commands to provide:
+- Consistent security policies across all commands
+- CWE/OWASP knowledge for vulnerability classification
+- Scanner configuration defaults
+- Triage classification criteria
+- Compliance framework mappings
+
 ## Fundamental Constraint (NON-NEGOTIABLE)
 
 ### WRONG ❌
@@ -113,10 +179,10 @@ src/specify_cli/scanners/
 **Files:**
 ```
 .claude/commands/
-├── jpspec-security-scan.md     # Run scanners → findings.json
-├── jpspec-security-triage.md   # Invoke security-triage.md skill
-├── jpspec-security-fix.md      # Invoke security-fixer.md skill
-├── jpspec-security-report.md   # Invoke security-reporter.md skill
+├── jpspec-security_scan.md     # Run scanners → findings.json
+├── jpspec-security_triage.md   # Invoke security-triage.md skill
+├── jpspec-security_fix.md      # Invoke security-fixer.md skill
+├── jpspec-security_report.md   # Invoke security-reporter.md skill
 └── jpspec-security.md          # Main command (orchestrates all)
 ```
 
@@ -144,7 +210,7 @@ src/specify_cli/config/
 ### 1. Scanning Phase (Python)
 
 ```bash
-/jpspec:security scan
+/jpspec:security_scan
 ```
 
 **Flow:**
@@ -171,7 +237,7 @@ src/specify_cli/config/
 ### 2. Triage Phase (AI Skill)
 
 ```bash
-/jpspec:security triage
+/jpspec:security_triage
 ```
 
 **Flow:**
@@ -204,7 +270,7 @@ src/specify_cli/config/
 ### 3. Fix Generation Phase (AI Skill)
 
 ```bash
-/jpspec:security fix
+/jpspec:security_fix
 ```
 
 **Flow:**
@@ -231,7 +297,7 @@ src/specify_cli/config/
 ### 4. Reporting Phase (Python + AI Skill)
 
 ```bash
-/jpspec:security report
+/jpspec:security_report
 ```
 
 **Flow:**
@@ -258,7 +324,7 @@ src/specify_cli/config/
    - AI coding tool executes skill natively
 
 3. **Slash Command:**
-   - `.claude/commands/jpspec-security-triage.md`
+   - `.claude/commands/jpspec-security_triage.md`
    - Invokes security-triage skill
    - Reads findings.json → writes triage-results.json
 
@@ -276,7 +342,7 @@ src/specify_cli/config/
    - AI coding tool creates actual patches
 
 2. **Slash Command:**
-   - `.claude/commands/jpspec-security-fix.md`
+   - `.claude/commands/jpspec-security_fix.md`
    - Invokes security-fixer skill
    - Reads triage-results.json → writes patches/
 
@@ -306,7 +372,7 @@ src/specify_cli/config/
    ```
 
 3. **Slash Command:**
-   - `.claude/commands/jpspec-security-triage.md`
+   - `.claude/commands/jpspec-security_triage.md`
    - Reads config → invokes appropriate skill variant
 
 **Output:**
@@ -327,7 +393,7 @@ src/specify_cli/config/
    - Calculates precision/recall/F1
 
 3. **AI Skill Execution:**
-   - Script invokes `/jpspec:security triage`
+   - Script invokes `/jpspec:security_triage`
    - **AI coding tool** executes skill
    - Python measures accuracy of results
 
@@ -405,7 +471,7 @@ src/specify_cli/config/
    - AI coding tool generates markdown
 
 2. **Slash Command:**
-   - `.claude/commands/jpspec-security-report.md`
+   - `.claude/commands/jpspec-security_report.md`
    - Invokes security-reporter skill
    - Reads triage-results.json → writes audit-report.md
 
@@ -422,22 +488,23 @@ src/specify_cli/config/
 
 **CORRECTED Implementation:**
 
-1. **Workflow Integration:**
-   - Update `jpspec_workflow.yml`
-   - Add security state transitions
+1. **Optional Workflow Integration:**
+   - Security commands are NOT required workflow steps
+   - Can optionally add to `jpspec_workflow.yml` if desired
+   - Example (optional):
    ```yaml
    workflows:
      security:
        command: "/jpspec:security"
        agents: ["security-triage", "security-fixer"]
-       input_states: ["In Implementation", "Validated"]
+       input_states: []  # No required input states
        output_state: "Security Reviewed"
    ```
 
-2. **Backlog Integration:**
-   - Security findings create tasks
+2. **Optional Backlog Integration:**
+   - Security findings can optionally create tasks
    - Tasks track fix implementation
-   - `/jpspec:security` updates task status
+   - `/jpspec:security` can optionally update task status
 
 3. **Python Code:**
    - `src/specify_cli/commands/security.py` - Backlog integration
@@ -531,10 +598,10 @@ All skills in `.claude/skills/`:
 
 All commands in `.claude/commands/`:
 
-1. **jpspec-security-scan.md** - Run scanners
-2. **jpspec-security-triage.md** - Invoke triage skill
-3. **jpspec-security-fix.md** - Invoke fixer skill
-4. **jpspec-security-report.md** - Invoke reporter skill
+1. **jpspec-security_scan.md** - Run scanners
+2. **jpspec-security_triage.md** - Invoke triage skill
+3. **jpspec-security_fix.md** - Invoke fixer skill
+4. **jpspec-security_report.md** - Invoke reporter skill
 5. **jpspec-security.md** - Main orchestrator
 
 ## Configuration Files
