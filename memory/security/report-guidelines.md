@@ -156,7 +156,7 @@ Common CWE IDs to include:
 
 **Key Findings:**
 - 2 Critical vulnerabilities requiring immediate attention
-- 5 High severity issues to address within 30 days
+- 5 High severity issues to address within 7 days
 - 12 Medium/Low issues for backlog
 
 **Business Impact:**

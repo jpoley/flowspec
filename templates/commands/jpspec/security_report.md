@@ -31,7 +31,7 @@ TRIAGE_RESULTS="docs/security/triage-results.json"
 PATCHES_DIR="docs/security/patches/"
 
 if [ ! -f "$SCAN_RESULTS" ]; then
-    echo "❌ Error: scan-results.json not found. Run /jpspec:security scan first."
+    echo "❌ Error: scan-results.json not found. Run /jpspec:security scan first to generate scan results."
     exit 1
 fi
 
@@ -164,7 +164,7 @@ Generate a complete audit report following this structure:
 
 **Key Findings:**
 - [N] Critical vulnerabilities requiring immediate attention
-- [N] High severity issues to address within 30 days
+- [N] High severity issues to address within 7 days
 - [N] Medium/Low issues for backlog
 
 **Business Impact:**
@@ -314,7 +314,7 @@ If user requested HTML or PDF format:
 
 **HTML Generation:**
 ```bash
-if [ "$FORMAT" == "html" ] || [ "$FORMAT" == "all" ]; then
+if [ "$FORMAT" = "html" ] || [ "$FORMAT" = "all" ]; then
     # Convert markdown to HTML using Pandoc
     pandoc docs/security/audit-report.md \
         -o docs/security/audit-report.html \
@@ -328,7 +328,7 @@ fi
 
 **PDF Generation:**
 ```bash
-if [ "$FORMAT" == "pdf" ] || [ "$FORMAT" == "all" ]; then
+if [ "$FORMAT" = "pdf" ] || [ "$FORMAT" = "all" ]; then
     # Convert HTML to PDF using wkhtmltopdf
     wkhtmltopdf docs/security/audit-report.html docs/security/audit-report.pdf
 

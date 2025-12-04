@@ -5,11 +5,10 @@ status: To Do
 assignee:
   - '@muckross'
 created_date: '2025-12-03 02:16'
-updated_date: '2025-12-04 14:21'
+updated_date: '2025-12-04 16:51'
 labels:
+  - 'workflow:Planned'
   - security
-  - customization
-  - v1.5
 dependencies: []
 priority: medium
 ---
@@ -31,85 +30,45 @@ Allow users to define custom security rules in .jpspec/security-rules/ directory
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
-## Implementation Plan: Implement Custom Security Rules System
+## CORRECTED Implementation Plan
 
-### Overview
-Allow users to define custom Semgrep rules in .jpspec/security-rules/ directory with automatic loading and validation.
+**CRITICAL: Custom rules = scanner config, not AI logic.**
 
-### Step-by-Step Implementation
+### Phase 1: Rule Directory Structure
+- Create `docs/security/rules/` directory
+- Subdirectories:
+  - `semgrep/` - Semgrep YAML rules
+  - `bandit/` - Bandit config files
+  - `custom/` - Project-specific rules
 
-#### Step 1: Create Rules Directory Structure (1 hour)
-```
-.jpspec/security-rules/
-├── python/
-│   ├── custom-sql-injection.yml
-│   └── api-auth-bypass.yml
-├── javascript/
-│   └── unsafe-eval.yml
-└── README.md
-```
+### Phase 2: Rule Loader (Python)
+- Create `src/specify_cli/scanners/custom_rules.py`
+  - Load rules from `docs/security/rules/`
+  - Validate rule syntax
+  - Pass to scanners
+  - **NO AI logic, just file I/O**
 
-#### Step 2: Implement Rule Loader (2 hours)
-**File**: `src/specify_cli/security/custom_rules.py`
+### Phase 3: Rule Templates
+- Create example rules:
+  - `docs/security/rules/semgrep/django-custom.yaml`
+  - `docs/security/rules/semgrep/flask-custom.yaml`
+- Document rule creation process
 
-```python
-def load_custom_rules(rules_dir: str = ".jpspec/security-rules/") -> List[str]:
-    """Load custom Semgrep rules from directory."""
-    if not Path(rules_dir).exists():
-        return []
-    
-    rule_files = []
-    for root, dirs, files in os.walk(rules_dir):
-        for file in files:
-            if file.endswith(('.yml', '.yaml')):
-                path = Path(root) / file
-                if validate_semgrep_rule(path):
-                    rule_files.append(str(path))
-                else:
-                    logger.warning(f"Invalid rule: {path}")
-    
-    return rule_files
-```
+### Phase 4: Integration
+- Update scanners to load custom rules
+- Custom rules included in findings metadata
+- Skills consider custom rules when triaging
 
-#### Step 3: Integrate with Scan Command (1 hour)
-Pass custom rules to Semgrep:
-```bash
-semgrep --config auto --config .jpspec/security-rules/
-```
+### Success Criteria
+- [ ] Rule directory structure created
+- [ ] Rule loader implemented
+- [ ] Example rules provided
+- [ ] Scanners use custom rules
+- [ ] **ZERO AI LOGIC in rule system**
 
-#### Step 4: Add Rule Validation (2 hours)
-```python
-def validate_semgrep_rule(rule_file: Path) -> bool:
-    """Validate Semgrep rule syntax."""
-    result = subprocess.run(
-        ["semgrep", "--validate", "--config", str(rule_file)],
-        capture_output=True
-    )
-    return result.returncode == 0
-```
-
-#### Step 5: Documentation (2 hours)
-**File**: `docs/guides/custom-security-rules.md`
-
-Sections:
-1. Semgrep rule syntax overview
-2. Creating your first custom rule
-3. Rule patterns library (examples)
-4. Testing custom rules
-5. Contributing rules upstream
-
-Example rule template provided.
-
-#### Step 6: Testing (2 hours)
-- Test rule loading
-- Test rule validation
-- Test rule execution
-- Test invalid rule handling
-
-### Dependencies
-- Semgrep installed
-- Security scan command
-
-### Estimated Effort
-**Total**: 10 hours (1.25 days)
+### Files Created
+- `src/specify_cli/scanners/custom_rules.py`
+- `docs/security/rules/semgrep/django-custom.yaml`
+- `docs/security/rules/semgrep/flask-custom.yaml`
+- `docs/guides/custom-rules.md`
 <!-- SECTION:PLAN:END -->

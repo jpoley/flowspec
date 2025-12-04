@@ -5,12 +5,10 @@ status: To Do
 assignee:
   - '@muckross'
 created_date: '2025-12-03 02:15'
-updated_date: '2025-12-04 14:21'
+updated_date: '2025-12-04 16:51'
 labels:
+  - 'workflow:Planned'
   - security
-  - dast
-  - web
-  - v1.5
 dependencies: []
 priority: high
 ---
