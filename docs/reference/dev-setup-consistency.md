@@ -1169,7 +1169,7 @@ Creating symlinks for jpspec commands...
 
 The project includes automated validation in CI/CD pipelines:
 
-**GitHub Actions Workflow**: `.github/workflows/dev-setup-validation.yml` (planned)
+**GitHub Actions Workflow**: `.github/workflows/dev-setup-validation.yml` (planned; see [tracking issue #123](https://github.com/your-org/your-repo/issues/123))
 
 **Checks**:
 - No non-symlink files in `.claude/commands/`
