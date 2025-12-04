@@ -1,10 +1,10 @@
 ---
 id: task-277
 title: Create dev-setup/init equivalence validation tests
-status: In Progress
+status: Done
 assignee: []
 created_date: '2025-12-03 14:01'
-updated_date: '2025-12-04 01:40'
+updated_date: '2025-12-04 02:26'
 labels:
   - testing
   - validation
@@ -27,3 +27,14 @@ Automated tests to verify dogfood and init produce equivalent command sets with 
 - [ ] #5 Test no direct files exist in source .claude/commands/
 - [ ] #6 Test subdirectory structure matches between dogfood and init
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Equivalence tests merged in PR #395.
+
+Files created:
+- tests/test_dev_setup_init_equivalence.py (18 tests)
+
+All code review issues fixed.
+<!-- SECTION:NOTES:END -->

@@ -1,10 +1,10 @@
 ---
 id: task-263
 title: Document dev-setup workflow for contributors
-status: In Progress
+status: Done
 assignee: []
 created_date: '2025-12-03 13:54'
-updated_date: '2025-12-04 01:39'
+updated_date: '2025-12-04 02:26'
 labels:
   - documentation
   - dogfood
@@ -31,14 +31,9 @@ Comprehensive documentation explaining single-source-of-truth approach, common w
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
-PARTIALLY COMPLETE:
+Documentation merged in PR #393.
 
-✓ CONTRIBUTING.md updated with dogfood workflow section (line 48-80)
-✓ Common workflows documented (manual setup)
-✗ docs/reference/dogfood-consistency.md NOT created
-✗ Architecture diagrams missing
-✗ Troubleshooting guide missing
-✗ Code review checklist missing
-
-Recommendation: Rename remaining docs to use dev-setup instead of dogfood.
+Files created:
+- docs/reference/dev-setup-consistency.md
+- Updated CONTRIBUTING.md
 <!-- SECTION:NOTES:END -->
