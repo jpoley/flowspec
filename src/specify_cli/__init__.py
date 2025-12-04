@@ -5257,6 +5257,282 @@ def security_audit(
         console.print(f"Output: {output}")
 
 
+# Constitution management sub-app
+constitution_app = typer.Typer(
+    name="constitution",
+    help="Constitution management commands",
+    add_completion=False,
+)
+app.add_typer(constitution_app, name="constitution")
+
+
+@constitution_app.command("diff")
+def constitution_diff(
+    tier: str = typer.Option(
+        "medium",
+        "--tier",
+        "-t",
+        help="Constitution tier to compare against (light|medium|heavy)",
+    ),
+    project_path: Path = typer.Option(
+        Path("."),
+        "--path",
+        "-p",
+        help="Project path to check",
+        exists=True,
+    ),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Show detailed diff output",
+    ),
+):
+    """Compare project constitution against template.
+
+    This command compares your project's memory/constitution.md
+    against the specified tier template to identify customizations
+    and differences.
+
+    Examples:
+        specify constitution diff
+        specify constitution diff --tier heavy
+        specify constitution diff --tier light --verbose
+        specify constitution diff --path /path/to/project
+    """
+    from difflib import unified_diff
+
+    # Validate tier
+    if tier not in CONSTITUTION_TIER_CHOICES:
+        console.print(
+            f"[red]Error:[/red] Invalid tier '{tier}'. "
+            f"Choose from: {', '.join(CONSTITUTION_TIER_CHOICES.keys())}"
+        )
+        raise typer.Exit(1)
+
+    # Check if project has a constitution
+    constitution_path = project_path / "memory" / "constitution.md"
+    if not constitution_path.exists():
+        console.print(f"[red]Error:[/red] No constitution found at {constitution_path}")
+        console.print("\nTo initialize a constitution, run:")
+        console.print(f"  specify init --here --constitution {tier}")
+        raise typer.Exit(1)
+
+    # Get template content from file (not embedded templates)
+    # Templates are in project root: jp-spec-kit/templates/
+    # __file__ is at: jp-spec-kit/src/specify_cli/__init__.py
+    templates_dir = Path(__file__).parent.parent.parent / "templates" / "constitutions"
+    template_file = templates_dir / f"constitution-{tier}.md"
+
+    if not template_file.exists():
+        console.print(
+            f"[red]Error:[/red] Template for tier '{tier}' not found at {template_file}"
+        )
+        raise typer.Exit(1)
+
+    template_content = template_file.read_text()
+
+    # Read project constitution
+    project_content = constitution_path.read_text()
+
+    # Generate diff
+    template_lines = template_content.splitlines(keepends=True)
+    project_lines = project_content.splitlines(keepends=True)
+
+    diff_lines = list(
+        unified_diff(
+            template_lines,
+            project_lines,
+            fromfile=f"template ({tier})",
+            tofile="project constitution",
+            lineterm="",
+        )
+    )
+
+    if not diff_lines:
+        console.print(
+            f"[green]✓[/green] Project constitution matches {tier} tier template"
+        )
+        raise typer.Exit(0)
+
+    # Display results
+    console.print(f"[cyan]Constitution diff:[/cyan] {tier} tier template vs project\n")
+
+    if verbose:
+        # Show full unified diff
+        for line in diff_lines:
+            if line.startswith("---") or line.startswith("+++"):
+                console.print(f"[bold]{line}[/bold]")
+            elif line.startswith("@@"):
+                console.print(f"[cyan]{line}[/cyan]")
+            elif line.startswith("-"):
+                console.print(f"[red]{line}[/red]")
+            elif line.startswith("+"):
+                console.print(f"[green]{line}[/green]")
+            else:
+                console.print(line)
+    else:
+        # Show summary
+        additions = sum(
+            1
+            for line in diff_lines
+            if line.startswith("+") and not line.startswith("+++")
+        )
+        deletions = sum(
+            1
+            for line in diff_lines
+            if line.startswith("-") and not line.startswith("---")
+        )
+
+        console.print(
+            f"[green]+{additions}[/green] additions, [red]-{deletions}[/red] deletions"
+        )
+        console.print("\nRun with --verbose to see full diff")
+
+    console.print(
+        "\n[dim]Tip: Use 'specify constitution merge' to update from template[/dim]"
+    )
+
+
+@constitution_app.command("merge")
+def constitution_merge(
+    tier: str = typer.Option(
+        "medium",
+        "--tier",
+        "-t",
+        help="Constitution tier to merge from (light|medium|heavy)",
+    ),
+    project_path: Path = typer.Option(
+        Path("."),
+        "--path",
+        "-p",
+        help="Project path",
+        exists=True,
+    ),
+    output: Optional[Path] = typer.Option(
+        None,
+        "--output",
+        "-o",
+        help="Output file path (default: memory/constitution.merged.md)",
+    ),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        help="Show merge preview without writing file",
+    ),
+):
+    """Merge template updates into project constitution.
+
+    This command creates a merged constitution file that:
+    1. Preserves your customized sections (marked with SECTION markers)
+    2. Updates non-customized sections from the template
+    3. Adds new sections from the template
+
+    The merged file is written to memory/constitution.merged.md by default.
+    Review the merged file before replacing your constitution.
+
+    Examples:
+        specify constitution merge
+        specify constitution merge --tier heavy
+        specify constitution merge --dry-run
+        specify constitution merge --output /tmp/constitution.md
+    """
+    import re
+
+    # Validate tier
+    if tier not in CONSTITUTION_TIER_CHOICES:
+        console.print(
+            f"[red]Error:[/red] Invalid tier '{tier}'. "
+            f"Choose from: {', '.join(CONSTITUTION_TIER_CHOICES.keys())}"
+        )
+        raise typer.Exit(1)
+
+    # Check if project has a constitution
+    constitution_path = project_path / "memory" / "constitution.md"
+    if not constitution_path.exists():
+        console.print(f"[red]Error:[/red] No constitution found at {constitution_path}")
+        console.print("\nTo initialize a constitution, run:")
+        console.print(f"  specify init --here --constitution {tier}")
+        raise typer.Exit(1)
+
+    # Get template content from file
+    # Templates are in project root: jp-spec-kit/templates/
+    # __file__ is at: jp-spec-kit/src/specify_cli/__init__.py
+    templates_dir = Path(__file__).parent.parent.parent / "templates" / "constitutions"
+    template_file = templates_dir / f"constitution-{tier}.md"
+
+    if not template_file.exists():
+        console.print(
+            f"[red]Error:[/red] Template for tier '{tier}' not found at {template_file}"
+        )
+        raise typer.Exit(1)
+
+    template_content = template_file.read_text()
+
+    # Read project constitution
+    project_content = constitution_path.read_text()
+
+    # Extract customized sections from project
+    section_pattern = re.compile(
+        r"<!-- SECTION:(\w+):BEGIN -->(.*?)<!-- SECTION:\1:END -->",
+        re.DOTALL,
+    )
+
+    customized_sections = {}
+    for match in section_pattern.finditer(project_content):
+        section_name = match.group(1)
+        section_content = match.group(2)
+        customized_sections[section_name] = section_content
+
+    # Merge: Replace sections in template with customized versions
+    merged_content = template_content
+    for section_name, custom_content in customized_sections.items():
+        # Find and replace the section in template
+        section_regex = re.compile(
+            rf"(<!-- SECTION:{section_name}:BEGIN -->).*?(<!-- SECTION:{section_name}:END -->)",
+            re.DOTALL,
+        )
+        if section_regex.search(merged_content):
+            merged_content = section_regex.sub(
+                rf"\1{custom_content}\2",
+                merged_content,
+            )
+
+    # Determine output path
+    if output is None:
+        output = project_path / "memory" / "constitution.merged.md"
+
+    # Display merge info
+    console.print(f"[cyan]Merging constitution:[/cyan] {tier} tier template")
+    console.print(f"[cyan]Project:[/cyan] {constitution_path}")
+    console.print(f"[cyan]Output:[/cyan] {output}")
+    console.print()
+
+    if customized_sections:
+        console.print(
+            f"[green]✓[/green] Preserved {len(customized_sections)} customized sections:"
+        )
+        for section_name in customized_sections:
+            console.print(f"  - {section_name}")
+        console.print()
+
+    if dry_run:
+        console.print("[yellow]Dry run - no files written[/yellow]")
+        console.print("\n[dim]Merged content preview:[/dim]\n")
+        console.print(merged_content[:500] + "...")
+        raise typer.Exit(0)
+
+    # Write merged file
+    output.write_text(merged_content)
+    console.print(f"[green]✓[/green] Merged constitution written to {output}")
+    console.print()
+    console.print("[yellow]Next steps:[/yellow]")
+    console.print("1. Review the merged file:")
+    console.print(f"   cat {output}")
+    console.print("2. If satisfied, replace your constitution:")
+    console.print(f"   mv {output} {constitution_path}")
+
+
 @workflow_app.command("validate")
 def workflow_validate(
     file: Optional[str] = typer.Option(
