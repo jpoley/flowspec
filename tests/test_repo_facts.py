@@ -10,8 +10,6 @@ Tests cover:
 - Handling of multiple languages and CI/CD systems
 """
 
-
-
 from specify_cli import write_repo_facts
 
 
