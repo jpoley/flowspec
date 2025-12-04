@@ -220,8 +220,10 @@ Tasks should have:
 
 This constitution is a living document. Update it as the project evolves.
 
-**Version**: 1.0.0 | **Created**: [DATE]
-<!-- NEEDS_VALIDATION: Version and date -->
+**Version**: 1.0.0
+**Ratified**: [DATE]
+**Last Amended**: [DATE]
+<!-- NEEDS_VALIDATION: Version and dates -->
 """,
     "medium": """# [PROJECT_NAME] Constitution
 <!-- TIER: Medium - Standard controls for typical business projects -->
@@ -585,6 +587,9 @@ BANNER = """
 
 # Version - keep in sync with pyproject.toml
 __version__ = "0.0.258"
+
+# Constitution template version
+CONSTITUTION_VERSION = "1.0.0"
 
 TAGLINE = (
     f"(jp extension v{__version__}) GitHub Spec Kit - Spec-Driven Development Toolkit"
@@ -5322,6 +5327,78 @@ def workflow_validate(
 
         console.print("[dim]Fix the errors above and run validation again.[/dim]")
         raise typer.Exit(1)
+
+
+@app.command(name="constitution-version")
+def constitution_version_command(
+    path: Path = typer.Option(
+        None,
+        "--path",
+        help="Path to constitution file (default: memory/constitution.md)",
+    ),
+):
+    """Show constitution version information.
+
+    Displays the current constitution's version, ratified date, and last amended date.
+    Also shows if an upgrade is available.
+
+    Examples:
+        specify constitution-version
+        specify constitution-version --path custom/constitution.md
+    """
+    import re
+
+    show_banner()
+
+    constitution_path = path or Path.cwd() / "memory" / "constitution.md"
+
+    if not constitution_path.exists():
+        console.print(
+            f"[red]Error:[/red] Constitution not found at {constitution_path}"
+        )
+        raise typer.Exit(1)
+
+    content = constitution_path.read_text()
+
+    # Parse version info
+    version_match = re.search(r"\*\*Version\*\*:\s*(\S+)", content)
+    ratified_match = re.search(r"\*\*Ratified\*\*:\s*(.+?)(?:\n|$)", content)
+    amended_match = re.search(r"\*\*Last Amended\*\*:\s*(.+?)(?:\n|$)", content)
+
+    version = version_match.group(1) if version_match else "Unknown"
+    ratified = ratified_match.group(1).strip() if ratified_match else "Unknown"
+    amended = amended_match.group(1).strip() if amended_match else "Unknown"
+
+    # Detect tier
+    tier = "Unknown"
+    if "<!-- TIER: Light" in content:
+        tier = "Light"
+    elif "<!-- TIER: Medium" in content:
+        tier = "Medium"
+    elif "<!-- TIER: Heavy" in content:
+        tier = "Heavy"
+
+    # Build output
+    table = Table(show_header=False, box=None, padding=(0, 2))
+    table.add_column("Field", style="cyan")
+    table.add_column("Value", style="green")
+
+    table.add_row("Version", version)
+    table.add_row("Tier", tier)
+    table.add_row("Ratified", ratified)
+    table.add_row("Last Amended", amended)
+    table.add_row("Template Version", CONSTITUTION_VERSION)
+
+    console.print()
+    console.print(Panel(table, title="Constitution Version", border_style="cyan"))
+
+    # Check if upgrade available
+    if version != CONSTITUTION_VERSION and version != "Unknown":
+        console.print()
+        console.print(
+            f"[yellow]⚠ Template version {CONSTITUTION_VERSION} available (you have {version})[/yellow]"
+        )
+        console.print("[cyan]Run 'specify upgrade' to update your templates[/cyan]")
 
 
 def main():
