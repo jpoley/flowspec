@@ -586,6 +586,9 @@ BANNER = """
 # Version - keep in sync with pyproject.toml
 __version__ = "0.0.258"
 
+# Constitution template version
+CONSTITUTION_VERSION = "1.0.0"
+
 TAGLINE = (
     f"(jp extension v{__version__}) GitHub Spec Kit - Spec-Driven Development Toolkit"
 )
@@ -4761,6 +4764,102 @@ workflow_app = typer.Typer(
 )
 app.add_typer(workflow_app, name="workflow")
 
+
+# Constitution subcommand
+constitution_app = typer.Typer(
+    name="constitution",
+    help="Constitution management and validation",
+    add_completion=False,
+)
+app.add_typer(constitution_app, name="constitution")
+
+
+@constitution_app.command("validate")
+def constitution_validate(
+    path: Optional[Path] = typer.Option(
+        None,
+        "--path",
+        help="Path to constitution file (default: memory/constitution.md)",
+    ),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Show detailed validation information",
+    ),
+):
+    """Validate a constitution file for NEEDS_VALIDATION markers.
+
+    Scans the constitution for markers that indicate sections requiring
+    human review and customization.
+
+    Examples:
+        specify constitution validate
+        specify constitution validate --verbose
+        specify constitution validate --path custom/constitution.md
+    """
+    import re
+
+    show_banner()
+
+    constitution_path = path or Path.cwd() / "memory" / "constitution.md"
+
+    if not constitution_path.exists():
+        console.print(
+            f"[red]Error:[/red] Constitution not found at {constitution_path}"
+        )
+        console.print("[yellow]Tip:[/yellow] Run 'specify init --here' to create one")
+        raise typer.Exit(1)
+
+    content = constitution_path.read_text()
+
+    # Find NEEDS_VALIDATION markers
+    pattern = r"<!-- NEEDS_VALIDATION: (.+?) -->"
+    markers = re.findall(pattern, content)
+
+    if not markers:
+        success_panel = Panel(
+            "[green]✓ Constitution is fully validated[/green]\n\n"
+            "No NEEDS_VALIDATION markers found.\n"
+            "Your constitution is ready for use.",
+            title="[green]Validation Passed[/green]",
+            border_style="green",
+            padding=(1, 2),
+        )
+        console.print()
+        console.print(success_panel)
+        raise typer.Exit(0)
+
+    # Show markers that need attention
+    console.print()
+    console.print(
+        f"[yellow]Found {len(markers)} section(s) requiring validation:[/yellow]"
+    )
+    console.print()
+
+    for i, marker in enumerate(markers, 1):
+        console.print(f"  {i}. [cyan]{marker}[/cyan]")
+
+    console.print()
+
+    guidance_panel = Panel(
+        "[yellow]Action Required:[/yellow]\n\n"
+        "1. Review each section listed above\n"
+        "2. Update the values to match your project\n"
+        "3. Remove the NEEDS_VALIDATION comment when done\n\n"
+        "[cyan]Example:[/cyan]\n"
+        "Before: <!-- NEEDS_VALIDATION: Project name -->\n"
+        "        # [PROJECT_NAME] Constitution\n\n"
+        "After:  # My Awesome Project Constitution",
+        title="[yellow]Validation Required[/yellow]",
+        border_style="yellow",
+        padding=(1, 2),
+    )
+    console.print(guidance_panel)
+
+    raise typer.Exit(1)  # Non-zero exit for CI usage
+
+
 # Hooks app (event emission and hook management)
 from specify_cli.hooks.cli import hooks_app  # noqa: E402
 
@@ -5322,6 +5421,78 @@ def workflow_validate(
 
         console.print("[dim]Fix the errors above and run validation again.[/dim]")
         raise typer.Exit(1)
+
+
+@app.command(name="constitution-version")
+def constitution_version_command(
+    path: Path = typer.Option(
+        None,
+        "--path",
+        help="Path to constitution file (default: memory/constitution.md)",
+    ),
+):
+    """Show constitution version information.
+
+    Displays the current constitution's version, ratified date, and last amended date.
+    Also shows if an upgrade is available.
+
+    Examples:
+        specify constitution-version
+        specify constitution-version --path custom/constitution.md
+    """
+    import re
+
+    show_banner()
+
+    constitution_path = path or Path.cwd() / "memory" / "constitution.md"
+
+    if not constitution_path.exists():
+        console.print(
+            f"[red]Error:[/red] Constitution not found at {constitution_path}"
+        )
+        raise typer.Exit(1)
+
+    content = constitution_path.read_text()
+
+    # Parse version info
+    version_match = re.search(r"\*\*Version\*\*:\s*(\S+)", content)
+    ratified_match = re.search(r"\*\*Ratified\*\*:\s*(.+?)(?:\n|$)", content)
+    amended_match = re.search(r"\*\*Last Amended\*\*:\s*(.+?)(?:\n|$)", content)
+
+    version = version_match.group(1) if version_match else "Unknown"
+    ratified = ratified_match.group(1).strip() if ratified_match else "Unknown"
+    amended = amended_match.group(1).strip() if amended_match else "Unknown"
+
+    # Detect tier
+    tier = "Unknown"
+    if "<!-- TIER: Light" in content:
+        tier = "Light"
+    elif "<!-- TIER: Medium" in content:
+        tier = "Medium"
+    elif "<!-- TIER: Heavy" in content:
+        tier = "Heavy"
+
+    # Build output
+    table = Table(show_header=False, box=None, padding=(0, 2))
+    table.add_column("Field", style="cyan")
+    table.add_column("Value", style="green")
+
+    table.add_row("Version", version)
+    table.add_row("Tier", tier)
+    table.add_row("Ratified", ratified)
+    table.add_row("Last Amended", amended)
+    table.add_row("Template Version", CONSTITUTION_VERSION)
+
+    console.print()
+    console.print(Panel(table, title="Constitution Version", border_style="cyan"))
+
+    # Check if upgrade available
+    if version != CONSTITUTION_VERSION and version != "Unknown":
+        console.print()
+        console.print(
+            f"[yellow]⚠ Template version {CONSTITUTION_VERSION} available (you have {version})[/yellow]"
+        )
+        console.print("[cyan]Run 'specify upgrade' to update your templates[/cyan]")
 
 
 def main():
