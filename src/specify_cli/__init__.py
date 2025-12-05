@@ -1233,6 +1233,107 @@ WORKFLOW_TRANSITIONS = [
 ]
 
 
+def prompt_validation_modes() -> dict[str, str]:
+    """Interactively prompt for validation mode on each transition.
+
+    Returns:
+        Dict mapping transition name to validation mode string.
+        Example: {"assess": "none", "specify": 'KEYWORD["PRD_APPROVED"]'}
+
+    Raises:
+        typer.Exit: If user cancels with Ctrl+C.
+    """
+    # Transitions to configure with descriptions
+    transitions_info = [
+        ("assess", "To Do → Assessed", "after /jpspec:assess"),
+        ("specify", "Assessed → Specified", "after /jpspec:specify, produces PRD"),
+        ("research", "Specified → Researched", "after /jpspec:research"),
+        ("plan", "Researched → Planned", "after /jpspec:plan, produces ADRs"),
+        ("implement", "Planned → In Implementation", "after /jpspec:implement"),
+        ("validate", "In Implementation → Validated", "after /jpspec:validate"),
+        ("operate", "Validated → Deployed", "after /jpspec:operate"),
+    ]
+
+    modes = {}
+
+    console.print()
+    console.print("[cyan]== Workflow Transition Validation Configuration ==[/cyan]")
+    console.print()
+    console.print("For each workflow transition, choose a validation mode:")
+    console.print("  - [green]NONE[/green]: No gate, proceed immediately (default)")
+    console.print("  - [yellow]KEYWORD[/yellow]: Require user to type approval keyword")
+    console.print("  - [blue]PULL_REQUEST[/blue]: Require PR to be merged")
+    console.print()
+
+    try:
+        for i, (name, state_change, description) in enumerate(transitions_info, 1):
+            console.print(f"[dim]{i}. {state_change}[/dim] ({description})")
+            console.print("   [1] NONE (default)")
+            console.print("   [2] KEYWORD")
+            console.print("   [3] PULL_REQUEST")
+
+            choice = typer.prompt("   > ", default="1")
+
+            # Validate and normalize choice
+            if choice not in ["1", "2", "3"]:
+                console.print(
+                    f"   [yellow]Invalid choice '{choice}', using NONE[/yellow]"
+                )
+                choice = "1"
+
+            if choice == "2":
+                keyword = typer.prompt("   Enter approval keyword", default="APPROVED")
+                if not keyword or not keyword.strip():
+                    console.print(
+                        "   [yellow]Empty keyword, using default 'APPROVED'[/yellow]"
+                    )
+                    keyword = "APPROVED"
+                modes[name] = f'KEYWORD["{keyword.strip()}"]'
+            elif choice == "3":
+                modes[name] = "pull-request"
+            else:
+                modes[name] = "none"
+
+            console.print()
+
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Validation mode configuration cancelled[/yellow]")
+        raise typer.Exit(1)
+
+    return modes
+
+
+def display_validation_summary(modes: dict[str, str]) -> None:
+    """Display a formatted summary of configured validation modes.
+
+    Args:
+        modes: Dict mapping transition name to validation mode string.
+    """
+    console.print()
+    console.print("[cyan]== Validation Mode Summary ==[/cyan]")
+    console.print()
+
+    # Filter to show only non-default modes
+    non_default = {k: v for k, v in modes.items() if v.lower() != "none"}
+
+    if non_default:
+        console.print("[green]Custom validation modes:[/green]")
+        for name, mode in non_default.items():
+            # Format the mode for display
+            if mode.lower().startswith("keyword["):
+                display_mode = mode.upper()
+            elif mode.lower() == "pull-request":
+                display_mode = "PULL_REQUEST"
+            else:
+                display_mode = mode.upper()
+
+            console.print(f"  [cyan]{name:12}[/cyan] → {display_mode}")
+    else:
+        console.print("[dim]All transitions using NONE (default)[/dim]")
+
+    console.print()
+
+
 def generate_jpspec_workflow_yml(
     project_path: Path,
     transition_modes: dict[str, str] | None = None,
@@ -2987,8 +3088,8 @@ def init(
         # Use NONE for all transitions
         transition_modes = {}
     else:
-        # Build per-transition mode dict from CLI flags
-        transition_modes = {
+        # Check if any explicit validation flags were provided
+        explicit_flags = {
             "assess": validation_assess,
             "research": validation_research,
             "specify": validation_specify,
@@ -2998,16 +3099,25 @@ def init(
             "operate": validation_operate,
         }
 
+        # Check if any flag has a non-default value
+        has_explicit_flags = any(v.lower() != "none" for v in explicit_flags.values())
+
+        if has_explicit_flags:
+            # Use explicit CLI flags
+            transition_modes = explicit_flags
+        elif sys.stdin.isatty():
+            # Interactive mode: prompt for validation modes
+            transition_modes = prompt_validation_modes()
+        else:
+            # Non-interactive mode: use defaults (all NONE)
+            transition_modes = {}
+
     generate_jpspec_workflow_yml(project_path, transition_modes)
     console.print()
     console.print("[green]Generated jpspec_workflow.yml[/green]")
 
-    # Show non-default validation modes
-    non_default = {k: v for k, v in transition_modes.items() if v.lower() != "none"}
-    if non_default:
-        console.print("[dim]Custom validation modes:[/dim]")
-        for name, mode in non_default.items():
-            console.print(f"  [dim]{name}: {mode.upper()}[/dim]")
+    # Display validation summary
+    display_validation_summary(transition_modes)
 
     steps_lines = []
     if not here:
