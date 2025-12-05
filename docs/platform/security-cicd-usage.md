@@ -74,7 +74,7 @@ For the most up-to-date implementation status, see the inline comments in `.gith
 | Input | Type | Default | Description | Status |
 |-------|------|---------|-------------|--------|
 | `scan-type` | string | `full` | Scan mode: incremental, full, fast | PLANNED (currently ignored) |
-| `fail-on` | string | `critical,high` | Severity levels to block on | IMPLEMENTED |
+| `fail-on` | string | `critical,high` | Severity levels to block on (comma-separated values are parsed, but only the first is used) | PARTIALLY IMPLEMENTED (only single severity supported) |
 | `upload-sarif` | boolean | `true` | Upload SARIF to GitHub Security | IMPLEMENTED |
 | `scan-path` | string | `.` | Path to scan | IMPLEMENTED |
 
