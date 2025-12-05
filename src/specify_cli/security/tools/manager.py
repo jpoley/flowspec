@@ -447,7 +447,15 @@ class ToolManager:
                 error_message=f"Invalid URL template: {error_msg}",
             )
 
-        url = url_template.format(version=config.version)
+        # Defensive: wrap format() even though validation passed
+        try:
+            url = url_template.format(version=config.version)
+        except KeyError as e:
+            return InstallResult(
+                success=False,
+                error_message=f"URL template formatting failed: {str(e)}",
+            )
+
         dest_dir = self.cache_dir / config.name / config.version
 
         # Acquire file-based lock for concurrent installation protection
@@ -847,9 +855,7 @@ class ToolManager:
 
                 # Check for symlinks BEFORE calling resolve() to prevent TOCTOU
                 if item.is_symlink():
-                    logger.warning(
-                        f"Removing symlink from archive (security risk): {item}"
-                    )
+                    logger.warning(f"Removing symlink: {item}")
                     shutil.rmtree(temp_extract)
                     raise RuntimeError(
                         f"Archive contains symlink (not allowed): {item.name}"
