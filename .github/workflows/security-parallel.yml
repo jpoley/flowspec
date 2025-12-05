@@ -136,7 +136,6 @@ jobs:
           fi
 
           # Don't fail the workflow - security scan is advisory
-          exit 0
 
       - name: Upload SARIF for ${{ matrix.component }}
         if: always()
