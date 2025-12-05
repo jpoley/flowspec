@@ -2351,6 +2351,11 @@ def init(
         "--no-validation-prompts",
         help="Skip validation prompts and use NONE for all transitions",
     ),
+    validation_mode: str = typer.Option(
+        None,
+        "--validation-mode",
+        help="Set validation mode for ALL transitions: none, keyword, or pull-request. Per-transition flags override this.",
+    ),
     light: bool = typer.Option(
         False,
         "--light",
@@ -2983,20 +2988,71 @@ def init(
         )
 
     # Generate workflow configuration file with per-transition validation modes
+    # Precedence (lowest to highest): default -> batch mode -> per-transition flags
     if no_validation_prompts:
         # Use NONE for all transitions
         transition_modes = {}
     else:
-        # Build per-transition mode dict from CLI flags
-        transition_modes = {
-            "assess": validation_assess,
-            "research": validation_research,
-            "specify": validation_specify,
-            "plan": validation_plan,
-            "implement": validation_implement,
-            "validate": validation_validate,
-            "operate": validation_operate,
-        }
+        # Start with batch mode if specified
+        if validation_mode is not None:
+            batch_mode = validation_mode.lower()
+            if batch_mode not in ("none", "keyword", "pull-request"):
+                console.print(
+                    f"[red]Error:[/red] Invalid validation mode: {validation_mode}"
+                )
+                console.print("Valid modes: none, keyword, pull-request")
+                raise typer.Exit(1)
+
+            # For KEYWORD mode, prompt for keyword or use default
+            if batch_mode == "keyword":
+                if sys.stdin.isatty():
+                    keyword = typer.prompt(
+                        "Enter approval keyword for all transitions",
+                        default="APPROVED",
+                    )
+                else:
+                    keyword = "APPROVED"
+                batch_value = f'KEYWORD["{keyword}"]'
+            else:
+                batch_value = batch_mode
+
+            # Initialize all transitions with batch mode
+            transition_modes = {
+                "assess": batch_value,
+                "research": batch_value,
+                "specify": batch_value,
+                "plan": batch_value,
+                "implement": batch_value,
+                "validate": batch_value,
+                "operate": batch_value,
+            }
+        else:
+            # No batch mode, start with defaults
+            transition_modes = {
+                "assess": "none",
+                "research": "none",
+                "specify": "none",
+                "plan": "none",
+                "implement": "none",
+                "validate": "none",
+                "operate": "none",
+            }
+
+        # Per-transition flags override batch mode (only if not default "none")
+        if validation_assess.lower() != "none":
+            transition_modes["assess"] = validation_assess
+        if validation_research.lower() != "none":
+            transition_modes["research"] = validation_research
+        if validation_specify.lower() != "none":
+            transition_modes["specify"] = validation_specify
+        if validation_plan.lower() != "none":
+            transition_modes["plan"] = validation_plan
+        if validation_implement.lower() != "none":
+            transition_modes["implement"] = validation_implement
+        if validation_validate.lower() != "none":
+            transition_modes["validate"] = validation_validate
+        if validation_operate.lower() != "none":
+            transition_modes["operate"] = validation_operate
 
     generate_jpspec_workflow_yml(project_path, transition_modes)
     console.print()
