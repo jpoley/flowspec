@@ -136,11 +136,11 @@ jobs:
           echo "Running security scan on: $SCAN_PATH"
 
           # Check if multiple severities were specified (comma-separated)
+          FAIL_SEVERITY=$(echo "$FAIL_ON" | cut -d',' -f1)
           if echo "$FAIL_ON" | grep -q ","; then
             echo "⚠️ Warning: Multiple severities specified but only single severity is supported."
-            echo "   Using first value only: $(echo "$FAIL_ON" | cut -d',' -f1)"
+            echo "   Using: $FAIL_SEVERITY"
           fi
-          FAIL_SEVERITY=$(echo "$FAIL_ON" | cut -d',' -f1)
 
           specify security scan \
             "$SCAN_PATH" \
