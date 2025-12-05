@@ -64,7 +64,8 @@ jobs:
       - name: Install JP Spec Kit
         run: |
           pip install uv
-          uv tool install specify-cli
+          # Install from local checkout (this repo's code)
+          uv pip install .
 
       - name: Install Semgrep
         run: pip install semgrep==1.50.0
