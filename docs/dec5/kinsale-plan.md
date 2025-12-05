@@ -24,7 +24,7 @@ This document outlines the execution plan for the remaining kinsale-assigned tas
 | task-083 | Pre-Implementation Quality Gates | Medium (4-6 hrs) |
 | task-182 | Extend specify init for Validation Modes | Large (6-8 hrs) |
 
-#### MEDIUM Priority (6 tasks)
+#### MEDIUM Priority (7 tasks)
 | Task | Description | Est. Effort |
 |------|-------------|-------------|
 | task-085 | Local CI Simulation Script | Medium (3-4 hrs) |
