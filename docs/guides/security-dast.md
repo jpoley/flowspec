@@ -287,15 +287,11 @@ for severity in ["critical", "high", "medium", "low", "info"]:
     if severity in by_severity:
         print(f"{severity.upper()}: {len(by_severity[severity])} findings")
 
-# Export to SARIF
-# TODO: SARIFExporter is a placeholder - implement or use your own SARIF export logic
-from specify_cli.security.exporters import SARIFExporter
+# Export to JSON (SARIF export coming in future release)
+import json
 
-exporter = SARIFExporter()
-sarif_output = exporter.export(result.findings)
-
-with open("dast-results.sarif", "w") as f:
-    f.write(sarif_output)
+with open("dast-results.json", "w") as f:
+    json.dump([f.__dict__ for f in result.findings], f, indent=2)
 ```
 
 ## Best Practices
@@ -348,8 +344,10 @@ async def secure_auth(page):
 DAST can produce false positives. Review findings before creating issues:
 
 ```python
+from specify_cli.security.dast import DASTScanner
 from specify_cli.security.models import Confidence
 
+scanner = DASTScanner(base_url="https://example.com")
 result = scanner.scan_sync()
 
 # Filter high-confidence findings
@@ -366,9 +364,11 @@ for finding in high_confidence:
 ### 5. Integrate with CI/CD
 
 ```python
+from specify_cli.security.dast import DASTScanner
 from specify_cli.security.models import Severity
 
 # In CI pipeline
+scanner = DASTScanner(base_url="https://staging.example.com")
 result = scanner.scan_sync()
 
 # Fail build if critical/high severity found

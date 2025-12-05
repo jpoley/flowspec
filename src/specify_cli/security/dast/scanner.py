@@ -174,8 +174,6 @@ class DASTScanner:
                     await page.close()
 
             # Test standalone inputs for XSS
-            # TODO: Track source page URL in input_data to test on correct page
-            # Currently tests all inputs on base_url which may miss context-specific inputs
             for input_data in crawl_result.inputs_found:
                 page = await context.new_page()
                 try:
