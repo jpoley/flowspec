@@ -180,13 +180,16 @@ matrix:
 
 ### Fail-On Severity
 
-| Setting | Blocks On | Use Case |
-|---------|-----------|----------|
-| `critical` | Critical only | Permissive (hotfixes) |
-| `critical,high` | Critical + High | **Recommended for PRs** |
-| `critical,high,medium` | Critical + High + Medium | Strict (security-critical apps) |
-| `critical,high,medium,low` | All findings | Very strict (compliance) |
+> **NOTE:** Currently, only the first severity level in a comma-separated list is used to determine blocking. For example, `critical,high` will only block on "Critical" findings. Support for blocking on multiple severities is planned.
 
+| Setting | Blocks On (Current) | Use Case |
+|---------|---------------------|----------|
+| `critical` | Critical only | Permissive (hotfixes) |
+| `critical,high` | Critical only | **Recommended for PRs** |
+| `critical,high,medium` | Critical only | Strict (security-critical apps) |
+| `critical,high,medium,low` | Critical only | Very strict (compliance) |
+
+<!-- Planned behavior: Once multi-severity support is implemented, the "Blocks On" column will reflect all listed severities. -->
 ### SARIF Upload
 
 SARIF (Static Analysis Results Interchange Format) results are uploaded to GitHub's Security tab.
