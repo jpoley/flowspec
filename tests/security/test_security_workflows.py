@@ -288,6 +288,37 @@ class TestParallelSecurityWorkflow:
         # Check that path uses matrix.component
         assert "${{ matrix.component }}" in scan_step["run"]
 
+    def test_component_name_sanitization(self, workflow_data):
+        """Test that component names with slashes are sanitized for file paths.
+
+        Components like 'src/specify_cli' contain slashes which are invalid
+        in file paths. The workflow must sanitize these (e.g., replace / with -)
+        before using them in file names.
+        """
+        steps = workflow_data["jobs"]["security-scan-matrix"]["steps"]
+
+        scan_step = next(
+            (s for s in steps if "Run Security Scan" in s.get("name", "")), None
+        )
+
+        assert scan_step is not None
+        run_script = scan_step["run"]
+
+        # Should sanitize component name (replace / with -)
+        assert "tr '/' '-'" in run_script, (
+            "Workflow must sanitize component names with slashes for file paths"
+        )
+
+        # Should use sanitized name in output file paths
+        assert "security-results-${COMPONENT_NAME}.sarif" in run_script, (
+            "SARIF output should use sanitized component name"
+        )
+
+        # Should set component_name output for downstream steps
+        assert "component_name=${COMPONENT_NAME}" in run_script, (
+            "Should output sanitized component name for SARIF upload"
+        )
+
     def test_sarif_per_component(self, workflow_data):
         """Test SARIF upload uses component-specific category."""
         steps = workflow_data["jobs"]["security-scan-matrix"]["steps"]
