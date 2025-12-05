@@ -1003,7 +1003,7 @@ class TestURLValidation:
         assert "version is empty" in error
 
     def test_url_template_empty_version_with_double_slash(self, tmp_path):
-        """Issue #7: URL template with empty version and double slash is rejected."""
+        """Issue #2: URL template with empty version and double slash is rejected."""
         manager = ToolManager(cache_dir=tmp_path)
 
         # Empty version with template requiring version
@@ -1015,7 +1015,7 @@ class TestURLValidation:
         assert "version is empty" in error.lower()
 
     def test_url_template_malformed_url_after_substitution(self, tmp_path):
-        """Issue #7: Malformed URLs with double slashes after substitution are rejected."""
+        """Issue #2: Malformed URLs with double slashes after substitution are rejected."""
         manager = ToolManager(cache_dir=tmp_path)
 
         # This creates https://example.com//tool.zip (double slash in path)

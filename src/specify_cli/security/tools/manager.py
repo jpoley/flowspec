@@ -730,7 +730,7 @@ class ToolManager:
                     logger.warning(f"Removing symlink: {symlink_path}")
                     symlink_path.unlink()
                 raise RuntimeError(
-                    f"Zip archive contains symlinks: {', '.join(s.name for s in symlinks)}"
+                    f"Zip archive contains {len(symlinks)} symlink(s): {', '.join(s.name for s in symlinks)}"
                 )
 
     def _extract_tar_safely(self, archive_path: Path, dest_dir: Path) -> None:
@@ -752,7 +752,7 @@ class ToolManager:
                     # Check file count limit during pre-extraction
                     if member_count > self.MAX_ARCHIVE_FILES:
                         raise RuntimeError(
-                            f"Archive contains too many files (>{self.MAX_ARCHIVE_FILES})"
+                            f"Archive contains {member_count} files (>{self.MAX_ARCHIVE_FILES})"
                         )
 
                     # Check for absolute paths
@@ -795,10 +795,11 @@ class ToolManager:
                 new_files = files_after - files_before
                 symlinks = [p for p in new_files if p.is_symlink()]
                 if symlinks:
-                    for s in symlinks:
-                        s.unlink()
+                    for symlink_path in symlinks:
+                        logger.warning(f"Removing symlink: {symlink_path}")
+                        symlink_path.unlink()
                     raise RuntimeError(
-                        f"Tar contains symlinks: {', '.join(s.name for s in symlinks)}"
+                        f"Tar archive contains {len(symlinks)} symlink(s): {', '.join(s.name for s in symlinks)}"
                     )
         except tarfile.TarError as e:
             # Issue #5/#8: Cleanup on tar extraction failure
@@ -841,7 +842,7 @@ class ToolManager:
                 if file_count > self.MAX_ARCHIVE_FILES:
                     shutil.rmtree(temp_extract)
                     raise RuntimeError(
-                        f"Archive contains too many files (>{self.MAX_ARCHIVE_FILES})"
+                        f"Archive contains {file_count} files (>{self.MAX_ARCHIVE_FILES})"
                     )
 
                 # Check for symlinks BEFORE calling resolve() to prevent TOCTOU
