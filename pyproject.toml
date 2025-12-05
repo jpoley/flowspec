@@ -18,6 +18,7 @@ dependencies = [
     "keyring>=25.0.0",
     "jsonschema>=4.0.0",
     "mcp>=0.1.0",
+    "filelock>=3.0.0",
 ]
 
 [project.scripts]
