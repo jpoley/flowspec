@@ -21,6 +21,7 @@ Security Features:
 - Command injection prevention via path validation
 """
 
+import fcntl
 import logging
 import os
 import platform
@@ -29,10 +30,13 @@ import shutil
 import stat
 import subprocess
 import sys
+import tarfile
+import time
 import uuid
 import zipfile
 from pathlib import Path
 from urllib.error import URLError
+from urllib.parse import urlparse
 from urllib.request import urlopen
 
 from specify_cli.security.tools.models import (
@@ -47,10 +51,27 @@ from specify_cli.security.tools.models import (
 
 logger = logging.getLogger(__name__)
 
-# Anchored regex for exact version validation (rejects "1.2.3.4.5")
+# VERSION_PATTERN: Regex for validating semantic version strings (anchored for exact match)
+#
+# Pattern explanation:
+# - ^v?              : Optional 'v' prefix at start (e.g., "v1.0.0" or "1.0.0")
+# - (\d+\.\d+        : Major.minor (required, e.g., "1.0")
+# - (?:\.\d+)?       : Optional patch version (e.g., ".0" in "1.0.0")
+# - (?:-[\w.]+)?     : Optional pre-release/metadata (e.g., "-beta1", "-rc.1")
+# - )$               : Anchor to end (no extra content allowed)
+#
+# Accepted formats:
+#   - "1.0", "1.0.0", "v1.0.0"
+#   - "1.0.0-beta1", "v2.15.0-rc.1"
+#
+# Rejected formats:
+#   - "1.2.3.4" (too many segments)
+#   - "abc", "version" (non-numeric)
+#   - "semgrep 1.0.0" (extra text, not anchored)
 VERSION_PATTERN = re.compile(r"^v?(\d+\.\d+(?:\.\d+)?(?:-[\w.]+)?)$")
 
-# Unanchored regex for extracting version from tool output
+# VERSION_SEARCH_PATTERN: Regex for extracting version from tool output (not anchored)
+# Used for parsing version strings from --version output, which may contain other text
 VERSION_SEARCH_PATTERN = re.compile(r"v?(\d+\.\d+(?:\.\d+)?(?:-[\w.]+)?)")
 
 # Constants for timeouts and limits (Issue #9: Extract magic numbers)
@@ -97,6 +118,12 @@ class ToolManager:
 
     # Maximum search depth for finding executables
     MAX_SEARCH_DEPTH = 5
+
+    # Maximum number of files allowed in an archive (zip bomb protection)
+    MAX_ARCHIVE_FILES = 10000
+
+    # Maximum file size for executables in MB (sanity check)
+    MAX_EXECUTABLE_SIZE_MB = 1000
 
     def __init__(
         self,
@@ -286,6 +313,67 @@ class ToolManager:
                 error_message=f"Installation timed out after {PIP_INSTALL_TIMEOUT_SECONDS // 60} minutes",
             )
 
+    def _acquire_install_lock(self, tool_name: str, version: str, timeout: int = 60):
+        """Acquire file-based lock for concurrent installation protection.
+
+        Args:
+            tool_name: Name of the tool.
+            version: Version being installed.
+            timeout: Maximum seconds to wait for lock.
+
+        Returns:
+            Context manager that holds the lock file handle.
+
+        Raises:
+            RuntimeError: If lock cannot be acquired within timeout.
+        """
+        lock_file = self.cache_dir / f".{tool_name}_{version}.lock"
+        lock_file.parent.mkdir(parents=True, exist_ok=True)
+
+        class FileLock:
+            def __init__(self, path: Path, timeout: int):
+                self.path = path
+                self.timeout = timeout
+                self.file_handle = None
+
+            def __enter__(self):
+                self.file_handle = open(self.path, "w")
+                start_time = time.time()
+                while True:
+                    try:
+                        # Non-blocking exclusive lock
+                        fcntl.flock(
+                            self.file_handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB
+                        )
+                        return self
+                    except OSError:
+                        # Lock held by another process
+                        if time.time() - start_time >= self.timeout:
+                            raise RuntimeError(
+                                f"Could not acquire install lock for {self.path.name} within {self.timeout}s"
+                            )
+                        time.sleep(0.1)
+
+            def __exit__(self, exc_type, exc_val, exc_tb):
+                # Release lock and close file
+                # The lock is automatically released when file is closed
+                if self.file_handle:
+                    try:
+                        fcntl.flock(self.file_handle.fileno(), fcntl.LOCK_UN)
+                    except Exception:
+                        pass  # Ignore errors during unlock
+                    finally:
+                        self.file_handle.close()
+                # Clean up lock file
+                try:
+                    if self.path.exists():
+                        self.path.unlink()
+                except Exception:
+                    pass  # Ignore cleanup errors
+                return False
+
+        return FileLock(lock_file, timeout)
+
     def _install_binary(self, config: ToolConfig) -> InstallResult:
         """Install tool by downloading binary.
 
@@ -321,20 +409,57 @@ class ToolManager:
                 error_message=f"Invalid version format: {config.version}",
             )
 
-        url = config.binary_urls[platform_key].format(version=config.version)
+        # Validate and construct URL
+        url_template = config.binary_urls[platform_key]
+        is_valid, error_msg = self._validate_url_template(url_template, config.version)
+        if not is_valid:
+            return InstallResult(
+                success=False,
+                error_message=f"Invalid URL template: {error_msg}",
+            )
+
+        url = url_template.format(version=config.version)
         dest_dir = self.cache_dir / config.name / config.version
 
+        # Acquire file-based lock for concurrent installation protection
+        try:
+            with self._acquire_install_lock(config.name, config.version):
+                return self._install_binary_locked(config, url, dest_dir)
+        except RuntimeError as e:
+            return InstallResult(
+                success=False,
+                error_message=f"Lock acquisition failed: {e}",
+            )
+
+    def _install_binary_locked(
+        self, config: ToolConfig, url: str, dest_dir: Path
+    ) -> InstallResult:
+        """Install binary with lock already acquired.
+
+        Args:
+            config: Tool configuration.
+            url: Download URL.
+            dest_dir: Destination directory.
+
+        Returns:
+            InstallResult with status.
+        """
         try:
             logger.info(f"Downloading {config.name} from {url}")
             dest_dir.mkdir(parents=True, exist_ok=True)
 
-            download_path = dest_dir / "download.zip"
+            # Use URL-based filename for download
+            download_filename = self._get_filename_from_url(url)
+            download_path = dest_dir / download_filename
 
             # Issue #3: Calculate max download size
             max_download_mb = (
                 config.size_estimate_mb * 2 if config.size_estimate_mb else 1000
             )
             self._download_file(url, download_path, max_size_mb=max_download_mb)
+
+            # Count files before extraction for validation
+            files_before = set(dest_dir.rglob("*"))
 
             # Issue #6: Set restrictive umask before extraction
             old_umask = os.umask(0o077)
@@ -343,13 +468,21 @@ class ToolManager:
                 self._safe_extract_archive(download_path, dest_dir)
             finally:
                 os.umask(old_umask)
-                # Issue #10: Always clean up download file (even on extraction failure)
-                try:
-                    download_path.unlink()
-                except (OSError, PermissionError) as e:
-                    logger.warning(
-                        f"Could not remove download file {download_path}: {e}"
-                    )
+
+            # Validate archive produced files
+            files_after = set(dest_dir.rglob("*"))
+            new_files = files_after - files_before - {download_path}
+            if not new_files:
+                return InstallResult(
+                    success=False,
+                    error_message="Archive extraction produced no files",
+                )
+
+            # Issue #10: Always clean up download file
+            try:
+                download_path.unlink()
+            except (OSError, PermissionError) as e:
+                logger.warning(f"Could not remove download file {download_path}: {e}")
 
             tool_path = self._find_in_directory(dest_dir, config.name)
             if not tool_path:
@@ -361,14 +494,23 @@ class ToolManager:
                 )
 
             # Set executable permission (owner only for security)
-            if tool_path.is_file():
-                tool_path.chmod(stat.S_IRWXU)  # 0o700 - owner only
-            else:
+            if not tool_path.is_file():
                 shutil.rmtree(dest_dir)
                 return InstallResult(
                     success=False,
                     error_message=f"Found path is not a valid file: {tool_path}",
                 )
+
+            # Check file size for sanity
+            file_size_mb = tool_path.stat().st_size / (1024 * 1024)
+            if file_size_mb > self.MAX_EXECUTABLE_SIZE_MB:
+                shutil.rmtree(dest_dir)
+                return InstallResult(
+                    success=False,
+                    error_message=f"Executable too large ({file_size_mb:.1f}MB > {self.MAX_EXECUTABLE_SIZE_MB}MB)",
+                )
+
+            tool_path.chmod(stat.S_IRWXU)  # 0o700 - owner only
 
             tool_info = ToolInfo(
                 name=config.name,
@@ -381,21 +523,33 @@ class ToolManager:
 
             return InstallResult(success=True, tool_info=tool_info)
 
-        except (OSError, RuntimeError, zipfile.BadZipFile) as e:
-            # Issue #12: Include exception details in error message
+        except (ValueError, RuntimeError, zipfile.BadZipFile) as e:
+            # Security exceptions (path traversal, zip bombs, etc.)
             error_details = f"{type(e).__name__}: {str(e)}"
-            logger.error(f"Binary install failed: {error_details}")
-
-            # Clean up partially installed directory on failure
+            logger.error(f"Security error during binary install: {error_details}")
+            # Clean up partial installation on any failure
             if dest_dir.exists():
                 try:
                     shutil.rmtree(dest_dir)
-                except (OSError, PermissionError) as cleanup_error:
-                    logger.warning(f"Could not clean up {dest_dir}: {cleanup_error}")
-
+                except (OSError, PermissionError) as cleanup_err:
+                    logger.warning(f"Failed to clean up {dest_dir}: {cleanup_err}")
             return InstallResult(
                 success=False,
-                error_message=f"Binary installation failed: {error_details}",
+                error_message=f"Security error: {e}",
+            )
+        except (OSError, PermissionError) as e:
+            # Filesystem errors (permissions, disk full, etc.)
+            error_details = f"{type(e).__name__}: {str(e)}"
+            logger.error(f"Filesystem error during binary install: {error_details}")
+            # Clean up partial installation on any failure
+            if dest_dir.exists():
+                try:
+                    shutil.rmtree(dest_dir)
+                except (OSError, PermissionError) as cleanup_err:
+                    logger.warning(f"Failed to clean up {dest_dir}: {cleanup_err}")
+            return InstallResult(
+                success=False,
+                error_message=f"Filesystem error: {e}",
             )
 
     def _download_file(
@@ -460,7 +614,8 @@ class ToolManager:
             - Validates all paths using Path.relative_to() (not string prefix)
             - Rejects absolute paths in archive
             - Prevents directory traversal attacks (../)
-            - Rejects symlinks that could escape destination
+            - Detects and rejects symlinks before resolution (TOCTOU protection)
+            - Limits number of files to prevent zip bomb DoS
             - Uses temp directory for non-ZIP to prevent TOCTOU
 
         Args:
@@ -470,48 +625,51 @@ class ToolManager:
         Raises:
             RuntimeError: If archive contains suspicious paths or symlinks.
         """
-        dest_dir_resolved = dest_dir.resolve()
-
-        if str(archive_path).endswith(".zip"):
-            self._extract_zip_safely(archive_path, dest_dir, dest_dir_resolved)
+        # Use .suffix.lower() for case-insensitive extension checking
+        if archive_path.suffix.lower() == ".zip":
+            self._extract_zip_safely(archive_path, dest_dir)
+        elif archive_path.suffix.lower() in [".tar", ".gz", ".tgz", ".bz2", ".xz"]:
+            self._extract_tar_safely(archive_path, dest_dir)
         else:
-            # Issue #2: TOCTOU fix - extract to temp directory first
-            self._extract_non_zip_safely(archive_path, dest_dir, dest_dir_resolved)
+            # For other archive types, use generic extraction with validation
+            self._extract_non_zip_safely(archive_path, dest_dir)
 
-    def _extract_zip_safely(
-        self, archive_path: Path, dest_dir: Path, dest_dir_resolved: Path
-    ) -> None:
+    def _extract_zip_safely(self, archive_path: Path, dest_dir: Path) -> None:
         """Extract ZIP archive with security validation.
 
         Args:
             archive_path: Path to ZIP file.
             dest_dir: Destination directory.
-            dest_dir_resolved: Resolved destination directory path.
 
         Raises:
             RuntimeError: If archive contains malicious content.
         """
         with zipfile.ZipFile(archive_path, "r") as zf:
+            # Check file count to prevent zip bomb DoS
+            member_count = len(zf.namelist())
+            if member_count > self.MAX_ARCHIVE_FILES:
+                raise RuntimeError(
+                    f"Archive contains too many files ({member_count} > {self.MAX_ARCHIVE_FILES})"
+                )
+
+            # Pre-extraction validation
             for member in zf.namelist():
                 # Check for absolute paths
                 if Path(member).is_absolute():
                     raise RuntimeError(f"Archive contains absolute path: {member}")
 
-                # Check for path traversal using path components
-                # This correctly allows files like "README..md"
+                # Use Path.parts for path traversal check (not substring)
                 if ".." in Path(member).parts:
                     raise RuntimeError(f"Archive contains path traversal: {member}")
 
-                # Issue #1: Use Path.relative_to() for robust validation
-                member_path = (dest_dir / member).resolve()
+                # Validate without resolve() to prevent TOCTOU with symlinks
+                member_path = dest_dir / member
+                # Check if path would escape using relative_to
                 try:
-                    member_path.relative_to(dest_dir_resolved)
+                    member_path.relative_to(dest_dir)
                 except ValueError:
-                    raise RuntimeError(
-                        f"Archive member escapes destination: {member}"
-                    ) from None
+                    raise RuntimeError(f"Archive member escapes destination: {member}")
 
-                # Issue #20: Comment references _is_zip_symlink method
                 # Check for symlinks using _is_zip_symlink() method
                 info = zf.getinfo(member)
                 if self._is_zip_symlink(info):
@@ -519,12 +677,90 @@ class ToolManager:
                         f"Archive contains symlink (not allowed): {member}"
                     )
 
+            # All paths validated, safe to extract
             zf.extractall(dest_dir)
 
-    def _extract_non_zip_safely(
-        self, archive_path: Path, dest_dir: Path, dest_dir_resolved: Path
-    ) -> None:
-        """Extract non-ZIP archive with TOCTOU mitigation.
+            # Post-extraction: check for and remove symlinks
+            for extracted_path in dest_dir.rglob("*"):
+                if extracted_path.is_symlink():
+                    logger.warning(
+                        f"Removing symlink from zip archive (security risk): {extracted_path}"
+                    )
+                    extracted_path.unlink()
+                    raise RuntimeError(
+                        f"Zip archive contains symlink (not allowed): {extracted_path.name}"
+                    )
+
+    def _extract_tar_safely(self, archive_path: Path, dest_dir: Path) -> None:
+        """Extract tar archive with security validation.
+
+        Args:
+            archive_path: Path to tar archive.
+            dest_dir: Destination directory.
+
+        Raises:
+            RuntimeError: If archive contains malicious content.
+        """
+        try:
+            with tarfile.open(archive_path, "r:*") as tf:
+                # Pre-extraction validation
+                member_count = 0
+                for member in tf.getmembers():
+                    member_count += 1
+                    # Check file count limit during pre-extraction
+                    if member_count > self.MAX_ARCHIVE_FILES:
+                        raise RuntimeError(
+                            f"Archive contains too many files (>{self.MAX_ARCHIVE_FILES})"
+                        )
+
+                    # Check for absolute paths
+                    if Path(member.name).is_absolute():
+                        raise RuntimeError(
+                            f"Archive contains absolute path: {member.name}"
+                        )
+
+                    # Check for path traversal
+                    if ".." in Path(member.name).parts:
+                        raise RuntimeError(
+                            f"Archive contains path traversal: {member.name}"
+                        )
+
+                    # Detect symlinks BEFORE any path resolution (TOCTOU protection)
+                    if member.issym() or member.islnk():
+                        # Symlinks could be used to escape destination
+                        logger.warning(
+                            f"Tar archive contains symlink (potential security risk): {member.name}"
+                        )
+                        # Validate symlink target doesn't escape - WITHOUT following it
+                        if member.linkname:
+                            # Check for absolute path in link target
+                            if Path(member.linkname).is_absolute():
+                                raise RuntimeError(
+                                    f"Archive contains symlink to absolute path: {member.linkname}"
+                                )
+                            # Check for path traversal in link target
+                            if ".." in Path(member.linkname).parts:
+                                raise RuntimeError(
+                                    f"Archive contains symlink with path traversal: {member.linkname}"
+                                )
+
+                    # Validate member path WITHOUT resolve() to avoid following symlinks
+                    member_path = dest_dir / member.name
+                    try:
+                        # Use relative_to on non-resolved path
+                        member_path.relative_to(dest_dir)
+                    except ValueError:
+                        raise RuntimeError(
+                            f"Archive member escapes destination: {member.name}"
+                        )
+
+                # All validated, extract
+                tf.extractall(dest_dir)
+        except tarfile.TarError as e:
+            raise RuntimeError(f"Failed to extract tar archive: {e}") from e
+
+    def _extract_non_zip_safely(self, archive_path: Path, dest_dir: Path) -> None:
+        """Extract non-ZIP/non-tar archive with TOCTOU mitigation.
 
         Uses a temporary directory for extraction and validation
         before moving to the final destination.
@@ -532,7 +768,6 @@ class ToolManager:
         Args:
             archive_path: Path to archive file.
             dest_dir: Destination directory.
-            dest_dir_resolved: Resolved destination directory path.
 
         Raises:
             RuntimeError: If archive contains malicious content.
@@ -542,31 +777,38 @@ class ToolManager:
 
         try:
             temp_extract.mkdir(parents=True, exist_ok=True)
-            temp_resolved = temp_extract.resolve()
 
             # Extract to temp location
             shutil.unpack_archive(archive_path, temp_extract)
 
-            # Post-extraction validation in temp directory
+            # Post-extraction validation
+            file_count = 0
             for item in temp_extract.rglob("*"):
-                # Check for symlinks
-                if item.is_symlink():
-                    # Issue #5: Clean up entire directory on security violation
+                file_count += 1
+                # File count limit check
+                if file_count > self.MAX_ARCHIVE_FILES:
                     shutil.rmtree(temp_extract)
                     raise RuntimeError(
-                        f"Archive contains symlink (not allowed): {item}"
+                        f"Archive contains too many files (>{self.MAX_ARCHIVE_FILES})"
                     )
 
-                # Issue #1: Use Path.relative_to() for validation
-                item_resolved = item.resolve()
-                try:
-                    item_resolved.relative_to(temp_resolved)
-                except ValueError:
-                    # Clean up entire temp directory (items inside will be deleted too)
+                # Check for symlinks BEFORE calling resolve() to prevent TOCTOU
+                if item.is_symlink():
+                    logger.warning(
+                        f"Removing symlink from archive (security risk): {item}"
+                    )
                     shutil.rmtree(temp_extract)
                     raise RuntimeError(
-                        f"Archive member escapes destination: {item}"
-                    ) from None
+                        f"Archive contains symlink (not allowed): {item.name}"
+                    )
+
+                # Validate path without resolve() first
+                try:
+                    item.relative_to(temp_extract)
+                except ValueError:
+                    # Path escapes destination - remove it
+                    shutil.rmtree(temp_extract)
+                    raise RuntimeError(f"Extracted file escaped destination: {item}")
 
             # Validation passed - move contents to final destination
             for item in temp_extract.iterdir():
@@ -607,6 +849,87 @@ class ToolManager:
             True if version format is valid (e.g., "1.0.0", "v2.15.0").
         """
         return bool(VERSION_PATTERN.match(version))
+
+    def _validate_url_template(
+        self, url_template: str, version: str
+    ) -> tuple[bool, str]:
+        """Validate URL template and substitution.
+
+        Security:
+            - Validates URL template contains only {version} placeholder
+            - Checks for malformed URLs after substitution
+            - Prevents double slashes (https://example.com//file)
+            - Validates placeholder exists or version is empty
+
+        Args:
+            url_template: URL template with {version} placeholder.
+            version: Version string to substitute.
+
+        Returns:
+            Tuple of (is_valid, error_message). error_message is empty if valid.
+        """
+        # Check for only allowed placeholder
+        allowed_placeholders = ["{version}"]
+        placeholders = re.findall(r"\{[^}]+\}", url_template)
+        for placeholder in placeholders:
+            if placeholder not in allowed_placeholders:
+                return (
+                    False,
+                    f"Invalid URL template placeholder: {placeholder}. Only {{version}} is allowed.",
+                )
+
+        # Handle empty version
+        if not version:
+            if "{version}" in url_template:
+                return (False, "URL template requires {version} but version is empty.")
+            # No placeholder needed if version is empty
+            final_url = url_template
+        else:
+            # Substitute version
+            final_url = url_template.format(version=version)
+
+        # Check for malformed URLs (double slashes except in protocol)
+        # Split on :// to separate protocol from path
+        parts = final_url.split("://", 1)
+        if len(parts) == 2:
+            protocol, rest = parts
+            # Check for double slashes in the path/query part
+            if "//" in rest:
+                return (
+                    False,
+                    f"Malformed URL after substitution: {final_url} (contains //)",
+                )
+
+        # Basic URL validation
+        try:
+            parsed = urlparse(final_url)
+            if not parsed.scheme or not parsed.netloc:
+                return (False, f"Invalid URL after substitution: {final_url}")
+        except Exception as e:
+            return (False, f"URL parsing failed: {e}")
+
+        return (True, "")
+
+    def _get_filename_from_url(self, url: str) -> str:
+        """Extract filename with extension from URL.
+
+        Args:
+            url: URL to extract filename from.
+
+        Returns:
+            Filename with extension, or "download.bin" if cannot determine.
+        """
+        try:
+            parsed = urlparse(url)
+            path = parsed.path
+            if path:
+                filename = Path(path).name
+                if filename and "." in filename:
+                    return filename
+        except Exception:
+            pass
+        # Default fallback
+        return "download.bin"
 
     def get_cache_info(self) -> CacheInfo:
         """Get information about the tool cache.
