@@ -251,6 +251,21 @@ Reference the following files for CWE patterns and triage guidelines:
 6. Report summary to user
 ```
 
+## Expert Personas
+
+For enhanced analysis, you can invoke specialized security personas:
+
+- **@security-analyst** - Deep OWASP/CVSS expertise, compliance mapping, business impact assessment
+- **@patch-engineer** - Security fix validation, code quality review, testing strategies
+- **@fuzzing-strategist** - Dynamic testing guidance, fuzzing strategy development
+- **@exploit-researcher** - Attack scenarios, exploitability assessment, vulnerability chaining
+
+Use personas for:
+- Critical/high severity findings (detailed analysis)
+- Complex vulnerabilities requiring specialized knowledge
+- Executive reporting (business impact narratives)
+- Fix validation and quality assurance
+
 ## Notes
 
 - This is a SKILL, not Python code. You (Claude Code) execute the logic natively.
@@ -258,3 +273,4 @@ Reference the following files for CWE patterns and triage guidelines:
 - Python code only handles data structures (Finding, TriageResult) and file I/O.
 - Use Read tool to view code context, Bash tool for git blame.
 - Apply domain knowledge from memory/security/ guidelines.
+- For specialized analysis, invoke expert personas (@security-analyst, @patch-engineer, @fuzzing-strategist, @exploit-researcher)

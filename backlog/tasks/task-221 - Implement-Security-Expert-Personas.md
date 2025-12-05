@@ -1,11 +1,11 @@
 ---
 id: task-221
 title: Implement Security Expert Personas
-status: To Do
+status: In Progress
 assignee:
-  - '@muckross'
+  - '@backend-engineer'
 created_date: '2025-12-03 02:15'
-updated_date: '2025-12-04 14:19'
+updated_date: '2025-12-05 17:17'
 labels:
   - security
   - personas
@@ -22,11 +22,11 @@ Create 4 security-focused expert personas borrowed from Raptor patterns: @securi
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Create @security-analyst persona with OWASP expertise
-- [ ] #2 Create @patch-engineer persona for fix quality focus
-- [ ] #3 Create @fuzzing-strategist persona for dynamic testing guidance
-- [ ] #4 Create @exploit-researcher persona for attack surface analysis
-- [ ] #5 Implement progressive disclosure pattern for persona loading
+- [x] #1 Create @security-analyst persona with OWASP expertise
+- [x] #2 Create @patch-engineer persona for fix quality focus
+- [x] #3 Create @fuzzing-strategist persona for dynamic testing guidance
+- [x] #4 Create @exploit-researcher persona for attack surface analysis
+- [x] #5 Implement progressive disclosure pattern for persona loading
 <!-- AC:END -->
 
 ## Implementation Plan
