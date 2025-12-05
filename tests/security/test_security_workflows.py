@@ -114,14 +114,16 @@ class TestSecurityScanWorkflow:
 
     def test_jq_has_error_handling(self, workflow_content):
         """Test that jq commands have error handling."""
-        # Find all jq commands
-        jq_commands = re.findall(r"jq\s+'[^']+'\s+\S+", workflow_content)
-        for cmd in jq_commands:
-            # Each jq command should have 2>/dev/null || echo "0" pattern nearby
-            assert "2>/dev/null" in workflow_content, (
-                f"jq command should have error handling: {cmd}"
-            )
-
+        # Check each line for jq commands and ensure error handling is present
+        for line in workflow_content.split('\n'):
+            if 'jq ' in line and 'jq' in line:
+                # Skip comments
+                if line.strip().startswith('#'):
+                    continue
+                # Each jq command line should have error handling
+                assert '2>/dev/null' in line or 'echo "0"' in line, (
+                    f"jq command should have error handling: {line.strip()}"
+                )
     def test_yq_has_checksum_verification(self, workflow_content):
         """Test that yq download includes checksum verification."""
         assert "YQ_CHECKSUM=" in workflow_content, "Should define yq checksum"
