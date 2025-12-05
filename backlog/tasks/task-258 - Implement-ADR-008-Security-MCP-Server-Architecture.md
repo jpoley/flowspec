@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@backend-engineer'
 created_date: '2025-12-03 02:32'
-updated_date: '2025-12-04 17:21'
+updated_date: '2025-12-05 16:28'
 labels:
   - 'workflow:Planned'
 dependencies: []
@@ -29,9 +29,9 @@ Build MCP server exposing security scanning capabilities for tool composition (v
 - [x] #7 Implement security://status resource
 - [x] #8 Implement security://config resource
 - [x] #9 Add MCP server configuration to .mcp.json
-- [ ] #10 Create Claude agent example
-- [ ] #11 Create cross-repo dashboard example
-- [ ] #12 Test with MCP Inspector
+- [x] #10 Create Claude agent example
+- [x] #11 Create cross-repo dashboard example
+- [x] #12 Test with MCP Inspector
 - [x] #13 Write MCP server documentation
 <!-- AC:END -->
 
