@@ -17,13 +17,15 @@ def load_workflow(path: Path) -> dict:
         content = f.read()
     # PyYAML interprets 'on' as True (YAML 1.1 boolean)
     # Replace 'on:' at the start of a line with '"on":'
-    content = re.sub(r'^on:', '"on":', content, flags=re.MULTILINE)
+    content = re.sub(r"^on:", '"on":', content, flags=re.MULTILINE)
     return yaml.safe_load(content)
 
 
 # Path to workflow files
 WORKFLOWS_DIR = Path(__file__).parent.parent.parent / ".github" / "workflows"
-SECURITY_CONFIG = Path(__file__).parent.parent.parent / ".github" / "security-config.yml"
+SECURITY_CONFIG = (
+    Path(__file__).parent.parent.parent / ".github" / "security-config.yml"
+)
 
 
 class TestSecurityWorkflowFiles:
@@ -114,22 +116,29 @@ class TestSecurityScanWorkflow:
 
     def test_jq_has_error_handling(self, workflow_content):
         """Test that jq commands have error handling."""
-        # Find all jq commands
-        jq_commands = re.findall(r"jq\s+'[^']+'\s+\S+", workflow_content)
-        for cmd in jq_commands:
-            # Each jq command should have 2>/dev/null || echo "0" pattern nearby
-            assert "2>/dev/null" in workflow_content, (
-                f"jq command should have error handling: {cmd}"
-            )
+        # Check each line for jq commands and ensure error handling is present
+        for line in workflow_content.split("\n"):
+            if "jq " in line and "jq" in line:
+                # Skip comments
+                if line.strip().startswith("#"):
+                    continue
+                # Each jq command line should have error handling
+                assert "2>/dev/null" in line or 'echo "0"' in line, (
+                    f"jq command should have error handling: {line.strip()}"
+                )
 
     def test_yq_has_checksum_verification(self, workflow_content):
         """Test that yq download includes checksum verification."""
         assert "YQ_CHECKSUM=" in workflow_content, "Should define yq checksum"
-        assert "sha256sum -c" in workflow_content, "Should verify checksum with sha256sum"
+        assert "sha256sum -c" in workflow_content, (
+            "Should verify checksum with sha256sum"
+        )
 
     def test_yq_version_is_pinned(self, workflow_content):
         """Test that yq version is pinned."""
-        assert 'YQ_VERSION="v4.40.5"' in workflow_content, "yq should be pinned to v4.40.5"
+        assert 'YQ_VERSION="v4.40.5"' in workflow_content, (
+            "yq should be pinned to v4.40.5"
+        )
 
 
 class TestShellInjectionPrevention:
@@ -152,8 +161,8 @@ class TestShellInjectionPrevention:
         """
         # Patterns that are dangerous in run: blocks
         dangerous_patterns = [
-            r'\$\{\{\s*inputs\.\w+\s*\}\}',  # ${{ inputs.foo }}
-            r'\$\{\{\s*matrix\.\w+\s*\}\}',  # ${{ matrix.foo }}
+            r"\$\{\{\s*inputs\.\w+\s*\}\}",  # ${{ inputs.foo }}
+            r"\$\{\{\s*matrix\.\w+\s*\}\}",  # ${{ matrix.foo }}
         ]
 
         for workflow_file in workflow_files:
@@ -272,4 +281,6 @@ class TestWorkflowYamlValidity:
         for workflow_file in all_workflow_files:
             workflow = load_workflow(workflow_file)
             assert "jobs" in workflow, f"{workflow_file.name} should have jobs"
-            assert len(workflow["jobs"]) > 0, f"{workflow_file.name} should have at least one job"
+            assert len(workflow["jobs"]) > 0, (
+                f"{workflow_file.name} should have at least one job"
+            )
