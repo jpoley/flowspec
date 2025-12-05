@@ -1,11 +1,11 @@
 ---
 id: task-280
 title: Benchmark AI Triage Engine Accuracy
-status: To Do
+status: Done
 assignee:
-  - '@muckross'
+  - '@backend-engineer'
 created_date: '2025-12-03 23:21'
-updated_date: '2025-12-04 14:21'
+updated_date: '2025-12-05 16:35'
 labels:
   - security
   - testing
@@ -23,13 +23,13 @@ Create benchmark dataset and measure AI triage accuracy against expert manual tr
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Curate dataset of 100+ security findings with ground truth labels (TP/FP)
-- [ ] #2 Include diverse vulnerability types (SQL injection, XSS, path traversal, secrets, crypto)
-- [ ] #3 Implement benchmark script to run triage and compare with ground truth
-- [ ] #4 Calculate accuracy metrics: overall accuracy, per-classifier accuracy, precision, recall
-- [ ] #5 Generate benchmark report with detailed breakdown and failure analysis
-- [ ] #6 Achieve >85% overall accuracy or document reasons for lower performance
-- [ ] #7 Document benchmark methodology and dataset curation process
+- [x] #1 Curate dataset of 100+ security findings with ground truth labels (TP/FP)
+- [x] #2 Include diverse vulnerability types (SQL injection, XSS, path traversal, secrets, crypto)
+- [x] #3 Implement benchmark script to run triage and compare with ground truth
+- [x] #4 Calculate accuracy metrics: overall accuracy, per-classifier accuracy, precision, recall
+- [x] #5 Generate benchmark report with detailed breakdown and failure analysis
+- [x] #6 Achieve >85% overall accuracy or document reasons for lower performance
+- [x] #7 Document benchmark methodology and dataset curation process
 <!-- AC:END -->
 
 ## Implementation Plan
