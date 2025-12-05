@@ -1,11 +1,11 @@
 ---
 id: task-216
 title: 'Integrate /jpspec:security with Workflow and Backlog'
-status: In Progress
+status: To Do
 assignee:
-  - '@backend-engineer'
+  - '@muckross'
 created_date: '2025-12-03 01:58'
-updated_date: '2025-12-05 16:59'
+updated_date: '2025-12-04 14:20'
 labels:
   - security
   - implement
@@ -22,12 +22,12 @@ Wire /jpspec:security commands into jpspec_workflow.yml and add backlog.md task 
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [x] #1 Add optional pre-commit hook integration
-- [x] #2 Implement --create-tasks flag to auto-create backlog tasks for findings
-- [x] #3 Task format includes severity, CWE, location, AI explanation
-- [x] #4 Document workflow integration options (validate extension, dedicated state)
-- [x] #5 CI/CD integration examples (GitHub Actions, GitLab CI)
-- [x] #6 SARIF output for GitHub Code Scanning
+- [ ] #1 Add optional pre-commit hook integration
+- [ ] #2 Implement --create-tasks flag to auto-create backlog tasks for findings
+- [ ] #3 Task format includes severity, CWE, location, AI explanation
+- [ ] #4 Document workflow integration options (validate extension, dedicated state)
+- [ ] #5 CI/CD integration examples (GitHub Actions, GitLab CI)
+- [ ] #6 SARIF output for GitHub Code Scanning
 <!-- AC:END -->
 
 ## Implementation Plan
