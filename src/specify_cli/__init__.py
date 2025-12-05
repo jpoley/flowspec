@@ -5191,10 +5191,8 @@ def config_validation(
         formatted_mode = "NONE"
     elif mode.lower() == "keyword":
         formatted_mode = f'KEYWORD["{keyword}"]'
-    elif mode.lower() == "pull-request":
-        formatted_mode = "PULL_REQUEST"
     else:
-        formatted_mode = "NONE"
+        formatted_mode = "PULL_REQUEST"
 
     # Update the transition
     for t in transitions:
