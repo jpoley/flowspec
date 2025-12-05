@@ -1,322 +1,177 @@
-# Security Configuration Guide
+# Security Documentation
 
-This directory contains security configuration documentation and examples for JP Spec Kit.
+Complete documentation for `/jpspec:security` security scanning features.
 
-## Quick Start
+## Quick Links
 
-1. Copy the example config:
-   ```bash
-   cp docs/security/config-schema.yaml .jpspec/security-config.yml
-   ```
+| Document | Description | Audience |
+|----------|-------------|----------|
+| [Security Quickstart](../guides/security-quickstart.md) | 5-minute getting started guide | All developers |
+| [Command Reference](../reference/jpspec-security-commands.md) | Complete CLI reference | All developers |
+| [CI/CD Integration](../guides/security-cicd-integration.md) | Pipeline setup examples | DevOps engineers |
+| [Custom Rules Guide](../guides/security-custom-rules.md) | Writing security rules | Security teams |
+| [Threat Model](../reference/security-threat-model.md) | Security boundaries | Security architects |
+| [Privacy Policy](../reference/security-privacy-policy.md) | Data handling | Compliance officers |
 
-2. Edit `.jpspec/security-config.yml` to enable/disable scanners and set thresholds
+## Getting Started
 
-3. Run a security scan:
-   ```bash
-   specify security scan
-   ```
+### For Developers
 
-## Configuration File
+1. Start with [Security Quickstart](../guides/security-quickstart.md)
+2. Learn commands from [Command Reference](../reference/jpspec-security-commands.md)
+3. Integrate into workflow with [Workflow Integration](../guides/security-workflow-integration.md)
 
-The security configuration file (`.jpspec/security-config.yml`) controls:
+### For DevOps Engineers
 
-- Which scanners to run (Semgrep, CodeQL, Bandit)
-- Severity thresholds for failing scans
-- Path exclusions (dependencies, generated code)
-- AI triage settings
-- Report format and output
+1. Review [CI/CD Integration Guide](../guides/security-cicd-integration.md)
+2. Choose your platform (GitHub Actions, GitLab, Jenkins, etc.)
+3. Copy and customize the example workflows
 
-See [`config-schema.yaml`](config-schema.yaml) for a fully documented example with all available options.
+### For Security Teams
 
-## Configuration Locations
+1. Understand [Threat Model](../reference/security-threat-model.md)
+2. Review [Privacy Policy](../reference/security-privacy-policy.md) for compliance
+3. Create [Custom Rules](../guides/security-custom-rules.md) for your organization
 
-The system searches for configuration files in this order:
+## Documentation Structure
 
-1. `.jpspec/security-config.yml`
-2. `.jpspec/security-config.yaml`
-3. `.security/config.yml`
-4. `.security/config.yaml`
-5. `security-config.yml`
-
-If no config file is found, sensible defaults are used.
-
-## Scanner Overview
-
-### Semgrep (Recommended)
-- **Speed**: Fast (seconds)
-- **Languages**: 30+ languages
-- **Setup**: None required
-- **Best for**: Daily development, pre-commit hooks
-
-Default rulesets:
-- `p/default` - Comprehensive security rules
-- `p/owasp-top-ten` - OWASP Top 10 vulnerabilities
-- `p/cwe-top-25` - CWE Top 25 weaknesses
-
-### CodeQL (Advanced)
-- **Speed**: Slow (minutes to hours)
-- **Languages**: 10+ languages (Python, JS, Go, Java, C/C++, C#, Ruby)
-- **Setup**: Requires database creation
-- **Best for**: CI/CD, scheduled scans, deep analysis
-
-### Bandit (Python)
-- **Speed**: Fast (seconds)
-- **Languages**: Python only
-- **Setup**: None required
-- **Best for**: Python projects, quick checks
-
-## Configuration Profiles
-
-### Development (Fast Local Scans)
-```yaml
-scanners:
-  semgrep:
-    enabled: true
-  bandit:
-    enabled: true
-  codeql:
-    enabled: false
-fail_on: high
+```
+docs/
+├── guides/
+│   ├── security-quickstart.md           # 5-minute tutorial
+│   ├── security-cicd-integration.md     # CI/CD examples
+│   ├── security-custom-rules.md         # Rule writing guide
+│   ├── security-mcp-guide.md            # MCP server integration
+│   └── security-workflow-integration.md # /jpspec workflow
+├── reference/
+│   ├── jpspec-security-commands.md      # CLI reference
+│   ├── security-threat-model.md         # Security analysis
+│   └── security-privacy-policy.md       # Privacy & compliance
+└── security/
+    ├── README.md                        # This file
+    └── DOCUMENTATION-INDEX.md           # Complete index
 ```
 
-**Use when**: Local development, pre-commit checks
+## Key Features Documented
 
-### CI/CD (Comprehensive)
-```yaml
-scanners:
-  semgrep:
-    enabled: true
-    timeout: 600
-  codeql:
-    enabled: true
-  bandit:
-    enabled: true
-fail_on: high
-triage:
-  auto_dismiss_fp: true
-reporting:
-  format: sarif
-```
+### Security Scanning
+- Multiple scanner support (Semgrep, CodeQL, Bandit, Trivy)
+- SARIF/JSON/Markdown output formats
+- Incremental and full scan modes
+- Configurable severity thresholds
 
-**Use when**: GitHub Actions, GitLab CI, Jenkins
+### AI-Powered Triage
+- Automatic TP/FP/NI classification
+- Confidence scoring
+- Plain-English explanations
+- Risk prioritization
 
-### Security Audit (Deep Analysis)
-```yaml
-scanners:
-  semgrep:
-    enabled: true
-    registry_rulesets: [p/default, p/owasp-top-ten, p/security-audit]
-  codeql:
-    enabled: true
-    query_suites: [security-extended]
-  bandit:
-    enabled: true
-    confidence_level: low
-fail_on: medium
-triage:
-  confidence_threshold: 0.5
-  auto_dismiss_fp: false
-```
+### Fix Generation
+- Automated security patches
+- Dry-run preview mode
+- Syntax validation
+- Backup creation
 
-**Use when**: Security reviews, compliance audits
+### Audit Reports
+- Executive summaries
+- OWASP Top 10 mapping
+- Compliance frameworks (SOC2, ISO27001, HIPAA)
+- Multiple output formats
 
-## Severity Levels
+### CI/CD Integration
+- GitHub Actions workflows
+- GitLab CI pipelines
+- Jenkins pipelines
+- Azure DevOps
+- CircleCI
+- Pre-commit hooks
 
-From highest to lowest:
-- **critical** - Exploitable vulnerabilities (SQL injection, RCE)
-- **high** - Serious security issues (XSS, CSRF, auth bypass)
-- **medium** - Security weaknesses (weak crypto, info disclosure)
-- **low** - Best practice violations
-- **info** - Informational findings
+## Compliance Coverage
 
-The `fail_on` setting determines which findings cause scans to fail:
-- `fail_on: critical` - Only fail on critical
-- `fail_on: high` - Fail on high and critical (recommended)
-- `fail_on: medium` - Fail on medium, high, and critical
-- `fail_on: low` - Fail on any finding except info
-- `fail_on: none` - Never fail (report only)
+| Framework | Documentation | Status |
+|-----------|---------------|--------|
+| OWASP Top 10 | ✅ Mapped in all reports | Complete |
+| SOC2 | ✅ Covered in Privacy Policy | Complete |
+| ISO27001 | ✅ Covered in Threat Model | Complete |
+| HIPAA | ✅ Covered in Privacy Policy | Complete |
+| PCI-DSS | ✅ Covered in Privacy Policy | Complete |
+| GDPR | ✅ Covered in Privacy Policy | Complete |
 
-## Path Exclusions
+## Tool Support
 
-Exclude files/directories from scanning:
+| Scanner | Language Support | Documentation Status |
+|---------|------------------|---------------------|
+| Semgrep | Python, JS, Go, Java, Ruby, PHP | ✅ Complete |
+| CodeQL | Python, JS, Go, Java, C++ | ✅ Complete |
+| Bandit | Python | ✅ Complete |
+| Trivy | Containers, IaC | ✅ Complete |
 
-```yaml
-exclusions:
-  paths:
-    - node_modules/    # Dependencies
-    - .venv/          # Virtual environments
-    - dist/           # Build output
-  patterns:
-    - "*.min.js"      # Minified files
-    - "*_test.py"     # Test files
-  file_extensions:
-    - .map            # Source maps
-    - .lock           # Lock files
-```
+## Example Workflows
 
-**Common exclusions**:
-- Dependencies (`node_modules/`, `vendor/`, `.venv/`)
-- Generated code (`*.generated.*`, `*.pb.go`)
-- Build artifacts (`dist/`, `build/`)
-- Test files (`*_test.py`, `*_test.go`)
-
-## AI Triage
-
-AI-powered analysis to reduce false positives:
-
-```yaml
-triage:
-  enabled: true
-  confidence_threshold: 0.7    # 0.0-1.0
-  auto_dismiss_fp: false       # Let humans review
-  cluster_similar: true        # Group similar findings
-```
-
-**Confidence threshold**:
-- `0.5` - More findings, some false positives
-- `0.7` - Balanced (recommended)
-- `0.9` - Fewer findings, very high confidence
-
-**Auto-dismiss**:
-- `false` - Human reviews all findings (recommended)
-- `true` - Auto-dismiss low-confidence findings (CI/CD)
-
-## Custom Semgrep Rules
-
-Create custom rules in `.security/rules/`:
-
-```yaml
-# .security/rules/custom-api-key.yml
-rules:
-  - id: custom-hardcoded-api-key
-    patterns:
-      - pattern: api_key = "..."
-    message: Hardcoded API key detected
-    severity: ERROR
-    languages: [python]
-```
-
-Then enable in config:
-
-```yaml
-semgrep:
-  enabled: true
-  custom_rules_dir: .security/rules/
-```
-
-## Report Formats
-
-### Markdown (Default)
-```yaml
-reporting:
-  format: markdown
-```
-Human-readable format for terminals and GitHub
-
-### SARIF
-```yaml
-reporting:
-  format: sarif
-```
-Standard format for GitHub Code Scanning, IDEs
-
-### JSON
-```yaml
-reporting:
-  format: json
-```
-Machine-readable for automation, dashboards
-
-### HTML
-```yaml
-reporting:
-  format: html
-```
-Rich format for manual review, reports
-
-## Validation
-
-Validate your configuration before committing:
-
+### Development Workflow
 ```bash
-specify security validate-config
+# 1. Run scan before commit
+specify security scan --quick --fail-on critical
+
+# 2. Triage findings (Phase 2)
+specify security triage results.json --interactive
+
+# 3. Apply fixes (Phase 2)
+specify security fix results.json --apply --backup
+
+# 4. Generate report
+specify security audit results.json --format markdown
 ```
 
-Or validate a specific file:
-
-```bash
-specify security validate-config --file .jpspec/security-config.yml
-```
-
-## Environment Variables
-
-Override config with environment variables:
-
-- `SECURITY_FAIL_ON=critical` - Override fail_on threshold
-- `SECURITY_PARALLEL=false` - Disable parallel scanning
-- `SECURITY_CONFIG=/path/to/config.yml` - Use custom config path
-
-## Troubleshooting
-
-### "Scanner not found"
-Install the scanner:
-```bash
-# Semgrep
-pip install semgrep
-
-# Bandit
-pip install bandit
-
-# CodeQL
-# Download from GitHub
-```
-
-### "Configuration validation failed"
-Run validation with verbose output:
-```bash
-specify security validate-config --verbose
-```
-
-### "Too many findings"
-Adjust thresholds:
+### CI/CD Workflow
 ```yaml
-fail_on: critical      # Only fail on critical
-max_findings: 100      # Limit output
+# GitHub Actions example
+- name: Security Scan
+  run: specify security scan --format sarif --output results.sarif
+
+- name: Upload SARIF
+  uses: github/codeql-action/upload-sarif@v3
+  with:
+    sarif_file: results.sarif
 ```
 
-Or add exclusions:
-```yaml
-exclusions:
-  paths:
-    - legacy/          # Exclude legacy code
-```
+## Common Use Cases
 
-### "Scan timeout"
-Increase timeout:
-```yaml
-semgrep:
-  timeout: 600  # 10 minutes
-```
+1. **Pre-commit scanning**: Catch vulnerabilities before they're committed
+2. **PR security gates**: Block merges with critical findings
+3. **Scheduled audits**: Regular security posture assessments
+4. **Compliance reporting**: Generate audit-ready security reports
+5. **Custom rule enforcement**: Organization-specific security policies
+
+## Support & Resources
+
+- **Issues**: Report bugs or request features on GitHub
+- **Discussions**: Ask questions in GitHub Discussions
+- **Updates**: Check release notes for new features
+- **Examples**: See `examples/security/` for working examples
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | 2025-12-05 | Initial comprehensive documentation |
+
+## Contributing
+
+To improve security documentation:
+
+1. Identify gaps or inaccuracies
+2. Propose changes via pull request
+3. Update cross-references
+4. Test all code examples
+5. Update DOCUMENTATION-INDEX.md
 
 ## Related Documentation
 
-- [Security Quick Start](../guides/security-quickstart.md) - Get started guide
-- [Custom Rules Guide](../guides/security-custom-rules.md) - Writing custom rules
-- [CI/CD Integration](../guides/security-cicd-integration.md) - GitHub Actions setup
-- [Security Facts](../../memory/security/security-facts.md) - Key security facts
-- [Scanner Defaults](../../memory/security/scanner-config.md) - Default configuration
+- [JP Spec Kit Documentation](../../README.md)
+- [Workflow Guide](../guides/workflow-architecture.md)
+- [Agent Classification](../reference/agent-loop-classification.md)
 
-## Examples
+---
 
-See [`config-schema.yaml`](config-schema.yaml) for:
-- Full configuration with all options
-- Development profile
-- CI/CD profile
-- Audit profile
-- Minimal profile
-
-## Support
-
-- GitHub Issues: Report bugs or request features
-- Documentation: See `docs/guides/security-*.md`
-- Community: Discussions and questions
+**Questions?** Check the [Command Reference](../reference/jpspec-security-commands.md) or open an issue.
