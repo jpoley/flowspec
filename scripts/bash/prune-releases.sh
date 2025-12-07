@@ -44,12 +44,12 @@ echo ""
 
 # Get all releases using JSON output (reliable parsing)
 echo "Fetching releases..."
-RELEASES=$(gh release list --limit 500 --json tagName -q '.[].tagName' | sed 's/^v//')
+mapfile -t RELEASES < <(gh release list --limit 500 --json tagName -q '.[].tagName' | sed 's/^v//')
 
 # Count releases to delete
 TO_DELETE=()
 
-for VERSION in $RELEASES; do
+for VERSION in "${RELEASES[@]}"; do
   # Parse version
   IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
 
