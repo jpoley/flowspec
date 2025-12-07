@@ -2,17 +2,17 @@
 # This file declares which versions of jp-spec-kit are compatible with upstream spec-kit
 
 jp-spec-kit:
-  version: "0.0.20"
+  version: "0.0.90"
   type: "layered-extension"
   description: "Multi-language, multi-agent extension for spec-kit with jpspec commands"
-  
+
   # Base spec-kit compatibility
   compatible_with:
     spec-kit:
       min: "0.0.18"
-      max: "0.0.22"
-      tested: "0.0.20"
-      recommended: "0.0.20"
+      max: "0.0.99"
+      tested: "0.0.90"
+      recommended: "0.0.90"
       repository: "github/spec-kit"
   
   # What jp-spec-kit provides as extension layer
