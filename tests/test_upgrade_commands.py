@@ -1,0 +1,300 @@
+"""Tests for upgrade commands (upgrade, upgrade-tools, upgrade-repo).
+
+Tests cover:
+- upgrade-tools command for CLI tool upgrades
+- upgrade-repo command for repository template upgrades
+- upgrade command as interactive dispatcher
+- Version hint in version display
+- Component upgrade helper functions
+"""
+
+from unittest.mock import MagicMock, patch
+
+import pytest
+from typer.testing import CliRunner
+
+from specify_cli import (
+    UPGRADE_TOOLS_COMPONENTS,
+    _run_upgrade_tools,
+    _upgrade_backlog_md,
+    _upgrade_jp_spec_kit,
+    app,
+)
+
+runner = CliRunner()
+
+
+class TestUpgradeToolsComponents:
+    """Tests for UPGRADE_TOOLS_COMPONENTS constant."""
+
+    def test_contains_jp_spec_kit(self):
+        """jp-spec-kit is a valid component."""
+        assert "jp-spec-kit" in UPGRADE_TOOLS_COMPONENTS
+
+    def test_contains_backlog(self):
+        """backlog is a valid component."""
+        assert "backlog" in UPGRADE_TOOLS_COMPONENTS
+
+
+class TestUpgradeJpSpecKit:
+    """Tests for _upgrade_jp_spec_kit helper function."""
+
+    def test_already_at_latest_version(self):
+        """Returns success when already at latest version."""
+        with patch("specify_cli.__version__", "1.0.0"):
+            with patch("specify_cli.get_github_latest_release", return_value="1.0.0"):
+                success, message = _upgrade_jp_spec_kit(dry_run=False)
+                assert success is True
+                assert "Already at latest version" in message
+
+    def test_dry_run_shows_would_upgrade(self):
+        """Dry run shows what would be upgraded."""
+        with patch("specify_cli.__version__", "1.0.0"):
+            with patch("specify_cli.get_github_latest_release", return_value="2.0.0"):
+                success, message = _upgrade_jp_spec_kit(dry_run=True)
+                assert success is True
+                assert "Would upgrade" in message
+                assert "1.0.0" in message
+                assert "2.0.0" in message
+
+    def test_handles_no_available_version(self):
+        """Returns failure when available version cannot be determined."""
+        with patch("specify_cli.__version__", "1.0.0"):
+            with patch("specify_cli.get_github_latest_release", return_value=None):
+                success, message = _upgrade_jp_spec_kit(dry_run=False)
+                assert success is False
+                assert "Could not determine latest version" in message
+
+    def test_uv_upgrade_success(self):
+        """Successful uv tool upgrade."""
+        with patch("specify_cli.__version__", "1.0.0"):
+            with patch("specify_cli.get_github_latest_release", return_value="2.0.0"):
+                mock_result = MagicMock()
+                mock_result.returncode = 0
+                with patch("subprocess.run", return_value=mock_result):
+                    success, message = _upgrade_jp_spec_kit(dry_run=False)
+                    assert success is True
+                    assert "Upgraded" in message
+
+    def test_uv_not_found_fallback(self):
+        """Falls back to reinstall when uv upgrade fails."""
+        with patch("specify_cli.__version__", "1.0.0"):
+            with patch("specify_cli.get_github_latest_release", return_value="2.0.0"):
+                # First call (uv tool upgrade) raises FileNotFoundError
+                # Second call (uv tool install) succeeds
+                def mock_subprocess_run(cmd, **kwargs):
+                    if "upgrade" in cmd:
+                        raise FileNotFoundError()
+                    result = MagicMock()
+                    result.returncode = 0
+                    return result
+
+                with patch("subprocess.run", side_effect=mock_subprocess_run):
+                    success, message = _upgrade_jp_spec_kit(dry_run=False)
+                    assert success is True
+                    assert "Reinstalled" in message
+
+
+class TestUpgradeBacklogMd:
+    """Tests for _upgrade_backlog_md helper function."""
+
+    def test_not_installed(self):
+        """Returns failure when backlog-md not installed."""
+        with patch("specify_cli.check_backlog_installed_version", return_value=None):
+            success, message = _upgrade_backlog_md(dry_run=False)
+            assert success is False
+            assert "not installed" in message
+
+    def test_already_at_latest_version(self):
+        """Returns success when already at latest version."""
+        with patch("specify_cli.check_backlog_installed_version", return_value="1.0.0"):
+            with patch("specify_cli.get_npm_latest_version", return_value="1.0.0"):
+                success, message = _upgrade_backlog_md(dry_run=False)
+                assert success is True
+                assert "Already at latest version" in message
+
+    def test_dry_run_shows_would_upgrade(self):
+        """Dry run shows what would be upgraded."""
+        with patch("specify_cli.check_backlog_installed_version", return_value="1.0.0"):
+            with patch("specify_cli.get_npm_latest_version", return_value="2.0.0"):
+                success, message = _upgrade_backlog_md(dry_run=True)
+                assert success is True
+                assert "Would upgrade" in message
+
+    def test_handles_no_available_version(self):
+        """Returns failure when available version cannot be determined."""
+        with patch("specify_cli.check_backlog_installed_version", return_value="1.0.0"):
+            with patch("specify_cli.get_npm_latest_version", return_value=None):
+                success, message = _upgrade_backlog_md(dry_run=False)
+                assert success is False
+                assert "Could not determine latest version" in message
+
+    def test_no_package_manager(self):
+        """Returns failure when no package manager found."""
+        with patch("specify_cli.check_backlog_installed_version", return_value="1.0.0"):
+            with patch("specify_cli.get_npm_latest_version", return_value="2.0.0"):
+                with patch("specify_cli.detect_package_manager", return_value=None):
+                    success, message = _upgrade_backlog_md(dry_run=False)
+                    assert success is False
+                    assert "No Node.js package manager" in message
+
+
+class TestUpgradeToolsCommand:
+    """Tests for 'specify upgrade-tools' command."""
+
+    def test_help_shows_correct_description(self):
+        """Help text explains the command upgrades CLI tools."""
+        result = runner.invoke(app, ["upgrade-tools", "--help"])
+        assert result.exit_code == 0
+        assert "CLI tools" in result.output
+        assert "jp-spec-kit" in result.output
+        assert "backlog-md" in result.output
+
+    def test_invalid_component_rejected(self):
+        """Invalid component name is rejected."""
+        with patch("specify_cli.show_banner"):
+            result = runner.invoke(app, ["upgrade-tools", "-c", "invalid"])
+            assert result.exit_code == 1
+            assert "Unknown component" in result.output
+
+    def test_dry_run_mode(self):
+        """Dry run mode shows preview without making changes."""
+        with patch("specify_cli.show_banner"):
+            with patch("specify_cli.get_all_component_versions") as mock_versions:
+                mock_versions.return_value = {
+                    "jp_spec_kit": {"installed": "1.0.0", "available": "2.0.0"},
+                    "spec_kit": {"installed": "1.0.0", "available": "2.0.0"},
+                    "backlog_md": {"installed": "1.0.0", "available": "2.0.0"},
+                }
+                with patch(
+                    "specify_cli._upgrade_jp_spec_kit",
+                    return_value=(True, "Would upgrade"),
+                ):
+                    with patch(
+                        "specify_cli._upgrade_backlog_md",
+                        return_value=(True, "Would upgrade"),
+                    ):
+                        result = runner.invoke(app, ["upgrade-tools", "--dry-run"])
+                        assert result.exit_code == 0
+                        assert "DRY RUN" in result.output
+
+    def test_single_component_upgrade(self):
+        """Can upgrade a single component with -c flag."""
+        with patch("specify_cli.show_banner"):
+            with patch("specify_cli.get_all_component_versions") as mock_versions:
+                mock_versions.return_value = {
+                    "jp_spec_kit": {"installed": "1.0.0", "available": "2.0.0"},
+                    "spec_kit": {"installed": "1.0.0", "available": "2.0.0"},
+                    "backlog_md": {"installed": "1.0.0", "available": "2.0.0"},
+                }
+                with patch(
+                    "specify_cli._upgrade_jp_spec_kit",
+                    return_value=(True, "Already at latest"),
+                ) as mock_jp:
+                    with patch(
+                        "specify_cli._upgrade_backlog_md"
+                    ) as mock_bl:
+                        result = runner.invoke(
+                            app, ["upgrade-tools", "-c", "jp-spec-kit"]
+                        )
+                        assert result.exit_code == 0
+                        mock_jp.assert_called_once()
+                        mock_bl.assert_not_called()
+
+
+class TestUpgradeRepoCommand:
+    """Tests for 'specify upgrade-repo' command."""
+
+    def test_help_shows_correct_description(self):
+        """Help text explains the command upgrades repository templates."""
+        result = runner.invoke(app, ["upgrade-repo", "--help"])
+        assert result.exit_code == 0
+        assert "repository templates" in result.output.lower()
+        assert "upgrade-tools" in result.output
+
+    def test_source_repo_detection(self):
+        """Detects jp-spec-kit source repository and blocks upgrade."""
+        import os
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Create source repo marker
+            marker_path = os.path.join(tmpdir, ".jp-spec-kit-source")
+            with open(marker_path, "w") as f:
+                f.write("")
+
+            old_cwd = os.getcwd()
+            try:
+                os.chdir(tmpdir)
+                with patch("specify_cli.show_banner"):
+                    result = runner.invoke(app, ["upgrade-repo"])
+                    assert result.exit_code == 1
+                    assert "Source Repository Detected" in result.output
+            finally:
+                os.chdir(old_cwd)
+
+
+class TestUpgradeCommand:
+    """Tests for 'specify upgrade' dispatcher command."""
+
+    def test_help_shows_options(self):
+        """Help text shows --tools, --repo, and --all options."""
+        result = runner.invoke(app, ["upgrade", "--help"])
+        assert result.exit_code == 0
+        assert "--tools" in result.output
+        assert "--repo" in result.output
+        assert "--all" in result.output
+
+    def test_tools_flag_delegates(self):
+        """--tools flag delegates to upgrade-tools."""
+        with patch("specify_cli.show_banner"):
+            with patch("specify_cli._run_upgrade_tools") as mock_run:
+                result = runner.invoke(app, ["upgrade", "--tools"])
+                assert result.exit_code == 0
+                mock_run.assert_called_once_with(dry_run=False)
+
+    def test_repo_flag_delegates(self):
+        """--repo flag delegates to upgrade-repo info."""
+        with patch("specify_cli.show_banner"):
+            with patch("specify_cli._run_upgrade_repo") as mock_run:
+                result = runner.invoke(app, ["upgrade", "--repo"])
+                assert result.exit_code == 0
+                mock_run.assert_called_once_with(dry_run=False)
+
+    def test_all_flag_calls_both(self):
+        """--all flag calls both upgrade-tools and upgrade-repo."""
+        with patch("specify_cli.show_banner"):
+            with patch("specify_cli._run_upgrade_tools") as mock_tools:
+                with patch("specify_cli._run_upgrade_repo") as mock_repo:
+                    result = runner.invoke(app, ["upgrade", "--all"])
+                    assert result.exit_code == 0
+                    mock_tools.assert_called_once()
+                    mock_repo.assert_called_once()
+
+    def test_non_interactive_requires_flag(self):
+        """Non-interactive mode requires explicit flag."""
+        with patch("specify_cli.show_banner"):
+            with patch("sys.stdin") as mock_stdin:
+                mock_stdin.isatty.return_value = False
+                result = runner.invoke(app, ["upgrade"])
+                assert result.exit_code == 1
+                assert "Non-interactive" in result.output
+
+
+class TestVersionHint:
+    """Tests for version upgrade hint in version display."""
+
+    def test_version_hint_says_upgrade_tools(self):
+        """Version hint points to upgrade-tools command."""
+        with patch("specify_cli.get_all_component_versions") as mock_versions:
+            mock_versions.return_value = {
+                "jp_spec_kit": {"installed": "1.0.0", "available": "2.0.0"},
+                "spec_kit": {"installed": "1.0.0", "available": "2.0.0"},
+                "backlog_md": {"installed": "1.0.0", "available": "2.0.0"},
+            }
+            # version command (no --detail flag, it shows detailed by default)
+            result = runner.invoke(app, ["version"])
+            assert result.exit_code == 0
+            assert "upgrade-tools" in result.output
+            # Should NOT say just "upgrade" without specifying tools
+            # This is the key fix - the hint should be accurate
