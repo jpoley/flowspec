@@ -34,8 +34,6 @@ build-backend = "hatchling.build"
 packages = ["src/specify_cli"]
 
 # Include data files in the package
-[tool.hatch.build.targets.wheel.force-include]
-".spec-kit-compatibility.yml" = "specify_cli/.spec-kit-compatibility.yml"
 
 [project.optional-dependencies]
 dast = [
