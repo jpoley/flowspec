@@ -711,6 +711,235 @@ def compare_semver(version1: str, version2: str) -> int:
         return 0
 
 
+# =============================================================================
+# Version Detection and Display
+# =============================================================================
+
+
+def get_github_latest_release(owner: str, repo: str) -> Optional[str]:
+    """Fetch the latest release version from GitHub API.
+
+    Args:
+        owner: Repository owner (e.g., "github", "jpoley")
+        repo: Repository name (e.g., "spec-kit", "jp-spec-kit")
+
+    Returns:
+        Version string (e.g., "0.0.90") or None if unable to fetch
+    """
+    try:
+        url = (
+            f"https://api.github.com/repos/{owner}/{repo}/releases/latest"
+        )
+        response = client.get(
+            url, headers=_github_headers(skip_auth=True), timeout=5.0
+        )
+        if response.status_code == 200:
+            data = response.json()
+            tag_name = data.get("tag_name", "")
+            return tag_name.lstrip("v") if tag_name else None
+    except Exception:
+        pass
+    return None
+
+
+def get_npm_latest_version(package: str) -> Optional[str]:
+    """Fetch the latest version of an npm package from the registry.
+
+    Args:
+        package: npm package name (e.g., "backlog-md")
+
+    Returns:
+        Version string (e.g., "1.23.0") or None if unable to fetch
+    """
+    try:
+        url = f"https://registry.npmjs.org/{package}/latest"
+        response = client.get(url, timeout=5.0)
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("version")
+    except Exception:
+        pass
+    return None
+
+
+def get_spec_kit_installed_version() -> Optional[str]:
+    """Get the installed spec-kit version from compatibility matrix.
+
+    Checks multiple locations:
+    1. Current working directory's .spec-kit-compatibility.yml
+    2. Package's bundled compatibility matrix
+    3. Fallback to default tested version
+
+    Returns:
+        Version string or None if not found
+    """
+    # Try current directory first (user's project)
+    cwd_matrix = Path.cwd() / ".spec-kit-compatibility.yml"
+    if cwd_matrix.exists():
+        try:
+            with open(cwd_matrix, "r") as f:
+                matrix = yaml.safe_load(f) or {}
+                jp_config = matrix.get("jp-spec-kit", {})
+                compat = jp_config.get("compatible_with", {})
+                spec_kit = compat.get("spec-kit", {})
+                if spec_kit.get("tested"):
+                    return spec_kit.get("tested")
+        except Exception:
+            pass
+
+    # Try package's compatibility matrix
+    matrix = load_compatibility_matrix()
+    if matrix:
+        jp_config = matrix.get("jp-spec-kit", {})
+        compat = jp_config.get("compatible_with", {})
+        spec_kit = compat.get("spec-kit", {})
+        if spec_kit.get("tested"):
+            return spec_kit.get("tested")
+
+    # Default fallback (update when upstream changes)
+    return "0.0.20"
+
+
+def get_all_component_versions() -> dict:
+    """Get installed and available versions for all components.
+
+    Returns:
+        Dict with structure:
+        {
+            "jp_spec_kit": {"installed": "0.0.301", "available": "0.0.305"},
+            "spec_kit": {"installed": "0.0.20", "available": "0.0.90"},
+            "backlog_md": {"installed": "1.23.0", "available": "1.25.0"},
+        }
+    """
+    return {
+        "jp_spec_kit": {
+            "installed": __version__,
+            "available": get_github_latest_release(
+                EXTENSION_REPO_OWNER, EXTENSION_REPO_NAME
+            ),
+        },
+        "spec_kit": {
+            "installed": get_spec_kit_installed_version(),
+            "available": get_github_latest_release(
+                BASE_REPO_OWNER, BASE_REPO_NAME
+            ),
+        },
+        "backlog_md": {
+            "installed": check_backlog_installed_version(),
+            "available": get_npm_latest_version("backlog.md"),
+        },
+    }
+
+
+def format_version_status(installed: Optional[str], available: Optional[str]) -> str:
+    """Format version with upgrade indicator if available.
+
+    Args:
+        installed: Currently installed version
+        available: Latest available version
+
+    Returns:
+        Formatted string like "1.0.0" or "1.0.0 → 1.1.0 (upgrade available)"
+    """
+    if not installed:
+        return "[dim]not installed[/dim]"
+    if not available:
+        return installed
+    if compare_semver(installed, available) < 0:
+        return f"{installed} [yellow]→ {available}[/yellow]"
+    return installed
+
+
+def show_version_info(detailed: bool = False, centered: bool = False) -> None:
+    """Display version information for all components.
+
+    Args:
+        detailed: If True, show installed vs available with upgrade indicators
+        centered: If True, center the output (for banner display)
+    """
+    versions = get_all_component_versions()
+
+    if detailed:
+        table = Table(show_header=True, box=None, padding=(0, 2))
+        table.add_column("Component", style="cyan")
+        table.add_column("Installed", style="green")
+        table.add_column("Available", style="dim")
+
+        # jp-spec-kit
+        jp = versions["jp_spec_kit"]
+        jp_status = (
+            "[yellow]↑[/yellow]"
+            if jp["available"]
+            and jp["installed"]
+            and compare_semver(jp["installed"], jp["available"]) < 0
+            else ""
+        )
+        table.add_row(
+            f"jp-spec-kit {jp_status}",
+            jp["installed"] or "-",
+            jp["available"] or "-",
+        )
+
+        # spec-kit
+        sk = versions["spec_kit"]
+        sk_status = (
+            "[yellow]↑[/yellow]"
+            if sk["available"]
+            and sk["installed"]
+            and compare_semver(sk["installed"], sk["available"]) < 0
+            else ""
+        )
+        table.add_row(
+            f"spec-kit {sk_status}",
+            sk["installed"] or "-",
+            sk["available"] or "-",
+        )
+
+        # backlog.md
+        bl = versions["backlog_md"]
+        bl_status = (
+            "[yellow]↑[/yellow]"
+            if bl["available"]
+            and bl["installed"]
+            and compare_semver(bl["installed"], bl["available"]) < 0
+            else ""
+        )
+        table.add_row(
+            f"backlog.md {bl_status}",
+            bl["installed"] or "[dim]not installed[/dim]",
+            bl["available"] or "-",
+        )
+
+        if centered:
+            console.print(Align.center(table))
+        else:
+            console.print(table)
+
+        # Show upgrade hint if any upgrades available
+        has_upgrades = any(
+            v["available"]
+            and v["installed"]
+            and compare_semver(v["installed"], v["available"]) < 0
+            for v in versions.values()
+        )
+        if has_upgrades:
+            hint = "[dim]Run 'specify upgrade' to update components[/dim]"
+            if centered:
+                console.print(Align.center(hint))
+            else:
+                console.print(hint)
+    else:
+        # Simple one-line version output
+        console.print(f"jp-spec-kit {versions['jp_spec_kit']['installed']}")
+
+
+def version_callback(value: bool) -> None:
+    """Callback for --version flag."""
+    if value:
+        show_version_info(detailed=False)
+        raise typer.Exit()
+
+
 def write_repo_facts(project_path: Path) -> None:
     """Write repository facts to memory/repo-facts.md with YAML frontmatter.
 
@@ -1409,7 +1638,17 @@ def show_banner():
 
 
 @app.callback()
-def callback(ctx: typer.Context):
+def callback(
+    ctx: typer.Context,
+    version: bool = typer.Option(
+        False,
+        "--version",
+        "-v",
+        help="Show version information and exit",
+        callback=version_callback,
+        is_eager=True,
+    ),
+):
     """Show banner when no subcommand is provided."""
     if (
         ctx.invoked_subcommand is None
@@ -1417,10 +1656,18 @@ def callback(ctx: typer.Context):
         and "-h" not in sys.argv
     ):
         show_banner()
+        show_version_info(detailed=True, centered=True)
+        console.print()
         console.print(
             Align.center("[dim]Run 'specify --help' for usage information[/dim]")
         )
         console.print()
+
+
+@app.command()
+def version():
+    """Show detailed version information for all components."""
+    show_version_info(detailed=True)
 
 
 def run_command(
