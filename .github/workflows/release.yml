@@ -85,7 +85,7 @@ jobs:
           git commit -m "chore: bump version to $NEW_VERSION [skip ci]"
 
           # Try direct push first
-          if git push origin main 2>&1; then
+          if git push origin main; then
             echo "✅ Version files updated directly on main"
           else
             echo "⚠️ Direct push failed (branch protection). Creating PR instead..."
