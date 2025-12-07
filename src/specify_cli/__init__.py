@@ -3997,8 +3997,6 @@ def _upgrade_spec_kit(dry_run: bool = False) -> tuple[bool, str]:
 
         if new_version and compare_semver(new_version, current_version) > 0:
             return True, f"Upgraded from {current_version} to {new_version}"
-        elif new_version == available_version:
-            return True, f"Upgraded to {new_version}"
         elif new_version == current_version:
             # Version didn't change - bundled version is same as before
             return True, f"Reinstalled (already at bundled version {new_version})"
