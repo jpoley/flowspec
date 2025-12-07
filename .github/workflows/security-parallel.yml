@@ -151,7 +151,10 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: security-results-${{ steps.scan.outputs.component_name }}.sarif
-          category: jpspec-security-${{ steps.scan.outputs.component_name }}
+          # Use consistent category to allow GitHub to compare alerts across workflows
+          # Note: All parallel scans merge into same category; results from different
+          # components are distinguished by file paths within the SARIF results
+          category: jpspec-security
 
       - name: Upload Scan Artifacts
         if: always()
