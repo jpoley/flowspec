@@ -10,12 +10,10 @@ Tests cover:
 
 from unittest.mock import MagicMock, patch
 
-import pytest
 from typer.testing import CliRunner
 
 from specify_cli import (
     UPGRADE_TOOLS_COMPONENTS,
-    _run_upgrade_tools,
     _upgrade_backlog_md,
     _upgrade_jp_spec_kit,
     app,
