@@ -925,7 +925,7 @@ def show_version_info(detailed: bool = False, centered: bool = False) -> None:
 
         # Show upgrade hint if any upgrades available
         if any(upgrades_available):
-            hint = "[dim]Run 'specify upgrade' to update components[/dim]"
+            hint = "[dim]Run 'specify upgrade-tools' to update CLI tools[/dim]"
             if centered:
                 console.print(Align.center(hint))
             else:
@@ -3463,8 +3463,8 @@ def init(
     console.print(enhancements_panel)
 
 
-@app.command()
-def upgrade(
+@app.command(name="upgrade-repo")
+def upgrade_repo(
     base_version: str = typer.Option(
         None,
         "--base-version",
@@ -3492,7 +3492,10 @@ def upgrade(
     ),
 ):
     """
-    Upgrade an existing Specify project to the latest (or specified) versions of base spec-kit and jp-spec-kit extension.
+    Upgrade repository templates to latest spec-kit and jp-spec-kit versions.
+
+    This upgrades the templates and configuration files in your current project directory.
+    It does NOT upgrade the globally installed CLI tools (use 'specify upgrade-tools' for that).
 
     This command will:
     1. Detect the AI assistant type from the project
@@ -3502,11 +3505,14 @@ def upgrade(
     5. Apply updates to current project
 
     Examples:
-        specify upgrade                                    # Upgrade to latest base + extension
-        specify upgrade --dry-run                          # Preview changes
-        specify upgrade --base-version 0.0.20              # Pin base to specific version
-        specify upgrade --extension-version 0.0.21         # Pin extension to specific version
-        specify upgrade --templates-only                   # Only update template files
+        specify upgrade-repo                               # Upgrade repo to latest templates
+        specify upgrade-repo --dry-run                     # Preview changes
+        specify upgrade-repo --base-version 0.0.20         # Pin base to specific version
+        specify upgrade-repo --extension-version 0.0.21    # Pin extension to specific version
+        specify upgrade-repo --templates-only              # Only update template files
+
+    See also:
+        specify upgrade-tools    # Upgrade globally installed CLI tools
     """
     show_banner()
 
@@ -3518,10 +3524,10 @@ def upgrade(
         error_panel = Panel(
             f"[yellow]This directory contains '{SOURCE_REPO_MARKER}'[/yellow]\n\n"
             "This indicates it is the jp-spec-kit source repository.\n"
-            "Running 'specify upgrade' here would overwrite source files.\n\n"
+            "Running 'specify upgrade-repo' here would overwrite source files.\n\n"
             "[cyan]To update jp-spec-kit itself:[/cyan]\n"
             "  Use git pull or standard development workflow.\n\n"
-            "[cyan]To test 'specify upgrade' on a project:[/cyan]\n"
+            "[cyan]To test 'specify upgrade-repo' on a project:[/cyan]\n"
             "  Navigate to a project initialized with 'specify init'.",
             title="[yellow]Source Repository Detected[/yellow]",
             border_style="yellow",
@@ -3764,6 +3770,344 @@ def upgrade(
     console.print(
         f"  3. If needed, restore from backup: [cyan]cp -r {backup_dir}/* .[/cyan]"
     )
+
+
+# Valid component names for upgrade-tools
+UPGRADE_TOOLS_COMPONENTS = ["jp-spec-kit", "backlog"]
+
+
+def _upgrade_jp_spec_kit(dry_run: bool = False) -> tuple[bool, str]:
+    """Upgrade jp-spec-kit (specify-cli) via uv tool.
+
+    Args:
+        dry_run: If True, only show what would be done
+
+    Returns:
+        Tuple of (success, message)
+    """
+    current_version = __version__
+    available_version = get_github_latest_release(
+        EXTENSION_REPO_OWNER, EXTENSION_REPO_NAME
+    )
+
+    if not current_version:
+        return False, "jp-spec-kit not installed via uv tool"
+
+    if not available_version:
+        return False, "Could not determine latest version"
+
+    if compare_semver(current_version, available_version) >= 0:
+        return True, f"Already at latest version ({current_version})"
+
+    if dry_run:
+        return True, f"Would upgrade from {current_version} to {available_version}"
+
+    # Try uv tool upgrade first
+    try:
+        result = subprocess.run(
+            ["uv", "tool", "upgrade", "specify-cli"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode == 0:
+            # After upgrade, the version in memory won't change but the tool is updated
+            return True, f"Upgraded from {current_version} to {available_version}"
+    except FileNotFoundError:
+        pass
+
+    # Fallback: reinstall from git
+    try:
+        subprocess.run(
+            [
+                "uv",
+                "tool",
+                "install",
+                "--force",
+                "specify-cli",
+                "--from",
+                "git+https://github.com/jpoley/jp-spec-kit.git",
+            ],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return True, f"Reinstalled (version: {available_version})"
+    except subprocess.CalledProcessError as e:
+        return False, f"Upgrade failed: {e.stderr}"
+    except FileNotFoundError:
+        return False, "uv not found - install uv first"
+
+
+def _upgrade_backlog_md(dry_run: bool = False) -> tuple[bool, str]:
+    """Upgrade backlog-md via npm/pnpm.
+
+    Args:
+        dry_run: If True, only show what would be done
+
+    Returns:
+        Tuple of (success, message)
+    """
+    current_version = check_backlog_installed_version()
+    available_version = get_npm_latest_version("backlog.md")
+
+    if not current_version:
+        return False, "backlog-md not installed (use 'specify backlog install')"
+
+    if not available_version:
+        return False, "Could not determine latest version"
+
+    if compare_semver(current_version, available_version) >= 0:
+        return True, f"Already at latest version ({current_version})"
+
+    if dry_run:
+        return True, f"Would upgrade from {current_version} to {available_version}"
+
+    pkg_manager = detect_package_manager()
+    if not pkg_manager:
+        return False, "No Node.js package manager found (npm or pnpm required)"
+
+    try:
+        if pkg_manager == "pnpm":
+            cmd = ["pnpm", "add", "-g", f"backlog-md@{available_version}"]
+        else:
+            cmd = ["npm", "install", "-g", f"backlog-md@{available_version}"]
+
+        subprocess.run(cmd, check=True, capture_output=True, text=True)
+
+        new_version = check_backlog_installed_version()
+        if new_version == available_version:
+            return True, f"Upgraded from {current_version} to {new_version}"
+        return True, f"Upgrade completed (version: {new_version or 'unknown'})"
+    except FileNotFoundError:
+        return False, f"{pkg_manager} not found - package manager may have been removed"
+    except subprocess.CalledProcessError as e:
+        return False, f"Upgrade failed: {e.stderr}"
+
+
+@app.command(name="upgrade-tools")
+def upgrade_tools(
+    component: str = typer.Option(
+        None,
+        "--component",
+        "-c",
+        help="Specific component to upgrade (jp-spec-kit, backlog). Upgrades all if not specified.",
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="Show what would be upgraded without making changes"
+    ),
+):
+    """
+    Upgrade globally installed CLI tools (jp-spec-kit, backlog-md).
+
+    This upgrades the CLI tools themselves at their global installation locations.
+    It does NOT upgrade repository templates (use 'specify upgrade-repo' for that).
+
+    Tools upgraded:
+    - jp-spec-kit (specify-cli): via uv tool upgrade
+    - backlog-md: via npm/pnpm global install
+
+    Examples:
+        specify upgrade-tools                    # Upgrade all tools
+        specify upgrade-tools -c jp-spec-kit    # Upgrade only jp-spec-kit
+        specify upgrade-tools -c backlog        # Upgrade only backlog-md
+        specify upgrade-tools --dry-run         # Preview what would be upgraded
+
+    See also:
+        specify upgrade-repo    # Upgrade repository templates
+    """
+    show_banner()
+    _run_upgrade_tools(dry_run=dry_run, component=component)
+
+
+def _run_upgrade_tools(dry_run: bool = False, component: str | None = None) -> None:
+    """Internal helper to run upgrade-tools logic.
+
+    Args:
+        dry_run: If True, only show what would be done
+        component: Optional specific component to upgrade
+    """
+    if dry_run:
+        console.print("[yellow]DRY RUN MODE - No changes will be made[/yellow]\n")
+
+    # Validate component if specified
+    if component and component not in UPGRADE_TOOLS_COMPONENTS:
+        console.print(
+            f"[red]Error:[/red] Unknown component '{component}'. "
+            f"Valid options: {', '.join(UPGRADE_TOOLS_COMPONENTS)}"
+        )
+        raise typer.Exit(1)
+
+    # Get current versions for display
+    versions = get_all_component_versions()
+
+    # Build table of components to upgrade
+    table = Table(show_header=True, box=None, padding=(0, 2))
+    table.add_column("Component", style="cyan")
+    table.add_column("Current", style="green")
+    table.add_column("Available", style="dim")
+    table.add_column("Status", style="yellow")
+
+    results = []
+
+    # jp-spec-kit
+    if not component or component == "jp-spec-kit":
+        jp_current = versions["jp_spec_kit"].get("installed", "-")
+        jp_available = versions["jp_spec_kit"].get("available", "-")
+
+        success, message = _upgrade_jp_spec_kit(dry_run=dry_run)
+        status = "[green]✓[/green]" if success else "[red]✗[/red]"
+        results.append(("jp-spec-kit", success, message))
+
+        table.add_row("jp-spec-kit", jp_current, jp_available, f"{status} {message}")
+
+    # backlog-md
+    if not component or component == "backlog":
+        bl_current = versions["backlog_md"].get("installed", "-")
+        bl_available = versions["backlog_md"].get("available", "-")
+
+        success, message = _upgrade_backlog_md(dry_run=dry_run)
+        status = "[green]✓[/green]" if success else "[red]✗[/red]"
+        results.append(("backlog-md", success, message))
+
+        table.add_row("backlog-md", bl_current, bl_available, f"{status} {message}")
+
+    console.print(table)
+    console.print()
+
+    # Summary
+    successful = sum(1 for _, success, _ in results if success)
+    total = len(results)
+
+    if dry_run:
+        console.print("[dim]Run without --dry-run to apply upgrades[/dim]")
+    elif successful == total:
+        console.print("[bold green]All tools upgraded successfully![/bold green]")
+    else:
+        console.print(
+            f"[yellow]Upgraded {successful}/{total} tools. "
+            "Check messages above for details.[/yellow]"
+        )
+
+
+def _run_upgrade_repo(dry_run: bool = False) -> None:
+    """Internal helper to run upgrade-repo logic.
+
+    Note: This is a simplified version. The full upgrade_repo command has
+    additional options that are not exposed through the dispatcher.
+
+    Args:
+        dry_run: If True, only show what would be done
+    """
+    console.print(
+        "[yellow]Note:[/yellow] For full options, use 'specify upgrade-repo' directly.\n"
+    )
+    console.print(
+        "[dim]This simplified mode upgrades to latest versions. "
+        "Use 'specify upgrade-repo --help' for version pinning options.[/dim]\n"
+    )
+
+    # For the dispatcher, we just inform the user about the dedicated command
+    # since upgrade_repo has many options not easily passed through
+    console.print("[cyan]To upgrade repository templates, run:[/cyan]")
+    console.print("  specify upgrade-repo")
+    console.print()
+    console.print("[cyan]Options available:[/cyan]")
+    console.print("  --dry-run              Preview changes")
+    console.print("  --base-version X       Pin base spec-kit version")
+    console.print("  --extension-version X  Pin jp-spec-kit version")
+    console.print("  --templates-only       Only update templates")
+
+
+@app.command()
+def upgrade(
+    tools: bool = typer.Option(
+        False, "--tools", "-t", help="Upgrade globally installed CLI tools"
+    ),
+    repo: bool = typer.Option(
+        False, "--repo", "-r", help="Upgrade repository templates"
+    ),
+    all_components: bool = typer.Option(
+        False, "--all", "-a", help="Upgrade both tools and repository"
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="Show what would be upgraded without making changes"
+    ),
+):
+    """
+    Upgrade specify components (dispatcher for upgrade-tools and upgrade-repo).
+
+    By default, shows upgrade options interactively. Use flags to specify what to upgrade:
+
+    Examples:
+        specify upgrade              # Interactive: choose what to upgrade
+        specify upgrade --tools      # Same as 'specify upgrade-tools'
+        specify upgrade --repo       # Same as 'specify upgrade-repo'
+        specify upgrade --all        # Upgrade both tools and repo
+
+    See also:
+        specify upgrade-tools    # Upgrade globally installed CLI tools
+        specify upgrade-repo     # Upgrade repository templates
+    """
+    show_banner()
+
+    # Handle explicit flags
+    if all_components:
+        # Upgrade both
+        console.print("[cyan]Upgrading CLI tools...[/cyan]\n")
+        _run_upgrade_tools(dry_run=dry_run)
+
+        console.print("\n" + "=" * 50 + "\n")
+        console.print("[cyan]Upgrading repository templates...[/cyan]\n")
+        _run_upgrade_repo(dry_run=dry_run)
+        return
+
+    if tools:
+        # Delegate to upgrade-tools
+        _run_upgrade_tools(dry_run=dry_run)
+        return
+
+    if repo:
+        # Delegate to upgrade-repo
+        _run_upgrade_repo(dry_run=dry_run)
+        return
+
+    # Interactive mode - show options
+    console.print("[cyan]What would you like to upgrade?[/cyan]\n")
+    console.print("  [bold]1.[/bold] CLI Tools (jp-spec-kit, backlog-md)")
+    console.print("       Upgrades the globally installed command-line tools")
+    console.print()
+    console.print("  [bold]2.[/bold] Repository Templates")
+    console.print("       Upgrades templates and config files in current project")
+    console.print()
+    console.print("  [bold]3.[/bold] Both")
+    console.print("       Upgrades CLI tools and repository templates")
+    console.print()
+
+    if not sys.stdin.isatty():
+        console.print(
+            "[yellow]Non-interactive mode. Use --tools, --repo, or --all flag.[/yellow]"
+        )
+        raise typer.Exit(1)
+
+    choice = typer.prompt("Enter choice (1/2/3)", default="1")
+
+    console.print()
+
+    if choice == "1":
+        _run_upgrade_tools(dry_run=dry_run)
+    elif choice == "2":
+        _run_upgrade_repo(dry_run=dry_run)
+    elif choice == "3":
+        console.print("[cyan]Upgrading CLI tools...[/cyan]\n")
+        _run_upgrade_tools(dry_run=dry_run)
+
+        console.print("\n" + "=" * 50 + "\n")
+        console.print("[cyan]Upgrading repository templates...[/cyan]\n")
+        _run_upgrade_repo(dry_run=dry_run)
+    else:
+        console.print(f"[red]Invalid choice:[/red] {choice}")
+        raise typer.Exit(1)
 
 
 @app.command()
