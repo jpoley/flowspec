@@ -136,6 +136,17 @@ class TestUpgradeBacklogMd:
                     assert success is False
                     assert "No Node.js package manager" in message
 
+    def test_package_manager_binary_removed(self):
+        """Gracefully handles package manager binary removal after detection."""
+        with patch("specify_cli.check_backlog_installed_version", return_value="1.0.0"):
+            with patch("specify_cli.get_npm_latest_version", return_value="2.0.0"):
+                with patch("specify_cli.detect_package_manager", return_value="npm"):
+                    with patch("subprocess.run", side_effect=FileNotFoundError()):
+                        success, message = _upgrade_backlog_md(dry_run=False)
+                        assert success is False
+                        assert "not found" in message.lower()
+                        assert "npm" in message
+
 
 class TestUpgradeToolsCommand:
     """Tests for 'specify upgrade-tools' command."""

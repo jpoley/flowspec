@@ -3879,6 +3879,8 @@ def _upgrade_backlog_md(dry_run: bool = False) -> tuple[bool, str]:
         if new_version == available_version:
             return True, f"Upgraded from {current_version} to {new_version}"
         return True, f"Upgrade completed (version: {new_version or 'unknown'})"
+    except FileNotFoundError:
+        return False, f"{pkg_manager} not found - package manager may have been removed"
     except subprocess.CalledProcessError as e:
         return False, f"Upgrade failed: {e.stderr}"
 
