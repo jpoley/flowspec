@@ -1,1 +1,0 @@
-../../../templates/commands/jpspec/github-janitor.md

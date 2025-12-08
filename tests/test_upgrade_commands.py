@@ -87,7 +87,7 @@ class TestUpgradeJpSpecKit:
             with patch("specify_cli.get_github_latest_release", return_value="1.0.0"):
                 success, message = _upgrade_jp_spec_kit(dry_run=False)
                 assert success is True
-                # When current == target, returns "Already at version X"
+                # Code returns "Already at version X" when current == target
                 assert "Already at version" in message
 
     def test_dry_run_shows_would_upgrade(self):
@@ -96,7 +96,7 @@ class TestUpgradeJpSpecKit:
             with patch("specify_cli.get_github_latest_release", return_value="2.0.0"):
                 success, message = _upgrade_jp_spec_kit(dry_run=True)
                 assert success is True
-                # New message format: "Would install version X (current: Y)"
+                # Code returns "Would install version X (current: Y)"
                 assert "Would install" in message
                 assert "1.0.0" in message
                 assert "2.0.0" in message
@@ -177,7 +177,7 @@ class TestUpgradeJpSpecKit:
                     ):
                         success, message = _upgrade_jp_spec_kit(dry_run=False)
                         assert success is True
-                        # New message format: "Installed version X (was: Y)"
+                        # Code returns "Installed version X (was: Y)"
                         assert "Installed" in message or "Upgraded" in message
 
 
