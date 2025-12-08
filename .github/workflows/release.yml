@@ -76,7 +76,7 @@ jobs:
               --base main \
               --head "$BRANCH_NAME"; then
               echo "✅ Created PR for version bump"
-              echo "version_committed=pr_created" >> $GITHUB_OUTPUT
+              echo "version_committed=false" >> $GITHUB_OUTPUT
             else
               echo "❌ Could not create PR. Cleaning up branch..."
               git push origin --delete "$BRANCH_NAME" || true
