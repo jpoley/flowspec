@@ -1,4 +1,5 @@
 ---
+mode: speckit:constitution
 description: Analyze repository and create customized constitution.md based on detected tech stack
 ---
 
