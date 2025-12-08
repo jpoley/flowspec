@@ -91,6 +91,44 @@ else
     fi
 fi
 
+# Check for pending janitor cleanup
+STATE_DIR="$PROJECT_DIR/.specify/state"
+PENDING_CLEANUP="$STATE_DIR/pending-cleanup.json"
+
+if [[ -f "$PENDING_CLEANUP" ]]; then
+    # Use Python to parse JSON and count pending items
+    janitor_warning=$(python3 -c "
+import json
+import sys
+
+try:
+    with open('$PENDING_CLEANUP', 'r') as f:
+        data = json.load(f)
+
+    merged = len(data.get('merged_branches', []))
+    worktrees = len(data.get('orphaned_worktrees', []))
+    non_compliant = len(data.get('non_compliant_branches', {}))
+
+    total = merged + worktrees
+    if total > 0 or non_compliant > 0:
+        parts = []
+        if merged > 0:
+            parts.append(f'{merged} branch(es) to prune')
+        if worktrees > 0:
+            parts.append(f'{worktrees} worktree(s) to clean')
+        if non_compliant > 0:
+            parts.append(f'{non_compliant} branch(es) with naming issues')
+        print(', '.join(parts))
+except (json.JSONDecodeError, FileNotFoundError, KeyError):
+    pass
+" 2>/dev/null || echo "")
+
+    if [[ -n "$janitor_warning" ]]; then
+        warnings+=("Repository cleanup pending: $janitor_warning")
+        warnings+=("  Run '/jpspec:prune-branch' or github-janitor to clean up")
+    fi
+fi
+
 # Build context message for display
 context_lines=()
 

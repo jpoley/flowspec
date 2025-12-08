@@ -1,11 +1,11 @@
 ---
 id: task-304
 title: 'Integrate Janitor into /jpspec:validate Workflow'
-status: To Do
+status: Done
 assignee:
-  - '@pm-planner'
+  - '@claude'
 created_date: '2025-12-07 20:38'
-updated_date: '2025-12-07 20:55'
+updated_date: '2025-12-08 00:08'
 labels:
   - implement
   - workflow
@@ -29,11 +29,11 @@ Also update jpspec_workflow.yml to include janitor in workflow configuration.
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Phase 7 added to validate.md command template
-- [ ] #2 github-janitor agent invoked after PR creation
-- [ ] #3 Cleanup results reported to user
-- [ ] #4 Janitor completion flag set for warning system
-- [ ] #5 jpspec_workflow.yml updated with janitor step
+- [x] #1 Phase 7 added to validate.md command template
+- [x] #2 github-janitor agent invoked after PR creation
+- [x] #3 Cleanup results reported to user
+- [x] #4 Janitor completion flag set for warning system
+- [x] #5 jpspec_workflow.yml updated with janitor step
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -88,3 +88,34 @@ Integrate github-janitor agent into /jpspec:validate workflow as Phase 7.
 - PRD Section 4.3 (github-janitor)
 - Existing command: .claude/commands/jpspec/prune-branch.md
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Implementation Summary
+
+### Deliverables
+
+| File | Description |
+|------|-------------|
+| `.claude/agents/github-janitor.md` | GitHub Janitor agent definition |
+| `src/specify_cli/janitor/__init__.py` | Module exports |
+| `src/specify_cli/janitor/reader.py` | State reading functions |
+| `src/specify_cli/janitor/state.py` | State writing functions |
+| `templates/commands/jpspec/validate.md` | Added Phase 7 |
+| `jpspec_workflow.yml` | Added github-janitor agent |
+| `tests/test_janitor.py` | 36 unit tests |
+
+### Phase 7 in /jpspec:validate
+
+1. Load janitor configuration from push-rules.md
+2. Invoke github-janitor agent
+3. Update state files (janitor-last-run, pending-cleanup.json)
+4. Write audit log
+5. Report cleanup results
+
+### Test Results
+
+- 36 tests covering reader, writer, audit logging
+- 100% pass rate
+<!-- SECTION:NOTES:END -->

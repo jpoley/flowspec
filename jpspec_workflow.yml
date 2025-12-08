@@ -163,7 +163,7 @@ workflows:
 
   validate:
     command: "/jpspec:validate"
-    description: "Execute validation using QA, security, and documentation agents"
+    description: "Execute validation using QA, security, documentation, and janitor agents"
     agents:
       - name: "quality-guardian"
         identity: "@quality-guardian"
@@ -187,6 +187,14 @@ workflows:
         description: "Senior Release Manager"
         responsibilities:
           - "Release planning and human approval coordination"
+      - name: "github-janitor"
+        identity: "@github-janitor"
+        description: "GitHub Repository Janitor"
+        responsibilities:
+          - "Prune merged and stale branches"
+          - "Clean orphaned git worktrees"
+          - "Validate branch naming conventions"
+          - "Maintain cleanup state for warnings"
     input_states: ["In Implementation"]
     output_state: "Validated"
     optional: false
@@ -427,6 +435,7 @@ agent_loops:
       - "ai-ml-engineer"
       - "frontend-code-reviewer"
       - "backend-code-reviewer"
+      - "github-janitor"
 
   outer:
     description: "Governance-focused - optimized for safety and reliability"
@@ -449,10 +458,10 @@ agent_loops:
 
 metadata:
   schema_version: "1.1"
-  last_updated: "2025-12-01"
+  last_updated: "2025-12-07"
   state_count: 9
   workflow_count: 7
-  agent_count: 16
-  inner_loop_agent_count: 5
+  agent_count: 17
+  inner_loop_agent_count: 6
   outer_loop_agent_count: 11
   transition_count: 15

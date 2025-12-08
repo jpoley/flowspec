@@ -1,11 +1,11 @@
 ---
 id: task-305
 title: Implement Janitor Warning System
-status: To Do
+status: Done
 assignee:
-  - '@pm-planner'
+  - '@claude'
 created_date: '2025-12-07 20:38'
-updated_date: '2025-12-07 20:55'
+updated_date: '2025-12-08 00:10'
 labels:
   - implement
   - hooks
@@ -29,11 +29,11 @@ Warning should be non-blocking but persistent until janitor runs.
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Janitor state tracking implemented
-- [ ] #2 session-start.sh updated with janitor warning
-- [ ] #3 Warning displays pending cleanup count
-- [ ] #4 Warning clears after janitor runs
-- [ ] #5 Non-blocking behavior confirmed
+- [x] #1 Janitor state tracking implemented
+- [x] #2 session-start.sh updated with janitor warning
+- [x] #3 Warning displays pending cleanup count
+- [x] #4 Warning clears after janitor runs
+- [x] #5 Non-blocking behavior confirmed
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -86,3 +86,39 @@ Implement janitor warning system in session-start hook to alert when cleanup is 
 - PRD Section 4.4 (Warning System)
 - Existing hook: .claude/hooks/session-start.sh
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Implementation Summary
+
+### Deliverables
+
+| File | Description |
+|------|-------------|
+| `.claude/hooks/session-start.sh` | Added janitor warning check |
+| `.claude/hooks/test-session-start.sh` | Added 4 new tests for janitor |
+
+### How It Works
+
+1. On session start, checks `.specify/state/pending-cleanup.json`
+2. Parses JSON to count pending branches, worktrees, non-compliant branches
+3. If any items pending, displays warning in session context
+4. Warning suggests running `/jpspec:prune-branch` or github-janitor
+5. Non-blocking (fail-open principle maintained)
+
+### Warning Format
+
+```
+Environment Warnings:
+  ⚠ Repository cleanup pending: 1 branch(es) to prune
+  ⚠   Run '/jpspec:prune-branch' or github-janitor to clean up
+```
+
+### Test Results
+
+- Warning displays when pending items exist
+- No warning when cleanup is empty
+- Handles missing file gracefully
+- Handles corrupted JSON gracefully
+<!-- SECTION:NOTES:END -->
