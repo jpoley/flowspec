@@ -45,6 +45,7 @@ This command orchestrates a phased validation workflow:
 - **Phase 4: AC Verification** - Verify all acceptance criteria
 - **Phase 5: Task Completion** - Generate notes and mark Done
 - **Phase 6: PR Generation** - Create pull request with approval
+- **Phase 7: Janitor Cleanup** - Prune merged branches and clean worktrees
 
 ## Execution Instructions
 
@@ -821,6 +822,119 @@ Parse PR URL from `gh` output and display to user.
 
 PR URL: https://github.com/owner/repo/pull/123
 Task: task-094 (Done)
+```
+
+---
+
+### Phase 7: Janitor Cleanup
+
+**Report progress**: Print "Phase 7: Running repository cleanup (github-janitor)..."
+
+This phase performs post-validation cleanup by invoking the github-janitor agent to prune merged branches and clean stale worktrees.
+
+#### Step 1: Load Janitor Configuration
+
+```bash
+# Check for push-rules.md
+if [ -f "push-rules.md" ]; then
+  # Parse janitor_settings from YAML frontmatter
+  # Extract: run_after_validation, prune_merged_branches, clean_stale_worktrees, protected_branches
+fi
+```
+
+**Check `run_after_validation`**: If set to `false` in push-rules.md, skip Phase 7:
+```
+⏭️  Phase 7 Skipped: Janitor disabled in push-rules.md (run_after_validation: false)
+```
+
+#### Step 2: Invoke GitHub Janitor Agent
+
+Use the Task tool to launch a **general-purpose** agent (GitHub Janitor context):
+
+```
+# AGENT CONTEXT: GitHub Janitor
+
+You are the GitHub Janitor, a meticulous repository maintainer focused on keeping codebases clean, organized, and free of cruft.
+
+## Task: Post-Validation Cleanup
+
+After successful PR creation, perform repository cleanup:
+
+1. **Fetch and sync**: `git fetch --prune --all`
+
+2. **Identify merged branches**:
+   - Branches with gone upstream: `git branch -vv | grep ': gone]'`
+   - Branches merged into main: `git branch --merged main`
+
+3. **Identify stale worktrees**: `git worktree list --porcelain | grep -B1 'prunable'`
+
+4. **Apply safety filters**:
+   - Never delete: main, master, develop (protected)
+   - Never delete: current branch
+   - Never delete: the branch just used for PR
+
+5. **Execute cleanup** (if items found):
+   ```bash
+   # Prune branches
+   git branch -D <branch>
+
+   # Prune worktrees
+   git worktree prune
+   ```
+
+6. **Update state files**:
+   - Write `.specify/state/janitor-last-run` with current timestamp
+   - Clear `.specify/state/pending-cleanup.json`
+
+7. **Generate cleanup report**:
+   - List pruned branches with reasons
+   - List cleaned worktrees
+   - List non-compliant branch names (warnings only)
+
+Deliver cleanup report with counts and details.
+```
+
+#### Step 3: Update State Files
+
+After janitor completes, ensure state is updated:
+
+```python
+from specify_cli.janitor import record_janitor_run, clear_pending_cleanup
+
+# Record successful run
+record_janitor_run(state_dir)
+
+# Clear pending items
+clear_pending_cleanup(state_dir)
+```
+
+#### Step 4: Write Audit Log
+
+```python
+from specify_cli.janitor import write_audit_log
+
+write_audit_log(
+    project_root,
+    action=f"Pruned {num_branches} branches, cleaned {num_worktrees} worktrees",
+    details="Branches: " + ", ".join(pruned_branches) if pruned_branches else None
+)
+```
+
+**Phase 7 Success**: Print summary:
+```
+✅ Phase 7 Complete: Repository cleanup finished
+   Branches pruned: 3
+   Worktrees cleaned: 1
+   State updated: .specify/state/janitor-last-run
+
+Workflow complete! 🎉
+```
+
+**Phase 7 Skip (nothing to clean)**:
+```
+✅ Phase 7 Complete: Repository already clean
+   No branches to prune
+   No worktrees to clean
 
 Workflow complete! 🎉
 ```
@@ -847,6 +961,7 @@ Phase Summary:
 ✅ Phase 4: All acceptance criteria verified (8/8)
 ✅ Phase 5: Task marked Done with implementation notes
 ✅ Phase 6: Pull request created
+✅ Phase 7: Repository cleanup complete (3 branches pruned)
 
 Pull Request: https://github.com/owner/repo/pull/123
 
@@ -854,7 +969,6 @@ Next steps:
 1. Wait for CI/CD pipeline to complete
 2. Request code review if needed
 3. Merge PR once approved and all checks pass
-4. Delete feature branch after merge
 ================================================================================
 ```
 
@@ -901,6 +1015,7 @@ If any phase fails, the workflow halts with a clear error message. To recover:
 5. **Phase 4: AC Verification** - Verify all acceptance criteria met
 6. **Phase 5: Task Completion** - Generate notes and mark task Done
 7. **Phase 6: PR Generation** - Create pull request with human approval
+8. **Phase 7: Janitor Cleanup** - Prune merged branches and clean worktrees
 
 **Examples**:
 
