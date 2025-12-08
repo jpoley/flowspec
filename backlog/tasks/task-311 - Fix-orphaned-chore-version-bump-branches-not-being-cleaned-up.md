@@ -5,13 +5,14 @@ status: To Do
 assignee:
   - '@galway'
 created_date: '2025-12-08 01:43'
-updated_date: '2025-12-08 02:31'
+updated_date: '2025-12-08 02:32'
 labels:
   - bug
   - ci
   - github-actions
   - cleanup
-dependencies: []
+dependencies:
+  - task-313
 priority: medium
 ---
 
