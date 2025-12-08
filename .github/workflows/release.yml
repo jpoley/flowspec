@@ -72,7 +72,7 @@ jobs:
             # Try to create PR - may fail if Actions can't create PRs
             if gh pr create \
               --title "chore: bump version to $NEW_VERSION" \
-              --body "Automated version bump to $NEW_VERSION after release. This PR was created because main branch is protected and requires PRs." \
+              --body "Automated version bump to $NEW_VERSION for upcoming release. This PR was created because main branch is protected and requires PRs." \
               --base main \
               --head "$BRANCH_NAME"; then
               echo "✅ Created PR for version bump - release will complete after PR merge"
