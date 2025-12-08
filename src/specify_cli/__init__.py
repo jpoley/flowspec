@@ -4004,10 +4004,9 @@ def _upgrade_jp_spec_kit(
             text=True,
             check=True,
         )
-        new_version = _get_installed_jp_spec_kit_version()
-        if new_version:
-            return True, f"Installed version {new_version} (was: {current_version})"
-        return True, f"Installed version {install_version}"
+        # After successful install, trust the version we just installed
+        # rather than re-detecting which may return stale results due to shell caching
+        return True, f"Installed version {install_version} (was: {current_version})"
     except subprocess.CalledProcessError as e:
         return False, f"Install failed: {e.stderr}"
     except FileNotFoundError:
