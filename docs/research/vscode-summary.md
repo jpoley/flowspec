@@ -130,7 +130,7 @@ and we will see that in action
 later.
 For more details on these
 features, you can check out the
-VSCode docs right over here.
+VS Code docs right over here.
 Now within here, you'll see that
 there's an option where you
 could choose different models.
