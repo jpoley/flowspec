@@ -179,7 +179,7 @@ $ARGUMENTS
 - [ ] All commands have correct `mode:` frontmatter
 - [ ] `/jpspec:specify` appears in VS Code Copilot Chat
 - [ ] `/jpspec.implement` appears in VS Code Copilot Chat
-- [ ] All other `/jpspec:*` commands appear
+- [ ] All other `/jpspec.*` commands appear
 - [ ] All `/speckit.*` commands appear
 - [ ] Commands execute correctly when invoked
 - [ ] Documentation updated
