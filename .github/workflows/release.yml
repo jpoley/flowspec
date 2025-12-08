@@ -90,6 +90,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          # Ensure we have the latest tags from the remote
+          git fetch --tags
           # Tag the current commit (which has the version update)
           if ! git rev-parse ${{ steps.get_tag.outputs.new_version }} >/dev/null 2>&1; then
             git tag ${{ steps.get_tag.outputs.new_version }}
