@@ -46,7 +46,43 @@ These tools use **subscription-based authentication** via browser OAuth, NOT API
 | **Claude Code** | Claude Pro/Max subscription | Run `claude` → Opens browser for OAuth |
 | **GitHub Copilot** | Copilot Pro/Business subscription | Run `copilot` → `/login` → Opens browser |
 
-Your OAuth tokens are persisted via volume mounts (`~/.claude`, `~/.config/github-copilot`), so you only need to authenticate once per host machine.
+#### First-Time Authentication (Inside Container)
+
+**Claude Code:**
+```bash
+# Run claude - it will open your browser for OAuth
+claude
+
+# Follow the browser prompts to sign in with your Claude Pro/Max account
+# Once authenticated, you're ready to use Claude Code
+```
+
+**GitHub Copilot:**
+```bash
+# Run copilot CLI
+copilot
+
+# Type /login to authenticate
+/login
+
+# Follow the browser prompts to sign in with your GitHub account
+# (Requires Copilot Pro, Pro+, Business, or Enterprise subscription)
+```
+
+#### Token Persistence Across Container Rebuilds
+
+Your OAuth tokens are persisted via volume mounts from your **host machine**:
+
+| Tool | Host Path | Container Path |
+|------|-----------|----------------|
+| Claude Code | `~/.claude` | `/home/vscode/.claude` |
+| GitHub Copilot | `~/.config/github-copilot` | `/home/vscode/.config/github-copilot` |
+
+**This means:**
+- You only authenticate **once per host machine**
+- Tokens survive container rebuilds
+- If you auth on muckross, you need to auth again on galway (different host)
+- No API keys needed - subscriptions are tied to your account
 
 ### API-Key Based Tools
 
