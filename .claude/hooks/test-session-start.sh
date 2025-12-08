@@ -263,6 +263,115 @@ else
     TESTS_FAILED=$((TESTS_FAILED + 1))
 fi
 
+# Test 8: Janitor warning with pending cleanup
+echo -e "\n${YELLOW}Test $((TESTS_RUN + 1)): Janitor warning with pending cleanup${NC}"
+echo "Description: Should show warning when pending-cleanup.json has items"
+
+TESTS_RUN=$((TESTS_RUN + 1))
+
+# Create test state directory with pending cleanup
+TEST_STATE_DIR="$PROJECT_ROOT/.specify/state"
+mkdir -p "$TEST_STATE_DIR"
+
+# Write test pending-cleanup.json with items
+cat > "$TEST_STATE_DIR/pending-cleanup.json" << 'CLEANUP'
+{
+    "last_updated": "2025-12-07T21:30:00Z",
+    "merged_branches": [
+        {"name": "feature/old", "reason": "upstream gone"}
+    ],
+    "orphaned_worktrees": [],
+    "non_compliant_branches": {}
+}
+CLEANUP
+
+cd "$PROJECT_ROOT"
+output=$("$SCRIPT_DIR/session-start.sh" 2>&1)
+exit_code=$?
+
+if [[ $exit_code -eq 0 ]] && echo "$output" | grep -q "cleanup pending"; then
+    echo -e "${GREEN}PASS: Janitor warning displayed for pending cleanup${NC}"
+    TESTS_PASSED=$((TESTS_PASSED + 1))
+else
+    echo -e "${RED}FAIL: Janitor warning not displayed${NC}"
+    echo "Output: $output"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+fi
+
+# Test 9: No janitor warning when cleanup is empty
+echo -e "\n${YELLOW}Test $((TESTS_RUN + 1)): No janitor warning when cleanup is empty${NC}"
+echo "Description: Should not show warning when pending-cleanup.json is empty"
+
+TESTS_RUN=$((TESTS_RUN + 1))
+
+# Write empty pending-cleanup.json
+cat > "$TEST_STATE_DIR/pending-cleanup.json" << 'CLEANUP'
+{
+    "last_updated": "2025-12-07T21:30:00Z",
+    "merged_branches": [],
+    "orphaned_worktrees": [],
+    "non_compliant_branches": {}
+}
+CLEANUP
+
+output=$("$SCRIPT_DIR/session-start.sh" 2>&1)
+exit_code=$?
+
+if [[ $exit_code -eq 0 ]] && ! echo "$output" | grep -q "cleanup pending"; then
+    echo -e "${GREEN}PASS: No warning when cleanup is empty${NC}"
+    TESTS_PASSED=$((TESTS_PASSED + 1))
+else
+    echo -e "${RED}FAIL: Unexpected warning for empty cleanup${NC}"
+    echo "Output: $output"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+fi
+
+# Clean up test state
+rm -f "$TEST_STATE_DIR/pending-cleanup.json"
+
+# Test 10: Handles missing pending-cleanup.json gracefully
+echo -e "\n${YELLOW}Test $((TESTS_RUN + 1)): Handles missing pending-cleanup.json${NC}"
+echo "Description: Should not error when pending-cleanup.json doesn't exist"
+
+TESTS_RUN=$((TESTS_RUN + 1))
+
+# Remove the file if it exists
+rm -f "$TEST_STATE_DIR/pending-cleanup.json"
+
+output=$("$SCRIPT_DIR/session-start.sh" 2>&1)
+exit_code=$?
+
+if [[ $exit_code -eq 0 ]] && echo "$output" | python3 -c "import json, sys; json.load(sys.stdin)" 2>/dev/null; then
+    echo -e "${GREEN}PASS: Hook works without pending-cleanup.json${NC}"
+    TESTS_PASSED=$((TESTS_PASSED + 1))
+else
+    echo -e "${RED}FAIL: Hook failed without pending-cleanup.json${NC}"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+fi
+
+# Test 11: Handles corrupted pending-cleanup.json gracefully
+echo -e "\n${YELLOW}Test $((TESTS_RUN + 1)): Handles corrupted pending-cleanup.json${NC}"
+echo "Description: Should not error when pending-cleanup.json is corrupted"
+
+TESTS_RUN=$((TESTS_RUN + 1))
+
+# Write corrupted JSON
+echo "not valid json" > "$TEST_STATE_DIR/pending-cleanup.json"
+
+output=$("$SCRIPT_DIR/session-start.sh" 2>&1)
+exit_code=$?
+
+if [[ $exit_code -eq 0 ]] && echo "$output" | python3 -c "import json, sys; json.load(sys.stdin)" 2>/dev/null; then
+    echo -e "${GREEN}PASS: Hook handles corrupted JSON gracefully${NC}"
+    TESTS_PASSED=$((TESTS_PASSED + 1))
+else
+    echo -e "${RED}FAIL: Hook failed with corrupted JSON${NC}"
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+fi
+
+# Clean up test state
+rm -f "$TEST_STATE_DIR/pending-cleanup.json"
+
 # Summary
 echo ""
 echo "========================================"
