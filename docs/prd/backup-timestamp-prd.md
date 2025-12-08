@@ -157,7 +157,7 @@ As a developer who needs to rollback, I want to easily identify which backup cor
 | Day | DD | 07 |
 | Hour (24h) | HH | 14 |
 | Minute | mm | 30 |
-| Second | SS | 52 |
+| Second | ss | 52 |
 | **Full Format** | `.specify-backup-YYYYMMDD-HHMMSS` | `.specify-backup-20251207-143052` |
 
 ### File System Safety
