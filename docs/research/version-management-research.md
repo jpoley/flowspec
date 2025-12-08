@@ -800,10 +800,10 @@ jobs:
             while read ref; do
               branch="${ref#refs/heads/}"
               # Check if branch is merged
-              if gh api repos/${{ github.repository }}/compare/main...$branch \
+              if gh api repos/${{ github.repository }}/compare/main..."$branch" \
                 --jq '.status' | grep -q 'behind\|identical'; then
                 echo "Deleting merged branch: $branch"
-                gh api -X DELETE repos/${{ github.repository }}/git/$ref
+                gh api -X DELETE "repos/${{ github.repository }}/git/$ref"
               fi
             done
 ```
