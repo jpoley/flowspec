@@ -595,7 +595,7 @@ BANNER = """
 """
 
 # Version - keep in sync with pyproject.toml
-__version__ = "0.2.322"
+__version__ = "0.2.328"
 
 # Constitution template version
 CONSTITUTION_VERSION = "1.0.0"
@@ -3905,7 +3905,14 @@ def _upgrade_jp_spec_kit(dry_run: bool = False) -> tuple[bool, str]:
     except FileNotFoundError:
         pass
 
-    # Fallback: reinstall from git (always try if uv upgrade didn't work)
+    # Fallback: reinstall from git at the specific release tag
+    # IMPORTANT: Install from release tag, not main branch, to ensure version consistency
+    # Main branch pyproject.toml may lag behind the latest release tag
+    git_url = f"git+https://github.com/{EXTENSION_REPO_OWNER}/{EXTENSION_REPO_NAME}.git"
+    if available_version:
+        # Install from specific release tag (e.g., @v0.2.327)
+        git_url = f"{git_url}@v{available_version}"
+
     try:
         subprocess.run(
             [
@@ -3915,7 +3922,7 @@ def _upgrade_jp_spec_kit(dry_run: bool = False) -> tuple[bool, str]:
                 "--force",
                 "specify-cli",
                 "--from",
-                "git+https://github.com/jpoley/jp-spec-kit.git",
+                git_url,
             ],
             capture_output=True,
             text=True,
