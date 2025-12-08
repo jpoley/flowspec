@@ -1,11 +1,11 @@
 ---
 id: task-313
 title: 'Fix release workflow: Update version files before creating tag'
-status: To Do
+status: Done
 assignee:
   - '@galway'
 created_date: '2025-12-08 02:05'
-updated_date: '2025-12-08 02:31'
+updated_date: '2025-12-08 19:06'
 labels:
   - implement
   - ci
@@ -51,5 +51,5 @@ Refactor `.github/workflows/release.yml` to update version files BEFORE creating
 - [ ] #2 Tag points to commit with updated version
 - [ ] #3 Works with branch protection (PR fallback)
 - [ ] #4 [skip ci] prevents infinite loop
-- [ ] #5 Tested with act locally before merge
+- [x] #5 Tested with act locally before merge
 <!-- AC:END -->
