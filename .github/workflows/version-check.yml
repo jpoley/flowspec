@@ -28,7 +28,7 @@ jobs:
         id: versions
         run: |
           # Get version from pyproject.toml
-          PYPROJECT_VERSION=$(grep '^\s*version\s*=' pyproject.toml | sed 's/.*"\(.*\)".*/\1/')
+          PYPROJECT_VERSION=$(grep '^[[:space:]]*version[[:space:]]*=' pyproject.toml | sed 's/.*"\(.*\)".*/\1/')
           if [ -z "$PYPROJECT_VERSION" ]; then
             echo "❌ Failed to extract version from pyproject.toml"
             exit 1
