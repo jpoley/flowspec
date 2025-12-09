@@ -71,7 +71,7 @@
     "GOOGLE_API_KEY": "${localEnv:GOOGLE_API_KEY}",
     "PYTHONUNBUFFERED": "1",
     "UV_SYSTEM_PYTHON": "1",
-    "PATH": "${containerEnv:PATH}:/home/vscode/.cargo/bin:/home/vscode/.local/bin"
+    "PATH": "/home/vscode/.local/share/pnpm:/home/vscode/.cargo/bin:/home/vscode/.local/bin:${containerEnv:PATH}"
   },
 
   "initializeCommand": "mkdir -p ${localEnv:HOME}/.claude ${localEnv:HOME}/.config/github-copilot",
@@ -83,7 +83,8 @@
   "forwardPorts": [],
 
   "containerEnv": {
-    "TERM": "xterm-256color"
+    "TERM": "xterm-256color",
+    "PNPM_HOME": "/home/vscode/.local/share/pnpm"
   },
 
   "remoteUser": "vscode",

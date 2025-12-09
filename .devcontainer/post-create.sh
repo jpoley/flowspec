@@ -8,8 +8,29 @@ echo "JP Spec Kit Devcontainer Setup"
 echo "========================================"
 echo ""
 
-# Ensure uv is in PATH (installed by onCreateCommand)
-export PATH="/home/vscode/.cargo/bin:$PATH"
+# -----------------------------------------------------------------------------
+# 0. Setup PATH for this script and future shells
+# -----------------------------------------------------------------------------
+export PATH="/home/vscode/.cargo/bin:/home/vscode/.local/bin:$PATH"
+
+# Get pnpm global bin directory and add to PATH
+PNPM_HOME="/home/vscode/.local/share/pnpm"
+export PNPM_HOME
+export PATH="$PNPM_HOME:$PATH"
+
+# Add to .zshrc for future shells
+cat >> /home/vscode/.zshrc << 'ZSHRC'
+
+# Added by devcontainer setup
+export PATH="/home/vscode/.cargo/bin:/home/vscode/.local/bin:$PATH"
+export PNPM_HOME="/home/vscode/.local/share/pnpm"
+export PATH="$PNPM_HOME:$PATH"
+
+# Activate Python virtual environment
+if [ -f "/workspaces/jp-spec-kit/.venv/bin/activate" ]; then
+    source /workspaces/jp-spec-kit/.venv/bin/activate
+fi
+ZSHRC
 
 # -----------------------------------------------------------------------------
 # 1. Python Environment Setup
@@ -30,20 +51,20 @@ echo "   Done."
 echo ""
 echo "2. Installing AI Coding Assistant CLIs..."
 
+# Configure pnpm global bin
+pnpm config set global-bin-dir "$PNPM_HOME"
+
 echo "   Installing Claude Code CLI..."
-pnpm install -g @anthropic-ai/claude-code || echo "   Warning: claude-code install failed (may need auth)"
+pnpm install -g @anthropic-ai/claude-code || echo "   Warning: claude-code install failed"
 
 echo "   Installing GitHub Copilot CLI..."
-pnpm install -g @github/copilot || echo "   Warning: copilot install failed"
+pnpm install -g @githubnext/github-copilot-cli || echo "   Warning: copilot install failed"
 
 echo "   Installing OpenAI Codex CLI..."
 pnpm install -g @openai/codex || echo "   Warning: codex install failed"
 
 echo "   Installing Google Gemini CLI..."
-pnpm install -g @google/gemini-cli || echo "   Warning: gemini-cli install failed"
-
-echo "   Installing Cursor..."
-curl https://cursor.com/install -fsSL | bash || echo "   Warning: cursor install failed"
+pnpm install -g @anthropic-ai/claude-code @google/gemini-cli || echo "   Warning: gemini-cli install failed"
 
 echo "   Done."
 
@@ -63,9 +84,9 @@ echo "   Done."
 echo ""
 echo "4. Setting up MCP server configuration..."
 
-mkdir -p ~/.config/claude
+mkdir -p /home/vscode/.config/claude
 
-cat > ~/.config/claude/claude_desktop_config.json << 'EOF'
+cat > /home/vscode/.config/claude/claude_desktop_config.json << 'EOF'
 {
   "mcpServers": {
     "backlog": {
@@ -79,7 +100,7 @@ cat > ~/.config/claude/claude_desktop_config.json << 'EOF'
 }
 EOF
 
-echo "   MCP configuration created at ~/.config/claude/claude_desktop_config.json"
+echo "   MCP configuration created."
 
 # -----------------------------------------------------------------------------
 # 5. Git Hooks (if available)
@@ -118,18 +139,18 @@ echo "Python version:    $(python --version 2>&1)"
 echo "uv version:        $(uv --version 2>&1)"
 echo "Node version:      $(node --version 2>&1)"
 echo "pnpm version:      $(pnpm --version 2>&1)"
+echo "pnpm global bin:   $PNPM_HOME"
 echo "gh version:        $(gh --version 2>&1 | head -1)"
 echo ""
 
 # Check for installed tools
 echo "Installed CLI tools:"
-command -v specify >/dev/null 2>&1 && echo "  - specify:     $(specify --version 2>&1 || echo 'installed')" || echo "  - specify:     NOT FOUND (try: source ~/.bashrc)"
-command -v claude >/dev/null 2>&1 && echo "  - claude:      installed" || echo "  - claude:      NOT FOUND"
-command -v copilot >/dev/null 2>&1 && echo "  - copilot:     installed" || echo "  - copilot:     NOT FOUND"
+command -v specify >/dev/null 2>&1 && echo "  - specify:     $(specify --version 2>&1 || echo 'installed')" || echo "  - specify:     NOT FOUND"
+command -v claude >/dev/null 2>&1 && echo "  - claude:      $(claude --version 2>&1 || echo 'installed')" || echo "  - claude:      NOT FOUND"
+command -v github-copilot-cli >/dev/null 2>&1 && echo "  - copilot:     installed" || echo "  - copilot:     NOT FOUND"
 command -v codex >/dev/null 2>&1 && echo "  - codex:       installed" || echo "  - codex:       NOT FOUND"
-command -v gemini >/dev/null 2>&1 && echo "  - gemini:      installed" || echo "  - gemini:       NOT FOUND"
-command -v cursor >/dev/null 2>&1 && echo "  - cursor:      installed" || echo "  - cursor:      NOT FOUND"
-command -v backlog >/dev/null 2>&1 && echo "  - backlog:     installed" || echo "  - backlog:     NOT FOUND"
+command -v gemini >/dev/null 2>&1 && echo "  - gemini:      installed" || echo "  - gemini:      NOT FOUND"
+command -v backlog >/dev/null 2>&1 && echo "  - backlog:     $(backlog --version 2>&1 || echo 'installed')" || echo "  - backlog:     NOT FOUND"
 
 echo ""
 echo "========================================"
@@ -142,9 +163,7 @@ echo "  ruff check . --fix      - Lint and fix code"
 echo "  ruff format .           - Format code"
 echo "  backlog task list       - List backlog tasks"
 echo "  specify --help          - JP Spec Kit CLI"
+echo "  claude                  - Claude Code CLI"
 echo ""
-echo "Documentation:"
-echo "  README.md               - Project overview"
-echo "  docs/                   - Full documentation"
-echo "  CLAUDE.md               - Development standards"
+echo "NOTE: Open a new terminal for PATH changes to take effect."
 echo ""
