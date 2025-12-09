@@ -46,6 +46,9 @@ cat >> /home/vscode/.zshrc << 'ZSHRC'
 if [ -f "/workspaces/jp-spec-kit/.venv/bin/activate" ]; then
     source /workspaces/jp-spec-kit/.venv/bin/activate
 fi
+
+# Aliases
+alias claude-yolo='claude --dangerously-skip-permissions'
 ZSHRC
 
 # -----------------------------------------------------------------------------
