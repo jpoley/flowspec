@@ -12,7 +12,6 @@ tools:
   - "mcp__backlog__*"
   - "mcp__serena__*"
   - "Skill"
-
 handoffs:
   - label: "Specify Requirements"
     agent: "jpspec-specify"
