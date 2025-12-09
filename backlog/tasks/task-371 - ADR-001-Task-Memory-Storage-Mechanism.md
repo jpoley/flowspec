@@ -1,0 +1,28 @@
+---
+id: task-371
+title: 'ADR-001: Task Memory Storage Mechanism'
+status: To Do
+assignee: []
+created_date: '2025-12-09 15:56'
+labels:
+  - architecture
+  - adr
+  - task-memory
+dependencies: []
+priority: high
+---
+
+## Description
+
+<!-- SECTION:DESCRIPTION:BEGIN -->
+Document the architectural decision for how Task Memory is stored (file-based vs embedded vs database vs git-native)
+<!-- SECTION:DESCRIPTION:END -->
+
+## Acceptance Criteria
+<!-- AC:BEGIN -->
+- [ ] #1 Evaluate all four storage options (file-based, embedded, database, git-native) with pros/cons
+- [ ] #2 Document trade-offs for each option using decision matrix
+- [ ] #3 Make and justify final decision based on constraints (offline, git-sync, human-readable)
+- [ ] #4 Create ADR document in docs/adr/ following ADR template
+- [ ] #5 Present decision to stakeholders and incorporate feedback
+<!-- AC:END -->
