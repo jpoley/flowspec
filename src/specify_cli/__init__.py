@@ -6248,11 +6248,15 @@ def vscode_generate(
             console.print(f"  • {agent}")
 
         console.print()
-        console.print("[dim]These agents will appear first in VS Code Copilot suggestions.[/dim]")
+        console.print(
+            "[dim]These agents will appear first in VS Code Copilot suggestions.[/dim]"
+        )
 
     except FileExistsError as e:
         console.print(f"[red]Error:[/red] {e}")
-        console.print("[dim]Use --force to overwrite or --no-merge to replace entirely[/dim]")
+        console.print(
+            "[dim]Use --force to overwrite or --no-merge to replace entirely[/dim]"
+        )
         raise typer.Exit(1)
     except Exception as e:
         console.print(f"[red]Error generating settings:[/red] {e}")

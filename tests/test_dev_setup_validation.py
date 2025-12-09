@@ -7,9 +7,9 @@ Validation Rules:
 - R1: .claude/commands/**/*.md contains ONLY symlinks
 - R2: All symlinks resolve to existing files
 - R3: All symlinks point to templates/commands/
-- R4: Every template has corresponding symlink
+- R4: Every active template has corresponding symlink
 - R5: No orphan symlinks (target exists in templates)
-- R7: Subdirectory structure matches (jpspec/, speckit/)
+- R7: Subdirectory structure matches expected command namespaces
 
 Note:
 - R6 ("dev-setup creates same file set as init would copy") is tested in
@@ -17,11 +17,30 @@ Note:
 References:
 - docs/architecture/command-single-source-of-truth.md
 - docs/architecture/adr-001-single-source-of-truth.md
+- docs/adr/ADR-role-based-command-namespaces.md
 """
 
 from pathlib import Path
 
 import pytest
+
+# Role-based command namespace directories (from specflow_workflow.yml)
+# These are the expected subdirectories in .claude/commands/
+EXPECTED_COMMAND_NAMESPACES = {
+    "jpspec",
+    "speckit",
+    "arch",
+    "dev",
+    "ops",
+    "pm",
+    "qa",
+    "sec",
+}
+
+
+def _is_active_template(filename: str) -> bool:
+    """Check if a template file is an active command (not deprecated)."""
+    return not filename.startswith("_DEPRECATED_")
 
 
 @pytest.fixture
@@ -154,7 +173,11 @@ class TestTemplateCoverage:
     def test_jpspec_templates_have_symlinks(
         self, claude_commands_dir: Path, templates_commands_dir: Path
     ) -> None:
-        """Verify every jpspec template has a corresponding symlink (R4)."""
+        """Verify every active jpspec template has a corresponding symlink (R4).
+
+        Note: Deprecated templates (_DEPRECATED_*.md) are excluded as they are
+        documentation artifacts, not active commands.
+        """
         jpspec_templates_dir = templates_commands_dir / "jpspec"
         if not jpspec_templates_dir.exists():
             pytest.skip("No templates/commands/jpspec directory")
@@ -165,7 +188,12 @@ class TestTemplateCoverage:
                 "No .claude/commands/jpspec directory - dev-setup not initialized"
             )
 
-        template_files = {f.name for f in jpspec_templates_dir.glob("*.md")}
+        # Only check active templates (exclude deprecated)
+        template_files = {
+            f.name
+            for f in jpspec_templates_dir.glob("*.md")
+            if _is_active_template(f.name)
+        }
         symlink_files = {f.name for f in claude_jpspec_dir.glob("*.md")}
 
         missing_symlinks = template_files - symlink_files
@@ -173,7 +201,7 @@ class TestTemplateCoverage:
         assert not missing_symlinks, (
             f"Found {len(missing_symlinks)} jpspec template(s) without symlinks:\n"
             + "\n".join(f"  - {t}" for t in sorted(missing_symlinks))
-            + "\n\nEvery template must have a corresponding symlink\n"
+            + "\n\nEvery active template must have a corresponding symlink\n"
             "\nTo fix:\n"
             "  uv run specify dev-setup --force\n"
         )
@@ -288,19 +316,22 @@ class TestSubdirectoryStructure:
         )
 
     def test_no_unexpected_subdirectories(self, claude_commands_dir: Path) -> None:
-        """Verify no unexpected subdirectories exist in .claude/commands/ (R7)."""
+        """Verify no unexpected subdirectories exist in .claude/commands/ (R7).
+
+        Expected namespaces include jpspec, speckit, and role-based directories
+        (arch, dev, ops, pm, qa, sec) as defined in specflow_workflow.yml.
+        """
         if not claude_commands_dir.exists():
             pytest.skip("No .claude/commands directory - dev-setup not initialized")
 
-        expected_dirs = {"jpspec", "speckit"}
         actual_dirs = {d.name for d in claude_commands_dir.iterdir() if d.is_dir()}
 
-        unexpected_dirs = actual_dirs - expected_dirs
+        unexpected_dirs = actual_dirs - EXPECTED_COMMAND_NAMESPACES
 
         assert not unexpected_dirs, (
             "Found unexpected subdirectories in .claude/commands/:\n"
             + "\n".join(f"  - {d}/" for d in sorted(unexpected_dirs))
-            + "\n\nExpected structure: jpspec/, speckit/ only\n"
+            + f"\n\nExpected: {sorted(EXPECTED_COMMAND_NAMESPACES)}\n"
             "\nTo fix:\n"
             "  uv run specify dev-setup --force\n"
         )

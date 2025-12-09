@@ -69,7 +69,9 @@ class TestVSCodeSettingsGenerator:
         assert generator.workflow_config is mock_workflow_config
         assert generator.primary_role == "dev"
 
-    def test_init_with_role_override(self, mock_workflow_config: WorkflowConfig) -> None:
+    def test_init_with_role_override(
+        self, mock_workflow_config: WorkflowConfig
+    ) -> None:
         """Test initialization with role override."""
         generator = VSCodeSettingsGenerator(
             workflow_config=mock_workflow_config,
@@ -108,7 +110,9 @@ class TestVSCodeSettingsGenerator:
             "@release-manager",
         ]
 
-    def test_get_role_agents_invalid_role(self, mock_workflow_config: WorkflowConfig) -> None:
+    def test_get_role_agents_invalid_role(
+        self, mock_workflow_config: WorkflowConfig
+    ) -> None:
         """Test getting agents for invalid role raises error."""
         generator = VSCodeSettingsGenerator(workflow_config=mock_workflow_config)
 
@@ -152,7 +156,9 @@ class TestVSCodeSettingsGenerator:
             "@researcher",
         ]
 
-    def test_generate_basic_settings(self, mock_workflow_config: WorkflowConfig) -> None:
+    def test_generate_basic_settings(
+        self, mock_workflow_config: WorkflowConfig
+    ) -> None:
         """Test generating basic VS Code settings."""
         generator = VSCodeSettingsGenerator(workflow_config=mock_workflow_config)
 
@@ -184,7 +190,9 @@ class TestVSCodeSettingsGenerator:
         assert "extensions" in settings
         assert "github.copilot" in settings["extensions"]["recommendations"]
 
-    def test_generate_merge_existing(self, mock_workflow_config: WorkflowConfig) -> None:
+    def test_generate_merge_existing(
+        self, mock_workflow_config: WorkflowConfig
+    ) -> None:
         """Test merging with existing settings."""
         generator = VSCodeSettingsGenerator(workflow_config=mock_workflow_config)
 
@@ -265,7 +273,9 @@ class TestVSCodeSettingsGenerator:
             json.dump({"existing": "data"}, f)
 
         # Force overwrite with merge_existing=False
-        generator.write_settings(output_path, role="pm", force=True, merge_existing=False)
+        generator.write_settings(
+            output_path, role="pm", force=True, merge_existing=False
+        )
 
         with open(output_path, encoding="utf-8") as f:
             settings = json.load(f)
@@ -307,7 +317,9 @@ class TestVSCodeSettingsGenerator:
         assert path.name == "settings.json"
         assert path.parent.name == ".vscode"
 
-    def test_agent_pinning_limits_to_six(self, mock_workflow_config: WorkflowConfig) -> None:
+    def test_agent_pinning_limits_to_six(
+        self, mock_workflow_config: WorkflowConfig
+    ) -> None:
         """Test that agent pinning limits to 6 agents."""
         generator = VSCodeSettingsGenerator(workflow_config=mock_workflow_config)
 

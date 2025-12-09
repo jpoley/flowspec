@@ -33,12 +33,16 @@ class TestRoleSelectionCommandTemplates:
 
     def test_init_template_exists(self, init_template_path: Path):
         """Test that init.md template exists."""
-        assert init_template_path.exists(), f"Init template not found at {init_template_path}"
+        assert init_template_path.exists(), (
+            f"Init template not found at {init_template_path}"
+        )
         assert init_template_path.is_file()
 
     def test_configure_template_exists(self, configure_template_path: Path):
         """Test that configure.md template exists."""
-        assert configure_template_path.exists(), f"Configure template not found at {configure_template_path}"
+        assert configure_template_path.exists(), (
+            f"Configure template not found at {configure_template_path}"
+        )
         assert configure_template_path.is_file()
 
     def test_init_has_role_selection_prompt(self, init_template_path: Path):
@@ -97,8 +101,12 @@ class TestRoleSelectionCommandTemplates:
 
         assert "--role" in content, "Missing --role flag documentation"
         # Check for role options (may have backslash escapes in markdown)
-        assert "pm" in content and "arch" in content and "dev" in content, "Missing role options"
-        assert "sec" in content and "qa" in content and "ops" in content, "Missing role options"
+        assert "pm" in content and "arch" in content and "dev" in content, (
+            "Missing role options"
+        )
+        assert "sec" in content and "qa" in content and "ops" in content, (
+            "Missing role options"
+        )
 
     def test_configure_documents_role_flag(self, configure_template_path: Path):
         """Test that configure.md documents --role flag for non-interactive use."""
@@ -106,36 +114,58 @@ class TestRoleSelectionCommandTemplates:
 
         assert "--role" in content, "Missing --role flag documentation"
         # Check for role options (may have backslash escapes in markdown)
-        assert "pm" in content and "arch" in content and "dev" in content, "Missing role options"
-        assert "sec" in content and "qa" in content and "ops" in content, "Missing role options"
+        assert "pm" in content and "arch" in content and "dev" in content, (
+            "Missing role options"
+        )
+        assert "sec" in content and "qa" in content and "ops" in content, (
+            "Missing role options"
+        )
 
     def test_init_documents_env_var(self, init_template_path: Path):
         """Test that init.md documents SPECFLOW_PRIMARY_ROLE environment variable."""
         content = init_template_path.read_text()
 
-        assert "SPECFLOW_PRIMARY_ROLE" in content, "Missing SPECFLOW_PRIMARY_ROLE env var"
-        assert "environment variable" in content.lower(), "Missing env var documentation"
+        assert "SPECFLOW_PRIMARY_ROLE" in content, (
+            "Missing SPECFLOW_PRIMARY_ROLE env var"
+        )
+        assert "environment variable" in content.lower(), (
+            "Missing env var documentation"
+        )
 
     def test_configure_documents_env_var(self, configure_template_path: Path):
         """Test that configure.md documents SPECFLOW_PRIMARY_ROLE environment variable."""
         content = configure_template_path.read_text()
 
-        assert "SPECFLOW_PRIMARY_ROLE" in content, "Missing SPECFLOW_PRIMARY_ROLE env var"
-        assert "environment variable" in content.lower(), "Missing env var documentation"
+        assert "SPECFLOW_PRIMARY_ROLE" in content, (
+            "Missing SPECFLOW_PRIMARY_ROLE env var"
+        )
+        assert "environment variable" in content.lower(), (
+            "Missing env var documentation"
+        )
 
     def test_init_has_role_to_workflow_yml_update(self, init_template_path: Path):
         """Test that init.md includes instructions to update specflow_workflow.yml."""
         content = init_template_path.read_text()
 
-        assert "specflow_workflow.yml" in content, "Missing workflow config file reference"
-        assert "roles.primary" in content or "roles:" in content, "Missing roles section reference"
+        assert "specflow_workflow.yml" in content, (
+            "Missing workflow config file reference"
+        )
+        assert "roles.primary" in content or "roles:" in content, (
+            "Missing roles section reference"
+        )
 
-    def test_configure_has_role_to_workflow_yml_update(self, configure_template_path: Path):
+    def test_configure_has_role_to_workflow_yml_update(
+        self, configure_template_path: Path
+    ):
         """Test that configure.md includes instructions to update specflow_workflow.yml."""
         content = configure_template_path.read_text()
 
-        assert "specflow_workflow.yml" in content, "Missing workflow config file reference"
-        assert "roles.primary" in content or "roles:" in content, "Missing roles section reference"
+        assert "specflow_workflow.yml" in content, (
+            "Missing workflow config file reference"
+        )
+        assert "roles.primary" in content or "roles:" in content, (
+            "Missing roles section reference"
+        )
 
     def test_init_shows_role_mapping(self, init_template_path: Path):
         """Test that init.md shows mapping from input numbers to role IDs."""
@@ -153,7 +183,9 @@ class TestRoleSelectionCommandTemplates:
         ]
 
         for role_id in expected_mappings:
-            assert f'"{role_id}"' in content or f"'{role_id}'" in content, f"Missing role ID {role_id}"
+            assert f'"{role_id}"' in content or f"'{role_id}'" in content, (
+                f"Missing role ID {role_id}"
+            )
 
     def test_configure_shows_role_mapping(self, configure_template_path: Path):
         """Test that configure.md shows mapping from input numbers to role IDs."""
@@ -171,7 +203,9 @@ class TestRoleSelectionCommandTemplates:
         ]
 
         for role_id in expected_mappings:
-            assert f'"{role_id}"' in content or f"'{role_id}'" in content, f"Missing role ID {role_id}"
+            assert f'"{role_id}"' in content or f"'{role_id}'" in content, (
+                f"Missing role ID {role_id}"
+            )
 
     def test_init_has_precedence_order(self, init_template_path: Path):
         """Test that init.md documents precedence order for role selection."""
@@ -212,10 +246,14 @@ class TestRoleSelectionCommandTemplates:
     def test_symlinks_exist(self, project_root: Path):
         """Test that command symlinks exist in .claude/commands/speckit/."""
         init_symlink = project_root / ".claude" / "commands" / "speckit" / "init.md"
-        configure_symlink = project_root / ".claude" / "commands" / "speckit" / "configure.md"
+        configure_symlink = (
+            project_root / ".claude" / "commands" / "speckit" / "configure.md"
+        )
 
         assert init_symlink.exists(), f"Init symlink not found at {init_symlink}"
-        assert configure_symlink.exists(), f"Configure symlink not found at {configure_symlink}"
+        assert configure_symlink.exists(), (
+            f"Configure symlink not found at {configure_symlink}"
+        )
 
         # Verify they are symlinks
         assert init_symlink.is_symlink(), "init.md should be a symlink"
@@ -258,7 +296,9 @@ class TestRoleSelectionIntegration:
         """Test that init.md and configure.md have consistent role definitions."""
         project_root = Path(__file__).parent.parent
         init_path = project_root / "templates" / "commands" / "speckit" / "init.md"
-        configure_path = project_root / "templates" / "commands" / "speckit" / "configure.md"
+        configure_path = (
+            project_root / "templates" / "commands" / "speckit" / "configure.md"
+        )
 
         init_content = init_path.read_text()
         configure_content = configure_path.read_text()
