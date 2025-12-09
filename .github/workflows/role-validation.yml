@@ -199,14 +199,19 @@ jobs:
         run: |
           echo "=== Checking for agent drift between commands and generated agents ==="
           bash scripts/bash/sync-copilot-agents.sh --validate
+          EXIT_CODE=$?
 
-          if [ $? -eq 2 ]; then
+          if [ $EXIT_CODE -eq 2 ]; then
             echo ""
             echo "❌ Drift detected!"
             echo "Generated agents in .github/agents/ are out of sync with commands."
             echo ""
             echo "Fix: Run 'bash scripts/bash/sync-copilot-agents.sh' to regenerate agents"
             exit 1
+          elif [ $EXIT_CODE -ne 0 ]; then
+            echo ""
+            echo "❌ Agent sync validation failed with exit code $EXIT_CODE"
+            exit $EXIT_CODE
           fi
 
           echo "✓ No drift detected - agents are in sync"
