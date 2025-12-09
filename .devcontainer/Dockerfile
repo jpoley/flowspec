@@ -4,7 +4,7 @@
 # This Dockerfile builds a pre-configured development environment with:
 # - Python 3.11 + uv package manager
 # - Node.js 20 + pnpm
-# - AI coding assistant CLIs (Claude Code, Gemini, GitHub Copilot)
+# - AI coding assistant CLIs (Claude Code, Codex, Gemini, GitHub Copilot)
 # - Task management (backlog.md)
 # - Common development tools
 #
@@ -47,6 +47,7 @@ RUN pnpm config set global-bin-dir "$PNPM_HOME"
 # Install AI coding assistant CLIs
 # Note: These are best-effort installs; some may not be available in all regions
 RUN pnpm install -g @anthropic-ai/claude-code || echo "claude-code install skipped" \
+    && pnpm install -g @openai/codex || echo "codex install skipped" \
     && pnpm install -g @githubnext/github-copilot-cli || echo "copilot-cli install skipped" \
     && pnpm install -g @google/gemini-cli || echo "gemini-cli install skipped"
 
@@ -67,11 +68,12 @@ RUN mkdir -p /home/vscode/.config/claude \
 RUN echo '' >> /home/vscode/.zshrc \
     && echo '# AI coding agent YOLO aliases (uncomment at your own risk)' >> /home/vscode/.zshrc \
     && echo '# alias claude-yolo="claude --dangerously-skip-permissions"' >> /home/vscode/.zshrc \
+    && echo '# alias codex-yolo="codex --full-auto"' >> /home/vscode/.zshrc \
     && echo '# alias gemini-yolo="gemini --yolo"' >> /home/vscode/.zshrc
 
 # Labels for Docker Hub
 LABEL org.opencontainers.image.title="SpecFlow Agents"
-LABEL org.opencontainers.image.description="Development container with AI coding assistants (Claude Code, Gemini, GitHub Copilot) and task management tools"
+LABEL org.opencontainers.image.description="Development container with AI coding assistants (Claude Code, Codex, Gemini, GitHub Copilot) and task management tools"
 LABEL org.opencontainers.image.source="https://github.com/jpoley/jp-spec-kit"
 LABEL org.opencontainers.image.vendor="jpoley"
 LABEL org.opencontainers.image.licenses="MIT"
