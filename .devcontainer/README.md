@@ -232,9 +232,10 @@ specify --version
 **Symptom**: CLI installed but not responding
 
 **Solutions**:
-1. Check API key is set: `echo $ANTHROPIC_API_KEY`
-2. Reinstall the CLI: `pnpm install -g @anthropic-ai/claude-code`
-3. Check pnpm global bin is in PATH
+1. For Claude Code, check that you are authenticated via OAuth (see `~/.claude` for your token).
+2. For Codex CLI or other API-based tools, check API key is set: `echo $ANTHROPIC_API_KEY`
+3. Reinstall the CLI: `pnpm install -g @anthropic-ai/claude-code`
+4. Check pnpm global bin is in PATH
 
 ### Tests Fail in Container
 
