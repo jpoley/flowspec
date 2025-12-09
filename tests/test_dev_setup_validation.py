@@ -165,7 +165,11 @@ class TestTemplateCoverage:
                 "No .claude/commands/jpspec directory - dev-setup not initialized"
             )
 
-        template_files = {f.name for f in jpspec_templates_dir.glob("*.md")}
+        # Exclude deprecated files - they intentionally don't have symlinks
+        template_files = {
+            f.name for f in jpspec_templates_dir.glob("*.md")
+            if not f.name.startswith("_DEPRECATED_")
+        }
         symlink_files = {f.name for f in claude_jpspec_dir.glob("*.md")}
 
         missing_symlinks = template_files - symlink_files
@@ -292,7 +296,8 @@ class TestSubdirectoryStructure:
         if not claude_commands_dir.exists():
             pytest.skip("No .claude/commands directory - dev-setup not initialized")
 
-        expected_dirs = {"jpspec", "speckit"}
+        # Include role-based command namespaces: arch, dev, ops, pm, qa, sec
+        expected_dirs = {"jpspec", "speckit", "arch", "dev", "ops", "pm", "qa", "sec"}
         actual_dirs = {d.name for d in claude_commands_dir.iterdir() if d.is_dir()}
 
         unexpected_dirs = actual_dirs - expected_dirs
@@ -300,7 +305,7 @@ class TestSubdirectoryStructure:
         assert not unexpected_dirs, (
             "Found unexpected subdirectories in .claude/commands/:\n"
             + "\n".join(f"  - {d}/" for d in sorted(unexpected_dirs))
-            + "\n\nExpected structure: jpspec/, speckit/ only\n"
+            + f"\n\nExpected structure: {', '.join(sorted(expected_dirs))}\n"
             "\nTo fix:\n"
             "  uv run specify dev-setup --force\n"
         )
