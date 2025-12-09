@@ -47,8 +47,8 @@ RUN pnpm config set global-bin-dir "$PNPM_HOME"
 # Install AI coding assistant CLIs
 # Note: These are best-effort installs; some may not be available in all regions
 RUN pnpm install -g @anthropic-ai/claude-code || echo "claude-code install skipped" \
-    && pnpm install -g @openai/codex || echo "codex install skipped" \
     && pnpm install -g @githubnext/github-copilot-cli || echo "copilot-cli install skipped" \
+    && pnpm install -g @openai/codex || echo "codex install skipped" \
     && pnpm install -g @google/gemini-cli || echo "gemini-cli install skipped"
 
 # Install task management tools
