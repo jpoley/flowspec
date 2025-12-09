@@ -75,7 +75,7 @@
     "PATH": "/workspaces/jp-spec-kit/.venv/bin:/home/vscode/.local/share/pnpm:/home/vscode/.cargo/bin:/home/vscode/.local/bin:${containerEnv:PATH}"
   },
 
-  "initializeCommand": "mkdir -p ${localEnv:HOME}/.claude ${localEnv:HOME}/.config/github-copilot",
+  "initializeCommand": "pwsh -Command \"New-Item -ItemType Directory -Force -Path '${localEnv:HOME}/.claude','${localEnv:HOME}/.config/github-copilot'\"",
   "onCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh",
   "postCreateCommand": "bash .devcontainer/post-create.sh",
   "postStartCommand": "cp /home/vscode/.gitconfig-host /home/vscode/.gitconfig 2>/dev/null || true; git config --global --add safe.directory ${containerWorkspaceFolder}",
