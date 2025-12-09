@@ -108,8 +108,8 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
 
-            # SHA tags for traceability
-            type=sha,prefix={{branch}}-
+            # SHA tags for traceability (short sha with 'sha-' prefix)
+            type=sha,prefix=sha-
 
             # Latest tag on main branch
             type=raw,value=latest,enable={{is_default_branch}}
