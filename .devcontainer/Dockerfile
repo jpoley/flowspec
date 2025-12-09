@@ -68,7 +68,7 @@ RUN mkdir -p /home/vscode/.config/claude \
 RUN echo '' >> /home/vscode/.zshrc \
     && echo '# AI coding agent YOLO aliases (uncomment at your own risk)' >> /home/vscode/.zshrc \
     && echo '# alias claude-yolo="claude --dangerously-skip-permissions"' >> /home/vscode/.zshrc \
-    && echo '# alias codex-yolo="codex --full-auto"' >> /home/vscode/.zshrc \
+    && echo '# alias codex-yolo="codex --dangerously-bypass-approvals-and-sandbox"' >> /home/vscode/.zshrc \
     && echo '# alias gemini-yolo="gemini --yolo"' >> /home/vscode/.zshrc
 
 # Labels for Docker Hub
