@@ -691,14 +691,14 @@ jobs:
           echo "All role validation jobs completed."
           echo ""
           echo "Jobs:"
-          echo "  ✓ Schema validation"
-          echo "  ✓ Command structure validation"
-          echo "  ✓ Agent sync validation"
-          echo "  ✓ PM role validation"
-          echo "  ✓ Dev role validation"
-          echo "  ✓ Security role validation"
-          echo "  ✓ QA role validation"
-          echo "  ✓ Team mode validation"
-          echo "  ✓ Ops role validation"
+          if [ "${{ needs.validate-schema.result }}" = "success" ]; then echo "  ✓ Schema validation"; else echo "  ❌ Schema validation"; fi
+          if [ "${{ needs.validate-commands.result }}" = "success" ]; then echo "  ✓ Command structure validation"; else echo "  ❌ Command structure validation"; fi
+          if [ "${{ needs.validate-agent-sync.result }}" = "success" ]; then echo "  ✓ Agent sync validation"; else echo "  ❌ Agent sync validation"; fi
+          if [ "${{ needs.validate-pm-role.result }}" = "success" ]; then echo "  ✓ PM role validation"; else echo "  ❌ PM role validation"; fi
+          if [ "${{ needs.validate-dev-role.result }}" = "success" ]; then echo "  ✓ Dev role validation"; else echo "  ❌ Dev role validation"; fi
+          if [ "${{ needs.validate-sec-role.result }}" = "success" ]; then echo "  ✓ Security role validation"; else echo "  ❌ Security role validation"; fi
+          if [ "${{ needs.validate-qa-role.result }}" = "success" ]; then echo "  ✓ QA role validation"; else echo "  ❌ QA role validation"; fi
+          if [ "${{ needs.validate-team-mode.result }}" = "success" ]; then echo "  ✓ Team mode validation"; else echo "  ❌ Team mode validation"; fi
+          if [ "${{ needs.validate-ops-role.result }}" = "success" ]; then echo "  ✓ Ops role validation"; else echo "  ❌ Ops role validation"; fi
           echo ""
           echo "See individual job logs for details."
