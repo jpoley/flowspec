@@ -1,0 +1,1 @@
+../../../templates/commands/jpspec/_DEPRECATED_security_fix.md

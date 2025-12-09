@@ -1,0 +1,1 @@
+../../templates/commands/jpspec/_DEPRECATED_plan.md

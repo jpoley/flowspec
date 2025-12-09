@@ -150,12 +150,13 @@ class TestSubdirectoryStructure:
         assert speckit_dir.is_dir(), "speckit is not a directory"
 
     def test_no_extra_subdirectories(self, claude_commands_dir: Path) -> None:
-        """Test only jpspec and speckit subdirectories exist."""
+        """Test expected command namespace subdirectories exist."""
         if not claude_commands_dir.exists():
             pytest.skip("No .claude/commands directory")
 
         subdirs = {d.name for d in claude_commands_dir.iterdir() if d.is_dir()}
-        expected_subdirs = {"jpspec", "speckit"}
+        # Role-based command namespaces added in specflow v2.0
+        expected_subdirs = {"jpspec", "speckit", "pm", "arch", "dev", "sec", "qa", "ops"}
 
         assert subdirs == expected_subdirs, (
             f"Unexpected subdirectory structure.\n"

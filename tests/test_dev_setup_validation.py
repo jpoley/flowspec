@@ -292,7 +292,8 @@ class TestSubdirectoryStructure:
         if not claude_commands_dir.exists():
             pytest.skip("No .claude/commands directory - dev-setup not initialized")
 
-        expected_dirs = {"jpspec", "speckit"}
+        # Role-based command namespaces added in specflow v2.0
+        expected_dirs = {"jpspec", "speckit", "pm", "arch", "dev", "sec", "qa", "ops"}
         actual_dirs = {d.name for d in claude_commands_dir.iterdir() if d.is_dir()}
 
         unexpected_dirs = actual_dirs - expected_dirs
@@ -300,7 +301,7 @@ class TestSubdirectoryStructure:
         assert not unexpected_dirs, (
             "Found unexpected subdirectories in .claude/commands/:\n"
             + "\n".join(f"  - {d}/" for d in sorted(unexpected_dirs))
-            + "\n\nExpected structure: jpspec/, speckit/ only\n"
+            + "\n\nExpected structure: jpspec/, speckit/, pm/, arch/, dev/, sec/, qa/, ops/\n"
             "\nTo fix:\n"
             "  uv run specify dev-setup --force\n"
         )
