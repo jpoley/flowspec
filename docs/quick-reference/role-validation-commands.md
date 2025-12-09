@@ -269,7 +269,7 @@ bash scripts/bash/sync-copilot-agents.sh --dry-run --verbose
 bash scripts/bash/sync-copilot-agents.sh --role dev
 
 # Force regeneration
-bash scripts/bash/sync-copilot-agents.sh --force
+# (No --force flag available in sync-copilot-agents.sh)
 ```
 
 ### Coverage Failures
