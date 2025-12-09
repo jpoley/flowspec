@@ -47,11 +47,19 @@ if [ -f "/workspaces/jp-spec-kit/.venv/bin/activate" ]; then
     source /workspaces/jp-spec-kit/.venv/bin/activate
 fi
 
-# Aliases for AI coding agents (yolo modes)
-alias claude-yolo='claude --dangerously-skip-permissions'
-alias codex-yolo='codex --dangerously-bypass-approvals-and-sandbox'
-alias gemini-yolo='gemini --yolo'
-alias copilot-yolo='copilot --allow-all-tools'
+# Aliases for AI coding agents (YOLO modes)
+# -----------------------------------------------------------------------------
+# WARNING: The following aliases bypass critical security features of AI agents.
+# Using these may expose your environment to malicious code execution,
+# data exfiltration, or other vulnerabilities. DO NOT enable unless you
+# fully understand the risks and are in a safe, isolated environment.
+#
+# To enable, uncomment the desired alias below.
+# -----------------------------------------------------------------------------
+# alias claude-yolo='claude --dangerously-skip-permissions'
+# alias codex-yolo='codex --dangerously-bypass-approvals-and-sandbox'
+# alias gemini-yolo='gemini --yolo'
+# alias copilot-yolo='copilot --allow-all-tools'
 ZSHRC
 
 # -----------------------------------------------------------------------------
