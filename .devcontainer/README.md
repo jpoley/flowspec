@@ -147,7 +147,7 @@ Start Container
 ├─→ postCreateCommand (once)
 │   ├─ uv sync (install Python dependencies)
 │   ├─ Install specify CLI
-│   ├─ Install AI coding assistants (claude, copilot, codex, gemini, cursor)
+│   ├─ Install AI coding assistants (claude, copilot, codex, gemini)
 │   ├─ Install backlog.md CLI
 │   └─ Setup MCP server configuration
 │
