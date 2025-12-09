@@ -52,6 +52,9 @@ class ContextInjector:
         self.base_path = base_path or Path.cwd()
         self.claude_md_path = self.base_path / "backlog" / "CLAUDE.md"
 
+    # Regex pattern for valid task IDs (task-NNN format)
+    VALID_TASK_ID_PATTERN = re.compile(r"^task-\d+$")
+
     def update_active_task(self, task_id: Optional[str] = None) -> None:
         """Update CLAUDE.md with @import for active task memory.
 
@@ -64,9 +67,17 @@ class ContextInjector:
 
         Raises:
             FileNotFoundError: If CLAUDE.md doesn't exist
+            ValueError: If task_id format is invalid
         """
         if not self.claude_md_path.exists():
             raise FileNotFoundError(f"CLAUDE.md not found: {self.claude_md_path}")
+
+        # Validate task_id format to prevent path traversal (CWE-22)
+        if task_id is not None and not self.VALID_TASK_ID_PATTERN.match(task_id):
+            raise ValueError(
+                f"Invalid task_id format: {task_id}. "
+                "Must match pattern 'task-NNN' where NNN is numeric."
+            )
 
         content = self.claude_md_path.read_text()
 

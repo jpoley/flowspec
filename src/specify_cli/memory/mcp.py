@@ -65,13 +65,15 @@ def register_memory_resources(
         Returns:
             JSON string containing task memory content and metadata
         """
+        import re
+
         try:
-            # Validate task_id format (basic security check)
-            if not task_id.startswith("task-"):
+            # Validate task_id format strictly (CWE-22 path traversal prevention)
+            if not re.match(r"^task-\d+$", task_id):
                 return json.dumps(
                     {
                         "error": "Invalid task ID format",
-                        "detail": "Task ID must start with 'task-'",
+                        "detail": "Task ID must match pattern 'task-NNN' where NNN is numeric",
                     }
                 )
 

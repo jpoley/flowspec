@@ -241,3 +241,36 @@ Some content here.
     assert "@import ../memory/task-375.md" not in content
     assert "## Other Section" in content
     assert "Some content here." in content
+
+
+# --- Security Tests ---
+
+
+def test_path_traversal_blocked(tmp_project: Path) -> None:
+    """Test that path traversal attempts are blocked."""
+    injector = ContextInjector(tmp_project)
+
+    # These should all raise ValueError due to invalid task_id format
+    malicious_ids = [
+        "../../../etc/passwd",
+        "task-123/../../../evil",
+        "/etc/passwd",
+        "task-with-dashes",  # Not numeric
+        "not-a-task-123",
+    ]
+
+    for malicious_id in malicious_ids:
+        with pytest.raises(ValueError, match="Invalid task_id format"):
+            injector.update_active_task(malicious_id)
+
+
+def test_valid_task_id_accepted(tmp_project: Path) -> None:
+    """Test that valid task IDs are accepted."""
+    injector = ContextInjector(tmp_project)
+
+    # These should succeed
+    valid_ids = ["task-1", "task-123", "task-99999"]
+
+    for valid_id in valid_ids:
+        injector.update_active_task(valid_id)
+        assert injector.get_active_task_id() == valid_id
