@@ -12,7 +12,6 @@ tools:
   - "mcp__backlog__*"
   - "mcp__serena__*"
   - "Skill"
-
 handoffs:
   - label: "Conduct Research"
     agent: "jpspec-research"
