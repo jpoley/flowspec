@@ -116,7 +116,6 @@ The devcontainer automatically forwards these to the container.
 | GitHub Copilot | `copilot` | OAuth (browser) | Copilot Pro/Business |
 | OpenAI Codex | `codex` | API Key | OpenAI API account |
 | Google Gemini | `gemini` | API Key | Google AI API |
-| Cursor | `cursor` | OAuth (browser) | Cursor subscription |
 
 ### Task Management
 
