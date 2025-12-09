@@ -74,6 +74,7 @@
     "PATH": "${containerEnv:PATH}:/home/vscode/.cargo/bin:/home/vscode/.local/bin"
   },
 
+  "initializeCommand": "mkdir -p ${localEnv:HOME}/.claude ${localEnv:HOME}/.config/github-copilot",
   "onCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh",
   "postCreateCommand": "bash .devcontainer/post-create.sh",
   "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
