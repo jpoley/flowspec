@@ -1,6 +1,7 @@
 """Tests for Memory CLI commands.
 
 Tests the specify memory CLI subcommands:
+- init: Initialize a new task memory file
 - show: Display task memory content
 - append: Append content to task memory
 - list: List all task memories
@@ -82,6 +83,85 @@ def sample_memories(temp_workspace):
     store.archive("task-100")
 
     return store
+
+
+# --- Test: memory init ---
+
+
+def test_init_creates_memory(temp_workspace):
+    """Test initializing a new task memory."""
+    result = runner.invoke(
+        memory_app,
+        ["init", "task-500", "--project-root", str(temp_workspace)],
+    )
+
+    assert result.exit_code == 0
+    assert "Created task memory" in result.stdout
+
+    # Verify file was created
+    store = TaskMemoryStore(base_path=temp_workspace)
+    assert store.exists("task-500")
+
+
+def test_init_with_title(temp_workspace):
+    """Test initializing memory with custom title."""
+    result = runner.invoke(
+        memory_app,
+        [
+            "init",
+            "task-501",
+            "--title",
+            "Implement Custom Feature",
+            "--project-root",
+            str(temp_workspace),
+        ],
+    )
+
+    assert result.exit_code == 0
+
+    # Verify content includes title
+    store = TaskMemoryStore(base_path=temp_workspace)
+    content = store.read("task-501")
+    assert "Implement Custom Feature" in content
+
+
+def test_init_existing_memory_fails(temp_workspace, sample_memories):
+    """Test that init fails for existing memory without --force."""
+    result = runner.invoke(
+        memory_app,
+        ["init", "task-389", "--project-root", str(temp_workspace)],
+    )
+
+    assert result.exit_code == 1
+    assert "already exists" in result.stdout
+
+
+def test_init_force_overwrites(temp_workspace, sample_memories):
+    """Test that --force overwrites existing memory."""
+    # Get original content
+    store = TaskMemoryStore(base_path=temp_workspace)
+    original_content = store.read("task-389")
+
+    result = runner.invoke(
+        memory_app,
+        [
+            "init",
+            "task-389",
+            "--force",
+            "--title",
+            "New Title",
+            "--project-root",
+            str(temp_workspace),
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert "Created task memory" in result.stdout
+
+    # Verify content was replaced
+    new_content = store.read("task-389")
+    assert "New Title" in new_content
+    assert new_content != original_content
 
 
 # --- Test: memory show ---

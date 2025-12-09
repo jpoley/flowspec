@@ -38,6 +38,57 @@ memory_app = typer.Typer(
 console = Console()
 
 
+@memory_app.command("init")
+def init(
+    task_id: str = typer.Argument(..., help="Task ID (e.g., task-389)"),
+    title: Optional[str] = typer.Option(
+        None, "--title", "-t", help="Task title for memory header"
+    ),
+    force: bool = typer.Option(
+        False, "--force", "-f", help="Overwrite existing memory"
+    ),
+    project_root: Optional[str] = typer.Option(
+        None, "--project-root", help="Project root directory"
+    ),
+):
+    """Initialize a new task memory file.
+
+    Creates a new memory file from the template for tracking implementation
+    context. Use this when starting work on a task.
+
+    Examples:
+        # Initialize memory for task
+        specify memory init task-389
+
+        # With title
+        specify memory init task-389 --title "Implement login feature"
+
+        # Force overwrite existing
+        specify memory init task-389 --force
+    """
+    workspace_root = Path(project_root) if project_root else Path.cwd()
+    store = TaskMemoryStore(base_path=workspace_root)
+
+    # Check if memory already exists
+    if store.exists(task_id) and not force:
+        console.print(f"[yellow]Memory already exists for {task_id}[/yellow]")
+        console.print("Use --force to overwrite")
+        raise typer.Exit(1)
+
+    # Delete existing if force
+    if force and store.exists(task_id):
+        store.delete(task_id)
+
+    # Create memory file
+    try:
+        memory_path = store.create(task_id, task_title=title or "")
+        console.print(f"[green]✓[/green] Created task memory: {memory_path}")
+
+    except Exception as e:
+        console.print(f"[red]Error creating memory:[/red] {e}")
+        raise typer.Exit(1)
+
+
 @memory_app.command("show")
 def show(
     task_id: str = typer.Argument(..., help="Task ID (e.g., task-389)"),
