@@ -1,11 +1,11 @@
 ---
 id: task-386
 title: Implement CLAUDE.md @import Context Injection
-status: In Progress
+status: Done
 assignee:
   - '@backend-engineer'
 created_date: '2025-12-09 15:57'
-updated_date: '2025-12-09 17:00'
+updated_date: '2025-12-09 17:09'
 labels:
   - backend
   - task-memory

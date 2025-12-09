@@ -1,11 +1,11 @@
 ---
 id: task-377
 title: 'Task Memory: Claude Code integration via hooks and MCP (Phase 3)'
-status: In Progress
+status: Done
 assignee:
   - '@backend-engineer'
 created_date: '2025-12-09 15:56'
-updated_date: '2025-12-09 17:04'
+updated_date: '2025-12-09 17:09'
 labels:
   - infrastructure
   - claude-code

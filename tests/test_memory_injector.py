@@ -158,8 +158,6 @@ def test_update_preserves_existing_content(tmp_project: Path) -> None:
     """Test that update_active_task preserves existing CLAUDE.md content."""
     injector = ContextInjector(tmp_project)
 
-    original_content = (tmp_project / "backlog" / "CLAUDE.md").read_text()
-
     # Update task
     injector.update_active_task("task-375")
 
