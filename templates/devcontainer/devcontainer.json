@@ -47,6 +47,7 @@
 
   "remoteEnv": {
     "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}",
+    "OPENAI_API_KEY": "${localEnv:OPENAI_API_KEY}",
     "GOOGLE_API_KEY": "${localEnv:GOOGLE_API_KEY}",
     "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
     "PYTHONUNBUFFERED": "1"

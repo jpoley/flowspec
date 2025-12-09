@@ -114,7 +114,7 @@ The devcontainer automatically forwards these to the container.
 |------|---------|-----------|----------------------|
 | Claude Code | `claude` | OAuth (browser) | Claude Pro/Max |
 | GitHub Copilot | `copilot` | OAuth (browser) | Copilot Pro/Business |
-| OpenAI Codex | `codex` | API Key | OpenAI API account |
+| [OpenAI Codex](https://github.com/openai/codex) | `codex` | OAuth or API Key | ChatGPT Plus/Pro/Team or OpenAI API |
 | Google Gemini | `gemini` | API Key | Google AI API |
 
 ### Task Management

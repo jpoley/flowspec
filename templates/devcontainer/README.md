@@ -19,6 +19,7 @@ The `jpoley/specflow-agents` Docker image includes:
 
 ### AI Coding Assistants
 - **Claude Code** (`claude`) - Anthropic's AI coding assistant
+- **Codex** (`codex`) - [OpenAI's coding agent](https://github.com/openai/codex)
 - **GitHub Copilot CLI** (`github-copilot-cli`) - GitHub's AI pair programmer
 - **Google Gemini CLI** (`gemini`) - Google's AI coding assistant
 
@@ -38,7 +39,10 @@ Set these in your shell or `.env` file before opening the container:
 |----------|---------|
 | `GITHUB_TOKEN` | GitHub API access |
 | `ANTHROPIC_API_KEY` | Claude Code authentication |
+| `OPENAI_API_KEY` | Codex authentication (alternative to ChatGPT login) |
 | `GOOGLE_API_KEY` | Google Gemini authentication |
+
+> **Note**: Codex supports two auth methods: (1) ChatGPT subscription login (Plus/Pro/Team/Edu/Enterprise) - recommended, or (2) `OPENAI_API_KEY` for API-based billing. Run `codex` to authenticate.
 
 ## Customization
 
@@ -87,6 +91,7 @@ The image includes commented-out aliases for bypassing AI agent safety features.
 
 ```bash
 alias claude-yolo='claude --dangerously-skip-permissions'
+alias codex-yolo='codex --full-auto'
 alias gemini-yolo='gemini --yolo'
 ```
 

@@ -106,7 +106,7 @@ This document describes the architecture for publishing the JP Spec Kit devconta
 │  + Node.js 20 + pnpm                                        │
 │  + GitHub CLI                                                │
 │  + uv (Python package manager)                              │
-│  + AI CLIs (Claude Code, Gemini, GitHub Copilot)            │
+│  + AI CLIs (Claude Code, Codex, Gemini, GitHub Copilot)     │
 │  + backlog.md                                                │
 └─────────────────────────────────────────────────────────────┘
 ```
