@@ -94,7 +94,7 @@ echo "   Installing OpenAI Codex CLI..."
 pnpm install -g @openai/codex || echo "   Warning: codex install failed"
 
 echo "   Installing Google Gemini CLI..."
-pnpm install -g @anthropic-ai/claude-code @google/gemini-cli || echo "   Warning: gemini-cli install failed"
+pnpm install -g @google/gemini-cli || echo "   Warning: gemini-cli install failed"
 
 echo "   Done."
 
