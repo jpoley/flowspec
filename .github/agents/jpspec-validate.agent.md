@@ -12,6 +12,7 @@ tools:
   - "mcp__backlog__*"
   - "mcp__serena__*"
   - "Skill"
+
 handoffs:
   - label: "Deploy to Production"
     agent: "jpspec-operate"

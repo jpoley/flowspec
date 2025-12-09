@@ -54,8 +54,8 @@ jobs:
           echo "Workflow version: $WORKFLOW_VERSION"
           echo "Schema version: $SCHEMA_VERSION"
 
-          # Validate version format
-          if ! echo "$WORKFLOW_VERSION" | grep -qE '^\d+\.\d+$'; then
+          # Validate version format (use [0-9] for portability, \d is not portable)
+          if ! echo "$WORKFLOW_VERSION" | grep -qE '^[0-9]+\.[0-9]+$'; then
             echo "❌ Invalid workflow version format: $WORKFLOW_VERSION"
             exit 1
           fi
@@ -161,16 +161,17 @@ jobs:
         run: |
           echo "=== Checking command file naming conventions ==="
 
-          # Commands should be lowercase with hyphens
+          # Commands should be lowercase with hyphens or underscores
+          # Pattern: lowercase letter followed by lowercase letters, digits, hyphens, or underscores
           INVALID_NAMES=$(find templates/commands -name "*.md" ! -name "_*" | while read file; do
             basename=$(basename "$file" .md)
-            if ! echo "$basename" | grep -qE '^[a-z][a-z0-9-]*$'; then
+            if ! echo "$basename" | grep -qE '^[a-z][a-z0-9_-]*$'; then
               echo "$file"
             fi
           done)
 
           if [ -n "$INVALID_NAMES" ]; then
-            echo "❌ Invalid command file names (must be lowercase-with-hyphens):"
+            echo "❌ Invalid command file names (must be lowercase with hyphens/underscores):"
             echo "$INVALID_NAMES" | sed 's/^/  - /'
             exit 1
           fi
