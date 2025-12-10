@@ -10,9 +10,9 @@
 
 ## Installation
 
-### Initialize a New Project (Layered: base + extension)
+### Initialize a New Project
 
-The easiest way to get started is to initialize a new project with the layered model: base spec-kit plus jp-spec-kit overlay.
+The easiest way to get started is to initialize a new project with Specflow.
 
 ```bash
 uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init <PROJECT_NAME>
@@ -70,30 +70,18 @@ uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init <project_n
 ## Verification
 
 After initialization, you should see the following commands available in your AI agent:
-- `/speckit.specify` - Create specifications
-- `/speckit.plan` - Generate implementation plans  
-- `/speckit.tasks` - Break down into actionable tasks
+- `/jpspec:specify` - Create specifications
+- `/jpspec:plan` - Generate implementation plans
+- `/jpspec:implement` - Execute implementation with code review
+- `/jpspec:validate` - QA and security validation
 
-The `.specify/scripts` directory will contain both `.sh` and `.ps1` scripts.
+The `scripts/bash` directory will contain both `.sh` and `.ps1` scripts.
 
 ### VS Code / GitHub Copilot Setup
 
-If you're using GitHub Copilot in VS Code, the initialization process automatically configures `.vscode/settings.json` with the required settings for prompt files. The key settings are:
+If you're using GitHub Copilot in VS Code, the initialization process automatically configures `.vscode/settings.json` with the required settings for prompt files. The key settings enable Copilot to discover and use the workflow commands.
 
-```json
-{
-    "chat.promptFiles": true,
-    "chat.promptFilesRecommendations": {
-        "speckit.constitution": true,
-        "speckit.specify": true,
-        "speckit.plan": true,
-        "speckit.tasks": true,
-        "speckit.implement": true
-    }
-}
-```
-
-**Prompt files location:** After initialization, prompt files are created in `.github/prompts/` with the `.prompt.md` extension.
+**Prompt files location:** After initialization, command files are created in `.claude/commands/` (for Claude Code) or `.github/prompts/` (for GitHub Copilot) depending on which AI agent you selected during initialization.
 
 **If prompts don't appear in Copilot Chat:**
 1. Ensure VS Code is version 1.96 or later (VS Code Insiders may have newer features)
@@ -105,7 +93,7 @@ If you're using GitHub Copilot in VS Code, the initialization process automatica
 
 ### Private assets or API rate limits (authenticated downloads)
 
-If the jp-spec-kit repository or its release assets are private, or you’re operating behind corporate restrictions/rate limits, provide a GitHub token so the CLI can authenticate when resolving releases and downloading assets.
+If the Specflow repository or its release assets are private, or you're operating behind corporate restrictions/rate limits, provide a GitHub token so the CLI can authenticate when resolving releases and downloading assets.
 
 Supported methods:
 
