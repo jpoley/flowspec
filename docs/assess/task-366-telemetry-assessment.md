@@ -111,7 +111,7 @@ To change approach:
 # Force spec-light mode
 /jpspec:assess task-366 --mode light
 
-# Force skip SDD
+# Force skip PRD
 /jpspec:assess task-366 --mode skip
 ```
 
