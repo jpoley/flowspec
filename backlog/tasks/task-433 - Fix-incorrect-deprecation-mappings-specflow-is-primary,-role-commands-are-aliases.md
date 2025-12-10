@@ -6,6 +6,7 @@ title: >-
 status: To Do
 assignee: []
 created_date: '2025-12-10 22:20'
+updated_date: '2025-12-10 22:48'
 labels:
   - bug
   - commands
@@ -17,32 +18,46 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-The DEPRECATED commands have WRONG mappings. They tell users to use role-based commands (`/pm:define`, `/arch:design`, etc.) instead of `/specflow:*` commands.
+## Target Architecture
 
-**This is backwards.**
+**2 Workflows + Many Utilities**
 
-The rule is:
-- `/specflow` is the PRIMARY namespace - all SDD workflow functionality MUST be available here
-- Role-based commands (`/pm`, `/arch`, `/dev`, `/qa`, `/sec`, `/ops`) are OPTIONAL convenience aliases
-- `/specflow:specify` should NOT be deprecated - it's the canonical command
-- `/pm:define` is an ALIAS to `/specflow:specify`, not a replacement
+- `/speckit:*` - Lightweight SDD workflow (10 commands)
+- `/specflow:*` - Full agent-based SDD workflow (14 commands)
+- `/dev:*`, `/sec:*`, `/arch:*`, `/ops:*`, `/qa:*` - Stateless utilities (run anytime)
 
-Current WRONG deprecation messages:
-- `/specflow:_DEPRECATED_specify` → "Use /pm:define" ❌
-- `/specflow:_DEPRECATED_assess` → "Use /pm:assess" ❌  
-- `/specflow:_DEPRECATED_research` → "Use /pm:discover" ❌
-- `/specflow:_DEPRECATED_plan` → "Use /arch:design" ❌
-- `/specflow:_DEPRECATED_validate` → "Use /qa:verify" ❌
-- etc.
+## Problem
 
-**Fix**: Remove all `_DEPRECATED_*` files from `/specflow` namespace. The `/specflow:*` commands are NOT deprecated.
+The "role-based" reorganization made things worse:
+- 8 namespaces instead of 2 clear workflows
+- Deprecation warnings pointing users AWAY from specflow (wrong direction)
+- Duplicate commands scattered everywhere
+- PM work duplicated as both workflow AND role namespace
+
+## Solution
+
+1. **DELETE** all `_DEPRECATED_*.md` files (13 files) - wrong direction
+2. **DELETE** entire `/pm` namespace - PM work IS the workflow
+3. **DELETE** workflow duplicates from role namespaces:
+   - `/arch:design` → use `/specflow:plan`
+   - `/dev:build` → use `/specflow:implement`
+   - `/qa:verify` → use `/specflow:validate`
+   - `/ops:deploy` → use `/specflow:operate`
+   - `/sec:audit` → use `/specflow:security_workflow`
+4. **KEEP** utility commands in role namespaces (debug, refactor, scan, etc.)
+
+See: `docs/audit/command-cleanup-plan.md` for full implementation plan.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 All _DEPRECATED_*.md files removed from templates/commands/specflow/
-- [ ] #2 All _DEPRECATED_*.md symlinks removed from .claude/commands/specflow/
-- [ ] #3 /specflow:specify, /specflow:assess, /specflow:plan, /specflow:validate etc. work as primary commands
-- [ ] #4 Role-based commands (/pm:*, /arch:*, etc.) remain as optional aliases
-- [ ] #5 Documentation updated to clarify /specflow is primary namespace
+- [ ] #1 All 13 _DEPRECATED_*.md files deleted from templates/commands/specflow/
+- [ ] #2 Entire /pm namespace deleted (3 commands + symlink)
+- [ ] #3 Workflow duplicate commands deleted: /arch:design, /dev:build, /qa:verify, /ops:deploy, /sec:audit
+- [ ] #4 All symlinks in .claude/commands/ updated (no broken links)
+- [ ] #5 /specflow:* commands work as primary workflow (no deprecation warnings)
+
+- [ ] #6 Utility commands preserved: /dev:debug, /dev:refactor, /sec:scan, etc.
+- [ ] #7 Documentation updated (CLAUDE.md, guides)
+- [ ] #8 Command count reduced from 61 to 38
 <!-- AC:END -->
