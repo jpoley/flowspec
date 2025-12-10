@@ -1,6 +1,6 @@
-# Spec Kit
+# Specflow
 
-*Build high-quality software faster.*
+*Specification-driven development for AI-augmented teams.*
 
 **An effort to allow organizations to focus on product scenarios rather than writing undifferentiated code with the help of Spec-Driven Development.**
 
