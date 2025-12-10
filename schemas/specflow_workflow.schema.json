@@ -26,8 +26,8 @@
       "properties": {
         "primary": {
           "type": "string",
-          "enum": ["pm", "arch", "dev", "sec", "qa", "ops", "all"],
-          "description": "Primary role selection - what role the user identifies with",
+          "enum": ["arch", "dev", "sec", "qa", "ops", "all"],
+          "description": "Primary role selection - what role the user identifies with. PM removed as PM work is done via /specflow workflow commands.",
           "default": "dev"
         },
         "show_all_commands": {
@@ -37,13 +37,10 @@
         },
         "definitions": {
           "type": "object",
-          "description": "Role definitions mapping roles to commands and agents",
-          "required": ["pm", "arch", "dev", "sec", "qa", "ops", "all"],
+          "description": "Role definitions mapping roles to commands and agents. PM role removed as PM work is done via /specflow workflow commands.",
+          "required": ["arch", "dev", "sec", "qa", "ops", "all"],
           "additionalProperties": false,
           "properties": {
-            "pm": {
-              "$ref": "#/$defs/role"
-            },
             "arch": {
               "$ref": "#/$defs/role"
             },

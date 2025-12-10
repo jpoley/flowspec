@@ -37,21 +37,13 @@ roles:
   show_all_commands: false
 
   # Role definitions
+  # NOTE: Role commands map to templates/commands/{role}/{command}.md files
+  # PM commands removed - PM work is done via /specflow workflow commands
   definitions:
-    pm:
-      display_name: "Product Manager"
-      icon: "📋"
-      commands: ["assess", "define", "discover"]
-      agents:
-        - "@product-requirements-manager"
-        - "@workflow-assessor"
-        - "@researcher"
-        - "@business-validator"
-
     arch:
       display_name: "Architect"
       icon: "🏗️"
-      commands: ["design", "decide", "model"]
+      commands: ["decide", "model"]
       agents:
         - "@software-architect"
         - "@platform-engineer"
@@ -59,7 +51,7 @@ roles:
     dev:
       display_name: "Developer"
       icon: "💻"
-      commands: ["build", "debug", "refactor"]
+      commands: ["cleanup", "debug", "refactor"]
       agents:
         - "@frontend-engineer"
         - "@backend-engineer"
@@ -68,14 +60,14 @@ roles:
     sec:
       display_name: "Security Engineer"
       icon: "🔒"
-      commands: ["scan", "triage", "fix", "audit"]
+      commands: ["fix", "report", "scan", "triage"]
       agents:
         - "@secure-by-design-engineer"
 
     qa:
       display_name: "QA Engineer"
       icon: "✅"
-      commands: ["test", "verify", "review"]
+      commands: ["review", "test"]
       agents:
         - "@quality-guardian"
         - "@release-manager"
@@ -83,7 +75,7 @@ roles:
     ops:
       display_name: "SRE/DevOps"
       icon: "🚀"
-      commands: ["deploy", "monitor", "respond", "scale"]
+      commands: ["monitor", "respond", "scale"]
       agents:
         - "@sre-agent"
 

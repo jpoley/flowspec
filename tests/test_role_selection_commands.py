@@ -294,8 +294,8 @@ class TestRoleSelectionIntegration:
         role_definitions = config.get("roles", {}).get("definitions", {})
         config_role_ids = set(role_definitions.keys())
 
-        # Expected role IDs
-        expected_role_ids = {"pm", "arch", "dev", "sec", "qa", "ops", "all"}
+        # Expected role IDs (pm removed - PM work is done via /specflow workflow commands)
+        expected_role_ids = {"arch", "dev", "sec", "qa", "ops", "all"}
 
         assert config_role_ids == expected_role_ids, (
             f"Role IDs mismatch. Expected: {expected_role_ids}, "
