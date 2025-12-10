@@ -51,7 +51,7 @@ Before proceeding, verify this is a valid jp-spec-kit project:
 
 ```bash
 # Check for project markers
-if [ ! -f "specflow_workflow.yml" ] && [ ! -f "specflow_workflow.yml" ] && [ ! -d ".claude" ]; then
+if [ ! -f "specflow_workflow.yml" ] && [ ! -f "specflow.yml" ] && [ ! -d ".claude" ]; then
   echo "Error: This doesn't appear to be a jp-spec-kit project"
   echo "Run '/speckit:init' first to initialize the project"
   exit 1
