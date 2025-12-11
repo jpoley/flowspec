@@ -1,9 +1,12 @@
 name: Docker Publish
 
 on:
+  # Trigger on release publication (creates version-tagged images)
+  # This is separate from push to avoid paths filter blocking tag triggers
+  release:
+    types: [published]
+  # Trigger on Dockerfile changes to main (updates :latest image)
   push:
-    tags:
-      - 'v*'  # Trigger on version tags (e.g., v0.2.349)
     branches: [main]
     paths:
       - '.devcontainer/Dockerfile'
@@ -90,8 +93,8 @@ jobs:
       - name: Determine image tag to verify
         id: verify-tag
         run: |
-          # For tag pushes, verify the version tag; otherwise verify latest
-          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+          # For release events, verify the version tag; otherwise verify latest
+          if [[ "${{ github.ref }}" =~ ^refs/tags/v ]]; then
             TAG="${{ github.ref_name }}"
             # Remove 'v' prefix for semver tag (v0.2.349 -> 0.2.349)
             TAG="${TAG#v}"
