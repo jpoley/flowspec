@@ -8,7 +8,7 @@ Proposed
 
 ### Current State
 
-The Specflow development environment currently uses Debian 11 (Bullseye) base images:
+The Flowspec development environment currently uses Debian 11 (Bullseye) base images:
 
 - **Devcontainer**: `mcr.microsoft.com/devcontainers/python:3.11-bullseye`
 - **Published Docker Image**: `mcr.microsoft.com/devcontainers/python:3.11-bullseye`

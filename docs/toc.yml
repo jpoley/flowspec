@@ -125,6 +125,8 @@
 # Task Memory
 - name: Task Memory
   items:
+    - name: Overview
+      href: guides/task-memory-overview.md
     - name: User Guide
       href: guides/task-memory-user-guide.md
 
