@@ -12,7 +12,7 @@
     "enabled": true
   },
 
-  "specflow": {
+  "flowspec": {
     "primaryRole": "",
     "displayName": "",
     "icon": "",
