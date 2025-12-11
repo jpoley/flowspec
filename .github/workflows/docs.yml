@@ -84,7 +84,7 @@ jobs:
             fi
             VERSION="$INPUT_VERSION"
           else
-            # Fall back to pyproject.toml version (used for workflow_run and workflow_dispatch)
+            # Fall back to pyproject.toml version (for workflow_run, and for workflow_dispatch only if version input is empty)
             VERSION=$(grep -Po '(?<=^version = ")[^"]*' pyproject.toml || echo "dev")
             echo "Using version from pyproject.toml: $VERSION"
           fi
