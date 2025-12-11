@@ -368,7 +368,7 @@ def test_hook_handles_missing_specify(mock_git_repo: Path) -> None:
     assert result.returncode == 0
 
     # Hook should output warning about missing specify
-    assert "specify CLI not found" in result.stderr or result.returncode == 0
+    assert "specify CLI not found" in result.stderr
 
 
 def test_hook_handles_non_task_files(mock_git_repo: Path) -> None:
