@@ -5,9 +5,10 @@ in the backlog/memory/ directory. Task memory files track implementation context
 decisions, approaches, and notes for individual tasks.
 """
 
+import re
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 
 class TaskMemoryStore:
@@ -129,24 +130,27 @@ class TaskMemoryStore:
         memory_path = self.get_path(task_id)
         current_content = memory_path.read_text()
 
-        # Update timestamp
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        updated_line = f"**Last Updated**: {timestamp}"
+        # Parse frontmatter and body
+        metadata, body = self._parse_frontmatter(current_content)
 
-        # Replace old timestamp
-        lines = current_content.split("\n")
+        # Update timestamp in metadata
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        metadata["updated"] = timestamp
+
+        # Also handle old format (for backward compatibility)
+        lines = body.split("\n")
         for i, line in enumerate(lines):
             if line.startswith("**Last Updated**:"):
-                lines[i] = updated_line
+                lines[i] = f"**Last Updated**: {timestamp}"
                 break
-        current_content = "\n".join(lines)
+        body = "\n".join(lines)
 
         # Append content
         if section:
             # Find section and append there
             section_marker = f"## {section}"
-            if section_marker in current_content:
-                parts = current_content.split(section_marker)
+            if section_marker in body:
+                parts = body.split(section_marker)
                 if len(parts) >= 2:
                     # Find next section or end of file
                     after_section = parts[1]
@@ -155,7 +159,7 @@ class TaskMemoryStore:
                         # Insert before next section
                         section_content = after_section[:next_section_idx]
                         rest = after_section[next_section_idx:]
-                        new_content = (
+                        body = (
                             parts[0]
                             + section_marker
                             + section_content
@@ -166,7 +170,7 @@ class TaskMemoryStore:
                         )
                     else:
                         # Append to end of section
-                        new_content = (
+                        body = (
                             parts[0]
                             + section_marker
                             + after_section
@@ -174,12 +178,13 @@ class TaskMemoryStore:
                             + content
                             + "\n"
                         )
-                    current_content = new_content
         else:
             # Append to end
-            current_content = current_content.rstrip() + "\n\n" + content + "\n"
+            body = body.rstrip() + "\n\n" + content + "\n"
 
-        memory_path.write_text(current_content)
+        # Serialize with updated metadata
+        updated_content = self._serialize_frontmatter(metadata, body)
+        memory_path.write_text(updated_content)
 
     def archive(self, task_id: str) -> None:
         """Move task memory to archive.
@@ -300,3 +305,132 @@ class TaskMemoryStore:
             Path to the task memory file (may not exist)
         """
         return self.memory_dir / f"{task_id}.md"
+
+    def _parse_frontmatter(self, content: str) -> tuple[Dict[str, str], str]:
+        """Parse YAML frontmatter from markdown content.
+
+        Args:
+            content: Markdown content with optional YAML frontmatter
+
+        Returns:
+            Tuple of (frontmatter_dict, body_content)
+        """
+        # Match YAML frontmatter pattern: ---\n...\n---
+        pattern = r"^---\s*\n(.*?)\n---\s*\n(.*)$"
+        match = re.match(pattern, content, re.DOTALL)
+
+        if match:
+            frontmatter_text = match.group(1)
+            body = match.group(2)
+
+            # Simple YAML parsing (key: value pairs)
+            frontmatter = {}
+            for line in frontmatter_text.split("\n"):
+                line = line.strip()
+                if ":" in line:
+                    key, value = line.split(":", 1)
+                    frontmatter[key.strip()] = value.strip()
+
+            return frontmatter, body
+        else:
+            # No frontmatter found
+            return {}, content
+
+    def _serialize_frontmatter(self, metadata: Dict[str, str], body: str) -> str:
+        """Serialize metadata and body into markdown with YAML frontmatter.
+
+        Args:
+            metadata: Dictionary of metadata key-value pairs
+            body: Markdown body content
+
+        Returns:
+            Complete markdown content with frontmatter
+        """
+        if not metadata:
+            return body
+
+        frontmatter_lines = ["---"]
+        for key, value in metadata.items():
+            frontmatter_lines.append(f"{key}: {value}")
+        frontmatter_lines.append("---")
+        frontmatter_lines.append("")  # Blank line after frontmatter
+
+        return "\n".join(frontmatter_lines) + body
+
+    def _update_metadata(self, task_id: str, updates: Dict[str, str]) -> None:
+        """Update YAML frontmatter metadata in memory file.
+
+        Args:
+            task_id: Task identifier
+            updates: Dictionary of metadata updates
+
+        Raises:
+            FileNotFoundError: If task memory doesn't exist
+        """
+        memory_path = self.get_path(task_id)
+        if not memory_path.exists():
+            raise FileNotFoundError(f"Task memory not found: {task_id}")
+
+        content = memory_path.read_text()
+        metadata, body = self._parse_frontmatter(content)
+
+        # Apply updates
+        metadata.update(updates)
+
+        # Write back
+        updated_content = self._serialize_frontmatter(metadata, body)
+        memory_path.write_text(updated_content)
+
+    def clear(self, task_id: str) -> None:
+        """Clear task memory content while preserving metadata.
+
+        Resets all sections to empty/template state but keeps YAML frontmatter
+        (task_id, created, updated timestamps).
+
+        Args:
+            task_id: Task identifier
+
+        Raises:
+            FileNotFoundError: If task memory doesn't exist
+        """
+        memory_path = self.get_path(task_id)
+        if not memory_path.exists():
+            raise FileNotFoundError(f"Task memory not found: {task_id}")
+
+        content = memory_path.read_text()
+        metadata, _ = self._parse_frontmatter(content)
+
+        # Update timestamp
+        metadata["updated"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Create empty body with sections
+        empty_body = """# Task Memory: {task_id}
+
+## Context
+
+<!-- Brief description of what this task is about -->
+
+## Key Decisions
+
+<!-- Record important decisions made during implementation -->
+
+## Approaches Tried
+
+<!-- Document approaches attempted and their outcomes -->
+
+## Open Questions
+
+<!-- Track unresolved questions -->
+
+## Resources
+
+<!-- Links to relevant documentation, PRs, discussions -->
+
+## Notes
+
+<!-- Freeform notes section -->
+""".format(task_id=metadata.get("task_id", task_id))
+
+        # Write cleared content with preserved metadata
+        cleared_content = self._serialize_frontmatter(metadata, empty_body)
+        memory_path.write_text(cleared_content)

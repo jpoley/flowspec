@@ -98,3 +98,7 @@ Tasks with labels `design`, `research`, `spike`, `architecture`:
 - User Guide: `docs/guides/backlog-user-guide.md`
 - Commands: `docs/reference/backlog-commands.md`
 - Flush/Archive: `docs/guides/backlog-flush.md`
+
+## Active Task Context
+
+@import ../memory/task-383.md

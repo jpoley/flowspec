@@ -390,9 +390,9 @@ class TestCLAUDEMDIntegrationE2E:
         )
 
         # Verify CLAUDE.md was updated with @import
-        # LifecycleManager uses format: @import memory/{task_id}.md
+        # LifecycleManager uses ContextInjector format: @import ../memory/{task_id}.md
         content = backlog_claude_md.read_text()
-        assert f"@import memory/{task_id}.md" in content
+        assert f"@import ../memory/{task_id}.md" in content
 
     def test_claude_md_preserves_existing_content(
         self, lifecycle_manager, context_injector, e2e_project
@@ -417,8 +417,8 @@ class TestCLAUDEMDIntegrationE2E:
         updated_content = backlog_claude_md.read_text()
         assert "Backlog Task Management" in updated_content
         assert "test project for context injection" in updated_content
-        # Also verify @import was added
-        assert f"@import memory/{task_id}.md" in updated_content
+        # Also verify @import was added (ContextInjector uses ../memory/ format)
+        assert f"@import ../memory/{task_id}.md" in updated_content
 
 
 class TestErrorRecoveryE2E:

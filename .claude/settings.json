@@ -87,6 +87,16 @@
             "timeout": 35
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/post-tool-use-task-memory-lifecycle.py",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "Stop": [

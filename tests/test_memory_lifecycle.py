@@ -153,7 +153,7 @@ class TestTaskStartTransition:
         # Verify CLAUDE.md updated
         assert claude_md.exists()
         content = claude_md.read_text()
-        assert f"@import memory/{task_id}.md" in content
+        assert f"@import ../memory/{task_id}.md" in content
 
     def test_task_start_without_title(self, manager):
         """Test starting task without title."""
@@ -201,7 +201,7 @@ class TestTaskCompleteTransition:
 
         # Verify import cleared
         content = claude_md.read_text()
-        assert f"@import memory/{task_id}.md" not in content
+        assert f"@import ../memory/{task_id}.md" not in content
 
     def test_task_complete_preserves_content(self, manager):
         """Test that archiving preserves memory content."""
@@ -306,7 +306,7 @@ class TestTaskReopenTransition:
 
         # Verify CLAUDE.md updated
         content = claude_md.read_text()
-        assert f"@import memory/{task_id}.md" in content
+        assert f"@import ../memory/{task_id}.md" in content
 
 
 class TestTaskResetTransition:
@@ -378,7 +378,7 @@ class TestClaudeMdManagement:
 
         assert claude_md.exists()
         content = claude_md.read_text()
-        assert f"@import memory/{task_id}.md" in content
+        assert f"@import ../memory/{task_id}.md" in content
 
     def test_clear_active_task_import(self, manager, temp_project):
         """Test clearing CLAUDE.md import."""
@@ -392,7 +392,7 @@ class TestClaudeMdManagement:
         manager.update_active_task_import(None)
 
         content = claude_md.read_text()
-        assert f"@import memory/{task_id}.md" not in content
+        assert f"@import ../memory/{task_id}.md" not in content
 
     def test_replace_active_task_import(self, manager, temp_project):
         """Test replacing one task import with another."""
@@ -405,8 +405,8 @@ class TestClaudeMdManagement:
         manager.update_active_task_import("task-376")
 
         content = claude_md.read_text()
-        assert "@import memory/task-375.md" not in content
-        assert "@import memory/task-376.md" in content
+        assert "@import ../memory/task-375.md" not in content
+        assert "@import ../memory/task-376.md" in content
 
     def test_create_claude_md_if_missing(self, manager, temp_project):
         """Test that CLAUDE.md is created if it doesn't exist."""
@@ -442,7 +442,7 @@ Follow these rules.
         manager.update_active_task_import("task-375")
 
         content = claude_md.read_text()
-        assert "@import memory/task-375.md" in content
+        assert "@import ../memory/task-375.md" in content
         assert "Some important documentation here" in content
         assert "## Guidelines" in content
 

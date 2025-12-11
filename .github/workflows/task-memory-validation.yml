@@ -218,6 +218,52 @@ jobs:
               });
             }
 
+      - name: Validate AC coverage in memory files
+        id: ac_coverage
+        run: |
+          echo "Validating acceptance criteria coverage in task memories..."
+
+          # Check if memory files reference corresponding backlog tasks
+          # and if AC tracking is consistent
+          WARNINGS=0
+
+          if [ -d "backlog/memory" ] && [ -d "backlog/tasks" ]; then
+            for memory_file in backlog/memory/*.md; do
+              if [ -f "$memory_file" ]; then
+                # Extract task ID from filename (e.g., task-42.md -> task-42)
+                task_id=$(basename "$memory_file" .md)
+
+                # Find corresponding task file (supports various naming patterns)
+                task_file=$(find backlog/tasks -name "${task_id}*" -type f 2>/dev/null | head -1)
+
+                if [ -z "$task_file" ]; then
+                  echo "::warning file=$memory_file::No corresponding backlog task found for $task_id"
+                  WARNINGS=$((WARNINGS + 1))
+                  continue
+                fi
+
+                # Check if memory documents AC progress
+                # Look for patterns like "AC#1", "AC1:", "[x] #1", etc.
+                if grep -qiE "(AC#?[0-9]+|acceptance.criter)" "$memory_file"; then
+                  echo "✓ $task_id: Memory documents AC progress"
+                else
+                  echo "::notice file=$memory_file::Consider documenting AC progress in memory"
+                fi
+
+                # Check memory references task context
+                if grep -qi "context\|decision\|approach" "$memory_file"; then
+                  echo "✓ $task_id: Memory contains structured context"
+                fi
+              fi
+            done
+          fi
+
+          if [ $WARNINGS -gt 0 ]; then
+            echo "::notice::$WARNINGS memory file(s) have no corresponding backlog task"
+          fi
+
+          echo "✓ AC coverage validation complete"
+
       - name: Summary
         run: |
           echo "## Task Memory Validation Complete" >> $GITHUB_STEP_SUMMARY
@@ -225,3 +271,4 @@ jobs:
           echo "✓ Size validation passed" >> $GITHUB_STEP_SUMMARY
           echo "✓ Secret detection passed" >> $GITHUB_STEP_SUMMARY
           echo "✓ Format validation passed" >> $GITHUB_STEP_SUMMARY
+          echo "✓ AC coverage validation passed" >> $GITHUB_STEP_SUMMARY

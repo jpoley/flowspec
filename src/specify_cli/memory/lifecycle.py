@@ -17,6 +17,7 @@ from typing import Optional
 import logging
 
 from .store import TaskMemoryStore
+from .injector import ContextInjector
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,7 @@ class LifecycleManager:
 
     Attributes:
         store: TaskMemoryStore instance for file operations
+        injector: ContextInjector instance for CLAUDE.md updates
     """
 
     def __init__(self, store: Optional[TaskMemoryStore] = None):
@@ -39,6 +41,7 @@ class LifecycleManager:
             store: Optional TaskMemoryStore instance. Creates default if not provided.
         """
         self.store = store or TaskMemoryStore()
+        self.injector = ContextInjector(base_path=self.store.base_path)
 
     def on_state_change(
         self, task_id: str, old_state: str, new_state: str, task_title: str = ""
@@ -85,10 +88,10 @@ class LifecycleManager:
 
         # Update CLAUDE.md import if task is now in progress
         if new_state == "in_progress":
-            self.update_active_task_import(task_id)
+            self._update_claude_md(task_id)
         elif old_state == "in_progress" and new_state != "in_progress":
             # Task is no longer active, clear the import
-            self.update_active_task_import(None)
+            self._update_claude_md(None)
 
     def _normalize_state(self, state: str) -> str:
         """Normalize state name to lowercase with underscores.
@@ -181,51 +184,39 @@ class LifecycleManager:
     def update_active_task_import(self, task_id: Optional[str] = None) -> None:
         """Update backlog/CLAUDE.md with current active task's @import.
 
-        This method updates the CLAUDE.md file in the backlog directory to
-        include an @import directive for the active task's memory file. This
-        ensures agents have context about the current task.
+        This is a public API that delegates to ContextInjector for updating
+        the CLAUDE.md file with an @import directive for the active task's
+        memory file. This ensures agents have context about the current task.
 
         Args:
             task_id: Task ID to import, or None to clear the import
         """
-        claude_md_path = self.store.base_path / "backlog" / "CLAUDE.md"
+        self._update_claude_md(task_id)
 
-        # Create CLAUDE.md if it doesn't exist
-        if not claude_md_path.exists():
+    def _update_claude_md(self, task_id: Optional[str] = None) -> None:
+        """Internal method to update CLAUDE.md via ContextInjector.
+
+        Args:
+            task_id: Task ID to import, or None to clear the import
+        """
+        try:
+            if task_id:
+                self.injector.update_active_task(task_id)
+                logger.info(f"Updated CLAUDE.md with @import for {task_id}")
+            else:
+                self.injector.clear_active_task()
+                logger.info("Cleared task memory @import from CLAUDE.md")
+        except FileNotFoundError:
+            # CLAUDE.md doesn't exist - create it and retry
+            logger.warning("CLAUDE.md not found, creating...")
+            claude_md_path = self.store.base_path / "backlog" / "CLAUDE.md"
             claude_md_path.parent.mkdir(parents=True, exist_ok=True)
             claude_md_path.write_text("# Backlog Context\n\n")
 
-        content = claude_md_path.read_text()
-
-        # Remove any existing task memory import
-        lines = content.split("\n")
-        filtered_lines = [
-            line for line in lines if not line.startswith("@import memory/task-")
-        ]
-
-        # Add new import if task_id provided
-        if task_id:
-            # Find the position to insert (after header, before any other content)
-            insert_pos = 0
-            for i, line in enumerate(filtered_lines):
-                if line.startswith("#"):
-                    insert_pos = i + 1
-                    # Skip any blank lines after header
-                    while (
-                        insert_pos < len(filtered_lines)
-                        and not filtered_lines[insert_pos].strip()
-                    ):
-                        insert_pos += 1
-                    break
-
-            import_line = f"@import memory/{task_id}.md"
-            filtered_lines.insert(insert_pos, import_line)
-            filtered_lines.insert(insert_pos + 1, "")  # Add blank line after import
-
-            logger.info(f"Updated CLAUDE.md with @import for {task_id}")
-        else:
-            logger.info("Cleared task memory @import from CLAUDE.md")
-
-        # Write updated content
-        new_content = "\n".join(filtered_lines)
-        claude_md_path.write_text(new_content)
+            # Retry the operation
+            if task_id:
+                self.injector.update_active_task(task_id)
+                logger.info(f"Updated CLAUDE.md with @import for {task_id}")
+            else:
+                self.injector.clear_active_task()
+                logger.info("Cleared task memory @import from CLAUDE.md")
