@@ -1,5 +1,5 @@
 ---
-name: "flowspec-reset"
+name: "flow-reset"
 description: "Reset workflow configuration by re-asking startup questions and regenerating flowspec_workflow.yml"
 target: "chat"
 tools:

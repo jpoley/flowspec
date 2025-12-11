@@ -1,5 +1,5 @@
 ---
-name: "flowspec-init"
+name: "flow-init"
 description: "Initialize or setup constitution for a project, handling both greenfield (new) and brownfield (existing) projects"
 target: "chat"
 tools:

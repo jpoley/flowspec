@@ -1,5 +1,5 @@
 ---
-name: "flowspec-security_report"
+name: "flow-security_report"
 description: "Generate comprehensive security audit report from scan and triage results using security-reporter skill."
 target: "chat"
 tools:

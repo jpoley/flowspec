@@ -1,5 +1,5 @@
 ---
-name: "flowspec-security_triage"
+name: "flow-security_triage"
 description: "flowspec security_triage workflow command"
 target: "chat"
 tools:

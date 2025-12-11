@@ -97,7 +97,7 @@ Options:
   --help              Show this help message
 
 Source:
-  - .claude/commands/{flowspec,speckit}/*.md (legacy workflow commands)
+  - .claude/commands/{flow,speckit}/*.md (legacy workflow commands)
   - templates/commands/{role}/*.md (role-based commands)
 Target: .github/agents/{role}-{command}.agent.md or {namespace}-{command}.agent.md
 
@@ -397,7 +397,7 @@ get_handoffs() {
     local command="$2"
 
     # Role-based commands use role-specific handoffs
-    if [[ -n "$role" && "$role" != "flowspec" && "$role" != "speckit" ]]; then
+    if [[ -n "$role" && "$role" != "flow" && "$role" != "speckit" ]]; then
         # Get next logical command in same role
         case "$role" in
             pm)
@@ -558,8 +558,8 @@ HANDOFF
         return
     fi
 
-    # Legacy flowspec workflow commands
-    if [[ "$role" != "flowspec" ]]; then
+    # Legacy flow workflow commands
+    if [[ "$role" != "flow" ]]; then
         echo ""
         return
     fi
@@ -569,7 +569,7 @@ HANDOFF
             cat << 'HANDOFF'
 handoffs:
   - label: "Specify Requirements"
-    agent: "flowspec-specify"
+    agent: "flow-specify"
     prompt: "The assessment is complete. Based on the assessment, create detailed product requirements."
     send: false
 HANDOFF
@@ -578,11 +578,11 @@ HANDOFF
             cat << 'HANDOFF'
 handoffs:
   - label: "Conduct Research"
-    agent: "flowspec-research"
+    agent: "flow-research"
     prompt: "The specification is complete. Conduct research to validate technical feasibility and market fit."
     send: false
   - label: "Create Technical Design"
-    agent: "flowspec-plan"
+    agent: "flow-plan"
     prompt: "The specification is complete. Create the technical architecture and platform design."
     send: false
 HANDOFF
@@ -591,7 +591,7 @@ HANDOFF
             cat << 'HANDOFF'
 handoffs:
   - label: "Create Technical Design"
-    agent: "flowspec-plan"
+    agent: "flow-plan"
     prompt: "Research is complete. Create the technical architecture and platform design based on findings."
     send: false
 HANDOFF
@@ -600,7 +600,7 @@ HANDOFF
             cat << 'HANDOFF'
 handoffs:
   - label: "Begin Implementation"
-    agent: "flowspec-implement"
+    agent: "flow-implement"
     prompt: "Planning is complete. Begin implementing the feature according to the technical design."
     send: false
 HANDOFF
@@ -609,7 +609,7 @@ HANDOFF
             cat << 'HANDOFF'
 handoffs:
   - label: "Run Validation"
-    agent: "flowspec-validate"
+    agent: "flow-validate"
     prompt: "Implementation is complete. Run QA validation, security review, and documentation checks."
     send: false
 HANDOFF
@@ -618,7 +618,7 @@ HANDOFF
             cat << 'HANDOFF'
 handoffs:
   - label: "Deploy to Production"
-    agent: "flowspec-operate"
+    agent: "flow-operate"
     prompt: "Validation is complete. Deploy the feature to production and configure operations."
     send: false
 HANDOFF
@@ -637,8 +637,8 @@ HANDOFF
 get_tools() {
     local role="$1"
 
-    # Full workflow tools for flowspec and role-based commands
-    if [[ "$role" == "flowspec" ]] || [[ "$role" =~ ^(pm|arch|dev|qa|sec|ops)$ ]]; then
+    # Full workflow tools for flow and role-based commands
+    if [[ "$role" == "flow" ]] || [[ "$role" =~ ^(pm|arch|dev|qa|sec|ops)$ ]]; then
         cat << 'TOOLS'
 tools:
   - "Read"
@@ -892,7 +892,7 @@ generate_vscode_settings() {
         "visibleInRoles": ["ops", "all"],
         "autoLoadInRoles": ["ops"]
       },
-      "flowspec-*": {
+      "flow-*": {
         "visibleInRoles": ["all"]
       },
       "speckit-*": {
@@ -919,8 +919,8 @@ cleanup_stale() {
     old_nullglob=$(shopt -p nullglob || true)
     shopt -s nullglob
 
-    # Remove old-format files (flowspec.*.md and speckit.*.md)
-    for old_file in "$AGENTS_DIR"/flowspec.*.md "$AGENTS_DIR"/speckit.*.md; do
+    # Remove old-format files (flow.*.md and speckit.*.md)
+    for old_file in "$AGENTS_DIR"/flow.*.md "$AGENTS_DIR"/speckit.*.md; do
         if [[ -f "$old_file" ]]; then
             if [[ "$FORCE" == true ]]; then
                 rm "$old_file"
@@ -942,7 +942,7 @@ cleanup_stale() {
 
         # Parse role and command from filename
         local role command
-        if [[ "$basename" =~ ^(pm|arch|dev|qa|sec|ops|flowspec|speckit)-(.+)$ ]]; then
+        if [[ "$basename" =~ ^(pm|arch|dev|qa|sec|ops|flow|speckit)-(.+)$ ]]; then
             role="${BASH_REMATCH[1]}"
             command="${BASH_REMATCH[2]}"
         else
@@ -1011,8 +1011,8 @@ main() {
     fi
 
     # Process legacy namespaces (if they exist)
-    if [[ -d "$COMMANDS_DIR/flowspec" ]]; then
-        process_namespace "flowspec" "$COMMANDS_DIR/flowspec"
+    if [[ -d "$COMMANDS_DIR/flow" ]]; then
+        process_namespace "flow" "$COMMANDS_DIR/flow"
     fi
     if [[ -d "$COMMANDS_DIR/speckit" ]]; then
         process_namespace "speckit" "$COMMANDS_DIR/speckit"

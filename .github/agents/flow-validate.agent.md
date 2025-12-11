@@ -1,5 +1,5 @@
 ---
-name: "flowspec-validate"
+name: "flow-validate"
 description: "Execute validation and quality assurance using QA, security, documentation, and release management agents."
 target: "chat"
 tools:
@@ -15,7 +15,7 @@ tools:
 
 handoffs:
   - label: "Deploy to Production"
-    agent: "flowspec-operate"
+    agent: "flow-operate"
     prompt: "Validation is complete. Deploy the feature to production and configure operations."
     send: false
 ---

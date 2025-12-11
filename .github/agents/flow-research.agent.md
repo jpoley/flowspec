@@ -1,5 +1,5 @@
 ---
-name: "flowspec-research"
+name: "flow-research"
 description: "Execute research and business validation workflow using specialized agents."
 target: "chat"
 tools:
@@ -15,7 +15,7 @@ tools:
 
 handoffs:
   - label: "Create Technical Design"
-    agent: "flowspec-plan"
+    agent: "flow-plan"
     prompt: "Research is complete. Create the technical architecture and platform design based on findings."
     send: false
 ---

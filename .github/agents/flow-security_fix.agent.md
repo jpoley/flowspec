@@ -1,5 +1,5 @@
 ---
-name: "flowspec-security_fix"
+name: "flow-security_fix"
 description: "Generate and apply security patches for vulnerability findings from triage results."
 target: "chat"
 tools:

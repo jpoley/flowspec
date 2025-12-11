@@ -1,5 +1,5 @@
 ---
-name: "flowspec-operate"
+name: "flow-operate"
 description: "Execute operations workflow using SRE agent for CI/CD, Kubernetes, DevSecOps, observability, and operational excellence."
 target: "chat"
 tools:

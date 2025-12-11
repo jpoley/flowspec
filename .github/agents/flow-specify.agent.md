@@ -1,5 +1,5 @@
 ---
-name: "flowspec-specify"
+name: "flow-specify"
 description: "Create or update feature specifications using PM planner agent (manages /speckit.tasks)."
 target: "chat"
 tools:
@@ -15,11 +15,11 @@ tools:
 
 handoffs:
   - label: "Conduct Research"
-    agent: "flowspec-research"
+    agent: "flow-research"
     prompt: "The specification is complete. Conduct research to validate technical feasibility and market fit."
     send: false
   - label: "Create Technical Design"
-    agent: "flowspec-plan"
+    agent: "flow-plan"
     prompt: "The specification is complete. Create the technical architecture and platform design."
     send: false
 ---

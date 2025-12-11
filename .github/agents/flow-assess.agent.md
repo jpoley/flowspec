@@ -1,5 +1,5 @@
 ---
-name: "flowspec-assess"
+name: "flow-assess"
 description: "Evaluate if SDD workflow is appropriate for a feature. Output: Full SDD workflow (complex), Spec-light mode (medium), Skip SDD (simple)."
 target: "chat"
 tools:
@@ -15,7 +15,7 @@ tools:
 
 handoffs:
   - label: "Specify Requirements"
-    agent: "flowspec-specify"
+    agent: "flow-specify"
     prompt: "The assessment is complete. Based on the assessment, create detailed product requirements."
     send: false
 ---

@@ -1,5 +1,5 @@
 ---
-name: "flowspec-plan"
+name: "flow-plan"
 description: "Execute planning workflow using project architect and platform engineer agents (builds out /speckit.constitution)."
 target: "chat"
 tools:
@@ -15,7 +15,7 @@ tools:
 
 handoffs:
   - label: "Begin Implementation"
-    agent: "flowspec-implement"
+    agent: "flow-implement"
     prompt: "Planning is complete. Begin implementing the feature according to the technical design."
     send: false
 ---

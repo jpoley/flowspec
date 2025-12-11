@@ -1,5 +1,5 @@
 ---
-name: "flowspec-security_web"
+name: "flow-security_web"
 description: "flowspec security_web workflow command"
 target: "chat"
 tools:

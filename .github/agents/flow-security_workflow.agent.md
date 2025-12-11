@@ -1,5 +1,5 @@
 ---
-name: "flowspec-security_workflow"
+name: "flow-security_workflow"
 description: "Integrate security scanning and remediation into the SDD workflow with automatic backlog task creation."
 target: "chat"
 tools:

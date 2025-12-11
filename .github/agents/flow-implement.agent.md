@@ -1,5 +1,5 @@
 ---
-name: "flowspec-implement"
+name: "flow-implement"
 description: "Execute implementation using specialized frontend and backend engineer agents with code review."
 target: "chat"
 tools:
@@ -15,7 +15,7 @@ tools:
 
 handoffs:
   - label: "Run Validation"
-    agent: "flowspec-validate"
+    agent: "flow-validate"
     prompt: "Implementation is complete. Run QA validation, security review, and documentation checks."
     send: false
 ---
