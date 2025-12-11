@@ -1,4 +1,4 @@
-# Flowspec / SpecFlow Agents Development Container
+# Flowspec / flowspec Agents Development Container
 # Published to Docker Hub: jpoley/flowspec-agents
 #
 # This Dockerfile builds a pre-configured development environment with:
@@ -60,7 +60,7 @@ RUN /home/vscode/.local/bin/uv tool install ruff \
 
 # Create shell configuration for PATH
 RUN mkdir -p /home/vscode/.config/claude \
-    && echo '# SpecFlow Agents PATH setup' > /home/vscode/.zshenv \
+    && echo '# flowspec Agents PATH setup' > /home/vscode/.zshenv \
     && echo 'export PNPM_HOME="/home/vscode/.local/share/pnpm"' >> /home/vscode/.zshenv \
     && echo 'export PATH="/home/vscode/.local/bin:$PNPM_HOME:$PATH"' >> /home/vscode/.zshenv
 
@@ -72,7 +72,7 @@ RUN echo '' >> /home/vscode/.zshrc \
     && echo '# alias gemini-yolo="gemini --yolo"' >> /home/vscode/.zshrc
 
 # Labels for Docker Hub
-LABEL org.opencontainers.image.title="SpecFlow Agents"
+LABEL org.opencontainers.image.title="flowspec Agents"
 LABEL org.opencontainers.image.description="Development container with AI coding assistants (Claude Code, Codex, Gemini, GitHub Copilot) and task management tools"
 LABEL org.opencontainers.image.source="https://github.com/jpoley/flowspec"
 LABEL org.opencontainers.image.vendor="jpoley"

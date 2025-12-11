@@ -1,5 +1,5 @@
 {
-  "name": "SpecFlow Agents Dev Environment",
+  "name": "flowspec Agents Dev Environment",
   "image": "jpoley/flowspec-agents:latest",
 
   "customizations": {
@@ -54,7 +54,7 @@
   },
 
   "postStartCommand": "cp /home/vscode/.gitconfig-host /home/vscode/.gitconfig 2>/dev/null || true; git config --global --add safe.directory ${containerWorkspaceFolder}",
-  "postAttachCommand": "echo '--- SpecFlow Agents Dev Environment Ready ---'",
+  "postAttachCommand": "echo '--- flowspec Agents Dev Environment Ready ---'",
 
   "remoteUser": "vscode"
 }

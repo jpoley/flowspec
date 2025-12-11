@@ -143,7 +143,7 @@ These agent personas are designed for specification-driven development using BMA
 - xUnit, NUnit, MSTest frameworks
 - Integration testing patterns
 - Test automation pipelines
-- BDD with SpecFlow
+- BDD with flowspec
 
 **Spec-Kit Approach**: Creates comprehensive testing specifications, defines quality gates, establishes test automation standards.
 

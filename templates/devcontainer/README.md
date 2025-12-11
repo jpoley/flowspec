@@ -1,4 +1,4 @@
-# SpecFlow Agents Devcontainer Template
+# flowspec Agents Devcontainer Template
 
 This template provides a pre-configured development environment with AI coding assistants.
 

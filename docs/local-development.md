@@ -74,8 +74,8 @@ uvx --from /path/to/flowspec specify init demo-anywhere --ai copilot --ignore-ag
 
 Set an environment variable for convenience:
 ```bash
-export SPECFLOW_SRC=/path/to/flowspec
-uvx --from "$SPECFLOW_SRC" specify init demo-env --ai copilot --ignore-agent-tools --script ps
+export flowspec_SRC=/path/to/flowspec
+uvx --from "$flowspec_SRC" specify init demo-env --ai copilot --ignore-agent-tools --script ps
 ```
 
 (Optional) Define a shell function:
