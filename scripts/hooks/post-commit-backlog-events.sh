@@ -58,7 +58,7 @@ while IFS= read -r file; do
     # Extract task ID from filename
     # Format: backlog/tasks/task-123.md or task-123 - Title.md
     BASENAME=$(basename "$file" .md)
-    TASK_ID=$(echo "$BASENAME" | sed -E 's/^(task-[0-9.]+)( - .*)?$/\1/')
+    TASK_ID=$(echo "$BASENAME" | sed -E 's/^(task-[0-9]+(\.[0-9]+)?)( - .*)?$/\1/')
 
     if [ -z "$TASK_ID" ]; then
         echo -e "${YELLOW}[post-commit-backlog-events] Could not extract task ID from: $file${NC}" >&2
