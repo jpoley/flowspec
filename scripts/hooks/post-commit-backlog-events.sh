@@ -43,7 +43,7 @@ else
 fi
 
 # Filter for backlog task files
-TASK_FILES=$(echo "$CHANGED_FILES" | grep -E '^backlog/tasks/task-.*\.md$' || true)
+TASK_FILES=$(echo "$CHANGED_FILES" | grep -E '^backlog/tasks/task-[0-9.]+\.md$' || true)
 
 if [ -z "$TASK_FILES" ]; then
     # No task files changed
