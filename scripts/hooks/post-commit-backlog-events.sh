@@ -60,8 +60,9 @@ while IFS= read -r file; do
     BASENAME=$(basename "$file" .md)
     TASK_ID=$(echo "$BASENAME" | sed -E 's/^(task-[0-9.]+)( - .*)?$/\1/')
 
-    if [ -z "$TASK_ID" ]; then
-        echo -e "${YELLOW}[post-commit-backlog-events] Could not extract task ID from: $file${NC}" >&2
+    # Validate TASK_ID: must match 'task-' followed by digits or dots
+    if [[ ! "$TASK_ID" =~ ^task-[0-9.]+$ ]]; then
+        echo -e "${YELLOW}[post-commit-backlog-events] Invalid or missing task ID extracted from: $file (got: '$TASK_ID')${NC}" >&2
         continue
     fi
 
