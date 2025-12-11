@@ -2,6 +2,8 @@ name: Docker Publish
 
 on:
   push:
+    tags:
+      - 'v*'  # Trigger on version tags (e.g., v0.2.349)
     branches: [main]
     paths:
       - '.devcontainer/Dockerfile'
@@ -49,6 +51,8 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
             type=sha,prefix=sha-
             type=ref,event=branch
 
@@ -83,10 +87,26 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      - name: Pull and verify image
+      - name: Determine image tag to verify
+        id: verify-tag
         run: |
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest zsh -c "
+          # For tag pushes, verify the version tag; otherwise verify latest
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            TAG="${{ github.ref_name }}"
+            # Remove 'v' prefix for semver tag (v0.2.349 -> 0.2.349)
+            TAG="${TAG#v}"
+          else
+            TAG="latest"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Will verify tag: $TAG"
+
+      - name: Pull and verify image
+        env:
+          VERIFY_TAG: ${{ steps.verify-tag.outputs.tag }}
+        run: |
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERIFY_TAG}
+          docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERIFY_TAG} zsh -c "
             echo '=== Verification ===' &&
             node --version &&
             pnpm --version &&
