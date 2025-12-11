@@ -135,9 +135,8 @@ while IFS= read -r file; do
             elif [ "$CURRENT_CHECKED" -lt "$PREV_CHECKED" ]; then
                 # AC was unchecked
                 echo -e "${GREEN}[post-commit-backlog-events] AC unchecked for $TASK_ID${NC}" >&2
-                # Note: Using task.ac_checked for both check and uncheck since the event exists
-                # A more complete implementation would have task.ac_unchecked
-                specify hooks emit task.ac_checked --task-id "$TASK_ID" --project-root "$PROJECT_ROOT" 2>&1 | sed 's/^/  /'
+                # Emit task.ac_unchecked event for AC uncheck action
+                specify hooks emit task.ac_unchecked --task-id "$TASK_ID" --project-root "$PROJECT_ROOT" 2>&1 | sed 's/^/  /'
                 EVENTS_EMITTED=$((EVENTS_EMITTED + 1))
             fi
         fi
