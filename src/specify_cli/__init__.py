@@ -599,14 +599,12 @@ BANNER = """
 """
 
 # Version - keep in sync with pyproject.toml
-__version__ = "0.2.352"
+__version__ = "0.2.353"
 
 # Constitution template version
 CONSTITUTION_VERSION = "1.0.0"
 
-TAGLINE = (
-    f"(flowspec v{__version__}) built on spec-kit & backlog.md - Spec-Driven Development with a Backlog"
-)
+TAGLINE = f"(flowspec v{__version__}) built on spec-kit & backlog.md - Spec-Driven Development with a Backlog"
 
 # Repository configuration for two-stage download
 BASE_REPO_OWNER = "github"
