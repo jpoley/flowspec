@@ -1,11 +1,11 @@
 ---
 id: task-204.01
 title: Create git hook to emit events on backlog task file changes
-status: To Do
+status: Done
 assignee:
-  - '@galway'
+  - '@backend-engineer'
 created_date: '2025-12-03 02:19'
-updated_date: '2025-12-04 04:01'
+updated_date: '2025-12-11 20:51'
 labels:
   - hooks
   - git
@@ -62,12 +62,22 @@ Hook emits: specify hooks emit task.completed --task-id task-123
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Git hook script created at scripts/hooks/post-commit-backlog-events.sh
-- [ ] #2 Hook detects new task files and emits task.created
-- [ ] #3 Hook detects status changes and emits task.status_changed
-- [ ] #4 Hook detects Done status and emits task.completed
-- [ ] #5 Hook detects AC checkbox changes and emits task.ac_checked
-- [ ] #6 Hook is idempotent (safe to run multiple times)
-- [ ] #7 Documentation explains setup and limitations
-- [ ] #8 Integration test with mock git repo
+- [x] #1 Git hook script created at scripts/hooks/post-commit-backlog-events.sh
+- [x] #2 Hook detects new task files and emits task.created
+- [x] #3 Hook detects status changes and emits task.status_changed
+- [x] #4 Hook detects Done status and emits task.completed
+- [x] #5 Hook detects AC checkbox changes and emits task.ac_checked
+- [x] #6 Hook is idempotent (safe to run multiple times)
+- [x] #7 Documentation explains setup and limitations
+- [x] #8 Integration test with mock git repo
 <!-- AC:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+1. Create post-commit hook script with event detection logic
+2. Implement file parsing for task status, ACs, and metadata
+3. Add event emission via specify hooks emit
+4. Write integration tests with mock git repo
+5. Create documentation for setup and usage
+<!-- SECTION:PLAN:END -->
