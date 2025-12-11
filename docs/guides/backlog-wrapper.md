@@ -130,7 +130,6 @@ bk task create "My task"
 # Output:
 # Created task task-123
 # File: /path/to/backlog/tasks/task-123 - My-task.md
-# Emitting event: task.created (task: task-123)  # Added by wrapper
 # No hooks matched this event                     # From hooks system
 ```
 
