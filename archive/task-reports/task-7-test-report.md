@@ -294,7 +294,7 @@ Used where appropriate:
 **Rating: 10/10**
 
 ✅ **Realistic Test Data:**
-- Based on actual jp-spec-kit format
+- Based on actual flowspec format
 - Multiple phases (Setup, Foundational, User Stories, Polish)
 - Real-world task descriptions
 - Typical dependency patterns
@@ -309,7 +309,7 @@ Used where appropriate:
 4. ✅ CI/CD ready
 
 ### Future Enhancements
-1. **Integration with real projects**: Test against actual jp-spec-kit projects
+1. **Integration with real projects**: Test against actual flowspec projects
 2. **Stress testing**: Test with 100+ tasks
 3. **Concurrent operations**: Test file locking if multiple processes write
 4. **Performance benchmarks**: Track test execution time over releases
@@ -349,14 +349,14 @@ The comprehensive test suite provides:
 
 ### Files Delivered
 
-1. `/home/jpoley/ps/jp-spec-kit/tests/__init__.py`
-2. `/home/jpoley/ps/jp-spec-kit/tests/conftest.py` (13 fixtures)
-3. `/home/jpoley/ps/jp-spec-kit/tests/test_parser.py` (35 tests)
-4. `/home/jpoley/ps/jp-spec-kit/tests/test_writer.py` (36 tests)
-5. `/home/jpoley/ps/jp-spec-kit/tests/test_dependency_graph.py` (31 tests)
-6. `/home/jpoley/ps/jp-spec-kit/tests/test_mapper.py` (29 tests)
-7. `/home/jpoley/ps/jp-spec-kit/tests/test_cli_tasks.py` (23 tests)
-8. Updated `/home/jpoley/ps/jp-spec-kit/pyproject.toml` (added pytest dev dependencies)
+1. `/home/jpoley/ps/flowspec/tests/__init__.py`
+2. `/home/jpoley/ps/flowspec/tests/conftest.py` (13 fixtures)
+3. `/home/jpoley/ps/flowspec/tests/test_parser.py` (35 tests)
+4. `/home/jpoley/ps/flowspec/tests/test_writer.py` (36 tests)
+5. `/home/jpoley/ps/flowspec/tests/test_dependency_graph.py` (31 tests)
+6. `/home/jpoley/ps/flowspec/tests/test_mapper.py` (29 tests)
+7. `/home/jpoley/ps/flowspec/tests/test_cli_tasks.py` (23 tests)
+8. Updated `/home/jpoley/ps/flowspec/pyproject.toml` (added pytest dev dependencies)
 
 **Total Test Lines:** ~2,400 lines of comprehensive test code
 

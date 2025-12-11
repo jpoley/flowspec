@@ -20,14 +20,14 @@ priority: high
 - [x] AC5: Document validation modes with examples
 - [x] AC6: Include rework/rollback transition handling
 - [x] AC7: Add troubleshooting section for validation failures
-- [x] AC8: Cross-reference jpspec_workflow.yml for programmatic lookup
+- [x] AC8: Cross-reference flowspec_workflow.yml for programmatic lookup
 <!-- AC:END -->
 
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
 ## Summary
-Create comprehensive documentation of the complete jpspec workflow showing all artifacts, transitions, and validation modes.
+Create comprehensive documentation of the complete flowspec workflow showing all artifacts, transitions, and validation modes.
 
 ## Documentation Deliverable
 
@@ -36,7 +36,7 @@ Create `docs/reference/workflow-artifact-flow.md`:
 ### Workflow Pipeline Diagram
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│                    JPSpec Workflow Pipeline with Artifacts                    │
+│                    Flowspec Workflow Pipeline with Artifacts                    │
 └──────────────────────────────────────────────────────────────────────────────┘
 
  ┌─────────┐      ┌─────────┐      ┌─────────┐      ┌─────────┐
@@ -86,13 +86,13 @@ Create `docs/reference/workflow-artifact-flow.md`:
 
 | # | From State | To State | Command | Input Artifacts | Output Artifacts | Validation |
 |---|------------|----------|---------|-----------------|------------------|------------|
-| 1 | To Do | Assessed | /jpspec:assess | (none) | Assessment Report | NONE |
-| 2 | Assessed | Specified | /jpspec:specify | Assessment Report | PRD, Backlog Tasks | NONE |
-| 3 | Specified | Researched | /jpspec:research | PRD | Research Report, Business Validation | NONE |
-| 4 | Researched | Planned | /jpspec:plan | PRD, Research Report | ADRs | NONE |
-| 5 | Planned | In Implementation | /jpspec:implement | ADRs | Code, Tests, AC Coverage | NONE |
-| 6 | In Implementation | Validated | /jpspec:validate | Tests, AC Coverage | QA Report, Security Report | NONE |
-| 7 | Validated | Deployed | /jpspec:operate | QA Report, Security Report | Deployment Manifest | NONE |
+| 1 | To Do | Assessed | /flowspec:assess | (none) | Assessment Report | NONE |
+| 2 | Assessed | Specified | /flowspec:specify | Assessment Report | PRD, Backlog Tasks | NONE |
+| 3 | Specified | Researched | /flowspec:research | PRD | Research Report, Business Validation | NONE |
+| 4 | Researched | Planned | /flowspec:plan | PRD, Research Report | ADRs | NONE |
+| 5 | Planned | In Implementation | /flowspec:implement | ADRs | Code, Tests, AC Coverage | NONE |
+| 6 | In Implementation | Validated | /flowspec:validate | Tests, AC Coverage | QA Report, Security Report | NONE |
+| 7 | Validated | Deployed | /flowspec:operate | QA Report, Security Report | Deployment Manifest | NONE |
 | 8 | Deployed | Done | manual | (all prior) | (completed) | NONE |
 
 ### Artifact Location Reference

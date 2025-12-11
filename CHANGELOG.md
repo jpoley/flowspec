@@ -80,19 +80,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 🎉 Major Architecture Change: Layered Extension Model
 
-JP Spec Kit is now a **layered extension** of GitHub's spec-kit, not a fork!
+Flowspec is now a **layered extension** of GitHub's spec-kit, not a fork!
 
 #### Added
 
 - **Two-Stage Download Architecture**: 
   - Downloads base spec-kit from `github/spec-kit` (Layer 1)
-  - Overlays jp-spec-kit extensions from `jpoley/jp-spec-kit` (Layer 2)
+  - Overlays flowspec extensions from `jpoley/flowspec` (Layer 2)
   - Extension overrides base where conflicts exist
   - Enabled by default with `--layered` flag
 
 - **Version Pinning Support**:
   - `--base-version <version>` - Pin base spec-kit to specific version
-  - `--extension-version <version>` - Pin jp-spec-kit extension to specific version
+  - `--extension-version <version>` - Pin flowspec extension to specific version
   - Defaults to "latest" for both
   - Enables reproducible builds and CI/CD integration
 
@@ -113,14 +113,14 @@ JP Spec Kit is now a **layered extension** of GitHub's spec-kit, not a fork!
   BASE_REPO_OWNER = "github"
   BASE_REPO_NAME = "spec-kit"
   EXTENSION_REPO_OWNER = "jpoley"
-  EXTENSION_REPO_NAME = "jp-spec-kit"
+  EXTENSION_REPO_NAME = "flowspec"
   ```
 
 #### Changed
 
 - **`specify init` Now Uses Two-Stage Download by Default**:
-  - Automatically downloads both base spec-kit and jp-spec-kit extension
-  - Use `--no-layered` to download only jp-spec-kit (legacy mode)
+  - Automatically downloads both base spec-kit and flowspec extension
+  - Use `--no-layered` to download only flowspec (legacy mode)
   - Tracker shows separate stages: fetch-base, fetch-extension, extract-base, extract-extension, merge
 
 - **Enhanced `download_template_from_github()`**:
@@ -136,7 +136,7 @@ JP Spec Kit is now a **layered extension** of GitHub's spec-kit, not a fork!
 #### Benefits
 
 - ✅ **Stay current** with upstream spec-kit features via `specify upgrade`
-- ✅ **Customizable** - Keep jp-spec-kit extensions while getting base updates
+- ✅ **Customizable** - Keep flowspec extensions while getting base updates
 - ✅ **Reproducible** - Pin versions for stable CI/CD builds
 - ✅ **Safe** - Automatic backups before upgrades
 - ✅ **Transparent** - See exactly what's downloaded (base vs extension)
@@ -151,7 +151,7 @@ JP Spec Kit is now a **layered extension** of GitHub's spec-kit, not a fork!
 
 #### Migration
 
-Existing jp-spec-kit projects can upgrade:
+Existing flowspec projects can upgrade:
 ```bash
 cd your-project
 specify upgrade

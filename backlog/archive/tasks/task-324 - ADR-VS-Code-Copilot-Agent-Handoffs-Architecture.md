@@ -15,7 +15,7 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Architecture Decision Record for implementing VS Code Copilot agent support with handoffs for JP Spec Kit's SDD workflow
+Architecture Decision Record for implementing VS Code Copilot agent support with handoffs for Flowspec's SDD workflow
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

@@ -472,7 +472,7 @@ class TestBackwardCompatibility:
 class TestAllCommandsCovered:
     """Tests for AC #8: All 7 commands implement checks."""
 
-    JPSPEC_COMMANDS = [
+    FLOWSPEC_COMMANDS = [
         "assess",
         "specify",
         "research",
@@ -485,27 +485,27 @@ class TestAllCommandsCovered:
     def test_all_commands_defined_in_config(self, sample_config):
         """All flowspec commands are defined in workflow config."""
         workflows = sample_config["workflows"]
-        for cmd in self.JPSPEC_COMMANDS:
+        for cmd in self.FLOWSPEC_COMMANDS:
             assert cmd in workflows, f"Command '{cmd}' not in workflow config"
 
     def test_all_commands_have_input_states(self, config_file):
         """All commands have input_states defined."""
         guard = WorkflowStateGuard(config_file)
-        for cmd in self.JPSPEC_COMMANDS:
+        for cmd in self.FLOWSPEC_COMMANDS:
             states = guard.get_input_states(cmd)
             assert len(states) > 0, f"Command '{cmd}' has no input_states"
 
     def test_all_commands_have_output_state(self, config_file):
         """All commands have output_state defined."""
         guard = WorkflowStateGuard(config_file)
-        for cmd in self.JPSPEC_COMMANDS:
+        for cmd in self.FLOWSPEC_COMMANDS:
             state = guard.get_output_state(cmd)
             assert state is not None, f"Command '{cmd}' has no output_state"
 
     def test_all_commands_can_be_validated(self, config_file):
         """All commands can be validated through state guard."""
         guard = WorkflowStateGuard(config_file)
-        for cmd in self.JPSPEC_COMMANDS:
+        for cmd in self.FLOWSPEC_COMMANDS:
             input_states = guard.get_input_states(cmd)
             valid_state = input_states[0] if input_states else "Unknown"
 

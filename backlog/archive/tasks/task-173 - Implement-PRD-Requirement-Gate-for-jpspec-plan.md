@@ -1,6 +1,6 @@
 ---
 id: task-173
-title: 'Implement PRD Requirement Gate for /jpspec:plan'
+title: 'Implement PRD Requirement Gate for /flowspec:plan'
 status: To Do
 assignee: []
 created_date: '2025-11-30 20:05'
@@ -51,11 +51,11 @@ Implement a quality gate requiring a validated PRD (Product Requirements Documen
 
 ## Acceptance Criteria
 - [ ] AC1: Create PRD template at templates/prd-template.md
-- [ ] AC2: Update /jpspec:specify to output PRD to ./docs/prd/{feature}.md
-- [ ] AC3: Add PRD existence check to /jpspec:plan entry gate
+- [ ] AC2: Update /flowspec:specify to output PRD to ./docs/prd/{feature}.md
+- [ ] AC3: Add PRD existence check to /flowspec:plan entry gate
 - [ ] AC4: Implement PRD structural validation (required sections present)
 - [ ] AC5: Add validation_mode config flag (human_review | pr_review | auto)
-- [ ] AC6: Update jpspec_workflow.yml with prd_required: true for plan workflow
+- [ ] AC6: Update flowspec_workflow.yml with prd_required: true for plan workflow
 
 ## Dependencies
 - task-172 (Workflow Artifacts Specification)

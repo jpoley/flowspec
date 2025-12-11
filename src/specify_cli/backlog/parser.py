@@ -1,8 +1,8 @@
 """
-Task parser for jp-spec-kit format.
+Task parser for flowspec format.
 
 Parses tasks from spec.md, plan.md, and tasks.md files following the
-jp-spec-kit task format conventions.
+flowspec task format conventions.
 """
 
 import re
@@ -13,7 +13,7 @@ from typing import Optional
 
 @dataclass
 class Task:
-    """Represents a single task parsed from jp-spec-kit format."""
+    """Represents a single task parsed from flowspec format."""
 
     task_id: str  # e.g., "T001", "T002"
     description: str  # Task description
@@ -57,7 +57,7 @@ class Task:
 
 
 class TaskParser:
-    """Parser for jp-spec-kit task format."""
+    """Parser for flowspec task format."""
 
     # Regex pattern for task format:
     # - [ ] T001 [P] [US1] Task description with file path
@@ -310,7 +310,7 @@ class TaskParser:
 # Convenience function for quick parsing
 def parse_tasks(file_path: Path) -> list[Task]:
     """
-    Parse tasks from a jp-spec-kit tasks.md file.
+    Parse tasks from a flowspec tasks.md file.
 
     Args:
         file_path: Path to tasks.md file

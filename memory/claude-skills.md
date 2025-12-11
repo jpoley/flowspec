@@ -1,6 +1,6 @@
 # Claude Code Skills
 
-JP Spec Kit includes 5 core Skills that Claude automatically invokes based on task context. Skills differ from slash commands in that they are **model-invoked** (automatic) rather than user-invoked (manual).
+Flowspec includes 5 core Skills that Claude automatically invokes based on task context. Skills differ from slash commands in that they are **model-invoked** (automatic) rather than user-invoked (manual).
 
 ## How Skills Work
 

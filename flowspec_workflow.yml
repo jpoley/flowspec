@@ -11,7 +11,7 @@
 #   - Roles: VS Code Copilot role-based command namespaces
 #
 # Configuration Version: 2.0
-# Compatible with: jp-spec-kit v0.1.0+
+# Compatible with: flowspec v0.1.0+
 #
 # References:
 #   - docs/reference/artifact-path-patterns.md

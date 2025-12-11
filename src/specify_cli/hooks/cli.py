@@ -1,4 +1,4 @@
-"""CLI commands for jp-spec-kit hooks system.
+"""CLI commands for flowspec hooks system.
 
 This module provides CLI commands for event emission, hook validation,
 and hook management. Integrates with the main specify CLI via typer.

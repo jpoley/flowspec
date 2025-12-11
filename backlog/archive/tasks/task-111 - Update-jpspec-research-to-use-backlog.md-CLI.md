@@ -1,13 +1,13 @@
 ---
 id: task-111
-title: 'Update /jpspec:research to use backlog.md CLI'
+title: 'Update /flowspec:research to use backlog.md CLI'
 status: Done
 assignee:
   - '@claude-agent'
 created_date: '2025-11-28 16:56'
 updated_date: '2025-11-29 05:16'
 labels:
-  - jpspec
+  - flowspec
   - backlog-integration
   - research
   - P1
@@ -30,18 +30,18 @@ Modify the research.md command to integrate backlog.md task management. Research
 - [x] #3 Researcher creates research spike tasks in backlog
 - [x] #4 Business Validator creates validation tasks in backlog
 - [x] #5 Agents add research findings as implementation notes to tasks
-- [x] #6 Test: Run /jpspec:research and verify research tasks created with findings
+- [x] #6 Test: Run /flowspec:research and verify research tasks created with findings
 <!-- AC:END -->
 
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
-Implemented /jpspec:research backlog.md integration.
+Implemented /flowspec:research backlog.md integration.
 
 ## Changes
 
 ### research.md Updates
-- Added {{INCLUDE:.claude/commands/jpspec/_backlog-instructions.md}} directive to both Phase 1 (Researcher) and Phase 2 (Business Validator) agent prompts
+- Added {{INCLUDE:.claude/commands/flowspec/_backlog-instructions.md}} directive to both Phase 1 (Researcher) and Phase 2 (Business Validator) agent prompts
 - Used <!--BACKLOG-INSTRUCTIONS-START--> and <!--BACKLOG-INSTRUCTIONS-END--> markers consistent with plan.md pattern
 - Maintains existing specialized research/validation task creation instructions alongside shared instructions
 
@@ -54,7 +54,7 @@ Implemented /jpspec:research backlog.md integration.
   - test_shared_instructions_include_count
 
 ## Verification
-- All 37 tests in test_jpspec_research_backlog.py pass
+- All 37 tests in test_flowspec_research_backlog.py pass
 - Ruff check passes on modified files
 
 ## Pre-existing Functionality Verified

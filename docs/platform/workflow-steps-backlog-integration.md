@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive platform engineering design for integrating JPSpec workflow steps into the backlog.md task management system, transforming it from a simple Kanban board into a workflow-aware development platform.
+This document provides a comprehensive platform engineering design for integrating Flowspec workflow steps into the backlog.md task management system, transforming it from a simple Kanban board into a workflow-aware development platform.
 
 ### Key Objectives
 
@@ -59,7 +59,7 @@ This document provides a comprehensive platform engineering design for integrati
 - Filtering by status, label, assignee
 - MCP integration for AI-powered task management
 
-**JPSpec Workflow System:**
+**Flowspec Workflow System:**
 - 9 states: To Do → Assessed → Specified → Researched → Planned → In Implementation → Validated → Deployed → Done
 - 7 workflow commands: `/flow:assess`, `/flow:specify`, `/flow:research`, `/flow:plan`, `/flow:implement`, `/flow:validate`, `/flow:operate`
 - Configuration in `flowspec_workflow.yml` (or future location TBD)
@@ -472,7 +472,7 @@ backlog board --show-transitions
 **Output Example** (`backlog board --workflow`):
 
 ```
-JPSpec Workflow Board: jp-spec-kit
+Flowspec Workflow Board: flowspec
 ═══════════════════════════════════════════════════════════════════════════════
 
 To Do          │ Assessed       │ Specified      │ Planned        │ In Implementation
@@ -712,7 +712,7 @@ To Do (2)      │ Assessed (1)  │ Specified (1) │ Planned (1)   │ In Impl
 ```
 User runs: /flow:specify user-auth
 
-1. JPSpec Command Execution
+1. Flowspec Command Execution
    ┌─────────────────────────────────────┐
    │ /flow:specify                     │
    │ • Validates current state: "Assessed"│
@@ -1178,7 +1178,7 @@ To Do  │ Assessed │ Specified │ Planned │ In Implementation │ Validate
 
 ```yaml
 # Project Configuration
-project_name: "jp-spec-kit"
+project_name: "flowspec"
 default_status: "To Do"
 
 # Workflow Integration
@@ -1242,7 +1242,7 @@ backlog board --workflow
 
 ### Auto-Configuration on `specify init`
 
-When initializing a new jp-spec-kit project:
+When initializing a new flowspec project:
 
 ```bash
 specify init my-project --agent claude
@@ -1346,7 +1346,7 @@ statuses: ["To Do", "Assessed", "Specified", "Researched", "Planned", "In Implem
 **Acceptance Criteria**:
 - [ ] Invalid transitions are blocked
 - [ ] Override flag works with logging
-- [ ] JPSpec commands update task status
+- [ ] Flowspec commands update task status
 - [ ] History is persisted correctly
 
 ---
@@ -1418,7 +1418,7 @@ statuses: ["To Do", "Assessed", "Specified", "Researched", "Planned", "In Implem
 **Title**: VIII. Workflow-Driven Task Management
 
 **Description**:
-All features MUST follow the JPSpec workflow pipeline, with state tracked and enforced through the backlog system.
+All features MUST follow the Flowspec workflow pipeline, with state tracked and enforced through the backlog system.
 
 **Requirements**:
 - **State Visibility**: Every task's workflow state is visible in the backlog
@@ -1689,7 +1689,7 @@ To Do  │ Planned  │ In Progress  │ Done
 
 ### Full SDD Workflow (Complex Projects)
 
-See `docs/reference/workflow-artifact-flow.md` for the complete 9-state workflow used in jp-spec-kit.
+See `docs/reference/workflow-artifact-flow.md` for the complete 9-state workflow used in flowspec.
 
 ---
 

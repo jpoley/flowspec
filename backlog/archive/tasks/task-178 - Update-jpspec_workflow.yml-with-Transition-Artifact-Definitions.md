@@ -1,6 +1,6 @@
 ---
 id: task-178
-title: Update jpspec_workflow.yml with Transition Artifact Definitions
+title: Update flowspec_workflow.yml with Transition Artifact Definitions
 status: Done
 assignee: []
 created_date: '2025-11-30 21:33'
@@ -28,7 +28,7 @@ priority: high
 
 <!-- SECTION:NOTES:BEGIN -->
 ## Summary
-Update the jpspec_workflow.yml configuration to include all transition definitions with input/output artifacts and validation modes.
+Update the flowspec_workflow.yml configuration to include all transition definitions with input/output artifacts and validation modes.
 
 ## Schema Updates
 
@@ -36,7 +36,7 @@ Update the jpspec_workflow.yml configuration to include all transition definitio
 ```yaml
 states:
   - "To Do"        # Initial state
-  - "Assessed"     # NEW: After /jpspec:assess
+  - "Assessed"     # NEW: After /flowspec:assess
   - "Specified"
   - "Researched"  
   - "Planned"
@@ -50,7 +50,7 @@ states:
 ```yaml
 workflows:
   assess:
-    command: "/jpspec:assess"
+    command: "/flowspec:assess"
     description: "Evaluate SDD workflow suitability (Full/Light/Skip)"
     agents:
       - name: "workflow-assessor"

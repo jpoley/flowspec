@@ -1,6 +1,6 @@
 # Constitution Troubleshooting Guide
 
-Comprehensive troubleshooting for common issues with Constitution distribution, validation, and enforcement in jp-spec-kit.
+Comprehensive troubleshooting for common issues with Constitution distribution, validation, and enforcement in flowspec.
 
 ## Table of Contents
 
@@ -817,7 +817,7 @@ jobs:
       - name: Install Flowspec
         run: |
           pip install uv
-          uv tool install jp-spec-kit
+          uv tool install flowspec
 
       - name: Validate constitution
         run: |

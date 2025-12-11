@@ -16,7 +16,7 @@ priority: medium
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Implement high-priority Claude Code hooks for jp-spec-kit. Phase 1: Sensitive file protection (PreToolUse), Git command safety validator (PreToolUse), Auto-format Python (PostToolUse), Auto-lint Python (PostToolUse). Phase 2: Version consistency checker, Git commit message validator, Destructive command confirmation.
+Implement high-priority Claude Code hooks for flowspec. Phase 1: Sensitive file protection (PreToolUse), Git command safety validator (PreToolUse), Auto-format Python (PostToolUse), Auto-lint Python (PostToolUse). Phase 2: Version consistency checker, Git commit message validator, Destructive command confirmation.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

@@ -154,7 +154,7 @@ Sigstore Attestation
 
 **File Naming Convention:** `task-{id} - {Title-Kebab-Case}.md`
 
-**Location:** `/home/jpoley/ps/jp-spec-kit/backlog/tasks/`
+**Location:** `/home/jpoley/ps/flowspec/backlog/tasks/`
 
 ### Phase 1: Discovery (Tasks 012-016) - CRITICAL
 
@@ -496,20 +496,20 @@ Sigstore Attestation
 
 ### Feature Documentation
 
-1. **/home/jpoley/ps/jp-spec-kit/features/satellite-mode/spec.md**
+1. **/home/jpoley/ps/flowspec/features/satellite-mode/spec.md**
    - Complete PRD with DVF+V analysis (15,000+ words)
    - User stories, acceptance criteria, success metrics
    - Compliance mapping (SLSA, NIST, SOC2)
    - Non-functional requirements
 
-2. **/home/jpoley/ps/jp-spec-kit/features/satellite-mode/architecture.md**
+2. **/home/jpoley/ps/flowspec/features/satellite-mode/architecture.md**
    - Technical architecture with Architect Elevator principles (12,000+ words)
    - Clean architecture layers, security design, compliance architecture
    - Detailed component designs (provider registry, secret manager, sync engine)
    - Mermaid diagrams for architecture, security, compliance
    - ADRs, extension points, testing strategy
 
-3. **/home/jpoley/ps/jp-spec-kit/features/satellite-mode/tasks.md**
+3. **/home/jpoley/ps/flowspec/features/satellite-mode/tasks.md**
    - Intermediate task list (42 tasks, 7 phases)
    - Dependency graph (Mermaid diagram)
    - Parallelization analysis, risk management
@@ -517,7 +517,7 @@ Sigstore Attestation
 
 ### Task Files (42 total)
 
-All task files created in `/home/jpoley/ps/jp-spec-kit/backlog/tasks/`:
+All task files created in `/home/jpoley/ps/flowspec/backlog/tasks/`:
 
 **Phase 1 (Discovery):** task-012 to task-016
 **Phase 2 (Design):** task-017 to task-022
@@ -570,9 +570,9 @@ Each task file includes:
 
 ### A. Related Documents
 
-- **Original Idea:** `/home/jpoley/ps/jp-spec-kit/backlog/docs/idea.md`
-- **Project Config:** `/home/jpoley/ps/jp-spec-kit/backlog/config.yml`
-- **Existing Tasks:** `/home/jpoley/ps/jp-spec-kit/backlog/tasks/task-001` to `task-011`
+- **Original Idea:** `/home/jpoley/ps/flowspec/backlog/docs/idea.md`
+- **Project Config:** `/home/jpoley/ps/flowspec/backlog/config.yml`
+- **Existing Tasks:** `/home/jpoley/ps/flowspec/backlog/tasks/task-001` to `task-011`
 
 ### B. Tools & Libraries
 

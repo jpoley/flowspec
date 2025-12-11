@@ -1,8 +1,8 @@
-# JP Spec Kit - Transformation Summary
+# Flowspec - Transformation Summary
 
 ## What We Did
 
-Transformed jp-spec-kit from a **fork** into a **layered extension** of GitHub's spec-kit.
+Transformed flowspec from a **fork** into a **layered extension** of GitHub's spec-kit.
 
 ## The 5 Steps
 
@@ -25,13 +25,13 @@ Transformed jp-spec-kit from a **fork** into a **layered extension** of GitHub's
 
 ### ✅ Step 4: Compatibility Matrix
 - Created `.spec-kit-compatibility.yml`
-- Declares which jp-spec-kit versions work with which spec-kit versions
+- Declares which flowspec versions work with which spec-kit versions
 - Documents tested, recommended, min, and max versions
 - Result: Clear compatibility tracking
 
 ### ✅ Step 5: Plugin Manifest
 - Created `.specify-plugin.yml`
-- Declares jp-spec-kit as a layered extension
+- Declares flowspec as a layered extension
 - Lists provided commands, languages, merge strategies
 - Result: Foundation for future plugin system
 
@@ -143,7 +143,7 @@ specify upgrade --dry-run
 ## Open Questions (Answered)
 
 1. ✅ **Architecture choice**: Layered extension (not fork)
-2. ✅ **Upgrade strategy**: Pull from both upstream AND jp-spec-kit
+2. ✅ **Upgrade strategy**: Pull from both upstream AND flowspec
 3. ⏳ **Multi-agent support**: Defer to later (per user request)
 
 ## Success Criteria
@@ -159,13 +159,13 @@ specify upgrade --dry-run
 
 ## Impact
 
-**Before**: jp-spec-kit was a fork that couldn't easily sync with upstream.
+**Before**: flowspec was a fork that couldn't easily sync with upstream.
 
-**After**: jp-spec-kit is a layered extension that:
+**After**: flowspec is a layered extension that:
 - Automatically stays current with spec-kit
 - Adds custom features without forking
 - Supports upgrades via `specify upgrade`
 - Enables version pinning for stability
 - Provides foundation for plugin ecosystem
 
-This is a **major architectural improvement** that positions jp-spec-kit as a true extension rather than a divergent fork. 🎉
+This is a **major architectural improvement** that positions flowspec as a true extension rather than a divergent fork. 🎉

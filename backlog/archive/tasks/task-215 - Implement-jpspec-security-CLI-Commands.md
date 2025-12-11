@@ -1,6 +1,6 @@
 ---
 id: task-215
-title: 'Implement /jpspec:security CLI Commands'
+title: 'Implement /flowspec:security CLI Commands'
 status: Done
 assignee:
   - '@pm-planner'
@@ -20,10 +20,10 @@ Build CLI interface for all four security subcommands (scan, triage, fix, audit)
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Implement /jpspec:security scan with --tool, --config, --fail-on flags
-- [ ] #2 Implement /jpspec:security triage with --interactive, --min-severity flags
-- [ ] #3 Implement /jpspec:security fix with --apply, --dry-run, --finding flags
-- [ ] #4 Implement /jpspec:security audit with --format, --compliance flags
+- [ ] #1 Implement /flowspec:security scan with --tool, --config, --fail-on flags
+- [ ] #2 Implement /flowspec:security triage with --interactive, --min-severity flags
+- [ ] #3 Implement /flowspec:security fix with --apply, --dry-run, --finding flags
+- [ ] #4 Implement /flowspec:security audit with --format, --compliance flags
 - [ ] #5 Exit codes: 0 (clean), 1 (findings), 2 (error)
 - [ ] #6 Progress indicators for long-running scans
 <!-- AC:END -->

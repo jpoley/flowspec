@@ -45,13 +45,13 @@ When working on spec-kit:
 3. Test script functionality in the `scripts/` directory
 4. Ensure memory files (`memory/constitution.md`) are updated if major process changes are made
 
-## Development Setup for jp-spec-kit
+## Development Setup for flowspec
 
-jp-spec-kit can use its own `/speckit.*` and `/flow:*` commands during development. This ensures developers test the same commands that users receive.
+flowspec can use its own `/speckit.*` and `/flow:*` commands during development. This ensures developers test the same commands that users receive.
 
 ### Quick Setup
 
-Run the dev-setup command in the jp-spec-kit repository root:
+Run the dev-setup command in the flowspec repository root:
 
 ```bash
 specify dev-setup
@@ -87,7 +87,7 @@ For detailed workflows, troubleshooting, and advanced scenarios, see [Dev-Setup 
 
 ### How It Works
 
-The jp-spec-kit repository contains a `.jp-spec-kit-source` marker file that:
+The flowspec repository contains a `.flowspec-source` marker file that:
 - Prevents `specify init` from accidentally overwriting source files
 - Prevents `specify upgrade` from clobbering development work
 - Identifies the repository as the source (not a project created by `specify init`)

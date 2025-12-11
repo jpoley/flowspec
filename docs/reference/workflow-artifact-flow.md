@@ -1,12 +1,12 @@
-# JPSpec Workflow Artifact Flow
+# Flowspec Workflow Artifact Flow
 
-This document provides comprehensive documentation of the JPSpec workflow pipeline, including all states, transitions, artifacts, and validation modes.
+This document provides comprehensive documentation of the Flowspec workflow pipeline, including all states, transitions, artifacts, and validation modes.
 
 ## Workflow Pipeline Diagram
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│                    JPSpec Workflow Pipeline with Artifacts                    │
+│                    Flowspec Workflow Pipeline with Artifacts                    │
 └──────────────────────────────────────────────────────────────────────────────┘
 
                               ┌───────────┐
@@ -65,7 +65,7 @@ This document provides comprehensive documentation of the JPSpec workflow pipeli
 
 ## Workflow States
 
-The JPSpec workflow consists of 9 states:
+The Flowspec workflow consists of 9 states:
 
 | # | State | Description |
 |---|-------|-------------|

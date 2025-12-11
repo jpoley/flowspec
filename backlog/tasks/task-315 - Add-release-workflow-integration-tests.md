@@ -53,7 +53,7 @@ Create integration tests for the release workflow to prevent regression.
 <!-- SECTION:NOTES:BEGIN -->
 ## Implementation Complete (v2)
 
-**PR**: https://github.com/jpoley/jp-spec-kit/pull/637
+**PR**: https://github.com/jpoley/flowspec/pull/637
 **Branch**: 315-workflow-tests
 **Commit**: 9c9ed91
 

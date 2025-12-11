@@ -1,7 +1,7 @@
 """Workflow configuration and validation module.
 
 This module provides workflow configuration loading, validation, and
-transition schema definitions for JPSpec workflows.
+transition schema definitions for Flowspec workflows.
 
 Key components:
 - WorkflowConfig: Load and query workflow configuration from YAML

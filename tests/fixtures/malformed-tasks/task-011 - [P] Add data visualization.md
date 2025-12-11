@@ -31,7 +31,7 @@ This task can be worked on in parallel with other parallelizable tasks.
   PROBLEMS:
   1. Filename contains [P] - breaks filesystem and parsing
   2. Title field has unquoted [P] - YAML interprets [ ] as array syntax
-  3. The [P] marker from jp-spec-kit should NOT be in Backlog.md titles
+  3. The [P] marker from flowspec should NOT be in Backlog.md titles
 
   CORRECT APPROACH:
   - Title should be: "Add data visualization" (no [P])

@@ -4,17 +4,17 @@
 Accepted
 
 ## Context
-The `.mcp.json` configuration file contained hardcoded absolute paths (e.g., `/Users/jasonpoley/ps/jp-spec-kit`) that prevented the configuration from working on other machines or when the repository is cloned to a different location.
+The `.mcp.json` configuration file contained hardcoded absolute paths (e.g., `/Users/jasonpoley/ps/flowspec`) that prevented the configuration from working on other machines or when the repository is cloned to a different location.
 
 ## Decision
 Replace hardcoded absolute paths with the `${PWD}` environment variable, which resolves to the current working directory at runtime.
 
 ### Changes Made
-- Serena MCP server `--project` argument: `/Users/jasonpoley/ps/jp-spec-kit` → `${PWD}`
+- Serena MCP server `--project` argument: `/Users/jasonpoley/ps/flowspec` → `${PWD}`
 
 ## Alternatives Considered
 
-1. **Custom environment variables** (e.g., `$JPSPEC_ROOT`)
+1. **Custom environment variables** (e.g., `$FLOWSPEC_ROOT`)
    - Pros: Explicit, user-controlled
    - Cons: Requires manual setup, another thing to configure
 

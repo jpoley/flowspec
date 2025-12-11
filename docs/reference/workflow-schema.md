@@ -230,7 +230,7 @@ workflows:
 
 ```yaml
 version: "1.0"
-description: "Default JP Spec Kit specification-driven development workflow"
+description: "Default Flowspec specification-driven development workflow"
 
 states:
   - name: "Specified"

@@ -20,7 +20,7 @@ Design the handoff configuration for VS Code Copilot agents that maps to SDD wor
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Handoff configuration defined for all 7 jpspec workflow commands
+- [ ] #1 Handoff configuration defined for all 7 flowspec workflow commands
 - [ ] #2 Handoff labels use consistent format with checkmarks and arrows
 - [ ] #3 All handoff targets reference valid agent names
 - [ ] #4 Speckit commands correctly have no handoffs (utilities)

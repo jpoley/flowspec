@@ -842,7 +842,7 @@ README* @{{ DOCS_OWNER }}
 # Tests
 /tests/ @{{ TEST_OWNER }}
 
-# Templates (if using jp-spec-kit patterns)
+# Templates (if using flowspec patterns)
 /templates/ @{{ TEMPLATE_OWNER }}
 
 # Security-sensitive files (require extra scrutiny)
@@ -956,7 +956,7 @@ config:
       - '**/*.toml'
       - '**/*.json'
 
-# Template changes (jp-spec-kit specific)
+# Template changes (flowspec specific)
 templates:
   - changed-files:
     - any-glob-to-any-file: 'templates/**/*'

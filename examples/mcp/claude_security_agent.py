@@ -17,7 +17,7 @@ IMPORTANT: This example demonstrates the request/response flow but does NOT:
 For production usage, see docs/guides/security-mcp-integration.md
 
 Requirements:
-    - JP Spec Kit installed: uv tool install . --force
+    - Flowspec installed: uv tool install . --force
     - MCP SDK installed: uv add mcp
     - Security scanners available: pip install semgrep
 

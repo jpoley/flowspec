@@ -57,11 +57,11 @@ Done                    →   Done
 
 ## Workflow State Machine
 
-### Full JPSpec Workflow
+### Full Flowspec Workflow
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     JPSPEC WORKFLOW STATES                      │
+│                     FLOWSPEC WORKFLOW STATES                      │
 └─────────────────────────────────────────────────────────────────┘
 
     ┌─────────┐
@@ -662,7 +662,7 @@ Hint: Run /flow:plan first
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    /JPSPEC COMMAND                          │
+│                    /FLOWSPEC COMMAND                          │
 │                   (e.g., /flow:implement)                 │
 └───────────────────────┬─────────────────────────────────────┘
                         │

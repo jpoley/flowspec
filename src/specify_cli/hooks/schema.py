@@ -1,4 +1,4 @@
-"""Hook definition schema for jp-spec-kit hooks.
+"""Hook definition schema for flowspec hooks.
 
 This module defines the structure and validation logic for hook definitions
 in .specify/hooks/hooks.yaml. Hooks define event matchers, execution methods,
@@ -449,7 +449,7 @@ class HooksConfig:
 # JSON Schema for hooks.yaml validation
 HOOKS_CONFIG_JSON_SCHEMA = {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "JP Spec Kit Hooks Configuration",
+    "title": "Flowspec Hooks Configuration",
     "type": "object",
     "required": ["version", "hooks"],
     "properties": {

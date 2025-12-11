@@ -1,4 +1,4 @@
-# JP Spec Kit Workflow Configuration - Design Specification
+# Flowspec Workflow Configuration - Design Specification
 
 **Date**: 2025-11-28
 **Branch**: workflow-config-design
@@ -10,7 +10,7 @@ This document specifies the design for a workflow configuration system that sync
 
 ## Problem Statement
 
-The JP Spec Kit has two workflow systems that need synchronization:
+The Flowspec has two workflow systems that need synchronization:
 
 1. **Agent Loop Workflow** (`/flowspec` commands)
    - 6 commands: specify, research, plan, implement, validate, operate
@@ -53,7 +53,7 @@ backlog.md states            ← Reflect workflow phase
 ### File Structure
 
 ```
-jp-spec-kit/
+flowspec/
 ├── flowspec_workflow.yml                 ← Configuration (new)
 ├── memory/
 │   ├── WORKFLOW_DESIGN_SPEC.md        ← This file
@@ -82,7 +82,7 @@ jp-spec-kit/
 
 ```yaml
 version: "1.0"
-description: "Default JP Spec Kit specification-driven development workflow"
+description: "Default Flowspec specification-driven development workflow"
 
 # Custom backlog.md states (beyond default To Do/Done)
 states:

@@ -1,4 +1,4 @@
-# JP Spec Kit - Claude Code Plugin
+# Flowspec - Claude Code Plugin
 
 A comprehensive Spec-Driven Development (SDD) toolkit designed specifically for Claude Code users. This plugin provides workflow commands, specialized agents, and integrated tools to streamline your entire software development lifecycle.
 
@@ -44,26 +44,26 @@ C, C++, C#, Go, Java, Kotlin, Python, Rust, TypeScript/JavaScript, Dart/Flutter
 ### Method 1: From GitHub (Recommended)
 ```bash
 # Install directly from GitHub repository
-/plugin install jpoley/jp-spec-kit
+/plugin install jpoley/flowspec
 ```
 
 ### Method 2: Add Marketplace First
 ```bash
 # Add the marketplace
-/plugin marketplace add jpoley/jp-spec-kit
+/plugin marketplace add jpoley/flowspec
 
 # Then install the plugin
-/plugin install jp-spec-kit
+/plugin install flowspec
 ```
 
 ### Method 3: Local Development
 ```bash
 # Clone the repository
-git clone https://github.com/jpoley/jp-spec-kit.git
-cd jp-spec-kit
+git clone https://github.com/jpoley/flowspec.git
+cd flowspec
 
 # Install from local path
-/plugin install /path/to/jp-spec-kit
+/plugin install /path/to/flowspec
 ```
 
 ## 🚀 Quick Start
@@ -74,7 +74,7 @@ After installing, verify the plugin is working:
 /plugin list
 ```
 
-You should see `jp-spec-kit` in the list of installed plugins.
+You should see `flowspec` in the list of installed plugins.
 
 ### 2. Start a New Feature
 Begin with specification:
@@ -259,7 +259,7 @@ Both distributions provide the same core functionality!
 
 ### Update the Plugin
 ```bash
-/plugin update jp-spec-kit
+/plugin update flowspec
 ```
 
 ## 🐛 Troubleshooting
@@ -267,8 +267,8 @@ Both distributions provide the same core functionality!
 ### Plugin Not Found
 ```bash
 # Reinstall from GitHub
-/plugin remove jp-spec-kit
-/plugin install jpoley/jp-spec-kit
+/plugin remove flowspec
+/plugin install jpoley/flowspec
 ```
 
 ### Commands Not Working
@@ -329,9 +329,9 @@ Run validation throughout development, not just at the end:
 ## 🤝 Support
 
 ### Get Help
-- **Issues**: [GitHub Issues](https://github.com/jpoley/jp-spec-kit/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/jpoley/jp-spec-kit/discussions)
-- **Documentation**: [Main Docs](https://github.com/jpoley/jp-spec-kit)
+- **Issues**: [GitHub Issues](https://github.com/jpoley/flowspec/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/jpoley/flowspec/discussions)
+- **Documentation**: [Main Docs](https://github.com/jpoley/flowspec)
 
 ### Contributing
 Contributions welcome! See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
@@ -352,4 +352,4 @@ Built with:
 
 **Version**: 0.0.20
 **Author**: Jason Poley
-**Repository**: [github.com/jpoley/jp-spec-kit](https://github.com/jpoley/jp-spec-kit)
+**Repository**: [github.com/jpoley/flowspec](https://github.com/jpoley/flowspec)

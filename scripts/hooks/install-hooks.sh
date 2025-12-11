@@ -1,5 +1,5 @@
 #!/bin/bash
-# Install git hooks for jp-spec-kit
+# Install git hooks for flowspec
 # Run from repository root: ./scripts/hooks/install-hooks.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

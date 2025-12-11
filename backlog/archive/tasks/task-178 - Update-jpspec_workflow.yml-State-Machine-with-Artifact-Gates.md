@@ -1,6 +1,6 @@
 ---
 id: task-178
-title: Update jpspec_workflow.yml State Machine with Artifact Gates
+title: Update flowspec_workflow.yml State Machine with Artifact Gates
 status: To Do
 assignee: []
 created_date: '2025-11-30 20:07'
@@ -18,7 +18,7 @@ priority: high
 
 <!-- SECTION:NOTES:BEGIN -->
 ## Summary
-Update the jpspec_workflow.yml configuration to include the new assess workflow and artifact requirement gates for each transition.
+Update the flowspec_workflow.yml configuration to include the new assess workflow and artifact requirement gates for each transition.
 
 ## Schema Updates
 
@@ -28,7 +28,7 @@ Add "Assessed" state between entry and "Specified":
 ```yaml
 states:
   - "To Do"        # Initial state
-  - "Assessed"     # NEW: After /jpspec:assess
+  - "Assessed"     # NEW: After /flowspec:assess
   - "Specified"
   - "Researched"
   - "Planned"
@@ -42,7 +42,7 @@ states:
 ```yaml
 workflows:
   assess:
-    command: "/jpspec:assess"
+    command: "/flowspec:assess"
     description: "Evaluate SDD workflow suitability (Full/Light/Skip)"
     agents:
       - name: "workflow-assessor"

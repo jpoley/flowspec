@@ -38,7 +38,7 @@ def _is_active_template(filename: str) -> bool:
 
 @pytest.fixture
 def source_repo_root() -> Path:
-    """Return path to jp-spec-kit source repository root."""
+    """Return path to flowspec source repository root."""
     return Path(__file__).parent.parent
 
 
@@ -488,7 +488,7 @@ class TestTemplateCompleteness:
         orphan_templates = template_files - symlink_files
 
         assert len(orphan_templates) == 0, (
-            f"Jpspec templates without symlinks:\n{', '.join(sorted(orphan_templates))}"
+            f"Flowspec templates without symlinks:\n{', '.join(sorted(orphan_templates))}"
         )
 
     def test_all_speckit_templates_have_symlinks(

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""PostToolUse hook: Auto-emit jp-spec-kit events when /flowspec commands complete.
+"""PostToolUse hook: Auto-emit flowspec events when /flowspec commands complete.
 
 This hook intercepts SlashCommand tool completions and emits corresponding
-jp-spec-kit events to trigger user-configured hooks in .specify/hooks/.
+flowspec events to trigger user-configured hooks in .specify/hooks/.
 
 Event Mapping:
     /flow:assess    → workflow.assessed

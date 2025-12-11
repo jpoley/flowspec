@@ -134,7 +134,7 @@ The Flowspec hook observability system provides comprehensive visibility into ho
     "completed_at": "2025-12-02T15:31:15.456Z"
   },
   "execution_context": {
-    "working_directory": "/home/jpoley/ps/jp-spec-kit",
+    "working_directory": "/home/jpoley/ps/flowspec",
     "environment_keys": ["PYTEST_ARGS"],
     "pid": 12345,
     "user": "jpoley",
@@ -177,7 +177,7 @@ The Flowspec hook observability system provides comprehensive visibility into ho
     "completed_at": "2025-12-02T16:00:00.005Z"
   },
   "execution_context": {
-    "working_directory": "/home/jpoley/ps/jp-spec-kit",
+    "working_directory": "/home/jpoley/ps/flowspec",
     "environment_keys": [],
     "pid": 12346,
     "user": "jpoley",
@@ -283,7 +283,7 @@ defaults:
   "details": {
     "script_path": ".specify/hooks/run-tests.sh",
     "script_args": [],
-    "working_directory": "/home/jpoley/ps/jp-spec-kit",
+    "working_directory": "/home/jpoley/ps/flowspec",
     "environment": {
       "PYTEST_ARGS": "-v --cov=src",
       "FEATURE_NAME": "authentication"
@@ -407,7 +407,7 @@ specify hooks audit --format csv --output audit-report.csv
 
 **Example Output**:
 ```
-Audit Log: /home/jpoley/ps/jp-spec-kit/.specify/hooks/audit.log
+Audit Log: /home/jpoley/ps/flowspec/.specify/hooks/audit.log
 ==================================================================
 
 2025-12-02 15:31:15  implement.completed  run-tests       ✓ success  (30.3s)

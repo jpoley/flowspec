@@ -237,7 +237,7 @@ def generate_gitlab_ci(
 # Template for GitHub Security Code Scanning integration README
 GITHUB_SECURITY_README = """# GitHub Code Scanning Integration
 
-This project uses JP Spec Kit security scanning with GitHub Code Scanning.
+This project uses Flowspec security scanning with GitHub Code Scanning.
 
 ## How it works
 

@@ -4,7 +4,7 @@ docs: recover dev-setup architecture (all review issues fixed)
 
 The `specify dev-setup` command has significant gaps compared to what `specify init` installs into target projects. This document provides a comprehensive analysis of the differences between:
 
-1. **jp-spec-kit source repo** (dev-setup installation at `./jp-spec-kit`)
+1. **flowspec source repo** (dev-setup installation at `./flowspec`)
 2. **nanofuse project** (normal `specify init` installation at `./nanofuse`)
 
 **Critical Finding**: The dev-setup command only sets up `speckit` symlinks but completely ignores `flowspec` commands and many other components that are installed during `specify init`.
@@ -15,10 +15,10 @@ The `specify dev-setup` command has significant gaps compared to what `specify i
 
 ### Step 1: Understanding the dev-setup Command Implementation
 
-**Location**: `jp-spec-kit/src/specify_cli/__init__.py:2499-2630`
+**Location**: `flowspec/src/specify_cli/__init__.py:2499-2630`
 
 **What it does:**
-1. Checks for `.jp-spec-kit-source` marker file
+1. Checks for `.flowspec-source` marker file
 2. Creates `.claude/commands/speckit/` directory
 3. Creates symlinks from `speckit/*.md` → `templates/commands/*.md`
 4. Verifies symlinks work
@@ -49,14 +49,14 @@ The `specify dev-setup` command has significant gaps compared to what `specify i
 ├── speckit.plan.md          (2886 bytes)
 ├── speckit.specify.md       (11533 bytes)
 ├── speckit.tasks.md         (6713 bytes)
-└── speckit.taskstoissues.md (1067 bytes)   ← MISSING FROM JP-SPEC-KIT
+└── speckit.taskstoissues.md (1067 bytes)   ← MISSING FROM flowspec
 ```
 
 - **15 command files total**
 - **Flat file structure** with dot notation (e.g., `flowspec.implement.md`)
 - All files are actual files, not symlinks
 
-#### JP-Spec-Kit dev-setup Installation
+#### flowspec dev-setup Installation
 ```
 .claude/commands/
 ├── flowspec/                          ← Subdirectory structure
@@ -92,8 +92,8 @@ There are **THREE different versions** of flowspec commands:
 | Location | Files | Content |
 |----------|-------|---------|
 | `nanofuse/.claude/commands/flow.*.md` | 6 files | From release package, small/simple |
-| `jp-spec-kit/templates/commands/flowspec/` | 6 files | Templates for release, small/simple |
-| `jp-spec-kit/.claude/commands/flow/` | 9 files | Enhanced for development, 3-7x larger |
+| `flowspec/templates/commands/flowspec/` | 6 files | Templates for release, small/simple |
+| `flowspec/.claude/commands/flow/` | 9 files | Enhanced for development, 3-7x larger |
 
 **MD5 Hash Comparison (implement.md):**
 ```
@@ -102,12 +102,12 @@ templates:       94f6876d82379e85ce89ab1772f3c92a  (2945 bytes)
 .claude actual:  c20b339affedc24243167e0f0f552da4  (19960 bytes)
 ```
 
-All three are different! The version jp-spec-kit uses for development (`.claude/commands/flow/`) is NOT what gets distributed.
+All three are different! The version flowspec uses for development (`.claude/commands/flow/`) is NOT what gets distributed.
 
 ### Step 4: Missing Files from dev-setup Setup
 
 #### Missing Command: `speckit.taskstoissues.md`
-- Present in nanofuse but not in jp-spec-kit templates
+- Present in nanofuse but not in flowspec templates
 - Creates GitHub issues from tasks.md
 - **Not part of dev-setup setup**
 
@@ -160,7 +160,7 @@ All three are different! The version jp-spec-kit uses for development (`.claude/
     └── partials/
 ```
 
-**JP-spec-kit has:**
+**flowspec has:**
 - NO `.specify/` directory (expected for source repo)
 - `memory/` at root level with only 2 files (vs 9 in nanofuse)
 - `scripts/` at root level with different structure
@@ -179,7 +179,7 @@ All three are different! The version jp-spec-kit uses for development (`.claude/
 - README.md
 - WORKFLOW_DESIGN_SPEC.md
 
-**JP-spec-kit `memory/` (2 files):**
+**flowspec `memory/` (2 files):**
 - constitution.md
 - WORKFLOW_DESIGN_SPEC.md
 
@@ -195,7 +195,7 @@ All three are different! The version jp-spec-kit uses for development (`.claude/
 └── constitution.md  (1812 bytes)
 ```
 
-**JP-spec-kit `.claude/`:**
+**flowspec `.claude/`:**
 ```
 .claude/
 ├── agents/
@@ -213,7 +213,7 @@ All three are different! The version jp-spec-kit uses for development (`.claude/
 **Key differences:**
 - Different CLAUDE.md content
 - Different command structure (flat vs subdirs)
-- jp-spec-kit has extra agent files
+- flowspec has extra agent files
 
 ---
 
@@ -234,7 +234,7 @@ speckit_commands_dir.mkdir(parents=True, exist_ok=True)
 
 ### Issue 2: flowspec Content Divergence (CRITICAL)
 
-**Problem**: The flowspec commands used for jp-spec-kit development are 3-7x larger than the template versions, with extensive backlog integration that is NOT distributed to end users.
+**Problem**: The flowspec commands used for flowspec development are 3-7x larger than the template versions, with extensive backlog integration that is NOT distributed to end users.
 
 **File Size Comparison:**
 | File | Templates | .claude | Ratio |
@@ -245,7 +245,7 @@ speckit_commands_dir.mkdir(parents=True, exist_ok=True)
 | research.md | 3202 bytes | 15025 bytes | 4.7x |
 | validate.md | 3029 bytes | 15945 bytes | 5.3x |
 
-**Impact**: End users get a vastly inferior experience compared to what jp-spec-kit developers use.
+**Impact**: End users get a vastly inferior experience compared to what flowspec developers use.
 
 ### Issue 3: Missing flowspec Commands in Templates
 
@@ -258,7 +258,7 @@ speckit_commands_dir.mkdir(parents=True, exist_ok=True)
 
 ### Issue 4: Missing speckit Command in Templates
 
-**Problem**: `speckit.taskstoissues.md` exists in nanofuse installation but NOT in jp-spec-kit templates.
+**Problem**: `speckit.taskstoissues.md` exists in nanofuse installation but NOT in flowspec templates.
 
 **Impact**: The "tasks to GitHub issues" feature is not available to end users.
 
@@ -268,13 +268,13 @@ speckit_commands_dir.mkdir(parents=True, exist_ok=True)
 
 **Evidence**:
 - nanofuse: `.claude/commands/speckit.implement.md` (dot notation)
-- jp-spec-kit: `.claude/commands/speckit/implement.md` (subdirectory)
+- flowspec: `.claude/commands/speckit/implement.md` (subdirectory)
 
 **Impact**: Different command invocation syntax depending on installation method.
 
 ### Issue 6: Missing Memory Files
 
-**Problem**: jp-spec-kit `memory/` has only 2 files vs 9 files installed by `specify init`.
+**Problem**: flowspec `memory/` has only 2 files vs 9 files installed by `specify init`.
 
 **Missing files:**
 - claude-hooks.md
@@ -291,7 +291,7 @@ speckit_commands_dir.mkdir(parents=True, exist_ok=True)
 
 ## Root Cause Analysis
 
-The fundamental problem is that jp-spec-kit has **two parallel command systems**:
+The fundamental problem is that flowspec has **two parallel command systems**:
 
 1. **Templates** (`templates/commands/`) - Simple, minimal versions for distribution
 2. **Actual** (`.claude/commands/`) - Enhanced versions with backlog integration
@@ -299,7 +299,7 @@ The fundamental problem is that jp-spec-kit has **two parallel command systems**
 The dev-setup command was designed to only link the `speckit` commands, assuming flowspec was "already available" (per CONTRIBUTING.md). However, the flowspec commands in `.claude/commands/flow/` have evolved independently and are now completely different from the templates.
 
 This creates a **dual-source-of-truth problem** where:
-- Developers working on jp-spec-kit get the enhanced commands
+- Developers working on flowspec get the enhanced commands
 - End users installing via `specify init` get the minimal template versions
 
 ---
@@ -346,7 +346,7 @@ Update both dev-setup and init commands to use the same convention.
 
 ### Fix 5: Sync Memory Files
 
-Update jp-spec-kit `memory/` directory to include all files that get installed via `specify init`:
+Update flowspec `memory/` directory to include all files that get installed via `specify init`:
 - claude-hooks.md
 - code-standards.md
 - critical-rules.md
@@ -376,12 +376,12 @@ Update jp-spec-kit `memory/` directory to include all files that get installed v
 
 | File | Purpose |
 |------|---------|
-| `jp-spec-kit/src/specify_cli/__init__.py` | Main CLI code including dev-setup command |
-| `jp-spec-kit/CONTRIBUTING.md` | Documentation about dev-setuping |
-| `jp-spec-kit/.jp-spec-kit-source` | Marker file for source repo |
-| `jp-spec-kit/.claude/commands/` | Active command files |
-| `jp-spec-kit/templates/commands/` | Templates for distribution |
-| `jp-spec-kit/memory/` | Memory/context files |
+| `flowspec/src/specify_cli/__init__.py` | Main CLI code including dev-setup command |
+| `flowspec/CONTRIBUTING.md` | Documentation about dev-setuping |
+| `flowspec/.flowspec-source` | Marker file for source repo |
+| `flowspec/.claude/commands/` | Active command files |
+| `flowspec/templates/commands/` | Templates for distribution |
+| `flowspec/memory/` | Memory/context files |
 | `nanofuse/.claude/commands/` | Installed commands (for comparison) |
 | `nanofuse/.specify/` | Installed specify directory structure |
 
@@ -396,4 +396,4 @@ The dev-setup setup is fundamentally incomplete. It was designed as a quick work
 3. Creates a different command structure than what end users get
 4. Missing several files and commands that are installed via `specify init`
 
-This needs to be fixed to ensure jp-spec-kit developers have the same experience as end users, and that improvements made during development are properly propagated to the release templates.
+This needs to be fixed to ensure flowspec developers have the same experience as end users, and that improvements made during development are properly propagated to the release templates.

@@ -1,6 +1,6 @@
-"""Agent Hooks system for jp-spec-kit.
+"""Agent Hooks system for flowspec.
 
-This module provides event-driven hook functionality for the jp-spec-kit
+This module provides event-driven hook functionality for the flowspec
 workflow system. Hooks enable automation of quality gates, notifications,
 and integrations with external tools.
 

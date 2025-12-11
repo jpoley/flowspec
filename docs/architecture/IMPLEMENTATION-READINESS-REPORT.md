@@ -29,7 +29,7 @@ The comprehensive architecture for resolving the dev-setup command divergence pr
 
 ### 1. Strategic Framing (Penthouse View) ✅
 
-**Location**: `/home/jpoley/ps/jp-spec-kit/docs/architecture/dev-setup-single-source-of-truth.md` (Section 1)
+**Location**: `/home/jpoley/ps/flowspec/docs/architecture/dev-setup-single-source-of-truth.md` (Section 1)
 
 **Contents**:
 - Current state architecture problems (with diagrams)
@@ -47,7 +47,7 @@ The comprehensive architecture for resolving the dev-setup command divergence pr
 
 ### 2. Architectural Blueprint (Engine Room View) ✅
 
-**Location**: `/home/jpoley/ps/jp-spec-kit/docs/architecture/dev-setup-single-source-of-truth.md` (Section 2)
+**Location**: `/home/jpoley/ps/flowspec/docs/architecture/dev-setup-single-source-of-truth.md` (Section 2)
 
 **Contents**:
 - Proposed directory structure (ASCII diagrams)
@@ -75,7 +75,7 @@ templates/commands/          ← SINGLE SOURCE OF TRUTH
 ### 3. Architecture Decision Records ✅
 
 **ADR-001: Single Source of Truth for Commands**
-- **Location**: `/home/jpoley/ps/jp-spec-kit/docs/architecture/adr-001-single-source-of-truth.md`
+- **Location**: `/home/jpoley/ps/flowspec/docs/architecture/adr-001-single-source-of-truth.md`
 - **Size**: 238 lines, 8.2KB
 - **Status**: Proposed
 - **Decision**: Move enhanced commands to templates/, use symlinks for dev-setup
@@ -83,7 +83,7 @@ templates/commands/          ← SINGLE SOURCE OF TRUTH
 - **Rationale**: Best long-term solution, eliminates sync overhead
 
 **ADR-002: Directory Structure Convention**
-- **Location**: `/home/jpoley/ps/jp-spec-kit/docs/architecture/adr-002-directory-structure.md`
+- **Location**: `/home/jpoley/ps/flowspec/docs/architecture/adr-002-directory-structure.md`
 - **Size**: 364 lines, 9.9KB
 - **Status**: Proposed
 - **Decision**: Use subdirectory structure (flowspec/implement.md) over flat (flowspec.implement.md)
@@ -92,7 +92,7 @@ templates/commands/          ← SINGLE SOURCE OF TRUTH
 - **Migration**: Script provided (`migrate-commands-to-subdirs.sh`)
 
 **ADR-003: Shared Content Strategy**
-- **Location**: `/home/jpoley/ps/jp-spec-kit/docs/architecture/adr-003-shared-content-strategy.md`
+- **Location**: `/home/jpoley/ps/flowspec/docs/architecture/adr-003-shared-content-strategy.md`
 - **Size**: 392 lines, 13KB
 - **Status**: Proposed
 - **Decision**: Separate file with textual references (not inline, not preprocessing)
@@ -106,7 +106,7 @@ templates/commands/          ← SINGLE SOURCE OF TRUTH
 
 ### 4. Component Design ✅
 
-**Location**: `/home/jpoley/ps/jp-spec-kit/docs/architecture/dev-setup-single-source-of-truth.md` (Section 4)
+**Location**: `/home/jpoley/ps/flowspec/docs/architecture/dev-setup-single-source-of-truth.md` (Section 4)
 
 **Components Designed**:
 
@@ -140,7 +140,7 @@ templates/commands/          ← SINGLE SOURCE OF TRUTH
 
 ### 5. Migration Plan ✅
 
-**Location**: `/home/jpoley/ps/jp-spec-kit/docs/architecture/dev-setup-single-source-of-truth.md` (Section 5)
+**Location**: `/home/jpoley/ps/flowspec/docs/architecture/dev-setup-single-source-of-truth.md` (Section 5)
 
 **Phases Defined**:
 
@@ -166,7 +166,7 @@ templates/commands/          ← SINGLE SOURCE OF TRUTH
 
 ### 6. Constitution Principles ✅
 
-**Location**: `/home/jpoley/ps/jp-spec-kit/docs/architecture/dev-setup-single-source-of-truth.md` (Section 6)
+**Location**: `/home/jpoley/ps/flowspec/docs/architecture/dev-setup-single-source-of-truth.md` (Section 6)
 
 **Principles Documented**:
 1. Single Source of Truth for Commands
@@ -351,18 +351,18 @@ Labels: architecture, adr
 ## References
 
 ### Architecture Documents
-- Main Architecture: `/home/jpoley/ps/jp-spec-kit/docs/architecture/dev-setup-single-source-of-truth.md`
-- ADR-001: `/home/jpoley/ps/jp-spec-kit/docs/architecture/adr-001-single-source-of-truth.md`
-- ADR-002: `/home/jpoley/ps/jp-spec-kit/docs/architecture/adr-002-directory-structure.md`
-- ADR-003: `/home/jpoley/ps/jp-spec-kit/docs/architecture/adr-003-shared-content-strategy.md`
-- Architecture Index: `/home/jpoley/ps/jp-spec-kit/docs/architecture/README.md`
+- Main Architecture: `/home/jpoley/ps/flowspec/docs/architecture/dev-setup-single-source-of-truth.md`
+- ADR-001: `/home/jpoley/ps/flowspec/docs/architecture/adr-001-single-source-of-truth.md`
+- ADR-002: `/home/jpoley/ps/flowspec/docs/architecture/adr-002-directory-structure.md`
+- ADR-003: `/home/jpoley/ps/flowspec/docs/architecture/adr-003-shared-content-strategy.md`
+- Architecture Index: `/home/jpoley/ps/flowspec/docs/architecture/README.md`
 
 ### Backlog Tasks
 - Task Range: task-267 through task-279
 - View all: `backlog task list --plain | grep "task-26[7-9]\|task-27[0-9]"`
 
 ### Problem Analysis
-- Original Analysis: `/home/jpoley/ps/jp-spec-kit/docs/fix-dev-setup.md`
+- Original Analysis: `/home/jpoley/ps/flowspec/docs/fix-dev-setup.md`
 
 ---
 

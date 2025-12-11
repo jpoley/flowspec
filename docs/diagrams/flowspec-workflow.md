@@ -1,4 +1,4 @@
-# JP Spec Kit Workflow Diagram
+# Flowspec Workflow Diagram
 
 This diagram visualizes the complete `/flowspec` command structure, showing all slash commands and their sub-agent invocations with execution patterns.
 

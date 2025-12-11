@@ -40,8 +40,8 @@ Comprehensive E2E tests covering full workflow: event emission -> hook matching 
    - Store in tests/e2e/fixtures/hooks/
 
 2. Write command → event tests
-   - Test: /jpspec:implement → implement.completed event
-   - Test: /jpspec:specify → spec.created event
+   - Test: /flowspec:implement → implement.completed event
+   - Test: /flowspec:specify → spec.created event
    - Test: backlog task edit → task.status_changed event
    - Verify event payload structure and fields
 

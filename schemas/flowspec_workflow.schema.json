@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://jp-spec-kit/schemas/flowspec_workflow.schema.json",
+  "$id": "https://flowspec/schemas/flowspec_workflow.schema.json",
   "title": "Flowspec Workflow Configuration",
   "description": "Schema for validating flowspec_workflow.yml configuration files that define the spec-driven development workflow state machine, workflows, transitions, agent assignments, and role-based command namespaces for VS Code Copilot.",
   "type": "object",

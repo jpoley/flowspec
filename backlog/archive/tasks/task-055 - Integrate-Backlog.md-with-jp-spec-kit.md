@@ -1,6 +1,6 @@
 ---
 id: task-055
-title: Integrate Backlog.md with jp-spec-kit
+title: Integrate Backlog.md with flowspec
 status: Done
 assignee: []
 created_date: '2025-11-24 01:11'

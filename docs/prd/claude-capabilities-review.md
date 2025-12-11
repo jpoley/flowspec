@@ -807,10 +807,10 @@ No `permissions.deny` rules means Claude Code can read:
 
 **Evidence**:
 - 4 CLAUDE.md files in hierarchical structure:
-  1. `/home/jpoley/ps/jp-spec-kit/CLAUDE.md` - Project root
-  2. `/home/jpoley/ps/jp-spec-kit/src/CLAUDE.md` - Source code context
-  3. `/home/jpoley/ps/jp-spec-kit/scripts/CLAUDE.md` - Script execution guidance
-  4. `/home/jpoley/ps/jp-spec-kit/backlog/CLAUDE.md` - Task management workflow
+  1. `/home/jpoley/ps/flowspec/CLAUDE.md` - Project root
+  2. `/home/jpoley/ps/flowspec/src/CLAUDE.md` - Source code context
+  3. `/home/jpoley/ps/flowspec/scripts/CLAUDE.md` - Script execution guidance
+  4. `/home/jpoley/ps/flowspec/backlog/CLAUDE.md` - Task management workflow
 
 **Content Quality**:
 - ✅ Comprehensive project overview
@@ -917,7 +917,7 @@ JP Flowspec contains all components of a comprehensive plugin:
 
 **Plugin Package Vision**:
 ```
-jp-spec-kit-plugin/
+flowspec-plugin/
 ├── .claude-plugin/
 │   ├── manifest.json
 │   └── marketplace.json
@@ -1613,10 +1613,10 @@ done
 **Marketplace Entry**:
 ```json
 {
-  "name": "jp-spec-kit",
+  "name": "flowspec",
   "description": "Spec-Driven Development (SDD) workflow for AI agents",
   "author": "Peregrine Summit",
-  "repository": "https://github.com/jpoley/jp-spec-kit",
+  "repository": "https://github.com/jpoley/flowspec",
   "version": "1.0.0"
 }
 ```

@@ -18,7 +18,7 @@ priority: low
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Create PowerShell version of flush-backlog.sh for Windows users, maintaining feature parity with the bash version. This enables cross-platform support for the jp-spec-kit distribution.
+Create PowerShell version of flush-backlog.sh for Windows users, maintaining feature parity with the bash version. This enables cross-platform support for the flowspec distribution.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

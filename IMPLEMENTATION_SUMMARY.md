@@ -326,4 +326,4 @@ Status: Pushed to remote
 Generated: 2025-12-09
 Task: task-365
 Branch: feat/task-365-cicd-validation
-Working Directory: /home/jpoley/ps/jp-spec-kit-task-365
+Working Directory: /home/jpoley/ps/flowspec-task-365

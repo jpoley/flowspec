@@ -2,7 +2,7 @@
 
 ## specify_cli/
 
-The main CLI package for JP Spec Kit.
+The main CLI package for Flowspec.
 
 ## Code Standards
 

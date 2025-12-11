@@ -20,7 +20,7 @@ priority: low
 <!-- SECTION:DESCRIPTION:BEGIN -->
 Experiment with Output Styles for different SDD workflow phases (PM, Architect, QA personas). This is exploratory work to assess value.
 
-Cross-reference: See docs/prd/claude-capabilities-review.md Section 2.9 for output styles assessment. Note: JP Spec Kit doesn't need all features from enterprise workflow engines - focus on what adds value for SDD.
+Cross-reference: See docs/prd/claude-capabilities-review.md Section 2.9 for output styles assessment. Note: Flowspec doesn't need all features from enterprise workflow engines - focus on what adds value for SDD.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

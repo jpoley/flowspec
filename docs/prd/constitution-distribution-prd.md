@@ -9,13 +9,13 @@
 
 ### Problem Statement
 
-JP Flowspec has a comprehensive constitution (`memory/constitution.md`) that defines critical workflow rules, artifact progression, task quality standards, and development practices. However, this constitution currently exists **only in the jp-spec-kit repository itself**, not in the target repositories that use JP Flowspec.
+JP Flowspec has a comprehensive constitution (`memory/constitution.md`) that defines critical workflow rules, artifact progression, task quality standards, and development practices. However, this constitution currently exists **only in the flowspec repository itself**, not in the target repositories that use JP Flowspec.
 
 This creates a fundamental problem:
 - **Workflow rules are invisible** to projects using JP Flowspec
 - **No guidance for users** on artifact progression (PRD → Functional Spec → Technical Spec → ADR → Implementation → Runbook)
 - **Workflow mode variations** (light/medium/heavy) are not documented in target repos
-- **Committer skill separation** and git commit requirements exist only in jp-spec-kit
+- **Committer skill separation** and git commit requirements exist only in flowspec
 - **Task quality standards** (acceptance criteria required) are not enforced in target projects
 - **LLM agents lack context** on the project's specific workflow and quality standards
 

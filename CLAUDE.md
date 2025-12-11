@@ -1,8 +1,8 @@
-# JP Spec Kit - Claude Code Configuration
+# Flowspec - Claude Code Configuration
 
 ## Project Overview
 
-**JP Spec Kit** is a toolkit for Spec-Driven Development (SDD):
+**Flowspec** is a toolkit for Spec-Driven Development (SDD):
 - **Specify CLI**: Command-line tool to bootstrap projects (`specify-cli` package)
 - **Templates**: SDD templates for multiple AI agents
 - **Documentation**: Comprehensive guides in `docs/`
@@ -64,7 +64,7 @@ backlog task edit 42 -s Done     # Complete task
 
 ## Engineering Subagents
 
-JP Spec Kit includes specialized engineering subagents for implementation tasks. These agents are invoked during `/flow:implement` and provide focused expertise:
+Flowspec includes specialized engineering subagents for implementation tasks. These agents are invoked during `/flow:implement` and provide focused expertise:
 
 ### Backend Engineer
 **Location**: `.claude/agents/backend-engineer.md`
@@ -128,7 +128,7 @@ See [Workflow Configuration](#workflow-configuration) for customizing agent assi
 
 ## Workflow Configuration
 
-JP Spec Kit uses a configurable workflow system defined in `flowspec_workflow.yml` at the project root.
+Flowspec uses a configurable workflow system defined in `flowspec_workflow.yml` at the project root.
 
 ### Configuration File Location
 
@@ -243,7 +243,7 @@ See [JP Spec + Backlog.md Integration Guide](docs/guides/flowspec-backlog-workfl
 ## Project Structure
 
 ```
-jp-spec-kit/
+flowspec/
 ├── src/specify_cli/        # CLI source code
 ├── tests/                  # Test suite (pytest)
 ├── templates/              # Project templates
@@ -297,7 +297,7 @@ Additional context loaded when working in specific directories:
 
 | Variable | Description |
 |----------|-------------|
-| `GITHUB_JPSPEC` | GitHub token for API requests |
+| `GITHUB_FLOWSPEC` | GitHub token for API requests |
 | `SPECIFY_FEATURE` | Override feature detection for non-Git repos |
 
 @import memory/claude-hooks.md

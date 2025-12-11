@@ -48,7 +48,7 @@ BASE_REPO_NAME = "spec-kit"
 BASE_REPO_DEFAULT_VERSION = "latest"
 
 EXTENSION_REPO_OWNER = "jpoley"
-EXTENSION_REPO_NAME = "jp-spec-kit"
+EXTENSION_REPO_NAME = "flowspec"
 EXTENSION_REPO_DEFAULT_VERSION = "latest"
 ```
 
@@ -77,7 +77,7 @@ def download_and_extract_two_stage(
 
 **Workflow**:
 1. Download base spec-kit from `github/spec-kit`
-2. Download jp-spec-kit extension from `jpoley/jp-spec-kit`
+2. Download flowspec extension from `jpoley/flowspec`
 3. Extract base first
 4. Extract extension on top (merges directories, overwrites files)
 5. Extension wins on conflicts
@@ -118,7 +118,7 @@ specify init my-project  # Uses "latest" by default
 Created `.spec-kit-compatibility.yml`:
 
 ```yaml
-jp-spec-kit:
+flowspec:
   version: "0.0.20"
   type: "layered-extension"
   
@@ -138,7 +138,7 @@ jp-spec-kit:
 Created `.specify-plugin.yml`:
 
 ```yaml
-name: jp-spec-kit
+name: flowspec
 version: 0.0.20
 type: layered-extension
 
@@ -169,7 +169,7 @@ provides:
 
 **New Flags**:
 - `--base-version <version>` - Pin base spec-kit version
-- `--extension-version <version>` - Pin jp-spec-kit version
+- `--extension-version <version>` - Pin flowspec version
 - `--layered/--no-layered` - Toggle two-stage download (default: `--layered`)
 
 **Examples**:
@@ -244,14 +244,14 @@ specify upgrade --templates-only
 
 ```bash
 # Install CLI
-uv tool install specify-cli --from git+https://github.com/jpoley/jp-spec-kit.git
+uv tool install specify-cli --from git+https://github.com/jpoley/flowspec.git
 
 # Initialize project with two-stage download
 specify init my-project --ai claude
 
 # Result:
 # - Base spec-kit templates from github/spec-kit
-# - JP spec-kit extension overlay from jpoley/jp-spec-kit
+# - JP spec-kit extension overlay from jpoley/flowspec
 # - Both /speckit.* and /flow:* commands available
 ```
 
@@ -284,17 +284,17 @@ specify init my-project \
 ### Extension-Only Mode
 
 ```bash
-# Skip base spec-kit, use jp-spec-kit only
+# Skip base spec-kit, use flowspec only
 specify init my-project --no-layered --ai claude
 
-# Result: Only jp-spec-kit templates (no base)
+# Result: Only flowspec templates (no base)
 ```
 
 ## Configuration Files
 
 ### `.spec-kit-compatibility.yml`
 
-Declares version compatibility between jp-spec-kit and upstream spec-kit.
+Declares version compatibility between flowspec and upstream spec-kit.
 
 **Purpose**:
 - Version matrix for testing
@@ -305,7 +305,7 @@ Declares version compatibility between jp-spec-kit and upstream spec-kit.
 
 ### `.specify-plugin.yml`
 
-Plugin manifest declaring what jp-spec-kit provides.
+Plugin manifest declaring what flowspec provides.
 
 **Purpose**:
 - Declarative extension metadata
@@ -317,7 +317,7 @@ Plugin manifest declaring what jp-spec-kit provides.
 
 ## Migration Guide
 
-### If You Have an Existing jp-spec-kit Project
+### If You Have an Existing flowspec Project
 
 **Before** (fork model):
 ```bash
@@ -339,7 +339,7 @@ specify upgrade --base-version 0.0.20 --extension-version 0.0.20
 
 Just use the standard workflow:
 ```bash
-uv tool install specify-cli --from git+https://github.com/jpoley/jp-spec-kit.git
+uv tool install specify-cli --from git+https://github.com/jpoley/flowspec.git
 specify init my-project --ai claude
 ```
 
@@ -386,7 +386,7 @@ shutil.copy2(item, dest_path)  # Overwrites base
 **Layered Mode**:
 ```python
 tracker.add("fetch-base", "Fetch base spec-kit")
-tracker.add("fetch-extension", "Fetch jp-spec-kit extension")
+tracker.add("fetch-extension", "Fetch flowspec extension")
 tracker.add("extract-base", "Extract base template")
 tracker.add("extract-extension", "Extract extension (overlay)")
 tracker.add("merge", "Merge templates (extension overrides base)")
@@ -405,7 +405,7 @@ tracker.add("extract", "Extract template")
 
 1. **Always Up-to-Date**: `specify upgrade` syncs with latest upstream
 2. **Version Control**: Pin to specific versions for reproducibility
-3. **Customization**: Keep jp-spec-kit extensions while getting base updates
+3. **Customization**: Keep flowspec extensions while getting base updates
 4. **Safety**: Automatic backups before upgrades
 5. **Transparency**: See exactly what's being downloaded (base vs extension)
 
@@ -419,7 +419,7 @@ tracker.add("extract", "Extract template")
 
 ### For Ecosystem
 
-1. **Composable**: Future extensions can layer on jp-spec-kit
+1. **Composable**: Future extensions can layer on flowspec
 2. **Interoperable**: Standard plugin manifest format
 3. **Discoverable**: Extensions declare what they provide
 4. **Upgradeable**: Users control when to adopt new versions
@@ -430,10 +430,10 @@ tracker.add("extract", "Extract template")
 
 ```bash
 # Install multiple extensions
-specify plugin add jpoley/jp-spec-kit
+specify plugin add jpoley/flowspec
 specify plugin add acme/custom-workflow
 specify plugin list
-specify plugin update jp-spec-kit
+specify plugin update flowspec
 ```
 
 ### Compatibility Checking
@@ -442,7 +442,7 @@ specify plugin update jp-spec-kit
 # CLI reads .spec-kit-compatibility.yml
 specify init my-project --extension-version 0.0.30
 
-# Warning: jp-spec-kit 0.0.30 not tested with spec-kit 0.0.20
+# Warning: flowspec 0.0.30 not tested with spec-kit 0.0.20
 # Recommended: upgrade to spec-kit 0.0.25
 # Continue anyway? (y/N)
 ```
@@ -453,7 +453,7 @@ specify init my-project --extension-version 0.0.30
 # .specify-config.yml
 base: github/spec-kit@0.0.20
 extensions:
-  - jpoley/jp-spec-kit@0.0.20
+  - jpoley/flowspec@0.0.20
     features:
       - flowspec-commands
       - multi-language
@@ -533,7 +533,7 @@ specify upgrade --debug
 JP Flowspec is now a **true layered extension** that:
 
 1. ✅ Downloads base spec-kit from `github/spec-kit`
-2. ✅ Overlays jp-spec-kit extensions from `jpoley/jp-spec-kit`
+2. ✅ Overlays flowspec extensions from `jpoley/flowspec`
 3. ✅ Merges with clear precedence (extension overrides base)
 4. ✅ Supports version pinning for reproducibility
 5. ✅ Provides `specify upgrade` for syncing with upstream
@@ -551,4 +551,4 @@ This architecture enables you to:
 1. Try it: `specify init test-project --ai claude`
 2. Explore flowspec commands: `/flow:plan`, `/flow:implement`
 3. Upgrade regularly: `specify upgrade`
-4. Report issues: https://github.com/jpoley/jp-spec-kit/issues
+4. Report issues: https://github.com/jpoley/flowspec/issues

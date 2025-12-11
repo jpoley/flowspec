@@ -8,7 +8,7 @@
 
 ## Summary
 
-The foundational components for Backlog.md integration with jp-spec-kit have been **successfully implemented and tested**. All P0 foundational tasks are complete.
+The foundational components for Backlog.md integration with flowspec have been **successfully implemented and tested**. All P0 foundational tasks are complete.
 
 ## ✅ Completed Tasks
 
@@ -21,11 +21,11 @@ The foundational components for Backlog.md integration with jp-spec-kit have bee
 - Configuration files created (`backlog/config.yml`)
 - Documentation complete (12,000+ word PRD, integration summary, setup verification)
 
-### Task 2: Task Parser for jp-spec-kit Format ✅
+### Task 2: Task Parser for flowspec Format ✅
 **Status**: Done
 **File**: `src/specify_cli/backlog/parser.py`
 **Capabilities**:
-- ✅ Parses jp-spec-kit task format (`- [ ] T001 [P] [US1] Description`)
+- ✅ Parses flowspec task format (`- [ ] T001 [P] [US1] Description`)
 - ✅ Extracts task ID, description, file path, parallelization markers
 - ✅ Identifies user story labels (US1, US2, etc.)
 - ✅ Detects phases (Setup, Foundational, User Stories, Polish)
@@ -170,10 +170,10 @@ All components have been tested and verified:
 ## 📊 Architecture
 
 ```
-jp-spec-kit specs (spec.md, plan.md, tasks.md)
+flowspec specs (spec.md, plan.md, tasks.md)
                     ↓
             ┌───────────────┐
-            │  TaskParser   │  Parse jp-spec-kit format
+            │  TaskParser   │  Parse flowspec format
             │  (parser.py)  │  Extract tasks, labels, dependencies
             └───────┬───────┘
                     ↓
@@ -300,7 +300,7 @@ specify backlog migrate feature/tasks.md
 ## 🎉 Success Criteria Met
 
 ### MVP Acceptance Criteria ✅
-- ✅ Parse jp-spec-kit task format (checkboxes, IDs, labels, descriptions)
+- ✅ Parse flowspec task format (checkboxes, IDs, labels, descriptions)
 - ✅ Extract user story labels (US1, US2, etc.)
 - ✅ Extract parallelization markers ([P])
 - ✅ Infer task dependencies based on phases

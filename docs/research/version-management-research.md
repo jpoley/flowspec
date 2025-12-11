@@ -270,7 +270,7 @@ Analysis:
 
 ### Current Branch Protection Rules
 
-Retrieved via `gh api repos/jpoley/jp-spec-kit/branches/main/protection`:
+Retrieved via `gh api repos/jpoley/flowspec/branches/main/protection`:
 
 ```json
 {
@@ -419,7 +419,7 @@ permissions:
 
 **❌ Anti-Pattern 1: Tag Before Source Update**
 - **Problem**: Creates window where tag exists but source is wrong
-- **Current Issue**: This is the exact bug in jp-spec-kit workflow
+- **Current Issue**: This is the exact bug in flowspec workflow
 
 **❌ Anti-Pattern 2: Silent Failures**
 - **Problem**: `continue-on-error: true` hides failures
@@ -435,7 +435,7 @@ permissions:
 
 ### Best Practice Summary
 
-| Principle | semantic-release | GitVersion | jp-spec-kit (current) | jp-spec-kit (proposed) |
+| Principle | semantic-release | GitVersion | flowspec (current) | flowspec (proposed) |
 |-----------|-----------------|------------|----------------------|----------------------|
 | **Version files first** | ✅ Yes | ✅ Yes | ❌ No (tags first) | ✅ Yes |
 | **Atomic operation** | ✅ Yes | N/A | ❌ No (multi-step) | ✅ Yes (commit includes version) |
@@ -995,9 +995,9 @@ $ git branch -r | grep version-bump
 ### Branch Protection Evidence
 
 ```bash
-$ gh api repos/jpoley/jp-spec-kit/branches/main/protection --jq '.enforce_admins'
+$ gh api repos/jpoley/flowspec/branches/main/protection --jq '.enforce_admins'
 {
-  "url": "https://api.github.com/repos/jpoley/jp-spec-kit/branches/main/protection/enforce_admins",
+  "url": "https://api.github.com/repos/jpoley/flowspec/branches/main/protection/enforce_admins",
   "enabled": true
 }
 

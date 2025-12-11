@@ -47,7 +47,7 @@ class TestGetGithubLatestRelease:
         mock_response.json.return_value = {"tag_name": "v0.0.311"}
 
         with patch("specify_cli.client.get", return_value=mock_response):
-            result = get_github_latest_release("jpoley", "jp-spec-kit")
+            result = get_github_latest_release("jpoley", "flowspec")
             assert result == "0.0.311"
 
     def test_handles_version_without_prefix(self):
@@ -166,7 +166,7 @@ class TestGetSpecKitInstalledVersion:
         """Reads version from current directory's compatibility matrix."""
         matrix_file = tmp_path / ".spec-kit-compatibility.yml"
         matrix_file.write_text("""
-jp-spec-kit:
+flowspec:
   compatible_with:
     spec-kit:
       tested: "0.0.25"
@@ -282,7 +282,7 @@ class TestVersionCliCommand:
             result = runner.invoke(app, ["version"])
 
             assert result.exit_code == 0
-            assert "jp-spec-kit" in result.stdout
+            assert "flowspec" in result.stdout
             assert "spec-kit" in result.stdout
             assert "backlog.md" in result.stdout
 
@@ -291,14 +291,14 @@ class TestVersionCliCommand:
         result = runner.invoke(app, ["--version"])
 
         assert result.exit_code == 0
-        assert "jp-spec-kit" in result.stdout
+        assert "flowspec" in result.stdout
 
     def test_version_flag_short_form(self):
         """'specify -v' shows simple version string."""
         result = runner.invoke(app, ["-v"])
 
         assert result.exit_code == 0
-        assert "jp-spec-kit" in result.stdout
+        assert "flowspec" in result.stdout
 
 
 class TestVersionUpgradeIndicators:

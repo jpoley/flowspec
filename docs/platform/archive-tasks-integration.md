@@ -162,7 +162,7 @@ exit 0
 
 ```bash
 # Test hook directly
-echo '{"event_type": "validate.completed", "feature": "test", "project_root": "/home/jpoley/ps/jp-spec-kit"}' | \
+echo '{"event_type": "validate.completed", "feature": "test", "project_root": "/home/jpoley/ps/flowspec"}' | \
   .claude/hooks/post-workflow-archive.sh
 
 # Test via specify hooks test command (once hook system implemented)
@@ -787,7 +787,7 @@ act workflow_dispatch -j archive-backlog \
 
 ```bash
 # Test hook directly
-echo '{"event_type": "validate.completed", "project_root": "/home/jpoley/ps/jp-spec-kit"}' | \
+echo '{"event_type": "validate.completed", "project_root": "/home/jpoley/ps/flowspec"}' | \
   .claude/hooks/post-workflow-archive.sh
 
 # Expected: Dry-run output, exit code 0

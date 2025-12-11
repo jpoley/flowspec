@@ -8,7 +8,7 @@ Approved Directories:
 - docs/           - Documentation files
 - backlog/        - Task management files
 - templates/      - Template files
-- .specify/       - JP Spec Kit configuration
+- .specify/       - Flowspec configuration
 
 Also approves:
 - Bash commands using the 'backlog' CLI tool

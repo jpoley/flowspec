@@ -43,14 +43,14 @@ Create pre-commit hook template and setup script for fast local security scannin
 
 1. Create template with flowspec-security hook:
    ```yaml
-   # JP Spec Kit Security Pre-commit Hook
+   # Flowspec Security Pre-commit Hook
    # Install: pip install pre-commit && pre-commit install
    
    repos:
      - repo: local
        hooks:
          - id: flowspec-security-fast-scan
-           name: JP Spec Kit Security Scan (Fast)
+           name: Flowspec Security Scan (Fast)
            description: Run fast security scan on changed files
            entry: specify security scan --fast --changed-only --fail-on critical
            language: system
@@ -81,7 +81,7 @@ Create pre-commit hook template and setup script for fast local security scannin
    
    set -e
    
-   echo "Setting up JP Spec Kit security pre-commit hooks..."
+   echo "Setting up Flowspec security pre-commit hooks..."
    
    # Check if pre-commit is installed
    if ! command -v pre-commit &> /dev/null; then
@@ -104,7 +104,7 @@ Create pre-commit hook template and setup script for fast local security scannin
      - repo: local
        hooks:
          - id: flowspec-security-fast-scan
-           name: JP Spec Kit Security Scan (Fast)
+           name: Flowspec Security Scan (Fast)
            entry: specify security scan --fast --changed-only --fail-on critical
            language: system
            stages: [commit]

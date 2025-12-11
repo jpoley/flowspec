@@ -9,7 +9,7 @@
 
 ## Context
 
-The jp-spec-kit project uses a "dev-setup" (formerly "dogfood") pattern where the source repository uses its own templates through symlinks. The `.claude/commands/` directory contains ONLY symlinks pointing to `templates/commands/`, ensuring:
+The flowspec project uses a "dev-setup" (formerly "dogfood") pattern where the source repository uses its own templates through symlinks. The `.claude/commands/` directory contains ONLY symlinks pointing to `templates/commands/`, ensuring:
 
 1. **Single Source of Truth**: All command content lives in `templates/commands/`
 2. **Dev-Prod Parity**: Developers test the exact commands distributed to users

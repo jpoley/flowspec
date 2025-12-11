@@ -497,7 +497,7 @@ def task_edit(task_id: str, status: str):
 - `ulid-py`: Event ID generation
 - `rich`: CLI output formatting (already used)
 
-**No New External Dependencies**: All required libraries already in jp-spec-kit
+**No New External Dependencies**: All required libraries already in flowspec
 
 ### File System Layout
 

@@ -11,7 +11,7 @@
 The fastest way to get started:
 
 ```bash
-/plugin install jpoley/jp-spec-kit
+/plugin install jpoley/flowspec
 ```
 
 That's it! The plugin will be installed and ready to use immediately.
@@ -25,7 +25,7 @@ That's it! The plugin will be installed and ready to use immediately.
 Install directly from the GitHub repository:
 
 ```bash
-/plugin install jpoley/jp-spec-kit
+/plugin install jpoley/flowspec
 ```
 
 **Pros:**
@@ -42,10 +42,10 @@ If you prefer using the marketplace system:
 
 ```bash
 # Step 1: Add the marketplace
-/plugin marketplace add jpoley/jp-spec-kit
+/plugin marketplace add jpoley/flowspec
 
 # Step 2: Install the plugin
-/plugin install jp-spec-kit
+/plugin install flowspec
 ```
 
 **Pros:**
@@ -61,11 +61,11 @@ For development or testing local changes:
 
 ```bash
 # Clone the repository
-git clone https://github.com/jpoley/jp-spec-kit.git
-cd jp-spec-kit
+git clone https://github.com/jpoley/flowspec.git
+cd flowspec
 
 # Install from local directory
-/plugin install /path/to/jp-spec-kit
+/plugin install /path/to/flowspec
 ```
 
 **Use this method if:**
@@ -84,7 +84,7 @@ After installation, verify everything is working:
 /plugin list
 ```
 
-You should see `jp-spec-kit` in the output.
+You should see `flowspec` in the output.
 
 **Test a command:**
 
@@ -310,12 +310,12 @@ The plugin includes a pre-commit hook (disabled by default).
 /plugin list
 ```
 
-Look for any update notifications next to `jp-spec-kit`.
+Look for any update notifications next to `flowspec`.
 
 ### Update the Plugin
 
 ```bash
-/plugin update jp-spec-kit
+/plugin update flowspec
 ```
 
 Updates are typically non-breaking and include:
@@ -337,7 +337,7 @@ Updates are typically non-breaking and include:
 
 If not listed, reinstall:
 ```bash
-/plugin install jpoley/jp-spec-kit
+/plugin install jpoley/flowspec
 ```
 
 ---
@@ -352,8 +352,8 @@ If not listed, reinstall:
 
 **Solution 2: Reinstall Plugin**
 ```bash
-/plugin remove jp-spec-kit
-/plugin install jpoley/jp-spec-kit
+/plugin remove flowspec
+/plugin install jpoley/flowspec
 ```
 
 ---
@@ -406,7 +406,7 @@ Ensure you have internet connection and can access GitHub.
 
 **Solution 2: Try Direct Install**
 ```bash
-/plugin install jpoley/jp-spec-kit
+/plugin install jpoley/flowspec
 ```
 
 **Solution 3: Check Claude Code Version**
@@ -496,7 +496,7 @@ Don't wait until the end to validate:
 
 ### Documentation
 - **Plugin README**: `.claude-plugin/README.md` (detailed plugin docs)
-- **Main Project**: [github.com/jpoley/jp-spec-kit](https://github.com/jpoley/jp-spec-kit)
+- **Main Project**: [github.com/jpoley/flowspec](https://github.com/jpoley/flowspec)
 - **Spec-Driven Development**: `spec-driven.md` (methodology guide)
 - **Agent Guide**: `AGENTS.md` (agent details)
 - **Contributing**: `CONTRIBUTING.md` (contribution guide)
@@ -507,8 +507,8 @@ Don't wait until the end to validate:
 - **Agent Classification**: `docs/reference/agent-loop-classification.md`
 
 ### Support
-- **Issues**: [GitHub Issues](https://github.com/jpoley/jp-spec-kit/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/jpoley/jp-spec-kit/discussions)
+- **Issues**: [GitHub Issues](https://github.com/jpoley/flowspec/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/jpoley/flowspec/discussions)
 
 ---
 
@@ -542,8 +542,8 @@ Don't wait until the end to validate:
 
 Love the plugin? Want to help improve it?
 
-1. **Report issues**: [GitHub Issues](https://github.com/jpoley/jp-spec-kit/issues)
-2. **Suggest features**: [GitHub Discussions](https://github.com/jpoley/jp-spec-kit/discussions)
+1. **Report issues**: [GitHub Issues](https://github.com/jpoley/flowspec/issues)
+2. **Suggest features**: [GitHub Discussions](https://github.com/jpoley/flowspec/discussions)
 3. **Submit PRs**: See [CONTRIBUTING.md](CONTRIBUTING.md)
 4. **Share feedback**: Let us know what's working and what's not!
 
@@ -563,11 +563,11 @@ Installation is complete. Start building with Spec-Driven Development:
 /flow:specify Build something amazing!
 ```
 
-**Questions?** Check the [troubleshooting section](#-troubleshooting) or [open an issue](https://github.com/jpoley/jp-spec-kit/issues).
+**Questions?** Check the [troubleshooting section](#-troubleshooting) or [open an issue](https://github.com/jpoley/flowspec/issues).
 
 ---
 
 **Version**: 0.0.20
 **Last Updated**: 2025-10-16
 **Author**: Jason Poley
-**Repository**: [github.com/jpoley/jp-spec-kit](https://github.com/jpoley/jp-spec-kit)
+**Repository**: [github.com/jpoley/flowspec](https://github.com/jpoley/flowspec)

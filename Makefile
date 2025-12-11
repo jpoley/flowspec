@@ -1,11 +1,11 @@
-# JP Spec Kit - Makefile
+# Flowspec - Makefile
 # Development and maintenance commands
 
 .PHONY: help install test lint format clean dev-validate dev-fix dev-status
 
 # Default target
 help:
-	@echo "JP Spec Kit - Available Commands"
+	@echo "Flowspec - Available Commands"
 	@echo "=================================="
 	@echo ""
 	@echo "Development:"
@@ -88,15 +88,15 @@ dev-fix:
 	@echo "Fixing development setup..."
 	@echo ""
 	@echo "Step 1: Backing up current state..."
-	@if [ -d .claude/commands/jpspec ]; then \
-		echo "  - Found jpspec directory"; \
+	@if [ -d .claude/commands/flowspec ]; then \
+		echo "  - Found flowspec directory"; \
 	fi
 	@if [ -d .claude/commands/speckit ]; then \
 		echo "  - Found speckit directory"; \
 	fi
 	@echo ""
 	@echo "Step 2: Removing existing symlinks..."
-	@rm -rf .claude/commands/jpspec .claude/commands/speckit 2>/dev/null || true
+	@rm -rf .claude/commands/flowspec .claude/commands/speckit 2>/dev/null || true
 	@echo "  ✓ Removed"
 	@echo ""
 	@echo "Step 3: Recreating symlinks with dev-setup command..."
@@ -128,9 +128,9 @@ dev-status:
 		ls -la .claude/commands/speckit/ | grep -E '\.md$$' || echo "No .md files"; \
 		echo ""; \
 	fi
-	@if [ -d .claude/commands/jpspec ]; then \
-		echo "=== jpspec commands ==="; \
-		ls -la .claude/commands/jpspec/ | grep -E '\.md$$' || echo "No .md files"; \
+	@if [ -d .claude/commands/flowspec ]; then \
+		echo "=== flowspec commands ==="; \
+		ls -la .claude/commands/flowspec/ | grep -E '\.md$$' || echo "No .md files"; \
 		echo ""; \
 	fi
 	@echo "=== Symlink verification ==="

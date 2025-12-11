@@ -1,6 +1,6 @@
 # Security Report Guidelines
 
-This document defines standards for generating security audit reports in JP Spec Kit. These guidelines ensure consistency, clarity, and actionability across all security reports.
+This document defines standards for generating security audit reports in Flowspec. These guidelines ensure consistency, clarity, and actionability across all security reports.
 
 ## Document Purpose
 

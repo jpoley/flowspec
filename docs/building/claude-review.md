@@ -1,4 +1,4 @@
-# JP Spec Kit - Comprehensive Feature Review
+# Flowspec - Comprehensive Feature Review
 
 **Review Date:** 2025-11-27
 **Reviewer:** Claude Code (Opus 4)
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-JP Spec Kit successfully unifies two powerful concepts: **Spec-Driven Development** (from GitHub's spec-kit) and **AI-powered task management** (from Backlog.md). The project demonstrates sophisticated architectural thinking with its layered extension model, multi-agent orchestration, and comprehensive workflow support.
+Flowspec successfully unifies two powerful concepts: **Spec-Driven Development** (from GitHub's spec-kit) and **AI-powered task management** (from Backlog.md). The project demonstrates sophisticated architectural thinking with its layered extension model, multi-agent orchestration, and comprehensive workflow support.
 
 However, several areas present opportunities for improvement:
 
@@ -31,7 +31,7 @@ However, several areas present opportunities for improvement:
 The two-stage download architecture is elegant:
 
 ```
-Layer 2: JP Spec Kit Extension
+Layer 2: Flowspec Extension
     ├── /flow:* commands (6 specialized agents)
     ├── .languages/ (12 language expertise bases)
     └── Advanced multi-agent orchestration
@@ -73,7 +73,7 @@ The 15 specialized agent personas are well-designed:
 ### 1.3 File Organization
 
 ```
-jp-spec-kit/
+flowspec/
 ├── .claude/commands/flow/     # Live flowspec commands (Claude)
 ├── templates/commands/          # speckit template commands
 │   └── flowspec/                  # flowspec templates
@@ -175,7 +175,7 @@ Two parallel command suites exist with similar purposes:
 
 ```bash
 # Step 1: Install specify-cli (requires uv + Python 3.11+)
-uv tool install specify-cli --from git+https://github.com/jpoley/jp-spec-kit.git
+uv tool install specify-cli --from git+https://github.com/jpoley/flowspec.git
 
 # Step 2: Install backlog.md (requires Node.js + pnpm/npm)
 pnpm i -g backlog.md
@@ -213,7 +213,7 @@ The following scenarios lack clear error handling:
 
 1. **Unified installer script:**
    ```bash
-   curl -fsSL https://jp-spec-kit.dev/install.sh | bash
+   curl -fsSL https://flowspec.dev/install.sh | bash
    # Handles: uv, specify-cli, backlog.md, verification
    ```
 
@@ -304,7 +304,7 @@ specify workflow
 
 ### 5.1 vs Backlog.md (MrLesk/Backlog.md)
 
-| Feature | Original Backlog.md | JP Spec Kit Integration |
+| Feature | Original Backlog.md | Flowspec Integration |
 |---------|---------------------|-------------------------|
 | Task creation | Manual via CLI | Auto-generated from specs |
 | MCP support | Native | Inherited |
@@ -312,17 +312,17 @@ specify workflow
 | Spec integration | None | Core feature |
 | Multi-agent | None | Extensive |
 
-**JP Spec Kit Advantages:**
+**Flowspec Advantages:**
 - Specs generate tasks automatically
 - Multi-agent workflow orchestration
 - Language-specific expertise
 
 **Potential Gap:**
-- Original Backlog.md updates independently; JP Spec Kit must track upstream
+- Original Backlog.md updates independently; Flowspec must track upstream
 
 ### 5.2 vs GitHub Spec-Kit
 
-| Feature | Original Spec-Kit | JP Spec Kit Extension |
+| Feature | Original Spec-Kit | Flowspec Extension |
 |---------|-------------------|----------------------|
 | Commands | 5 core | 14 total (8 speckit + 6 flowspec) |
 | Task management | tasks.md file | Backlog.md integration |
@@ -330,7 +330,7 @@ specify workflow
 | Language expertise | Generic | 12 language modules |
 | Project templates | Basic | 10 pre-built stacks |
 
-**JP Spec Kit Advantages:**
+**Flowspec Advantages:**
 - Much richer agent ecosystem
 - Backlog.md provides visual task management
 - Language-specific best practices
@@ -627,7 +627,7 @@ docs/
 
 ## 11. Conclusion
 
-JP Spec Kit represents a thoughtful integration of Spec-Driven Development with modern AI-powered task management. The architecture is sound, the agent system is comprehensive, and the vision of unifying specs and backlogs is compelling.
+Flowspec represents a thoughtful integration of Spec-Driven Development with modern AI-powered task management. The architecture is sound, the agent system is comprehensive, and the vision of unifying specs and backlogs is compelling.
 
 **Key Strengths:**
 1. Elegant layered extension model
@@ -707,7 +707,7 @@ JP Spec Kit represents a thoughtful integration of Spec-Driven Development with 
 ## Appendix B: Compatibility Matrix
 
 ```yaml
-jp-spec-kit: v0.0.59
+flowspec: v0.0.59
 spec-kit:
   min: 0.0.18
   max: 0.0.22

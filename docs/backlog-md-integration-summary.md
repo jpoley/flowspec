@@ -1,4 +1,4 @@
-# Backlog.md Integration with jp-spec-kit - Implementation Summary
+# Backlog.md Integration with flowspec - Implementation Summary
 
 **Date**: 2025-11-23
 **Status**: Discovery Complete, MCP Configured, Ready for Implementation
@@ -7,11 +7,11 @@
 
 ## Executive Summary
 
-This document summarizes the completed discovery and planning work for integrating **Backlog.md MCP** with **jp-spec-kit** to create a unified spec-driven development platform with AI-powered task management.
+This document summarizes the completed discovery and planning work for integrating **Backlog.md MCP** with **flowspec** to create a unified spec-driven development platform with AI-powered task management.
 
 ### What We've Accomplished
 
-✅ **Research Complete**: Full analysis of Backlog.md capabilities and jp-spec-kit's task management
+✅ **Research Complete**: Full analysis of Backlog.md capabilities and flowspec's task management
 ✅ **Chain of Thought Planning**: Comprehensive PRD with design decisions and trade-off analysis
 ✅ **MCP Configuration**: Backlog.md MCP server installed and configured for Claude Code
 ✅ **Integration Architecture**: Designed hybrid model for seamless spec-to-task workflow
@@ -31,7 +31,7 @@ This document summarizes the completed discovery and planning work for integrati
    - Ready for AI-powered task management
 
 3. **Backlog.md Initialization**: `backlog/` directory created
-   - Project configured: jp-spec-kit
+   - Project configured: flowspec
    - MCP integration mode enabled
    - Demonstration task created (task-1)
 
@@ -41,7 +41,7 @@ This document summarizes the completed discovery and planning work for integrati
 
 ### Decision 1: Integration Model
 
-**Problem**: How should jp-spec-kit and Backlog.md work together?
+**Problem**: How should flowspec and Backlog.md work together?
 
 **Options Evaluated**:
 1. Backlog.md as source of truth (replace tasks.md completely)
@@ -54,19 +54,19 @@ This document summarizes the completed discovery and planning work for integrati
 - **User Value**: Developers want task lifecycle management, not just static checklists
 - **Risk Mitigation**: Generate-once with optional regeneration balances simplicity and flexibility
 
-**Outcome**: jp-spec-kit generates tasks directly into Backlog.md format; tasks.md becomes optional reference or deprecated
+**Outcome**: flowspec generates tasks directly into Backlog.md format; tasks.md becomes optional reference or deprecated
 
 ---
 
 ### Decision 2: Task Format Mapping
 
-**Problem**: How do we preserve jp-spec-kit's user-story-centric organization in Backlog.md's flat structure?
+**Problem**: How do we preserve flowspec's user-story-centric organization in Backlog.md's flat structure?
 
 **Solution**: **Labels + Virtual Grouping**
 
 **Mapping Strategy**:
 ```
-jp-spec-kit:  - [ ] T012 [P] [US1] Create User model in src/models/user.py
+flowspec:  - [ ] T012 [P] [US1] Create User model in src/models/user.py
 
 Backlog.md:   task-012 - Create User model.md
               ---
@@ -174,7 +174,7 @@ Backlog.md:   task-012 - Create User model.md
 ### Current Status
 
 ✅ **Backlog.md Installed**: v1.20.1 (via pnpm)
-✅ **Backlog.md Initialized**: Project "jp-spec-kit"
+✅ **Backlog.md Initialized**: Project "flowspec"
 ✅ **MCP Configured**: Added to `.mcp.json` for Claude Code
 ✅ **Directory Structure Created**: `backlog/` with tasks, docs, decisions
 
@@ -196,7 +196,7 @@ Backlog.md:   task-012 - Create User model.md
 
 **`backlog/config.yml`** (Backlog.md Settings):
 ```yaml
-project_name: "jp-spec-kit"
+project_name: "flowspec"
 default_status: "To Do"
 statuses: ["To Do", "In Progress", "Done"]
 labels: []
@@ -235,7 +235,7 @@ The MCP server provides these tools:
 
 ### MVP Scope (Phase 1 - US1: Task Generation)
 
-**Goal**: Generate Backlog.md tasks from jp-spec-kit specs
+**Goal**: Generate Backlog.md tasks from flowspec specs
 
 **User Story**:
 > As a spec-driven developer, I want to automatically generate Backlog.md tasks from my spec.md and plan.md files, so that I don't have to manually create and organize tasks in a project management tool.
@@ -243,7 +243,7 @@ The MCP server provides these tools:
 **Tasks** (from PRD):
 ```
 Phase 2: Foundational
-- [ ] T006 Implement task parser for jp-spec-kit format
+- [ ] T006 Implement task parser for flowspec format
 - [ ] T007 Implement Backlog.md file writer
 - [ ] T008 Create dependency graph builder
 - [ ] T009 Implement task format mapper
@@ -322,7 +322,7 @@ Phase 3: User Story 1 (MVP)
 
 **Week 3-4** (MVP Development):
 - Build US1 (Task Generation)
-- Self-dogfood on jp-spec-kit project
+- Self-dogfood on flowspec project
 - Test with 3 existing features
 
 **Week 5-6** (Beta Release):
@@ -346,7 +346,7 @@ Phase 3: User Story 1 (MVP)
 ## Success Metrics
 
 ### North Star Metric
-**% of jp-spec-kit generated features actively tracked in Backlog.md**
+**% of flowspec generated features actively tracked in Backlog.md**
 - Target: 60% within 6 months
 
 ### Leading Indicators (Month 1-3)
@@ -402,7 +402,7 @@ Phase 3: User Story 1 (MVP)
    - Implement mapper (`src/specify_cli/backlog/mapper.py`)
    - Create CLI command: `specify tasks generate --format backlog-md`
 
-5. **Self-Dogfooding**: Use integration on jp-spec-kit project
+5. **Self-Dogfooding**: Use integration on flowspec project
    - Migrate 2-3 existing features
    - Document pain points and improvements
 
@@ -425,19 +425,19 @@ Phase 3: User Story 1 (MVP)
 
 ### Current Project Files
 - **MCP Config**: `.mcp.json` (Backlog.md server added)
-- **Backlog Config**: `backlog/config.yml` (jp-spec-kit project)
-- **Demo Task**: `backlog/tasks/task-1 - Integrate-Backlog.md-with-jp-spec-kit.md`
+- **Backlog Config**: `backlog/config.yml` (flowspec project)
+- **Demo Task**: `backlog/tasks/task-1 - Integrate-Backlog.md-with-flowspec.md`
 
 ### Tools Available
 - **Backlog.md CLI**: v1.20.1 installed via pnpm
 - **MCP Server**: Configured for Claude Code
-- **jp-spec-kit**: Current task generation via `/flow:tasks`
+- **flowspec**: Current task generation via `/flow:tasks`
 
 ---
 
 ## Questions for Review
 
-1. **Strategic Alignment**: Does this integration align with jp-spec-kit's vision and roadmap?
+1. **Strategic Alignment**: Does this integration align with flowspec's vision and roadmap?
 2. **Resource Commitment**: Can we commit developer time for 12-week implementation?
 3. **Scope Decision**: Should MVP be US1 only, or include US2/US3?
 4. **Validation Plan**: Which validation experiments should we run first?

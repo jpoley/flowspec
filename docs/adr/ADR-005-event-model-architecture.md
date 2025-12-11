@@ -153,7 +153,7 @@ Event IDs use **ULIDs** (Universally Unique Lexicographically Sortable Identifie
 
 ### Positive
 
-1. **Extensibility**: Third-party tools can integrate without modifying jp-spec-kit core
+1. **Extensibility**: Third-party tools can integrate without modifying flowspec core
 2. **Observability**: Event stream creates audit trail for compliance and debugging
 3. **Decoupling**: Automation logic lives in hooks, not embedded in workflow commands
 4. **Tool Agnostic**: Works with Claude Code, Gemini, Copilot, or headless automation

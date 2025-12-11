@@ -14,8 +14,8 @@ const fs = require('fs');
 const path = require('path');
 const puppeteer = require('puppeteer');
 
-const EXCALIDRAW_FILE = path.join(__dirname, 'jpspec-workflow.excalidraw');
-const OUTPUT_PNG = path.join(__dirname, 'jpspec-workflow.png');
+const EXCALIDRAW_FILE = path.join(__dirname, 'flowspec-workflow.excalidraw');
+const OUTPUT_PNG = path.join(__dirname, 'flowspec-workflow.png');
 const WIDTH = 1920;
 const SCALE = 2; // For high DPI
 

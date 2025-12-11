@@ -19,7 +19,7 @@ priority: medium
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Create Claude Code plugin distribution for jp-spec-kit alongside existing UV tool. Plugin provides easy updates via marketplace while UV tool handles initial bootstrap. Recommendation: Dual distribution model. Plugin contains: slash commands, agents, hooks, MCP configs. Plugin updates don't affect user files.
+Create Claude Code plugin distribution for flowspec alongside existing UV tool. Plugin provides easy updates via marketplace while UV tool handles initial bootstrap. Recommendation: Dual distribution model. Plugin contains: slash commands, agents, hooks, MCP configs. Plugin updates don't affect user files.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

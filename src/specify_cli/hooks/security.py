@@ -1,4 +1,4 @@
-"""Security controls for jp-spec-kit hooks.
+"""Security controls for flowspec hooks.
 
 This module provides enhanced security validation and audit logging for hook execution:
 - Dangerous pattern detection in script content

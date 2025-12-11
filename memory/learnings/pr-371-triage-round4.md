@@ -570,10 +570,10 @@ Before submitting future PRs with pattern matching or scoring:
 
 ## References
 
-- [PR #371](https://github.com/jpoley/jp-spec-kit/pull/371) - Original PR (closed, fixes applied to galway-learnings-triage-fixes)
+- [PR #371](https://github.com/jpoley/flowspec/pull/371) - Original PR (closed, fixes applied to galway-learnings-triage-fixes)
 - [PR #361 Learnings](./pr-361-triage-round2.md) - Previous round of triage fixes
 - [PR #342 Learnings](./pr-342-triage-engine.md) - Initial triage engine implementation
-- [GitHub Copilot Reviews](https://github.com/jpoley/jp-spec-kit/pull/371#discussion_r*) - Code quality issues identified
+- [GitHub Copilot Reviews](https://github.com/jpoley/flowspec/pull/371#discussion_r*) - Code quality issues identified
 
 ---
 

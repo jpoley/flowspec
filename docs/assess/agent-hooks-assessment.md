@@ -6,7 +6,7 @@
 
 ## Feature Overview
 
-Add an **event + hook abstraction** to jp-spec-kit that allows agent actions to trigger follow-up automation. This enables:
+Add an **event + hook abstraction** to flowspec that allows agent actions to trigger follow-up automation. This enables:
 - Running tests after task implementation
 - Updating docs when specs/plans change
 - Emitting events to CI/CD pipelines
@@ -72,14 +72,14 @@ Claude Code already provides a hook system in `.claude/hooks/` with:
 - `Stop` hooks (used by task-189 for quality gates)
 - `SessionStart` hooks (task-188 in progress)
 
-**Key Question**: Should jp-spec-kit hooks:
+**Key Question**: Should flowspec hooks:
 1. **Layer on top of** Claude Code hooks (use them as execution substrate)?
 2. **Be independent** (tool-agnostic, run via CLI)?
 3. **Complement** Claude Code hooks (different event types, same patterns)?
 
 ### Recommendation on Overlap
 
-Given the goal of tool-agnosticism, jp-spec-kit hooks should:
+Given the goal of tool-agnosticism, flowspec hooks should:
 - Be **independent** of Claude Code hooks (works with any agent)
 - Use **similar patterns** where sensible (familiar to Claude Code users)
 - **Complement** by handling workflow-level events (spec.created, task.completed) vs. tool-level events (PreToolUse, PostToolUse)

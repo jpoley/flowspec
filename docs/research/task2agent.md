@@ -1,4 +1,4 @@
-# Multi-Agent Task Assignment & Dispatch in `jp-spec-kit` (Single-Block Version)
+# Multi-Agent Task Assignment & Dispatch in `flowspec` (Single-Block Version)
 
 This is a self-contained design and implementation sketch for:
 
@@ -48,7 +48,7 @@ So: marking “this task is for @claude, that one is for @gemini” is already s
 
 You want a pipeline that goes from:
 
-1. Spec (jp-spec-kit) → generated tasks (Backlog.md)
+1. Spec (flowspec) → generated tasks (Backlog.md)
 2. Tasks → associated agent (Claude or Gemini)
 3. Agent → actual work in the repo
 4. Work → branch + PR
@@ -90,9 +90,9 @@ Recommended approach:
 
 This keeps your Backlog.md UX clean and obvious (“assignee looks like a person, but it’s actually a bot/agent”).
 
-### 3.2 Wire Agent Metadata into jp-spec-kit Task Generation
+### 3.2 Wire Agent Metadata into flowspec Task Generation
 
-Where jp-spec-kit converts specs into tasks (e.g. via `/speckit.tasks` or equivalent), extend the template to accept an optional `agent` field.
+Where flowspec converts specs into tasks (e.g. via `/speckit.tasks` or equivalent), extend the template to accept an optional `agent` field.
 
 For each generated task:
 
@@ -148,7 +148,7 @@ Your dispatcher will:
 
 ## 5. Step 3 – Design a `specify dispatch` CLI
 
-Add a new command in jp-spec-kit (or a sibling script):
+Add a new command in flowspec (or a sibling script):
 
 - Name suggestion: `specify dispatch`
 
@@ -319,7 +319,7 @@ Already present:
 Missing pieces:
 
 1. Small but important template/metadata changes:
-   - Extend jp-spec-kit’s task generation so that tasks come out with:
+   - Extend flowspec’s task generation so that tasks come out with:
      - Assignee: `@claude` / `@gemini` (and possibly label `agent:claude` / `agent:gemini`).
 
 2. An `agents.yml` registry file:

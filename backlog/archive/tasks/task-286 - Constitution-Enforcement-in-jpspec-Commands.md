@@ -1,6 +1,6 @@
 ---
 id: task-286
-title: Constitution Enforcement in /jpspec Commands
+title: Constitution Enforcement in /flowspec Commands
 status: Done
 assignee: []
 created_date: '2025-12-04 16:08'
@@ -15,7 +15,7 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Add constitution checks to all /jpspec slash commands before execution
+Add constitution checks to all /flowspec slash commands before execution
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
@@ -30,5 +30,5 @@ Add constitution checks to all /jpspec slash commands before execution
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
-Already implemented - `_constitution-check.md` included in all jpspec commands. Branch merged to main.
+Already implemented - `_constitution-check.md` included in all flowspec commands. Branch merged to main.
 <!-- SECTION:NOTES:END -->

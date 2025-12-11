@@ -121,4 +121,4 @@ Before submitting PRs with configuration or multi-format output:
 
 ## References
 
-- [PR #349](https://github.com/jpoley/jp-spec-kit/pull/349) - Original PR with Copilot review
+- [PR #349](https://github.com/jpoley/flowspec/pull/349) - Original PR with Copilot review

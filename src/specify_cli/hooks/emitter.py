@@ -1,4 +1,4 @@
-"""Event emitter for jp-spec-kit hooks system.
+"""Event emitter for flowspec hooks system.
 
 This module provides the event emission layer that workflow commands use to
 publish events. The emitter is designed to be fail-safe and lightweight,

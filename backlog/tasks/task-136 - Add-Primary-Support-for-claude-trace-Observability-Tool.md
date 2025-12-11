@@ -19,7 +19,7 @@ priority: medium
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Integrate claude-trace as a recommended observability and debugging tool for JP Spec Kit users, particularly for troubleshooting complex /flowspec workflow executions. This will provide visibility into AI agent decision-making, token usage, and internal Claude Code operations without requiring code changes to JP Spec Kit.
+Integrate claude-trace as a recommended observability and debugging tool for Flowspec users, particularly for troubleshooting complex /flowspec workflow executions. This will provide visibility into AI agent decision-making, token usage, and internal Claude Code operations without requiring code changes to Flowspec.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

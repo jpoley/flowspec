@@ -109,7 +109,7 @@ generate_commands() {
     esac
   done
   
-  # Process flowspec commands if they exist (jp-spec-kit extension)
+  # Process flowspec commands if they exist (flowspec extension)
   if [[ -d templates/commands/flowspec ]]; then
     echo "Processing flowspec commands for $agent..."
     for template in templates/commands/flowspec/*.md; do
@@ -253,7 +253,7 @@ build_variant() {
   
   [[ -d templates ]] && { mkdir -p "$SPEC_DIR/templates"; find templates -type f -not -path "templates/commands/*" -not -name "vscode-settings.json" -exec cp --parents {} "$SPEC_DIR"/ \; ; echo "Copied templates -> .specify/templates"; }
   
-  # Copy .languages directory if it exists (jp-spec-kit multi-language support)
+  # Copy .languages directory if it exists (flowspec multi-language support)
   if [[ -d .languages ]]; then
     cp -r .languages "$base_dir/"
     echo "Copied .languages/ directory for multi-language support"

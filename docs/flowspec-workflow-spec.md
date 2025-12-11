@@ -1,4 +1,4 @@
-# JPSpec Workflow Configuration Specification
+# Flowspec Workflow Configuration Specification
 
 **Version:** 1.0.0
 **Status:** Authoritative
@@ -408,7 +408,7 @@ All metadata count fields must equal their corresponding actual values:
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "JPSpec Workflow Configuration",
+  "title": "Flowspec Workflow Configuration",
   "type": "object",
   "required": ["version", "states", "workflows", "transitions", "agent_loops", "metadata"],
   "properties": {
@@ -598,4 +598,4 @@ Run with: `pytest tests/test_workflow_config_valid.py -v`
 - [Agent Loop Classification](docs/reference/agent-loop-classification.md)
 - [Inner Loop Reference](docs/reference/inner-loop.md)
 - [Outer Loop Reference](docs/reference/outer-loop.md)
-- [JPSpec Command Implementations](.claude/commands/flow/*.md)
+- [Flowspec Command Implementations](.claude/commands/flow/*.md)

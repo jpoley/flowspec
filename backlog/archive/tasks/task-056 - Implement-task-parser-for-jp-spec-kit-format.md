@@ -1,6 +1,6 @@
 ---
 id: task-056
-title: Implement task parser for jp-spec-kit format
+title: Implement task parser for flowspec format
 status: Done
 assignee: []
 created_date: '2025-11-24 01:13'

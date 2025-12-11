@@ -674,6 +674,6 @@ claude mcp add backlog --scope user -- backlog mcp start
 
 - See [Backlog.md User Guide](backlog-user-guide.md) for usage
 - Check [Command Reference](../reference/backlog-commands.md) for all commands
-- Open issue on [GitHub](https://github.com/jpoley/jp-spec-kit/issues) for migration problems
+- Open issue on [GitHub](https://github.com/jpoley/flowspec/issues) for migration problems
 
 **Status**: Manual migration available now. Automated migration coming in v0.1.0.

@@ -382,7 +382,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install jp-spec-kit
+      - name: Install flowspec
         run: |
           pip install uv
           uv sync
@@ -714,7 +714,7 @@ specify security scan --format sarif --output security-results.sarif
         "driver": {
           "name": "Flowspec Security Scanner",
           "version": "1.0.0",
-          "informationUri": "https://github.com/jpoley/jp-spec-kit",
+          "informationUri": "https://github.com/jpoley/flowspec",
           "rules": [
             {
               "id": "CWE-89",

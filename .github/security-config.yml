@@ -1,4 +1,4 @@
-# JP Spec Kit Security Configuration
+# Flowspec Security Configuration
 #
 # This file configures security scanning behavior for this repository.
 # Settings here are used by .github/workflows/security-scan.yml

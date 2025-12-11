@@ -3,7 +3,7 @@
 **Status:** Proposed
 **Date:** 2025-11-30
 **Author:** Enterprise Software Architect
-**Context:** jp-spec-kit workflow integration
+**Context:** flowspec workflow integration
 
 ---
 

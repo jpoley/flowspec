@@ -41,7 +41,7 @@ Configuration:
 ## README Badge
 Add OpenSSF Scorecard badge to README:
 ```markdown
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/jpoley/jp-spec-kit/badge)](https://scorecard.dev/viewer/?uri=github.com/jpoley/jp-spec-kit)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/jpoley/flowspec/badge)](https://scorecard.dev/viewer/?uri=github.com/jpoley/flowspec)
 ```
 
 ## Reference

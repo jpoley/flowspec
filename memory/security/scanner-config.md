@@ -1,6 +1,6 @@
 # Scanner Configuration Defaults
 
-This document defines the default configuration for security scanners used in JP Spec Kit.
+This document defines the default configuration for security scanners used in Flowspec.
 
 ## Default Scanner Configuration
 

@@ -787,7 +787,7 @@ main "$@"
 
 ```bash
 # 1. Create test environment
-cd /home/jpoley/ps/jp-spec-kit
+cd /home/jpoley/ps/flowspec
 git worktree add /tmp/archive-test-env main
 cd /tmp/archive-test-env
 
@@ -812,7 +812,7 @@ cd /tmp/archive-test-env
 # Expected: Tasks archived, exit code 0
 
 # 7. Cleanup
-cd /home/jpoley/ps/jp-spec-kit
+cd /home/jpoley/ps/flowspec
 git worktree remove /tmp/archive-test-env
 ```
 

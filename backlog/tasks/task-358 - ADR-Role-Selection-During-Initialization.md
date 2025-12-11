@@ -49,7 +49,7 @@ Week 4: Documentation and testing
 # ADR: Role Selection During Initialization
 
 ## Deliverable
-Created comprehensive ADR at: /home/jpoley/ps/jp-spec-kit/docs/adr/ADR-role-selection-during-initialization.md
+Created comprehensive ADR at: /home/jpoley/ps/flowspec/docs/adr/ADR-role-selection-during-initialization.md
 
 ## Key Design Decisions
 
@@ -87,7 +87,7 @@ Defined how role affects VS Code experience:
 - Autocomplete filtering (role commands shown first)
 
 ### 5. Environment Variable Override
-Added JPSPEC_PRIMARY_ROLE for per-session role switching:
+Added FLOWSPEC_PRIMARY_ROLE for per-session role switching:
 - Precedence: env var > config file > default
 - Enables multi-role users to switch contexts
 

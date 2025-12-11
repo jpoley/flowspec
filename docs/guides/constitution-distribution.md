@@ -1282,7 +1282,7 @@ templates/constitutions/        # Template source files
 ## Getting Help
 
 **Questions or issues?**
-- Open an issue: [GitHub Issues](https://github.com/jpoley/jp-spec-kit/issues)
+- Open an issue: [GitHub Issues](https://github.com/jpoley/flowspec/issues)
 - Check documentation: `docs/guides/`
 - Run `specify constitution validate --help`
 

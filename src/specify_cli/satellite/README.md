@@ -138,4 +138,4 @@ See `backlog/docs/satellite-mode-subsystems-design.md` for detailed design speci
 
 ## License
 
-Part of JP Spec Kit - see main README for license information.
+Part of Flowspec - see main README for license information.

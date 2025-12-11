@@ -897,7 +897,7 @@ Add to your `.github/workflows/pr-checks.yml`:
 \`\`\`yaml
 jobs:
   security:
-    uses: jpoley/jp-spec-kit/.github/workflows/security-scan.yml@main
+    uses: jpoley/flowspec/.github/workflows/security-scan.yml@main
     with:
       scan-type: incremental
       fail-on: critical,high
@@ -1238,7 +1238,7 @@ def is_security_feature_enabled(feature: str) -> bool:
     }
 
     # Override with environment variable
-    env_override = os.getenv(f"JPSPEC_SECURITY_{feature.upper()}_ENABLED")
+    env_override = os.getenv(f"FLOWSPEC_SECURITY_{feature.upper()}_ENABLED")
     if env_override:
         return env_override.lower() in ["true", "1", "yes"]
 
@@ -1248,7 +1248,7 @@ def is_security_feature_enabled(feature: str) -> bool:
 **Usage:**
 ```bash
 # Enable beta feature for specific project
-export JPSPEC_SECURITY_TRIAGE_ENABLED=true
+export FLOWSPEC_SECURITY_TRIAGE_ENABLED=true
 specify security triage
 ```
 

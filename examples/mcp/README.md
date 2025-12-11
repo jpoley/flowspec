@@ -1,14 +1,14 @@
 # MCP Security Examples
 
-This directory contains example clients demonstrating how to use the JP Spec Kit Security Scanner MCP server.
+This directory contains example clients demonstrating how to use the Flowspec Security Scanner MCP server.
 
 ## Prerequisites
 
 Before running these examples:
 
-1. **Install JP Spec Kit:**
+1. **Install Flowspec:**
    ```bash
-   cd /path/to/jp-spec-kit
+   cd /path/to/flowspec
    uv tool install . --force
    ```
 
@@ -114,7 +114,7 @@ python examples/mcp/security_dashboard.py --repos . --timeout 60
 ================ SECURITY DASHBOARD ================
 Repository            | Posture      | Total | C | H | M | L | Triage
 --------------------------------------------------------------------
-jp-spec-kit          | GOOD         | 0     | 0 | 0 | 0 | 0 | NOT_RUN
+flowspec          | GOOD         | 0     | 0 | 0 | 0 | 0 | NOT_RUN
 other-project        | HIGH RISK    | 12    | 1 | 5 | 6 | 0 | NOT_RUN
 --------------------------------------------------------------------
 
@@ -174,7 +174,7 @@ pip install mcp
 ### "Could not connect to any MCP servers"
 
 Make sure each repository has:
-1. JP Spec Kit installed
+1. Flowspec installed
 2. Security scan has been run at least once (`specify security scan .`)
 3. MCP server is configured in `.mcp.json`
 

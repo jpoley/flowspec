@@ -238,4 +238,4 @@ def validate_task_id(task_id: str):
 
 ---
 
-*Full report: `/tmp/jp-spec-kit-worktrees/host-task-tests/docs/qa/task-memory-qa-report.md`*
+*Full report: `/tmp/flowspec-worktrees/host-task-tests/docs/qa/task-memory-qa-report.md`*

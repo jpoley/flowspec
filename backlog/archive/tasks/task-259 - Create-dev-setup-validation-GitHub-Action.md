@@ -33,7 +33,7 @@ GitHub Actions workflow to validate dogfood consistency on every PR. Ensures .cl
 
 <!-- SECTION:NOTES:BEGIN -->
 Implementation completed in PR #397:
-https://github.com/jpoley/jp-spec-kit/pull/397
+https://github.com/jpoley/flowspec/pull/397
 
 Created .github/workflows/dev-setup-validation.yml with:
 
@@ -45,7 +45,7 @@ Created .github/workflows/dev-setup-validation.yml with:
 
 2. dev-setup command execution and verification
    - Runs: uv run specify dev-setup --force
-   - Verifies jpspec/ and speckit/ directories created
+   - Verifies flowspec/ and speckit/ directories created
    - Counts and verifies symlinks were created
 
 3. Test suite execution

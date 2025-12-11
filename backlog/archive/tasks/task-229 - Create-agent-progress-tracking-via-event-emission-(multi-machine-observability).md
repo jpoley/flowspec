@@ -21,7 +21,7 @@ priority: high
 <!-- SECTION:DESCRIPTION:BEGIN -->
 Enable agents to emit progress events during long-running tasks, creating an observability layer for tracking agent activity across multiple machines and projects.
 
-**Vision**: Any agent (Claude Code, Copilot, Gemini, custom) working on a jp-spec-kit project can emit progress events. These events can be:
+**Vision**: Any agent (Claude Code, Copilot, Gemini, custom) working on a flowspec project can emit progress events. These events can be:
 1. Stored locally in audit log
 2. Sent to a central collector (webhook)
 3. Used to coordinate multi-agent workflows

@@ -19,7 +19,7 @@ priority: medium
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Create a wrapper script/function around the `backlog` CLI that automatically emits jp-spec-kit events after each command.
+Create a wrapper script/function around the `backlog` CLI that automatically emits flowspec events after each command.
 
 **Context**: Since we can't modify backlog.md directly, we can wrap its CLI to add event emission. Users would use `bk` (or similar alias) instead of `backlog` directly.
 

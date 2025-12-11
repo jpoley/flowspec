@@ -33,7 +33,7 @@ def bare_remote(tmp_path):
     remote_path = tmp_path / "remote.git"
     remote_path.mkdir()
     subprocess.run(
-        ["git", "init", "--bare"],
+        ["git", "init", "--bare", "-b", "main"],
         cwd=remote_path,
         check=True,
         capture_output=True,

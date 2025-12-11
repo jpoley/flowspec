@@ -1,10 +1,10 @@
-# JP Spec Kit - Guide for AI Coding Agents
+# Flowspec - Guide for AI Coding Agents
 
-This file provides guidance for AI coding agents working on the JP Spec Kit project. It follows the [agents.md specification](https://agents.md/) to ensure compatibility across multiple AI coding assistant platforms.
+This file provides guidance for AI coding agents working on the Flowspec project. It follows the [agents.md specification](https://agents.md/) to ensure compatibility across multiple AI coding assistant platforms.
 
 ## Project Overview
 
-JP Spec Kit is a comprehensive toolkit for implementing **Spec-Driven Development (SDD)** - a methodology where specifications become executable, directly generating working implementations. The project includes:
+Flowspec is a comprehensive toolkit for implementing **Spec-Driven Development (SDD)** - a methodology where specifications become executable, directly generating working implementations. The project includes:
 
 - **Specify CLI** - Python-based CLI tool for bootstrapping spec-driven projects
 - **Multi-agent templates** - Support for 13+ AI coding assistants (Claude, Copilot, Gemini, Cursor, Windsurf, etc.)
@@ -30,7 +30,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh  # Install uv
 ```bash
 # Clone and setup
 git clone <repo-url>
-cd jp-spec-kit
+cd flowspec
 
 # Install dependencies
 uv sync
@@ -191,7 +191,7 @@ Examples:
 ## Project Structure
 
 ```
-jp-spec-kit/
+flowspec/
 ├── src/specify_cli/        # CLI source code
 │   ├── __init__.py        # Main CLI logic and AGENT_CONFIG
 │   └── ...
@@ -346,7 +346,7 @@ After pushing, GitHub Actions will:
 - Build documentation
 - Create release packages (on main branch)
 
-Monitor at: https://github.com/[username]/jp-spec-kit/actions
+Monitor at: https://github.com/[username]/flowspec/actions
 
 ## Resources
 

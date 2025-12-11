@@ -1,6 +1,6 @@
 ---
 id: task-172
-title: Define JPSpec Workflow Transition Validation Schema
+title: Define Flowspec Workflow Transition Validation Schema
 status: Done
 assignee: []
 created_date: '2025-11-30 21:31'
@@ -17,7 +17,7 @@ priority: high
 - [x] AC2: Document all 7 workflow transitions with complete artifact specifications
 - [x] AC3: Create validation mode enum: NONE | KEYWORD["<string>"] | PULL_REQUEST
 - [x] AC4: Set all transitions to validation: NONE as default
-- [x] AC5: Add transition schema to jpspec_workflow.yml
+- [x] AC5: Add transition schema to flowspec_workflow.yml
 - [x] AC6: Create validation for transition definitions (all 3 fields required)
 - [x] AC7: Document artifact path patterns ({feature}, {NNN}, {slug} variables)
 <!-- AC:END -->
@@ -26,7 +26,7 @@ priority: high
 
 <!-- SECTION:NOTES:BEGIN -->
 ## Summary
-Define the complete input/output artifacts and validation gates for each JPSpec workflow transition. Each transition MUST define its validation mode.
+Define the complete input/output artifacts and validation gates for each Flowspec workflow transition. Each transition MUST define its validation mode.
 
 ## Validation Mode Types
 

@@ -1,10 +1,10 @@
 # agents.md Integration for Claude Code
 
-This document explains how jp-spec-kit integrates the [agents.md specification](https://agents.md/) with Claude Code's slash commands.
+This document explains how flowspec integrates the [agents.md specification](https://agents.md/) with Claude Code's slash commands.
 
 ## Overview
 
-jp-spec-kit uses **15 specialized AI agents** defined in `.agents/` directory following the agents.md standard. These agents are dynamically loaded into Claude Code slash commands via a Python integration layer.
+flowspec uses **15 specialized AI agents** defined in `.agents/` directory following the agents.md standard. These agents are dynamically loaded into Claude Code slash commands via a Python integration layer.
 
 ## Architecture
 
@@ -276,7 +276,7 @@ Potential improvements to the integration layer:
 
 - **agents.md Spec**: https://agents.md/
 - **Claude Code Docs**: https://docs.claude.com/claude-code
-- **JP Spec Kit**: https://github.com/yourrepo/jp-spec-kit
+- **Flowspec**: https://github.com/yourrepo/flowspec
 - **Spec-Driven Development**: See `spec-driven.md`
 
 ## Support
@@ -289,4 +289,4 @@ For issues or questions:
 
 ---
 
-*This integration layer ensures jp-spec-kit remains compatible with the agents.md standard while providing seamless integration with Claude Code's slash command system.*
+*This integration layer ensures flowspec remains compatible with the agents.md standard while providing seamless integration with Claude Code's slash command system.*

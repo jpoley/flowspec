@@ -67,7 +67,7 @@ jobs:
           restore-keys: |
             semgrep-${{ runner.os }}-
 
-      - name: Install JP Spec Kit
+      - name: Install Flowspec
         run: |
           pip install uv
           # Install from local checkout (this repo's code)

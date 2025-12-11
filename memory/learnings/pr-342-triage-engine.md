@@ -190,5 +190,5 @@ Before submitting PRs with heuristic/pattern-matching code:
 
 ## References
 
-- [PR #342](https://github.com/jpoley/jp-spec-kit/pull/342) - Original PR with Copilot review
-- [GitHub Copilot Review Comments](https://github.com/jpoley/jp-spec-kit/pull/342#pullrequestreview-*) - 16 issues identified
+- [PR #342](https://github.com/jpoley/flowspec/pull/342) - Original PR with Copilot review
+- [GitHub Copilot Review Comments](https://github.com/jpoley/flowspec/pull/342#pullrequestreview-*) - 16 issues identified

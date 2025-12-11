@@ -295,7 +295,7 @@ jobs:
 
 **Path**: Repository → Settings → Pages
 
-1. Go to https://github.com/jpoley/jp-spec-kit/settings/pages
+1. Go to https://github.com/jpoley/flowspec/settings/pages
 2. Under "Build and deployment":
    - Source: **GitHub Actions**
 3. Save
@@ -306,7 +306,7 @@ Only needed if you want to keep the current workflow pattern.
 
 **Path**: Repository → Settings → Actions → General
 
-1. Go to https://github.com/jpoley/jp-spec-kit/settings/actions
+1. Go to https://github.com/jpoley/flowspec/settings/actions
 2. Scroll to "Workflow permissions"
 3. Check: **Allow GitHub Actions to create and approve pull requests**
 4. Save
@@ -317,7 +317,7 @@ Only needed if you want the workflow to push directly to main.
 
 **Path**: Repository → Settings → Branches → main → Edit
 
-1. Go to https://github.com/jpoley/jp-spec-kit/settings/branches
+1. Go to https://github.com/jpoley/flowspec/settings/branches
 2. Click "Edit" on the main branch rule
 3. Under "Bypass list", add the GitHub Actions bot
 4. Save
@@ -392,7 +392,7 @@ A: Same process - make your fix, merge to main, then `git tag v0.2.344 && git pu
 
 ### Step 1: Enable GitHub Pages (Manual - Repository Settings)
 
-1. Go to https://github.com/jpoley/jp-spec-kit/settings/pages
+1. Go to https://github.com/jpoley/flowspec/settings/pages
 2. Set Source to **GitHub Actions**
 3. Save
 

@@ -778,7 +778,7 @@ This allows JP Flowspec hooks to manage Claude Code hooks as artifacts.
 
 ### 4.5 Compatibility
 
-**Python Version**: Requires Python 3.11+ (same as jp-spec-kit)
+**Python Version**: Requires Python 3.11+ (same as flowspec)
 
 **Operating Systems**:
 - ✅ Linux (tested on Ubuntu 22.04, Arch)
@@ -790,7 +790,7 @@ This allows JP Flowspec hooks to manage Claude Code hooks as artifacts.
 - Supports: bash, zsh, sh, python, node
 
 **Backward Compatibility**:
-- Hook schema versioned independently of jp-spec-kit
+- Hook schema versioned independently of flowspec
 - Breaking changes to event schema require major version bump
 - Deprecation warnings 6 months before removal
 
@@ -814,7 +814,7 @@ This allows JP Flowspec hooks to manage Claude Code hooks as artifacts.
 
 The following tasks have been created in the backlog system:
 
-1. **task-198**: Define Event Model Schema for jp-spec-kit Hooks
+1. **task-198**: Define Event Model Schema for flowspec Hooks
    - Status: To Do
    - Assignee: @pm-planner
    - Labels: design, schema, hooks
@@ -983,7 +983,7 @@ task-210 (ADR) ← parallel to implementation
 4. Iteration: Refine YAML schema based on feedback
 
 **Track 3: Value Validation (Week 4-5)**
-1. Dogfooding: Use hooks in jp-spec-kit development itself
+1. Dogfooding: Use hooks in flowspec development itself
 2. Beta testing: 10 external users enable hooks, collect feedback
 3. Metrics analysis: Measure adoption rate, time savings, error rate
 4. Decision: Proceed to GA or pivot based on metrics
@@ -1157,7 +1157,7 @@ task-210 (ADR) ← parallel to implementation
 - Python 3.11+ (subprocess, asyncio, json, yaml)
 - YAML parser: PyYAML or ruamel.yaml
 - JSON Schema validator: jsonschema
-- No new external dependencies beyond what jp-spec-kit already requires
+- No new external dependencies beyond what flowspec already requires
 
 ### Constraints
 

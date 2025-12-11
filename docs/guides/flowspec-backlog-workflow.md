@@ -6,7 +6,7 @@ Complete guide to using `/flowspec` commands with backlog.md task management for
 
 - [Overview](#overview)
 - [How It Works](#how-it-works)
-- [Task Format for JPSpec Compatibility](#task-format-for-flowspec-compatibility)
+- [Task Format for Flowspec Compatibility](#task-format-for-flowspec-compatibility)
 - [Workflow State Transitions](#workflow-state-transitions)
 - [Command Integration Reference](#command-integration-reference)
 - [Best Practices](#best-practices)
@@ -98,7 +98,7 @@ Before executing, each `/flowspec` command validates task state:
 #   - Run /flow:plan first
 ```
 
-## Task Format for JPSpec Compatibility
+## Task Format for Flowspec Compatibility
 
 ### Required Fields
 

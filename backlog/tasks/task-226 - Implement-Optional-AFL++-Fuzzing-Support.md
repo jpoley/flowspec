@@ -92,7 +92,7 @@ Sections:
 7. Mark as advanced/optional feature
 
 #### Step 5: Mark as Optional Feature (1 hour)
-- Add feature flag: `JPSPEC_FUZZING_ENABLED`
+- Add feature flag: `FLOWSPEC_FUZZING_ENABLED`
 - Skip if AFL++ not installed
 - Document as v2.0/advanced feature
 

@@ -65,10 +65,10 @@ Create an optimized Docker image containing Semgrep and specify-cli for air-gapp
    # Stage 2: Runtime
    FROM python:3.11-slim
    
-   LABEL org.opencontainers.image.title="JP Spec Kit Security Scanner"
-   LABEL org.opencontainers.image.description="Security scanning tools for JP Spec Kit"
+   LABEL org.opencontainers.image.title="Flowspec Security Scanner"
+   LABEL org.opencontainers.image.description="Security scanning tools for Flowspec"
    LABEL org.opencontainers.image.version="1.0.0"
-   LABEL org.opencontainers.image.source="https://github.com/yourusername/jp-spec-kit"
+   LABEL org.opencontainers.image.source="https://github.com/yourusername/flowspec"
    
    # Install runtime dependencies
    RUN apt-get update && apt-get install -y \
@@ -284,13 +284,13 @@ Create an optimized Docker image containing Semgrep and specify-cli for air-gapp
    
    Pull the latest image:
    ```bash
-   docker pull ghcr.io/yourusername/jp-spec-kit/security-scanner:latest
+   docker pull ghcr.io/yourusername/flowspec/security-scanner:latest
    ```
    
    Scan a project:
    ```bash
    docker run --rm -v $(pwd):/src \
-     ghcr.io/yourusername/jp-spec-kit/security-scanner:latest
+     ghcr.io/yourusername/flowspec/security-scanner:latest
    ```
    
    ## Usage
@@ -298,7 +298,7 @@ Create an optimized Docker image containing Semgrep and specify-cli for air-gapp
    ### Basic Scan
    ```bash
    docker run --rm -v /path/to/project:/src \
-     ghcr.io/yourusername/jp-spec-kit/security-scanner:latest
+     ghcr.io/yourusername/flowspec/security-scanner:latest
    ```
    
    ### Custom Configuration
@@ -306,14 +306,14 @@ Create an optimized Docker image containing Semgrep and specify-cli for air-gapp
    docker run --rm \
      -v /path/to/project:/src \
      -v /path/to/.flow:/src/.flowspec \
-     ghcr.io/yourusername/jp-spec-kit/security-scanner:latest \
+     ghcr.io/yourusername/flowspec/security-scanner:latest \
      --policy .flowspec/security-policy.yml
    ```
    
    ### Save Results
    ```bash
    docker run --rm -v $(pwd):/src \
-     ghcr.io/yourusername/jp-spec-kit/security-scanner:latest \
+     ghcr.io/yourusername/flowspec/security-scanner:latest \
      --format sarif --output /src/results.sarif
    ```
    
@@ -324,14 +324,14 @@ Create an optimized Docker image containing Semgrep and specify-cli for air-gapp
    - name: Security Scan
      run: |
        docker run --rm -v ${{ github.workspace }}:/src \
-         ghcr.io/yourusername/jp-spec-kit/security-scanner:latest \
+         ghcr.io/yourusername/flowspec/security-scanner:latest \
          --fail-on critical,high
    ```
    
    ### GitLab CI
    ```yaml
    security-scan:
-     image: ghcr.io/yourusername/jp-spec-kit/security-scanner:latest
+     image: ghcr.io/yourusername/flowspec/security-scanner:latest
      script:
        - specify security scan --fail-on critical,high
    ```
@@ -340,8 +340,8 @@ Create an optimized Docker image containing Semgrep and specify-cli for air-gapp
    
    1. Pull image on internet-connected machine:
    ```bash
-   docker pull ghcr.io/yourusername/jp-spec-kit/security-scanner:latest
-   docker save -o security-scanner.tar ghcr.io/yourusername/jp-spec-kit/security-scanner:latest
+   docker pull ghcr.io/yourusername/flowspec/security-scanner:latest
+   docker save -o security-scanner.tar ghcr.io/yourusername/flowspec/security-scanner:latest
    ```
    
    2. Transfer `security-scanner.tar` to air-gapped environment
@@ -353,7 +353,7 @@ Create an optimized Docker image containing Semgrep and specify-cli for air-gapp
    
    4. Use normally:
    ```bash
-   docker run --rm -v $(pwd):/src ghcr.io/yourusername/jp-spec-kit/security-scanner:latest
+   docker run --rm -v $(pwd):/src ghcr.io/yourusername/flowspec/security-scanner:latest
    ```
    ```
 

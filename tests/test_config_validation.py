@@ -18,7 +18,7 @@ runner = CliRunner()
 @pytest.fixture
 def workflow_content() -> str:
     """Return sample workflow YAML content."""
-    return """# JPSpec Workflow Configuration
+    return """# Flowspec Workflow Configuration
 version: "1.0"
 
 transitions:

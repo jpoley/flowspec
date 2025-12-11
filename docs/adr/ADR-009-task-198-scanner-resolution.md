@@ -15,7 +15,7 @@ Task-220 was created to "Resolve Relationship with task-198 Unified Vulnerabilit
 
 During investigation, we discovered:
 
-1. **Task-198 was repurposed** - It now covers "Define Event Model Schema for jp-spec-kit Hooks" (completed 2025-12-03), not a unified vulnerability scanner
+1. **Task-198 was repurposed** - It now covers "Define Event Model Schema for flowspec Hooks" (completed 2025-12-03), not a unified vulnerability scanner
 2. **No separate scanner task exists** - The "Trivy + Snyk unified scanner" was a conceptual reference, not a tracked task
 3. **Native implementation supersedes** - The `/flow:security` architecture (ADR-005 through ADR-008) provides unified scanning through the adapter pattern
 
@@ -73,7 +73,7 @@ Since task-198 was never about security scanning, there is nothing to supersede,
 
 ## References
 
-- task-198: Define Event Model Schema for jp-spec-kit Hooks (Done)
+- task-198: Define Event Model Schema for flowspec Hooks (Done)
 - task-220: Resolve Relationship with task-198 (This resolution)
 - ADR-005: Scanner Orchestration Pattern
 - ADR-006: AI Triage Engine Design

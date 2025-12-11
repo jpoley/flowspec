@@ -48,7 +48,7 @@ This is a one-time fix while we implement the proper workflow fix in task-313.
 <!-- SECTION:NOTES:BEGIN -->
 ## Implementation Complete
 
-**PR**: https://github.com/jpoley/jp-spec-kit/pull/635
+**PR**: https://github.com/jpoley/flowspec/pull/635
 **Branch**: 314-sync-version
 **Commit**: 197df31
 
