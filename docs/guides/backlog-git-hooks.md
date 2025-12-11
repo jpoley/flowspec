@@ -207,7 +207,4 @@ If you need real-time event emission without git commits, consider:
 
 ## See Also
 
-- [Hooks System Documentation](../reference/hooks.md)
-- [Event Types Reference](../reference/event-types.md)
-- [Backlog Integration Guide](./backlog-integration.md)
 - [Workflow Configuration](./workflow-customization.md)

@@ -43,7 +43,8 @@ else
 fi
 
 # Filter for backlog task files
-TASK_FILES=$(echo "$CHANGED_FILES" | grep -E '^backlog/tasks/task-[0-9.]+\.md$' || true)
+# Matches: task-123.md, task-123 - Title.md, task-204.01 - Subtask.md
+TASK_FILES=$(echo "$CHANGED_FILES" | grep -E '^backlog/tasks/task-[0-9.]+( - .*)?\.md$' || true)
 
 if [ -z "$TASK_FILES" ]; then
     # No task files changed
@@ -116,16 +117,16 @@ while IFS= read -r file; do
 
         # Check for AC checkbox changes
         # Extract AC section from current file
-        CURRENT_ACS=$(sed -n '/^## Acceptance Criteria/,/^##/p' "$TASK_PATH" | grep -E '^\- \[(x| )\] #[0-9]+' || echo "")
-        PREV_ACS=$(echo "$PREV_CONTENT" | sed -n '/^## Acceptance Criteria/,/^##/p' | grep -E '^\- \[(x| )\] #[0-9]+' || echo "")
+        CURRENT_ACS=$(sed -n '/^## Acceptance Criteria/,/^##/p' "$TASK_PATH" | grep -E '^- \[(x| )\] #[0-9]+' || echo "")
+        PREV_ACS=$(echo "$PREV_CONTENT" | sed -n '/^## Acceptance Criteria/,/^##/p' | grep -E '^- \[(x| )\] #[0-9]+' || echo "")
 
         # Compare checkbox states
         if [ "$CURRENT_ACS" != "$PREV_ACS" ]; then
             # Count checked boxes in current and previous
             # Note: grep -c returns 0 (count) but exits 1 when no match, which would trigger || echo "0"
             # causing "0\n0". Use a subshell to capture only the count.
-            CURRENT_CHECKED=$(echo "$CURRENT_ACS" | grep -c '^\- \[x\]' 2>/dev/null || true)
-            PREV_CHECKED=$(echo "$PREV_ACS" | grep -c '^\- \[x\]' 2>/dev/null || true)
+            CURRENT_CHECKED=$(echo "$CURRENT_ACS" | grep -c '^- \[x\]' 2>/dev/null || true)
+            PREV_CHECKED=$(echo "$PREV_ACS" | grep -c '^- \[x\]' 2>/dev/null || true)
             # Ensure we have valid integers (empty becomes 0)
             CURRENT_CHECKED=${CURRENT_CHECKED:-0}
             PREV_CHECKED=${PREV_CHECKED:-0}
