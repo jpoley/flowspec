@@ -17,9 +17,9 @@
 
 ---
 
-## What is JP Spec Kit?
+## What is flowspec?
 
-JP Spec Kit transforms how you build software with AI. Instead of giving AI loose instructions, you give it **structured specifications** and **tracked tasks**. Each `/flowspec` command launches specialized AI agents that:
+flowspec transforms how you build software with AI. Instead of giving AI loose instructions, you give it **structured specifications** and **tracked tasks**. Each `/flowspec` command launches specialized AI agents that:
 
 1. **Read** existing specifications and tasks
 2. **Create** the right artifacts for each phase
@@ -28,7 +28,7 @@ JP Spec Kit transforms how you build software with AI. Instead of giving AI loos
 
 ## Quick Start
 
-### Option A: Devcontainer (Recommended)
+### Option A: Devcontainer 
 
 Use the pre-built [`jpoley/flowspec-agents`](https://hub.docker.com/r/jpoley/flowspec-agents) Docker image with all AI coding assistants pre-installed:
 
@@ -36,7 +36,7 @@ Use the pre-built [`jpoley/flowspec-agents`](https://hub.docker.com/r/jpoley/flo
 # Copy devcontainer template to your project
 mkdir -p .devcontainer
 curl -o .devcontainer/devcontainer.json \
-  https://raw.githubusercontent.com/jpoley/jp-spec-kit/main/templates/devcontainer/devcontainer.json
+  https://raw.githubusercontent.com/jpoley/flowspec/main/templates/devcontainer/devcontainer.json
 ```
 
 Open in VS Code → "Reopen in Container". The image includes:
@@ -47,7 +47,7 @@ Open in VS Code → "Reopen in Container". The image includes:
 
 ```bash
 # Specify CLI (project initialization)
-uv tool install specify-cli --from git+https://github.com/jpoley/jp-spec-kit.git
+uv tool install specify-cli --from git+https://github.com/jpoley/flowspec.git
 
 # Backlog.md (task management)
 pnpm i -g backlog.md
