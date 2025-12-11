@@ -1,5 +1,5 @@
 # JP Spec Kit / SpecFlow Agents Development Container
-# Published to Docker Hub: jpoley/specflow-agents
+# Published to Docker Hub: jpoley/flowspec-agents
 #
 # This Dockerfile builds a pre-configured development environment with:
 # - Python 3.11 + uv package manager
@@ -9,8 +9,8 @@
 # - Common development tools
 #
 # Usage:
-#   docker pull jpoley/specflow-agents:latest
-#   Or reference in devcontainer.json: "image": "jpoley/specflow-agents:latest"
+#   docker pull jpoley/flowspec-agents:latest
+#   Or reference in devcontainer.json: "image": "jpoley/flowspec-agents:latest"
 
 FROM mcr.microsoft.com/devcontainers/python:3.11-bullseye
 
