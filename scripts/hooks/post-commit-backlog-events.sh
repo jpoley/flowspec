@@ -113,8 +113,8 @@ while IFS= read -r file; do
 
         # Check for AC checkbox changes
         # Extract AC section from current file
-        CURRENT_ACS=$(sed -n '/^## Acceptance Criteria/,/^##/p' "$TASK_PATH" | grep -E '^\- \[(x| )\] #[0-9]+' || echo "")
-        PREV_ACS=$(echo "$PREV_CONTENT" | sed -n '/^## Acceptance Criteria/,/^##/p' | grep -E '^\- \[(x| )\] #[0-9]+' || echo "")
+        CURRENT_ACS=$( (cat "$TASK_PATH"; echo "## END_OF_FILE_DUMMY") | sed -n '/^## Acceptance Criteria/,/^##/p' | grep -E '^\- \[(x| )\] #[0-9]+' || echo "")
+        PREV_ACS=$( (printf "%s\n## END_OF_FILE_DUMMY" "$PREV_CONTENT") | sed -n '/^## Acceptance Criteria/,/^##/p' | grep -E '^\- \[(x| )\] #[0-9]+' || echo "")
 
         # Compare checkbox states
         if [ "$CURRENT_ACS" != "$PREV_ACS" ]; then
