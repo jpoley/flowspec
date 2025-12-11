@@ -44,7 +44,7 @@ Files to modify:
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
-PR created: https://github.com/jpoley/jp-spec-kit/pull/600
+PR created: https://github.com/jpoley/flowspec/pull/600
 
 ## Completed
 

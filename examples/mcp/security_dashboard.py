@@ -7,7 +7,7 @@ This example demonstrates how to:
 3. Display security posture trends
 
 Requirements:
-    - JP Spec Kit installed in each repository
+    - Flowspec installed in each repository
     - MCP SDK installed: uv add mcp
     - Each repo has .mcp.json configured with flowspec-security server
 
@@ -386,7 +386,7 @@ async def run_dashboard(
         error_msg = (
             "Error: Could not connect to any MCP servers.\n\n"
             "Make sure each repository has:\n"
-            "  1. JP Spec Kit installed\n"
+            "  1. Flowspec installed\n"
             "  2. Security scan has been run at least once\n"
             "  3. MCP server is configured in .mcp.json"
         )

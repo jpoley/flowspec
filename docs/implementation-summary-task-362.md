@@ -259,7 +259,7 @@ Potential improvements for future iterations:
 
 ```bash
 # Generate settings for primary role
-cd /home/jpoley/ps/jp-spec-kit-task-362
+cd /home/jpoley/ps/flowspec-task-362
 uv run specify vscode generate
 
 # Test with different roles

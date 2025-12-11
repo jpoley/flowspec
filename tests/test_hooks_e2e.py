@@ -1,4 +1,4 @@
-"""End-to-end tests for jp-spec-kit hooks system.
+"""End-to-end tests for flowspec hooks system.
 
 This test suite validates the complete hooks workflow from configuration
 to execution, including integration between all components:

@@ -19,14 +19,14 @@ Complete documentation created for task-9: Update documentation and user guides 
 
 **Self-Critique**:
 - ✅ Can a new user get started in <5 minutes? **YES** - Clear step-by-step with exact commands
-- ✅ Are examples realistic? **YES** - Based on actual jp-spec-kit usage patterns
+- ✅ Are examples realistic? **YES** - Based on actual flowspec usage patterns
 - ✅ Is it concise? **YES** - No fluff, action-oriented
 - ⚠️ Could add: Video walkthrough link (when available)
 
 ### 2. Comprehensive User Guide
 **File**: `docs/guides/backlog-user-guide.md`
 **Length**: ~1200 lines
-**Purpose**: Complete reference for all Backlog.md features and jp-spec-kit integration
+**Purpose**: Complete reference for all Backlog.md features and flowspec integration
 
 **Key Sections**:
 - Overview and architecture
@@ -241,7 +241,7 @@ Evidence:
 **ANSWER: YES**
 
 Evidence:
-- Examples based on real jp-spec-kit project structure
+- Examples based on real flowspec project structure
 - Complete commands (no placeholders or "...")
 - Real user stories (US1, US2, etc.)
 - Actual task IDs (task-001, task-012)

@@ -21,7 +21,7 @@ The two agent directories have diverged significantly and need to be synchronize
 
 | Directory | Files | Purpose |
 |-----------|-------|---------|
-| `.agents/` | 15 | Enhanced agents for JP Spec Kit workflows (MCP tools, loop classification, detailed prompts) |
+| `.agents/` | 15 | Enhanced agents for Flowspec workflows (MCP tools, loop classification, detailed prompts) |
 | `.claude/agents/` | 5 | Claude Code Task tool agents (simpler prompts, basic tools) |
 
 ## Issues Found

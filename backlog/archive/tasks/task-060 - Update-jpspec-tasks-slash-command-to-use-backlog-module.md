@@ -1,6 +1,6 @@
 ---
 id: task-060
-title: 'Update /jpspec:tasks slash command to use backlog module'
+title: 'Update /flowspec:tasks slash command to use backlog module'
 status: Done
 assignee:
   - backend-engineer
@@ -16,7 +16,7 @@ dependencies: []
 
 ## Implementation Complete
 
-Updated `/jpspec:tasks` slash command to integrate with the backlog module.
+Updated `/flowspec:tasks` slash command to integrate with the backlog module.
 
 ### Changes Made
 
@@ -31,14 +31,14 @@ Updated `/jpspec:tasks` slash command to integrate with the backlog module.
    - Creates individual task files in `backlog/tasks/`
 
 3. **Documentation Created**:
-   - Implementation guide: `docs/jpspec-tasks-command-update.md`
+   - Implementation guide: `docs/flowspec-tasks-command-update.md`
    - Testing guide: `docs/task-6-testing-guide.md`
    - Summary document: `docs/task-6-implementation-summary.md`
 
 ### Workflow
 
 ```
-/jpspec:tasks
+/flowspec:tasks
   → AI generates intermediate tasks.md
   → specify tasks generate converts to Backlog.md format
   → Output: tasks.md + backlog/tasks/*.md

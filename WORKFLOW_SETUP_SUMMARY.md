@@ -215,7 +215,7 @@ Each example is complete, validated, and includes explanation.
 ## File Structure Created
 
 ```
-jp-spec-kit/
+flowspec/
 ├── flowspec_workflow.yml                    ← To be created (task-118)
 ├── memory/
 │   ├── WORKFLOW_DESIGN_SPEC.md           ✅ Created

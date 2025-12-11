@@ -698,4 +698,4 @@ def find_user(user_id):
 ---
 
 **Last Updated**: 2025-12-04
-**Maintained By**: JP Spec Kit Security Team
+**Maintained By**: Flowspec Security Team

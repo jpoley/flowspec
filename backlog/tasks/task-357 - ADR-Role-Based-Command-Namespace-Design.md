@@ -34,7 +34,7 @@ Document architecture decision for transitioning from flat /flowspec and /specki
 # ADR: Role-Based Command Namespace Design
 
 ## Deliverable
-Created comprehensive ADR at: /home/jpoley/ps/jp-spec-kit/docs/adr/ADR-role-based-command-namespaces.md
+Created comprehensive ADR at: /home/jpoley/ps/flowspec/docs/adr/ADR-role-based-command-namespaces.md
 
 ## Key Design Decisions
 

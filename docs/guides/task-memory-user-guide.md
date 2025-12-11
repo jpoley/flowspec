@@ -670,7 +670,7 @@ A: Yes. All operations work offline. Sync happens via standard git push/pull whe
 ## Feedback
 
 Found an issue or have a suggestion? Open an issue or contribute to the documentation:
-- GitHub Issues: [jp-spec-kit/issues](https://github.com/yourusername/jp-spec-kit/issues)
+- GitHub Issues: [flowspec/issues](https://github.com/yourusername/flowspec/issues)
 - Documentation: `docs/guides/task-memory-user-guide.md`
 
 ---

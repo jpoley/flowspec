@@ -621,7 +621,7 @@ Run this to find all validation markers:
 **Scenario: Constitution template not found**
 - If `templates/constitutions/constitution-{tier}.md` does not exist
 - Output clear error message
-- Suggest checking JP Spec Kit installation
+- Suggest checking Flowspec installation
 - Do not create incomplete constitution file
 
 **Scenario: Existing constitution.md present**
@@ -630,9 +630,9 @@ Run this to find all validation markers:
 - Proceed with write (user controls via git)
 
 **Scenario: templates/ directory not accessible**
-- If running outside of JP Spec Kit structure
-- Output error explaining command must be run in project with JP Spec Kit installed
-- Provide guidance: "Ensure templates/constitutions/ exists in your project or JP Spec Kit installation"
+- If running outside of Flowspec structure
+- Output error explaining command must be run in project with Flowspec installed
+- Provide guidance: "Ensure templates/constitutions/ exists in your project or Flowspec installation"
 
 ## Important Notes
 

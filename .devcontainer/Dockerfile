@@ -1,4 +1,4 @@
-# JP Spec Kit / SpecFlow Agents Development Container
+# Flowspec / SpecFlow Agents Development Container
 # Published to Docker Hub: jpoley/flowspec-agents
 #
 # This Dockerfile builds a pre-configured development environment with:
@@ -74,7 +74,7 @@ RUN echo '' >> /home/vscode/.zshrc \
 # Labels for Docker Hub
 LABEL org.opencontainers.image.title="SpecFlow Agents"
 LABEL org.opencontainers.image.description="Development container with AI coding assistants (Claude Code, Codex, Gemini, GitHub Copilot) and task management tools"
-LABEL org.opencontainers.image.source="https://github.com/jpoley/jp-spec-kit"
+LABEL org.opencontainers.image.source="https://github.com/jpoley/flowspec"
 LABEL org.opencontainers.image.vendor="jpoley"
 LABEL org.opencontainers.image.licenses="MIT"
 

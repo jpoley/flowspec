@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-EXAMPLE_HOOKS_YAML = """# JP Spec Kit Hooks Configuration
-# Documentation: https://github.com/jpoley/jp-spec-kit/docs/guides/hooks.md
+EXAMPLE_HOOKS_YAML = """# Flowspec Hooks Configuration
+# Documentation: https://github.com/jpoley/flowspec/docs/guides/hooks.md
 
 version: "1.0"
 
@@ -155,7 +155,7 @@ echo "Quality gate passed"
 
 README_HOOKS = """# Hooks Directory
 
-This directory contains custom hooks for the JP Spec Kit workflow.
+This directory contains custom hooks for the Flowspec workflow.
 
 ## Files
 
@@ -213,7 +213,7 @@ specify hooks validate
 
 ## Documentation
 
-Full documentation: https://github.com/jpoley/jp-spec-kit/blob/main/docs/guides/hooks.md
+Full documentation: https://github.com/jpoley/flowspec/blob/main/docs/guides/hooks.md
 """
 
 

@@ -1,4 +1,4 @@
-# ✅ Backlog.md + jp-spec-kit Integration - COMPLETE
+# ✅ Backlog.md + flowspec Integration - COMPLETE
 
 **Host**: galway (Ubuntu 24.04)
 **Date**: 2025-11-23
@@ -8,7 +8,7 @@
 
 ## Summary
 
-The complete integration of **Backlog.md MCP** with **jp-spec-kit** is now **fully functional and ready for use**. All components have been installed, configured, tested, and documented.
+The complete integration of **Backlog.md MCP** with **flowspec** is now **fully functional and ready for use**. All components have been installed, configured, tested, and documented.
 
 ---
 
@@ -16,14 +16,14 @@ The complete integration of **Backlog.md MCP** with **jp-spec-kit** is now **ful
 
 ### 1. Research & Planning ✅
 - [x] Researched Backlog.md MCP server capabilities (v1.20.1)
-- [x] Analyzed jp-spec-kit's current task management system
+- [x] Analyzed flowspec's current task management system
 - [x] Created comprehensive 12,000-word PRD with chain of thought reasoning
 - [x] Designed integration architecture (hybrid model)
 - [x] Planned implementation roadmap (48 tasks, 5 user stories)
 
 ### 2. Installation & Configuration ✅
 - [x] Backlog.md CLI installed (v1.20.1 via pnpm)
-- [x] Project initialized: "jp-spec-kit"
+- [x] Project initialized: "flowspec"
 - [x] MCP server configured in `.mcp.json`
 - [x] Directory structure created (`backlog/`)
 - [x] Configuration files set up (`backlog/config.yml`)
@@ -65,8 +65,8 @@ Created:
 ### Backlog Tasks (4 tasks created)
 ```
 backlog/tasks/
-  ├── task-1 - Integrate-Backlog.md-with-jp-spec-kit.md [In Progress]
-  ├── task-2 - Implement-task-parser-for-jp-spec-kit-format.md [To Do]
+  ├── task-1 - Integrate-Backlog.md-with-flowspec.md [In Progress]
+  ├── task-2 - Implement-task-parser-for-flowspec-format.md [To Do]
   ├── task-3 - Implement-Backlog.md-file-writer.md [To Do]
   └── task-4 - Create-dependency-graph-builder.md [To Do]
 ```
@@ -123,7 +123,7 @@ scripts/bash/
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│            SPEC-DRIVEN WORKFLOW (jp-spec-kit)           │
+│            SPEC-DRIVEN WORKFLOW (flowspec)           │
 └─────────────────────────────────────────────────────────┘
                           ↓
         /flow:specify → spec.md (user stories)
@@ -159,7 +159,7 @@ scripts/bash/
 
 ### Key Design Decisions
 
-1. **Hybrid Model**: jp-spec-kit generates tasks directly to Backlog.md
+1. **Hybrid Model**: flowspec generates tasks directly to Backlog.md
 2. **Labels for Organization**: User stories (US1, US2) preserved as labels
 3. **Generate-Once**: Tasks generated from specs, then managed in Backlog.md
 4. **Optional Regeneration**: Conflict-aware regeneration for spec updates
@@ -211,7 +211,7 @@ backlog task archive task-1
 
 ## 📊 Current Status
 
-### Project: jp-spec-kit
+### Project: flowspec
 
 **Tasks**: 4 total
 - In Progress: 1 (25%)
@@ -219,8 +219,8 @@ backlog task archive task-1
 - Done: 0 (0%)
 
 **Recent Tasks**:
-- task-1: Integrate Backlog.md with jp-spec-kit [In Progress]
-- task-2: Implement task parser for jp-spec-kit format [To Do]
+- task-1: Integrate Backlog.md with flowspec [In Progress]
+- task-2: Implement task parser for flowspec format [To Do]
 - task-3: Implement Backlog.md file writer [To Do]
 - task-4: Create dependency graph builder [To Do]
 
@@ -252,7 +252,7 @@ Try:
 - [ ] Build Backlog.md writer (`src/specify_cli/backlog/writer.py`)
 - [ ] Build task mapper (`src/specify_cli/backlog/mapper.py`)
 - [ ] Enhance `/flow:tasks` command
-- [ ] Test with real jp-spec-kit features
+- [ ] Test with real flowspec features
 
 ### Medium Term (Full Integration - 2-3 months)
 - [ ] Add migration tool (tasks.md → Backlog.md)
@@ -266,7 +266,7 @@ Try:
 ## ✅ Verification Checklist
 
 - [x] Backlog.md installed (v1.20.1)
-- [x] Project initialized (jp-spec-kit)
+- [x] Project initialized (flowspec)
 - [x] MCP server configured (.mcp.json)
 - [x] Directory structure created (backlog/)
 - [x] Demo tasks created (4 tasks)
@@ -287,14 +287,14 @@ Try:
 ```bash
 $ backlog search "integrate"
 Tasks:
-  task-1 - Integrate Backlog.md with jp-spec-kit (In Progress) [score 0.701]
+  task-1 - Integrate Backlog.md with flowspec (In Progress) [score 0.701]
 ```
 
 ### Test 2: Task Files ✅
 ```bash
 $ ls -1 backlog/tasks/
-task-1 - Integrate-Backlog.md-with-jp-spec-kit.md
-task-2 - Implement-task-parser-for-jp-spec-kit-format.md
+task-1 - Integrate-Backlog.md-with-flowspec.md
+task-2 - Implement-task-parser-for-flowspec-format.md
 task-3 - Implement-Backlog.md-file-writer.md
 task-4 - Create-dependency-graph-builder.md
 ```
@@ -316,8 +316,8 @@ $ git status --short | grep backlog
 M  .mcp.json
 A  backlog.md
 A  backlog/config.yml
-A  backlog/tasks/task-1 - Integrate-Backlog.md-with-jp-spec-kit.md
-A  backlog/tasks/task-2 - Implement-task-parser-for-jp-spec-kit-format.md
+A  backlog/tasks/task-1 - Integrate-Backlog.md-with-flowspec.md
+A  backlog/tasks/task-2 - Implement-task-parser-for-flowspec-format.md
 A  backlog/tasks/task-3 - Implement-Backlog.md-file-writer.md
 A  backlog/tasks/task-4 - Create-dependency-graph-builder.md
 ```
@@ -329,7 +329,7 @@ A  backlog/tasks/task-4 - Create-dependency-graph-builder.md
 ## 🎉 Success Metrics
 
 ### North Star Metric
-**Target**: 60% of jp-spec-kit features tracked in Backlog.md within 6 months
+**Target**: 60% of flowspec features tracked in Backlog.md within 6 months
 
 ### Current Baseline
 - Features using Backlog.md: 1 (integration itself)
@@ -372,7 +372,7 @@ A  backlog/tasks/task-4 - Create-dependency-graph-builder.md
 
 - **Backlog.md Docs**: https://github.com/MrLesk/Backlog.md
 - **MCP Protocol**: https://modelcontextprotocol.io
-- **jp-spec-kit**: Current repository
+- **flowspec**: Current repository
 - **Issues**: Create GitHub issues for bugs/features
 
 ---

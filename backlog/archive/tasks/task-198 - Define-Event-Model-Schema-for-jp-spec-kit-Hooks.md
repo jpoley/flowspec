@@ -1,6 +1,6 @@
 ---
 id: task-198
-title: Define Event Model Schema for jp-spec-kit Hooks
+title: Define Event Model Schema for flowspec Hooks
 status: Done
 assignee:
   - '@backend-engineer'
@@ -17,7 +17,7 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Define canonical event types and JSON payload structure for the jp-spec-kit hook system. This is the foundation that all other components depend on.
+Define canonical event types and JSON payload structure for the flowspec hook system. This is the foundation that all other components depend on.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

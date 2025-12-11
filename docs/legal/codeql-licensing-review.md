@@ -178,7 +178,7 @@ If CodeQL licensing doesn't fit your use case, consider these alternatives:
 - Smaller query library
 - May miss complex vulnerabilities
 
-**Integration with jp-spec-kit**:
+**Integration with flowspec**:
 ```bash
 specify security scan --scanner semgrep
 ```
@@ -217,7 +217,7 @@ For organizations requiring advanced features:
 - **Veracode** - Application security platform
 - **Fortify** - Mature SAST solution
 
-## Recommended Approach for jp-spec-kit
+## Recommended Approach for flowspec
 
 ### For Open Source Projects
 

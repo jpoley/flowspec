@@ -304,7 +304,7 @@ cd your-project
 bash scripts/bash/migrate-commands-to-subdirs.sh
 ```
 
-### For jp-spec-kit Source Repo:
+### For flowspec Source Repo:
 
 1. Move flat template files to subdirectories
 2. Update dev-setup to create subdirectory symlinks

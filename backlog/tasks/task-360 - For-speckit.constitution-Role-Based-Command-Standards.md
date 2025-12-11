@@ -33,7 +33,7 @@ Define constitutional standards for role-based command namespaces to be included
 # For speckit.constitution: Role-Based Command Standards
 
 ## Deliverable
-Created constitutional standards document at: /home/jpoley/ps/jp-spec-kit/docs/adr/constitution-role-based-command-standards.md
+Created constitutional standards document at: /home/jpoley/ps/flowspec/docs/adr/constitution-role-based-command-standards.md
 
 ## Constitutional Principles Defined
 

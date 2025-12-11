@@ -28,7 +28,7 @@ hooks:
     script: ".specify/hooks/trigger-ci.sh"
     timeout: 30
     env:
-      GITHUB_TOKEN: "${GITHUB_JPSPEC}"
+      GITHUB_TOKEN: "${GITHUB_FLOWSPEC}"
       WORKFLOW_FILE: "integration-tests.yml"
 ```
 
@@ -46,7 +46,7 @@ BRANCH=$(git branch --show-current)
 gh workflow run "$WORKFLOW_FILE" \
   --ref "$BRANCH" \
   --field feature="$FEATURE" \
-  --field trigger="jp-spec-kit-hook"
+  --field trigger="flowspec-hook"
 
 echo "✓ Triggered CI workflow: $WORKFLOW_FILE for feature $FEATURE"
 ```
@@ -59,7 +59,7 @@ on:
   workflow_dispatch:
     inputs:
       feature:
-        description: 'Feature name from jp-spec-kit'
+        description: 'Feature name from flowspec'
         required: true
       trigger:
         description: 'Trigger source'
@@ -76,7 +76,7 @@ jobs:
           echo "Running integration tests for feature: ${{ inputs.feature }}"
           pytest tests/integration/ -v
 
-      - name: Report status back to jp-spec-kit
+      - name: Report status back to flowspec
         if: always()
         run: |
           # Post status to webhook or commit status
@@ -213,7 +213,7 @@ curl -X POST "$DEPLOY_WEBHOOK_URL" \
     \"commit\": \"$COMMIT\",
     \"branch\": \"$BRANCH\",
     \"environment\": \"$ENVIRONMENT\",
-    \"triggered_by\": \"jp-spec-kit-validate\"
+    \"triggered_by\": \"flowspec-validate\"
   }"
 
 echo "✓ Triggered deployment for feature $FEATURE to $ENVIRONMENT"
@@ -293,7 +293,7 @@ gh workflow run integration-tests.yml \
 #### Receiving Events in GitHub Actions
 
 ```yaml
-# .github/workflows/jp-spec-kit-integration.yml
+# .github/workflows/flowspec-integration.yml
 name: Flowspec Integration
 
 on:
@@ -413,7 +413,7 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'FEATURE', description: 'Feature name from jp-spec-kit')
+        string(name: 'FEATURE', description: 'Feature name from flowspec')
         string(name: 'EVENT_TYPE', description: 'Event type')
         string(name: 'COMMIT', description: 'Git commit SHA')
     }
@@ -517,7 +517,7 @@ jobs:
           command: ./scripts/deploy-staging.sh
 
 workflows:
-  jp-spec-kit-events:
+  flowspec-events:
     when:
       or:
         - equal: [ "implement.completed", << pipeline.parameters.event_type >> ]
@@ -647,7 +647,7 @@ $(backlog task list -s Done --plain | head -10)
 - [x] Integration tests pass
 - [x] All acceptance criteria complete
 
-Generated with [Flowspec](https://github.com/jpoley/jp-spec-kit)
+Generated with [Flowspec](https://github.com/jpoley/flowspec)
 EOF
 )" \
   --base "$BASE_BRANCH" \

@@ -55,7 +55,7 @@ hooks:
 4. If accepted, implement and submit PR
 5. Document integration once released
 
-**Alternative**: Fork backlog.md and maintain jp-spec-kit specific version with hooks built-in.
+**Alternative**: Fork backlog.md and maintain flowspec specific version with hooks built-in.
 
 **Repository**: https://github.com/MrLesk/Backlog.md
 <!-- SECTION:DESCRIPTION:END -->

@@ -1,10 +1,10 @@
 #!/bin/bash
-# JP Spec Kit Devcontainer Post-Create Script
+# Flowspec Devcontainer Post-Create Script
 # This script runs once when the container is first created
 set -e
 
 echo "========================================"
-echo "JP Spec Kit Devcontainer Setup"
+echo "Flowspec Devcontainer Setup"
 echo "========================================"
 echo ""
 
@@ -23,16 +23,16 @@ export PATH="$PNPM_HOME:/home/vscode/.cargo/bin:/home/vscode/.local/bin:$PATH"
 # Create .zshenv for PATH (runs for ALL shells, including non-interactive)
 # This ensures PATH is set even for VS Code integrated terminal
 cat > /home/vscode/.zshenv << 'ZSHENV'
-# JP Spec Kit devcontainer PATH setup
+# Flowspec devcontainer PATH setup
 # This file runs for ALL zsh shells (login, interactive, scripts)
 
 export PNPM_HOME="/home/vscode/.local/share/pnpm"
 export PATH="$PNPM_HOME:/home/vscode/.cargo/bin:/home/vscode/.local/bin:$PATH"
 
 # Add Python venv to PATH (activation not needed, just PATH)
-if [ -d "/workspaces/jp-spec-kit/.venv/bin" ]; then
-    export PATH="/workspaces/jp-spec-kit/.venv/bin:$PATH"
-    export VIRTUAL_ENV="/workspaces/jp-spec-kit/.venv"
+if [ -d "/workspaces/flowspec/.venv/bin" ]; then
+    export PATH="/workspaces/flowspec/.venv/bin:$PATH"
+    export VIRTUAL_ENV="/workspaces/flowspec/.venv"
 fi
 ZSHENV
 
@@ -43,8 +43,8 @@ cat >> /home/vscode/.zshrc << 'ZSHRC'
 # PATH is already set by .zshenv
 
 # Activate Python virtual environment for prompt indicator
-if [ -f "/workspaces/jp-spec-kit/.venv/bin/activate" ]; then
-    source /workspaces/jp-spec-kit/.venv/bin/activate
+if [ -f "/workspaces/flowspec/.venv/bin/activate" ]; then
+    source /workspaces/flowspec/.venv/bin/activate
 fi
 
 # Aliases for AI coding agents (YOLO modes)
@@ -123,7 +123,7 @@ cat > /home/vscode/.config/claude/claude_desktop_config.json << 'EOF'
       "command": "npx",
       "args": ["-y", "backlog.md"],
       "env": {
-        "BACKLOG_DIR": "/workspaces/jp-spec-kit/backlog"
+        "BACKLOG_DIR": "/workspaces/flowspec/backlog"
       }
     }
   }
@@ -192,7 +192,7 @@ echo "  pytest tests/           - Run test suite"
 echo "  ruff check . --fix      - Lint and fix code"
 echo "  ruff format .           - Format code"
 echo "  backlog task list       - List backlog tasks"
-echo "  specify --help          - JP Spec Kit CLI"
+echo "  specify --help          - Flowspec CLI"
 echo "  claude                  - Claude Code CLI"
 echo ""
 echo "NOTE: Open a new terminal for PATH changes to take effect."

@@ -1,4 +1,4 @@
-# JP Spec Kit - Test Suite
+# Flowspec - Test Suite
 
 Comprehensive integration tests for the backlog task generation workflow.
 
@@ -160,7 +160,7 @@ uv run pytest tests/ -s
 
 ## Documentation
 
-See `/home/jpoley/ps/jp-spec-kit/docs/task-7-test-report.md` for detailed test report including:
+See `/home/jpoley/ps/flowspec/docs/task-7-test-report.md` for detailed test report including:
 - Coverage analysis
 - Edge cases tested
 - Bugs found during testing

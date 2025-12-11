@@ -9,17 +9,17 @@
 ## Executive Summary
 
 This document provides a comprehensive analysis of:
-1. How **jp-spec-kit** can integrate with **Backlog.md** for task management
+1. How **flowspec** can integrate with **Backlog.md** for task management
 2. How both tools align with **augmented coding patterns** for AI-assisted development
 3. Tested integration approaches with verification results
 4. Detailed recommendations for improvement
 
 ### Key Findings
 
-✅ **Backlog.md is fully compatible** with jp-spec-kit and offers significant improvements
+✅ **Backlog.md is fully compatible** with flowspec and offers significant improvements
 ✅ **Tested and verified** - Backlog.md v1.20.1 installed and tested successfully
 ✅ **Native MCP support** - Direct integration with Claude Code and other AI agents
-✅ **Markdown-native** - Aligns perfectly with jp-spec-kit's documentation-first approach
+✅ **Markdown-native** - Aligns perfectly with flowspec's documentation-first approach
 ✅ **Git-native** - Seamless version control integration
 
 ---
@@ -28,7 +28,7 @@ This document provides a comprehensive analysis of:
 
 1. [Chain of Thought Analysis](#chain-of-thought-analysis)
 2. [What is Backlog.md](#what-is-backlogmd)
-3. [Current jp-spec-kit Task Management](#current-jp-spec-kit-task-management)
+3. [Current flowspec Task Management](#current-flowspec-task-management)
 4. [Integration Points](#integration-points)
 5. [Augmented Coding Patterns Alignment](#augmented-coding-patterns-alignment)
 6. [Tested Integration Approaches](#tested-integration-approaches)
@@ -95,11 +95,11 @@ Step-by-step plan
 Development notes
 ```
 
-### Step 2: Understanding Current jp-spec-kit Task Management
+### Step 2: Understanding Current flowspec Task Management
 
 **Current State Analysis:**
 
-jp-spec-kit has a **TODO directory** with task files but **no standardized task management system**:
+flowspec has a **TODO directory** with task files but **no standardized task management system**:
 
 ```
 TODO/
@@ -151,12 +151,12 @@ The augmented coding patterns repository (lexler/augmented-coding-patterns) is s
 - ✅ Clear status tracking (observable state)
 - ✅ Dependency modeling (traceability)
 
-### Step 4: Integration Points with jp-spec-kit
+### Step 4: Integration Points with flowspec
 
 **Where Backlog.md Fits:**
 
 ```
-JP-SPEC-KIT WORKFLOW:
+flowspec WORKFLOW:
 ┌──────────────────────────────────────────────────┐
 │ /flow:specify (PM Planner Agent)               │
 │ ↓ Creates PRD with task breakdown                │
@@ -186,7 +186,7 @@ JP-SPEC-KIT WORKFLOW:
 
 **Gap Analysis:**
 
-| Feature | Current jp-spec-kit | With Backlog.md | Improvement |
+| Feature | Current flowspec | With Backlog.md | Improvement |
 |---------|---------------------|-----------------|-------------|
 | Task structure | ❌ Ad-hoc | ✅ Standardized YAML | 🚀 Major |
 | CLI management | ❌ Manual files | ✅ Full CLI | 🚀 Major |
@@ -308,12 +308,12 @@ backlog/
 
 ---
 
-## Current jp-spec-kit Task Management
+## Current flowspec Task Management
 
 ### Existing Structure
 
 ```
-jp-spec-kit/
+flowspec/
 ├── TODO/                       # Ad-hoc task tracking
 │   ├── task-014-summary.md
 │   ├── task-20-suggestions.md
@@ -393,7 +393,7 @@ jp-spec-kit/
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    JP-SPEC-KIT                          │
+│                    flowspec                          │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  /flow:specify → Creates PRD                          │
@@ -567,7 +567,7 @@ While the full pattern catalog wasn't accessible, the repository structure and p
 - ✅ **Acceptance criteria** (clear completion definition)
 - ✅ **Implementation plans** (step-by-step guidance)
 
-**How jp-spec-kit Benefits:**
+**How flowspec Benefits:**
 - Current TODO files lack structure
 - Backlog.md provides consistent format
 - Agents can reliably parse task information
@@ -583,7 +583,7 @@ While the full pattern catalog wasn't accessible, the repository structure and p
 - ✅ **Real-time visualization** (Kanban board)
 - ✅ **Search and filter** for quick access
 
-**How jp-spec-kit Benefits:**
+**How flowspec Benefits:**
 - Aligns with **inner loop** principles (fast feedback)
 - Supports rapid task creation during specification
 - Quick visibility into current state
@@ -599,7 +599,7 @@ While the full pattern catalog wasn't accessible, the repository structure and p
 - ✅ **Version control** (Git-native, every change tracked)
 - ✅ **Cross-branch tracking** (task state across branches)
 
-**How jp-spec-kit Benefits:**
+**How flowspec Benefits:**
 - Link PRD sections → tasks → implementation
 - Track which tasks are in which features
 - Audit trail of task changes
@@ -615,7 +615,7 @@ While the full pattern catalog wasn't accessible, the repository structure and p
 - ✅ **JSON export** (machine-readable)
 - ✅ **Consistent patterns** (predictable structure)
 
-**How jp-spec-kit Benefits:**
+**How flowspec Benefits:**
 - Current TODO files are inconsistent
 - Agents struggle with ad-hoc formats
 - Backlog.md provides reliable structure
@@ -631,7 +631,7 @@ While the full pattern catalog wasn't accessible, the repository structure and p
 - ✅ **Search interface** (quick queries)
 - ✅ **Web dashboard** (team visibility)
 
-**How jp-spec-kit Benefits:**
+**How flowspec Benefits:**
 - Current state buried in TODO files
 - No quick way to see project status
 - Backlog.md makes state explicit
@@ -641,27 +641,27 @@ While the full pattern catalog wasn't accessible, the repository structure and p
 
 #### Anti-Pattern: Unstructured Task Tracking
 **Problem:** Tasks in ad-hoc formats without metadata
-**jp-spec-kit Current State:** TODO files with inconsistent structure
+**flowspec Current State:** TODO files with inconsistent structure
 **Backlog.md Solution:** Enforces YAML frontmatter, consistent format
 
 #### Anti-Pattern: Manual File Management
 **Problem:** Creating/editing task files manually, prone to errors
-**jp-spec-kit Current State:** Manual markdown file creation
+**flowspec Current State:** Manual markdown file creation
 **Backlog.md Solution:** CLI interface, automated file management
 
 #### Anti-Pattern: No Dependency Modeling
 **Problem:** Starting tasks before dependencies complete
-**jp-spec-kit Current State:** No dependency tracking
+**flowspec Current State:** No dependency tracking
 **Backlog.md Solution:** Explicit dependencies, circular detection, sequence validation
 
 #### Anti-Pattern: Hidden Progress
 **Problem:** Task state not visible without reading files
-**jp-spec-kit Current State:** Must read TODO files to understand status
+**flowspec Current State:** Must read TODO files to understand status
 **Backlog.md Solution:** Kanban board, overview command, web UI
 
 #### Anti-Pattern: Agent Unfriendly Data
 **Problem:** AI agents manually parsing inconsistent files
-**jp-spec-kit Current State:** Agents parse ad-hoc TODO markdown
+**flowspec Current State:** Agents parse ad-hoc TODO markdown
 **Backlog.md Solution:** MCP protocol, structured API, consistent format
 
 ---
@@ -853,7 +853,7 @@ backlog/
 
 **Migration Steps:**
 1. Install backlog.md: `npm install -g backlog.md`
-2. Initialize: `backlog init jp-spec-kit --defaults --integration-mode mcp`
+2. Initialize: `backlog init flowspec --defaults --integration-mode mcp`
 3. Migrate existing tasks:
    ```bash
    for task in TODO/*.md; do
@@ -969,7 +969,7 @@ backlog overview
 ```
 
 **Benefits:**
-- ✅ Tight integration with jp-spec-kit workflow
+- ✅ Tight integration with flowspec workflow
 - ✅ Automatic task management through slash commands
 - ✅ Clear progression through workflow stages
 - ✅ Agents can track progress programmatically
@@ -1079,7 +1079,7 @@ If MCP is available, use these tools:
 
 ## Overview
 
-JP-Spec-Kit uses Backlog.md for task management throughout the development workflow.
+flowspec uses Backlog.md for task management throughout the development workflow.
 
 ## Quick Start
 
@@ -1090,7 +1090,7 @@ npm install -g backlog.md
 
 Initialize in project:
 ```bash
-backlog init jp-spec-kit --defaults --integration-mode mcp
+backlog init flowspec --defaults --integration-mode mcp
 ```
 
 Create task:
@@ -1303,7 +1303,7 @@ exit 0
 
 **Tasks:**
 1. ✅ Install backlog.md: `npm install -g backlog.md`
-2. ✅ Initialize project: `backlog init jp-spec-kit --defaults --integration-mode mcp`
+2. ✅ Initialize project: `backlog init flowspec --defaults --integration-mode mcp`
 3. ⬜ Migrate existing TODO tasks to backlog/
 4. ⬜ Add backlog to .mcp.json
 5. ⬜ Test task creation: Create 3-5 sample tasks
@@ -1543,7 +1543,7 @@ backlog/                        # ✅ Root directory
    - Proper directory structure
    - Structured task format (YAML + markdown)
 
-2. **jp-spec-kit Can Benefit Significantly** 🚀
+2. **flowspec Can Benefit Significantly** 🚀
    - Replace ad-hoc TODO/ with structured backlog/
    - Integrate with /flowspec slash commands
    - Enable AI agent task management via MCP
@@ -1568,7 +1568,7 @@ backlog/                        # ✅ Root directory
 
 **Immediate (This Week):**
 1. ✅ Install backlog.md globally
-2. ✅ Initialize in jp-spec-kit project
+2. ✅ Initialize in flowspec project
 3. ⬜ Migrate 3-5 TODO tasks to verify workflow
 4. ⬜ Add backlog MCP server to .mcp.json
 5. ⬜ Test task creation with AI agents
@@ -1584,7 +1584,7 @@ backlog/                        # ✅ Root directory
 1. ⬜ CI/CD integration (auto-update tasks on PR merge)
 2. ⬜ Pre-commit hooks for validation
 3. ⬜ Team collaboration features
-4. ⬜ Custom labels/milestones for jp-spec-kit
+4. ⬜ Custom labels/milestones for flowspec
 5. ⬜ Metrics and reporting
 
 ### Impact Assessment
@@ -1605,7 +1605,7 @@ backlog/                        # ✅ Root directory
 
 **Overall Impact:** 🚀 **TRANSFORMATIONAL**
 
-This integration represents a significant upgrade to jp-spec-kit's task management capabilities, aligning it with modern augmented coding practices and enabling seamless AI-agent collaboration.
+This integration represents a significant upgrade to flowspec's task management capabilities, aligning it with modern augmented coding practices and enabling seamless AI-agent collaboration.
 
 ---
 
@@ -1624,7 +1624,7 @@ This integration represents a significant upgrade to jp-spec-kit's task manageme
 - **Website:** https://lexler.github.io/augmented-coding-patterns/
 - **Talk:** https://github.com/lexler/Talks/blob/main/augmented_coding_patterns_masterclass.md
 
-### jp-spec-kit Documentation
+### flowspec Documentation
 
 - **Inner Loop:** docs/reference/inner-loop.md
 - **Outer Loop:** docs/reference/outer-loop.md
@@ -1634,7 +1634,7 @@ This integration represents a significant upgrade to jp-spec-kit's task manageme
 ### Related Concepts
 
 - **Model Context Protocol (MCP):** Anthropic's protocol for AI agent tool integration
-- **Spec-Driven Development:** jp-spec-kit's core methodology
+- **Spec-Driven Development:** flowspec's core methodology
 - **Kanban:** Visual task management methodology
 - **ADRs:** Architectural Decision Records
 

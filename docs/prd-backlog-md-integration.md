@@ -1,4 +1,4 @@
-# Product Requirements Document: Backlog.md MCP Integration with jp-spec-kit
+# Product Requirements Document: Backlog.md MCP Integration with flowspec
 
 **Version**: 1.0
 **Date**: 2025-11-23
@@ -11,7 +11,7 @@
 
 ### Problem Statement
 
-**Customer Opportunity**: Developers using jp-spec-kit for Spec-Driven Development (SDD) lack robust task lifecycle management, visual task boards, and AI-powered task execution capabilities. While jp-spec-kit excels at generating structured, user-story-centric tasks from specifications, it stops short of providing the task management infrastructure needed for effective execution and team collaboration.
+**Customer Opportunity**: Developers using flowspec for Spec-Driven Development (SDD) lack robust task lifecycle management, visual task boards, and AI-powered task execution capabilities. While flowspec excels at generating structured, user-story-centric tasks from specifications, it stops short of providing the task management infrastructure needed for effective execution and team collaboration.
 
 **Current Pain Points**:
 - **Limited Visibility**: Tasks live in static markdown files without visual boards or status tracking
@@ -22,19 +22,19 @@
 
 ### Proposed Solution
 
-Integrate **Backlog.md MCP** as the task management layer for jp-spec-kit, creating a unified spec-driven development platform where:
+Integrate **Backlog.md MCP** as the task management layer for flowspec, creating a unified spec-driven development platform where:
 
-1. **jp-spec-kit generates tasks** from specifications (spec.md, plan.md) using its proven user-story-centric approach
+1. **flowspec generates tasks** from specifications (spec.md, plan.md) using its proven user-story-centric approach
 2. **Backlog.md manages task lifecycle** with status tracking, assignees, dependencies, labels, and priorities
 3. **MCP protocol enables AI-powered task execution** where Claude Code and other AI assistants can programmatically create, update, and complete tasks
 4. **Developers gain visual task management** via terminal Kanban boards and web UI while staying within their Git repository
-5. **Spec-driven workflow remains primary** with Backlog.md enhancing rather than replacing jp-spec-kit's core value proposition
+5. **Spec-driven workflow remains primary** with Backlog.md enhancing rather than replacing flowspec's core value proposition
 
-**Key Insight**: This is not a replacement but an **enhancement layer**—jp-spec-kit remains the source of truth for task generation from specs, while Backlog.md provides the execution infrastructure that's currently missing.
+**Key Insight**: This is not a replacement but an **enhancement layer**—flowspec remains the source of truth for task generation from specs, while Backlog.md provides the execution infrastructure that's currently missing.
 
 ### Success Metrics
 
-**North Star Metric**: **% of jp-spec-kit generated features actively tracked in Backlog.md**
+**North Star Metric**: **% of flowspec generated features actively tracked in Backlog.md**
 
 **Leading Indicators** (Early Signals):
 - Task generation success rate: **95%+** (tasks correctly synced to Backlog.md)
@@ -55,14 +55,14 @@ Integrate **Backlog.md MCP** as the task management layer for jp-spec-kit, creat
 
 ### Business Value & Strategic Alignment
 
-**jp-spec-kit Vision**: Become the standard toolkit for spec-driven development, enabling teams to ship customer value faster through structured, AI-assisted workflows.
+**flowspec Vision**: Become the standard toolkit for spec-driven development, enabling teams to ship customer value faster through structured, AI-assisted workflows.
 
 **This Integration Delivers**:
 1. **Competitive Differentiation**: First spec-driven tool with integrated AI-powered task management
-2. **Ecosystem Expansion**: Positions jp-spec-kit as a platform (specs + tasks + execution)
+2. **Ecosystem Expansion**: Positions flowspec as a platform (specs + tasks + execution)
 3. **Retention Driver**: Developers using Backlog.md integration are less likely to switch tools
-4. **Network Effects**: Backlog.md's standalone value attracts new jp-spec-kit users
-5. **AI-First Positioning**: Demonstrates jp-spec-kit's commitment to AI-assisted development workflows
+4. **Network Effects**: Backlog.md's standalone value attracts new flowspec users
+5. **AI-First Positioning**: Demonstrates flowspec's commitment to AI-assisted development workflows
 
 **Strategic Bets**:
 - MCP protocol becomes standard for AI tool integration (HIGH confidence)
@@ -79,7 +79,7 @@ Integrate **Backlog.md MCP** as the task management layer for jp-spec-kit, creat
 
 Let me break down the core problem:
 
-1. **jp-spec-kit's Current Strength**: Transforms specifications into actionable, user-story-organized task lists
+1. **flowspec's Current Strength**: Transforms specifications into actionable, user-story-organized task lists
    - *Why this matters*: Ensures tasks are traceable to requirements and user value
    - *What's missing*: Once generated, tasks are static—no status updates, no assignees, no progress tracking
 
@@ -88,7 +88,7 @@ Let me break down the core problem:
    - *What's missing*: No connection to spec-driven workflows or automatic task generation from requirements
 
 3. **The Integration Opportunity**: Combine spec generation with task management
-   - jp-spec-kit → **WHAT to build** (derived from specs)
+   - flowspec → **WHAT to build** (derived from specs)
    - Backlog.md → **HOW to execute** (task states, assignees, boards)
    - MCP → **AI-powered execution** (assistants manage tasks programmatically)
 
@@ -104,11 +104,11 @@ Let me break down the core problem:
 
 | Option | Pros | Cons | Decision |
 |--------|------|------|----------|
-| **A) Backlog.md as source of truth** | - Single source of truth<br>- Rich metadata natively stored<br>- AI tools directly update | - Breaks jp-spec-kit's current model<br>- Migration complexity<br>- Users lose tasks.md simplicity | ❌ Rejected |
-| **B) tasks.md as source of truth** | - Preserves jp-spec-kit model<br>- Familiar to users<br>- Simple rollback | - Backlog.md becomes stale if tasks.md changes<br>- Bidirectional sync complexity<br>- Conflict resolution needed | ❌ Rejected |
-| **C) Hybrid: Generation → Backlog.md** | - jp-spec-kit generates to Backlog.md directly<br>- tasks.md becomes optional reference<br>- Backlog.md manages execution | - Requires rethinking tasks.md role<br>- Potential user confusion<br>- Migration path needed | ✅ **SELECTED** |
+| **A) Backlog.md as source of truth** | - Single source of truth<br>- Rich metadata natively stored<br>- AI tools directly update | - Breaks flowspec's current model<br>- Migration complexity<br>- Users lose tasks.md simplicity | ❌ Rejected |
+| **B) tasks.md as source of truth** | - Preserves flowspec model<br>- Familiar to users<br>- Simple rollback | - Backlog.md becomes stale if tasks.md changes<br>- Bidirectional sync complexity<br>- Conflict resolution needed | ❌ Rejected |
+| **C) Hybrid: Generation → Backlog.md** | - flowspec generates to Backlog.md directly<br>- tasks.md becomes optional reference<br>- Backlog.md manages execution | - Requires rethinking tasks.md role<br>- Potential user confusion<br>- Migration path needed | ✅ **SELECTED** |
 
-**Decision**: **Hybrid model—jp-spec-kit generates tasks directly into Backlog.md format**
+**Decision**: **Hybrid model—flowspec generates tasks directly into Backlog.md format**
 
 **Reasoning**:
 - **Problem**: Bidirectional sync between tasks.md and Backlog.md creates complexity (conflicts, staleness, sync errors)
@@ -120,9 +120,9 @@ Let me break down the core problem:
 
 #### Decision 2: Task Format Mapping
 
-**Question**: How do we map jp-spec-kit's task format to Backlog.md's format?
+**Question**: How do we map flowspec's task format to Backlog.md's format?
 
-**jp-spec-kit Format**:
+**flowspec Format**:
 ```markdown
 - [ ] T012 [P] [US1] Create User model in src/models/user.py
 ```
@@ -150,7 +150,7 @@ Create User model in src/models/user.py
 
 **Mapping Strategy**:
 
-| jp-spec-kit Element | Backlog.md Mapping | Reasoning |
+| flowspec Element | Backlog.md Mapping | Reasoning |
 |---------------------|-------------------|-----------|
 | **TaskID** (T012) | `task-012` filename | Direct ID mapping preserves traceability |
 | **[P] marker** | `labels: [parallelizable]` | Allows filtering for parallel execution |
@@ -185,11 +185,11 @@ Create User model in src/models/user.py
 
 #### Decision 4: User Story Preservation
 
-**Question**: How do we maintain jp-spec-kit's user-story-centric organization in Backlog.md?
+**Question**: How do we maintain flowspec's user-story-centric organization in Backlog.md?
 
 **Backlog.md's Model**: Flat list of tasks with labels and dependencies
 
-**jp-spec-kit's Model**: Hierarchical phases organized by user stories
+**flowspec's Model**: Hierarchical phases organized by user stories
 
 **Solution**: **Use labels + virtual grouping**
 
@@ -254,8 +254,8 @@ dependencies: [task-foundational-auth]
 ```
 
 **Learning Curve**:
-- **Existing jp-spec-kit users**: Learn `backlog` CLI commands (5-10 minutes)
-- **New users**: Learn jp-spec-kit workflow + Backlog.md (30 minutes)
+- **Existing flowspec users**: Learn `backlog` CLI commands (5-10 minutes)
+- **New users**: Learn flowspec workflow + Backlog.md (30 minutes)
 
 **Friction Points**:
 - Initial setup (Backlog.md installation + MCP configuration)
@@ -340,7 +340,7 @@ dependencies: [task-foundational-auth]
 
 #### Epic 1: Task Generation from Specs
 
-**US1.1**: Generate Backlog.md Tasks from jp-spec-kit Specs
+**US1.1**: Generate Backlog.md Tasks from flowspec Specs
 - **As a** spec-driven developer
 - **I want** to automatically generate Backlog.md tasks from my spec.md and plan.md files
 - **So that** I don't have to manually create and organize tasks in a project management tool
@@ -415,7 +415,7 @@ dependencies: [task-foundational-auth]
 #### Epic 3: Migration and Compatibility
 
 **US3.1**: Migrate Existing tasks.md to Backlog.md
-- **As a** developer with existing jp-spec-kit projects
+- **As a** developer with existing flowspec projects
 - **I want** to migrate my tasks.md files to Backlog.md format
 - **So that** I can use the new integration without starting over
 
@@ -450,7 +450,7 @@ dependencies: [task-foundational-auth]
 |-----------|--------|-----------------|----------|
 | **Concierge Test** | Manually set up Backlog.md for 3 pilot users, help them use it for 1 sprint | 2/3 users continue using after concierge support ends | 2 weeks |
 | **Landing Page MVP** | Create demo video showing spec → task generation → AI completion workflow | 100+ email signups for beta | 1 week |
-| **Customer Interviews** | Interview 10 jp-spec-kit users about current task tracking pain points | 7/10 express strong interest in integration | 1 week |
+| **Customer Interviews** | Interview 10 flowspec users about current task tracking pain points | 7/10 express strong interest in integration | 1 week |
 | **Wizard of Oz** | Use Claude Code to manually manage Backlog.md tasks, simulate MCP integration | Users find workflow intuitive, complete tasks faster | 1 week |
 
 **Go/No-Go Decision**: Proceed to MVP if 2/4 experiments show positive results.
@@ -499,10 +499,10 @@ dependencies: [task-foundational-auth]
 
 ### Business Viability Risk (Organizational)
 
-**Question**: Does this integration align with jp-spec-kit's business model and strategic direction?
+**Question**: Does this integration align with flowspec's business model and strategic direction?
 
 **Assumptions to Test**:
-1. Integration increases jp-spec-kit adoption (more users)
+1. Integration increases flowspec adoption (more users)
 2. Integration increases retention (users stay longer)
 3. Maintenance burden is acceptable (no dedicated Backlog.md team)
 4. Dependency on external tool (Backlog.md) is strategically acceptable
@@ -511,9 +511,9 @@ dependencies: [task-foundational-auth]
 
 | Experiment | Method | Success Criteria | Timeline |
 |-----------|--------|-----------------|----------|
-| **Stakeholder Mapping** | Interview jp-spec-kit maintainers, gather concerns/requirements | No blocking objections, 2+ enthusiastic supporters | 1 week |
+| **Stakeholder Mapping** | Interview flowspec maintainers, gather concerns/requirements | No blocking objections, 2+ enthusiastic supporters | 1 week |
 | **Cost Analysis** | Estimate development (40-80 hours) + maintenance (5 hours/month) costs | ROI positive within 6 months based on adoption projections | 2 days |
-| **Competitive Analysis** | Survey 5 competitor tools (Linear, Jira, etc.) for spec-driven integrations | jp-spec-kit integration is differentiated | 3 days |
+| **Competitive Analysis** | Survey 5 competitor tools (Linear, Jira, etc.) for spec-driven integrations | flowspec integration is differentiated | 3 days |
 | **Legal Review** | Check Backlog.md license (likely MIT/Apache), ensure compatibility | No licensing conflicts | 1 day |
 
 **Go/No-Go Decision**: Proceed if ROI positive and no legal/strategic blockers.
@@ -585,7 +585,7 @@ dependencies: [task-005]  # Foundational auth task
 
 **FR1.3**: Map Task Dependencies
 
-**Requirement**: Encode jp-spec-kit's phase-based dependencies into Backlog.md's dependency system.
+**Requirement**: Encode flowspec's phase-based dependencies into Backlog.md's dependency system.
 
 **Mapping Rules**:
 - **Setup tasks** (Phase 1): No dependencies
@@ -650,7 +650,7 @@ blocked → archived
 - `backlog_list_tasks`: List tasks with filters
 - `backlog_archive_task`: Archive completed/irrelevant tasks
 
-**jp-spec-kit Responsibilities**:
+**flowspec Responsibilities**:
 - Ensure Backlog.md MCP server is configured during setup
 - Provide documentation for Claude Code integration
 - Test MCP commands work correctly
@@ -691,7 +691,7 @@ Claude (via MCP):
 
 **Process**:
 1. Locate `/specs/<feature-id>/tasks.md`
-2. Parse tasks using jp-spec-kit's task format rules
+2. Parse tasks using flowspec's task format rules
 3. Generate Backlog.md tasks (same as FR1.1)
 4. Create backup: `tasks.md.backup`
 5. Optionally deprecate tasks.md: Add note "Tasks migrated to backlog/"
@@ -784,12 +784,12 @@ Claude (via MCP):
 
 **NFR5.1**: Local Data Only
 - **Requirement**: All task data remains in local Git repository, no external services
-- **Rationale**: Developers must trust jp-spec-kit with potentially sensitive project information
+- **Rationale**: Developers must trust flowspec with potentially sensitive project information
 - **Verification**: Audit Backlog.md for network calls (should be zero)
 
 **NFR5.2**: No Telemetry Without Consent
 - **Requirement**: Usage analytics opt-in only
-- **Implementation**: Prompt during setup: "Send anonymous usage data to improve jp-spec-kit? (yes/no)"
+- **Implementation**: Prompt during setup: "Send anonymous usage data to improve flowspec? (yes/no)"
 
 ---
 
@@ -799,7 +799,7 @@ Claude (via MCP):
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                      jp-spec-kit Ecosystem                      │
+│                      flowspec Ecosystem                      │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  ┌─────────────┐    ┌──────────────┐    ┌─────────────────┐  │
@@ -867,7 +867,7 @@ Claude (via MCP):
 ```
 1. User runs: /flow:tasks --feature 001-auth
 
-2. jp-spec-kit Task Generator:
+2. flowspec Task Generator:
    a. Read /specs/001-auth/spec.md
    b. Read /specs/001-auth/plan.md
    c. Parse user stories (US1, US2, US3)
@@ -933,7 +933,7 @@ Claude (via MCP):
 | Component | Responsibilities | Dependencies |
 |-----------|-----------------|--------------|
 | **Task Generator** | - Parse spec.md, plan.md<br>- Generate task list<br>- Organize by user stories | - Python pathlib<br>- YAML parser<br>- Markdown parser |
-| **Backlog.md Adapter** | - Map jp-spec-kit format → Backlog.md format<br>- Write task-*.md files<br>- Build dependency graph | - Task Generator output<br>- Backlog.md file format spec |
+| **Backlog.md Adapter** | - Map flowspec format → Backlog.md format<br>- Write task-*.md files<br>- Build dependency graph | - Task Generator output<br>- Backlog.md file format spec |
 | **CLI Commands** | - User-facing commands (`specify backlog ...`)<br>- Wrapper for Backlog.md CLI<br>- Error handling | - Backlog.md CLI installed<br>- subprocess module |
 | **Migration Module** | - Parse existing tasks.md<br>- Detect completed tasks<br>- Generate Backlog.md tasks<br>- Create backups | - Task Generator<br>- Backlog.md Adapter |
 | **MCP Integration** | - Configure MCP server during setup<br>- Verify MCP connection<br>- Document AI workflows | - Claude Code<br>- Backlog.md MCP server |
@@ -989,7 +989,7 @@ my-project/
 - [ ] T002 [P] Research Backlog.md file format and API
 - [ ] T003 [P] Document Backlog.md MCP tools available
 - [ ] T004 Create integration module structure: `src/specify_cli/backlog/`
-- [ ] T005 [P] Add Backlog.md documentation to jp-spec-kit docs
+- [ ] T005 [P] Add Backlog.md documentation to flowspec docs
 
 **Checkpoint**: Development environment ready for integration work
 
@@ -999,10 +999,10 @@ my-project/
 
 **Purpose**: Core infrastructure that all user stories depend on
 
-- [ ] T006 Implement task parser for jp-spec-kit format in `src/specify_cli/backlog/parser.py`
+- [ ] T006 Implement task parser for flowspec format in `src/specify_cli/backlog/parser.py`
 - [ ] T007 [P] Implement Backlog.md file writer in `src/specify_cli/backlog/writer.py`
 - [ ] T008 [P] Create dependency graph builder in `src/specify_cli/backlog/dependencies.py`
-- [ ] T009 Implement task format mapper (jp-spec-kit → Backlog.md) in `src/specify_cli/backlog/mapper.py`
+- [ ] T009 Implement task format mapper (flowspec → Backlog.md) in `src/specify_cli/backlog/mapper.py`
 - [ ] T010 Create Backlog.md config.yml generator in `src/specify_cli/backlog/config.py`
 
 **Checkpoint**: Core utilities ready for task generation
@@ -1053,7 +1053,7 @@ my-project/
 - [ ] T023 [US2] Add help text and examples to all backlog commands
 - [ ] T024 [US2] Verify Backlog.md installed before running commands, provide install instructions if missing
 
-**Checkpoint**: Developers can manage Backlog.md tasks via jp-spec-kit CLI
+**Checkpoint**: Developers can manage Backlog.md tasks via flowspec CLI
 
 ---
 
@@ -1077,7 +1077,7 @@ my-project/
 - [ ] T029 [US3] Generate migration report: tasks migrated, completed, warnings
 - [ ] T030 [US3] Add deprecation note to migrated tasks.md file
 
-**Checkpoint**: Existing jp-spec-kit projects can migrate to Backlog.md
+**Checkpoint**: Existing flowspec projects can migrate to Backlog.md
 
 ---
 
@@ -1181,7 +1181,7 @@ my-project/
 **Learning Goals**:
 1. Will developers adopt Backlog.md integration?
 2. Is the task generation accurate and useful?
-3. Can we technically integrate Backlog.md with jp-spec-kit reliably?
+3. Can we technically integrate Backlog.md with flowspec reliably?
 4. Is MCP integration with Claude Code stable?
 
 **Experiments**:
@@ -1192,7 +1192,7 @@ my-project/
 | 3 | **Technical Spike** | Build prototype: tasks.md → Backlog.md generation | Successfully generate 50 tasks with correct metadata |
 | 4 | **MCP Feasibility** | Test Backlog.md MCP with Claude Code | Claude can create, update, complete tasks |
 | 5-7 | **Usability Test** | 5 new users attempt setup and task generation | 4/5 complete without help in <10 minutes |
-| 8-10 | **Customer Interviews** | Interview 10 jp-spec-kit users about task management pain | 7/10 express strong interest in integration |
+| 8-10 | **Customer Interviews** | Interview 10 flowspec users about task management pain | 7/10 express strong interest in integration |
 
 **Go/No-Go Decision**:
 - **GO** if: 2/3 concierge users adopt, technical spike succeeds, 4/5 usability tests pass
@@ -1210,7 +1210,7 @@ my-project/
 |------|-----------|-----------|
 | 3 | T006-T010 (Foundational) complete | Unit tests pass, can parse tasks.md correctly |
 | 4 | T011-T014 (Core generation) complete | Generate Backlog.md tasks from real spec, manual review |
-| 5 | T015-T018 (Metadata & errors) complete | Test with 3 real jp-spec-kit projects, verify accuracy |
+| 5 | T015-T018 (Metadata & errors) complete | Test with 3 real flowspec projects, verify accuracy |
 | 6 | US1 complete | Beta release to 10 pilot users, gather feedback |
 
 **Success Metrics**:
@@ -1370,7 +1370,7 @@ my-project/
 - [ ] Integration test for user story complete
 - [ ] Documentation updated (user guide + API reference)
 - [ ] Code reviewed and approved
-- [ ] Manual testing with real jp-spec-kit project
+- [ ] Manual testing with real flowspec project
 - [ ] No high/critical bugs open
 - [ ] User story demo recorded (for release notes)
 
@@ -1415,7 +1415,7 @@ my-project/
 | **Node.js/npm** | 18+ | Install Backlog.md CLI | MEDIUM - Common dependency |
 | **Claude Code** | Latest | MCP integration host | MEDIUM - Some users may not use Claude |
 | **MCP Protocol** | 1.0+ | AI assistant integration | MEDIUM - Relatively new standard |
-| **Python** | 3.11+ | jp-spec-kit runtime | LOW - Already required |
+| **Python** | 3.11+ | flowspec runtime | LOW - Already required |
 | **YAML parser** | PyYAML | Parse/write frontmatter | LOW - Stable library |
 
 **Mitigation Strategies**:
@@ -1476,7 +1476,7 @@ my-project/
 
 ### North Star Metric
 
-**% of jp-spec-kit generated features actively tracked in Backlog.md**
+**% of flowspec generated features actively tracked in Backlog.md**
 
 **Definition**:
 - Numerator: # of features with active `backlog/` directory and >1 task file
@@ -1497,7 +1497,7 @@ my-project/
 |--------|-----------|--------|---------|
 | **Task Generation Success Rate** | % of `specify tasks generate` commands that complete without errors | 95%+ | Month 1 |
 | **Integration Setup Time** | Median time from `specify init --with-backlog` to first task synced | <5 minutes | Month 1 |
-| **Developer Adoption Rate** | % of new jp-spec-kit users who opt into Backlog.md during init | 60%+ | Month 3 |
+| **Developer Adoption Rate** | % of new flowspec users who opt into Backlog.md during init | 60%+ | Month 3 |
 | **MCP Connection Success** | % of setups where MCP integration works on first try | 80%+ | Month 2 |
 | **Migration Success Rate** | % of `specify backlog migrate` commands that complete without data loss | 100% | Month 2 |
 
@@ -1513,7 +1513,7 @@ my-project/
 | Metric | Definition | Target | Timeline |
 |--------|-----------|--------|---------|
 | **Task Completion Velocity** | Average tasks completed per week (pre vs. post integration) | +20% improvement | Month 6 |
-| **Developer Satisfaction (NPS)** | Net Promoter Score for jp-spec-kit with Backlog.md | +15 points | Month 6 |
+| **Developer Satisfaction (NPS)** | Net Promoter Score for flowspec with Backlog.md | +15 points | Month 6 |
 | **Context Switching Reduction** | % decrease in "used external project tool" (self-reported) | 30% fewer | Month 6 |
 | **AI-Assisted Task Completion** | % of tasks completed with AI assistant help (vs. manual) | 40%+ | Month 6 |
 | **Retention Rate** | % of developers still using Backlog.md integration after 3 months | 70%+ | Month 6 |
@@ -1541,7 +1541,7 @@ analytics.track(event="task_generation", properties={
 ```
 
 **Surveys** (Quarterly):
-- NPS: "How likely are you to recommend jp-spec-kit with Backlog.md to a colleague?"
+- NPS: "How likely are you to recommend flowspec with Backlog.md to a colleague?"
 - Workflow: "How often do you use Backlog.md vs. external tools?"
 - Satisfaction: "How satisfied are you with task generation accuracy?"
 
@@ -1569,12 +1569,12 @@ analytics.track(event="task_generation", properties={
 
 ### Summary
 
-This PRD outlines a strategic integration between **jp-spec-kit** (spec-driven task generation) and **Backlog.md** (AI-powered task management), creating a unified platform for modern, AI-assisted software development workflows.
+This PRD outlines a strategic integration between **flowspec** (spec-driven task generation) and **Backlog.md** (AI-powered task management), creating a unified platform for modern, AI-assisted software development workflows.
 
 **Key Design Decisions**:
-1. **Hybrid Model**: jp-spec-kit generates tasks directly into Backlog.md format (no complex bidirectional sync)
+1. **Hybrid Model**: flowspec generates tasks directly into Backlog.md format (no complex bidirectional sync)
 2. **Backlog.md as Execution Layer**: Source of truth post-generation, managed via CLI/web UI/MCP
-3. **User Story Preservation**: Labels and dependencies encode jp-spec-kit's user-story organization
+3. **User Story Preservation**: Labels and dependencies encode flowspec's user-story organization
 4. **MVP-First Approach**: Ship US1 (Task Generation) as standalone value, iterate based on feedback
 
 **Expected Outcomes**:
@@ -1590,7 +1590,7 @@ This PRD outlines a strategic integration between **jp-spec-kit** (spec-driven t
 2. ✅ Build technical spike: tasks.md → Backlog.md generation
 3. ✅ Test MCP integration with Claude Code
 4. ✅ Conduct usability testing with 5 new users
-5. ✅ Interview 10 jp-spec-kit users about task management needs
+5. ✅ Interview 10 flowspec users about task management needs
 
 **Week 3** (Go/No-Go Decision):
 - Review discovery results
@@ -1615,7 +1615,7 @@ This PRD outlines a strategic integration between **jp-spec-kit** (spec-driven t
 
 ### Open Questions for Stakeholder Review
 
-1. **Strategic Alignment**: Does this integration align with jp-spec-kit's 5-10 year vision?
+1. **Strategic Alignment**: Does this integration align with flowspec's 5-10 year vision?
 2. **Resource Commitment**: Can we commit 1 developer for 12 weeks?
 3. **Dependency Risk**: Are we comfortable depending on Backlog.md (external project)?
 4. **Scope Creep**: Should we limit MVP to US1 only, or include US2/US3?
@@ -1628,7 +1628,7 @@ This PRD outlines a strategic integration between **jp-spec-kit** (spec-driven t
 **Version**: 1.0 (Draft)
 **Last Updated**: 2025-11-23
 **Next Review**: After Discovery Sprint (Week 2)
-**Approvers**: jp-spec-kit Maintainers, Community Feedback
+**Approvers**: flowspec Maintainers, Community Feedback
 **Status**: Awaiting Validation Experiments
 
 ---

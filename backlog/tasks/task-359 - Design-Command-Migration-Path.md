@@ -33,7 +33,7 @@ Design migration strategy from flat flowspec/* and speckit/* namespaces to role-
 # Design: Command Migration Path
 
 ## Deliverable
-Created comprehensive migration design at: /home/jpoley/ps/jp-spec-kit/docs/adr/design-command-migration-path.md
+Created comprehensive migration design at: /home/jpoley/ps/flowspec/docs/adr/design-command-migration-path.md
 
 ## Key Design Decisions
 

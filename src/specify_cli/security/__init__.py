@@ -1,4 +1,4 @@
-"""Security finding models and exporters for JP Spec Kit.
+"""Security finding models and exporters for Flowspec.
 
 This module implements the Unified Finding Format (UFFormat) for security
 scanners, providing a canonical data model that all security tools can map to.

@@ -39,7 +39,7 @@ This document outlines the execution plan for the remaining kinsale-assigned tas
 | Task | Description | Est. Effort |
 |------|-------------|-------------|
 | task-168 | Add macOS CI Matrix Testing | Small (1-2 hrs) |
-| task-195 | Create JP Spec Kit Plugin Package | Large (8+ hrs) |
+| task-195 | Create Flowspec Plugin Package | Large (8+ hrs) |
 | task-196 | Experiment with Output Styles | Small (2-3 hrs) |
 | task-197 | Create Custom Statusline | Medium (3-4 hrs) |
 
@@ -124,7 +124,7 @@ This document outlines the execution plan for the remaining kinsale-assigned tas
 - **Why**: Foundation for extensibility
 - **Complexity**: HIGH - defer to later sprint
 
-**12. task-195 - Create JP Spec Kit Plugin Package**
+**12. task-195 - Create Flowspec Plugin Package**
 - **Why**: Depends on task-081
 - **Complexity**: HIGH - defer
 

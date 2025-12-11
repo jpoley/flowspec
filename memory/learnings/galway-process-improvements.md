@@ -143,7 +143,7 @@ Copilot catches these well - ensure reviews are addressed:
 ## Implementation Priority
 
 ### Immediate (This Week)
-1. Add pre-commit hooks to jp-spec-kit
+1. Add pre-commit hooks to flowspec
 2. Update PR template with checklist
 
 ### Short Term (This Month)

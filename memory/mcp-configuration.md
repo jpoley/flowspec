@@ -1,6 +1,6 @@
 # MCP Configuration
 
-JP Spec Kit uses Model Context Protocol (MCP) servers for enhanced capabilities.
+Flowspec uses Model Context Protocol (MCP) servers for enhanced capabilities.
 
 ## MCP Server List
 

@@ -9,7 +9,7 @@ set -euo pipefail
 #   env GITHUB_TOKEN=... scripts/bash/install-specify-latest.sh --https
 #
 # Defaults:
-#   owner=jpoley repo=jp-spec-kit method=https
+#   owner=jpoley repo=flowspec method=https
 #
 # Notes:
 # - For private repos, prefer --ssh (requires GitHub SSH key) to avoid tokens in process args.
@@ -17,7 +17,7 @@ set -euo pipefail
 #   If you want to avoid that, ensure your Git credential helper is configured and pre-approved.
 
 OWNER="jpoley"
-REPO="jp-spec-kit"
+REPO="flowspec"
 METHOD="https"  # or ssh
 
 while [[ $# -gt 0 ]]; do

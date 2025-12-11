@@ -1,5 +1,5 @@
 """
-Task mapper for converting jp-spec-kit format to Backlog.md format.
+Task mapper for converting flowspec format to Backlog.md format.
 
 Provides high-level API for the complete conversion process.
 """
@@ -11,7 +11,7 @@ from .dependency_graph import DependencyGraphBuilder
 
 
 class TaskMapper:
-    """Maps jp-spec-kit tasks to Backlog.md format."""
+    """Maps flowspec tasks to Backlog.md format."""
 
     def __init__(self, backlog_dir: Path):
         """
@@ -28,7 +28,7 @@ class TaskMapper:
         self, tasks_file: Path, *, overwrite: bool = False, dry_run: bool = False
     ) -> dict:
         """
-        Generate Backlog.md tasks from a jp-spec-kit tasks.md file.
+        Generate Backlog.md tasks from a flowspec tasks.md file.
 
         Args:
             tasks_file: Path to tasks.md file

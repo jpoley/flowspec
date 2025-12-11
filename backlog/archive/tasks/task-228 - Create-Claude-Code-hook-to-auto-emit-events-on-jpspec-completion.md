@@ -1,6 +1,6 @@
 ---
 id: task-228
-title: Create Claude Code hook to auto-emit events on /jpspec completion
+title: Create Claude Code hook to auto-emit events on /flowspec completion
 status: Done
 assignee: []
 created_date: '2025-12-03 02:10'
@@ -17,19 +17,19 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Create a Claude Code PostToolUse hook that automatically emits jp-spec-kit events when /jpspec slash commands complete. This provides automatic event emission without requiring explicit agent instructions.
+Create a Claude Code PostToolUse hook that automatically emits flowspec events when /flowspec slash commands complete. This provides automatic event emission without requiring explicit agent instructions.
 
 **Context**: Claude Code has a native hook system in `.claude/hooks/` that can intercept tool calls. We can use PostToolUse to detect when slash commands complete and emit corresponding events.
 
 **Architecture**:
 ```
-Agent runs /jpspec:implement
+Agent runs /flowspec:implement
     ↓
 Claude Code executes slash command
     ↓
 PostToolUse hook fires
     ↓
-Hook detects /jpspec command completion
+Hook detects /flowspec command completion
     ↓
 Hook calls: specify hooks emit implement.completed
     ↓
@@ -37,7 +37,7 @@ User's hooks in .specify/hooks/ execute
 ```
 
 **Implementation**:
-1. Create `.claude/hooks/jpspec-event-emitter.py`
+1. Create `.claude/hooks/flowspec-event-emitter.py`
 2. Hook into PostToolUse or command completion
 3. Parse command output to extract feature/task IDs
 4. Call `specify hooks emit` with appropriate event type
@@ -46,13 +46,13 @@ User's hooks in .specify/hooks/ execute
 **Event Mapping**:
 | Command | Event |
 |---------|-------|
-| /jpspec:assess | workflow.assessed |
-| /jpspec:specify | spec.created |
-| /jpspec:research | research.completed |
-| /jpspec:plan | plan.created |
-| /jpspec:implement | implement.completed |
-| /jpspec:validate | validate.completed |
-| /jpspec:operate | deploy.completed |
+| /flowspec:assess | workflow.assessed |
+| /flowspec:specify | spec.created |
+| /flowspec:research | research.completed |
+| /flowspec:plan | plan.created |
+| /flowspec:implement | implement.completed |
+| /flowspec:validate | validate.completed |
+| /flowspec:operate | deploy.completed |
 
 **Considerations**:
 - Must be idempotent (don't double-emit if agent also emits manually)
@@ -62,8 +62,8 @@ User's hooks in .specify/hooks/ execute
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 PostToolUse hook created at .claude/hooks/jpspec-event-emitter.py
-- [ ] #2 Hook detects /jpspec:* command completion
+- [ ] #1 PostToolUse hook created at .claude/hooks/flowspec-event-emitter.py
+- [ ] #2 Hook detects /flowspec:* command completion
 - [ ] #3 Hook extracts spec-id and task-id from command context
 - [ ] #4 Hook calls specify hooks emit with correct event type
 - [ ] #5 Hook is fail-open (errors logged but don't break workflow)

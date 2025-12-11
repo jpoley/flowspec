@@ -18,7 +18,7 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Perform comprehensive testing of the flush feature in both manual and automated modes. Test against the current 23 Done tasks in jp-spec-kit and validate all edge cases.
+Perform comprehensive testing of the flush feature in both manual and automated modes. Test against the current 23 Done tasks in flowspec and validate all edge cases.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

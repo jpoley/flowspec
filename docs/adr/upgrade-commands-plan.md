@@ -6,14 +6,14 @@ Accepted - Implemented 2025-12-07
 ## Context
 
 The `specify` CLI has a confusing upgrade story:
-- `specify --version` shows available upgrades for jp-spec-kit, spec-kit, and backlog.md with `↑` indicators
+- `specify --version` shows available upgrades for flowspec, spec-kit, and backlog.md with `↑` indicators
 - The hint says "Run 'specify upgrade' to update components"
 - **BUT** `specify upgrade` only upgrades repo templates, not the actual CLI tools
 
 The tools are installed per-user:
 | Tool | Installation Method | Location |
 |------|---------------------|----------|
-| jp-spec-kit | `uv tool install specify-cli --from git+...` | `~/.local/bin/specify` |
+| flowspec | `uv tool install specify-cli --from git+...` | `~/.local/bin/specify` |
 | spec-kit | `uv tool install spec-kit` | uv managed |
 | backlog.md | `pnpm add -g backlog-md` | npm global |
 
@@ -29,12 +29,12 @@ Implement two distinct upgrade commands:
 Upgrades globally installed CLI tools:
 ```bash
 specify upgrade-tools                    # Upgrade all tools
-specify upgrade-tools -c jp-spec-kit     # Upgrade specific tool
+specify upgrade-tools -c flowspec     # Upgrade specific tool
 specify upgrade-tools --dry-run          # Preview changes
 ```
 
 Implementation:
-- jp-spec-kit: `uv tool upgrade specify-cli`
+- flowspec: `uv tool upgrade specify-cli`
 - backlog.md: `pnpm add -g backlog-md@latest` (or npm)
 - Verify version after upgrade
 

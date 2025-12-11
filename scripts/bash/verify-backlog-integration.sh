@@ -1,6 +1,6 @@
 #!/bin/bash
 # Backlog.md Integration Verification Script
-# Verifies complete setup of Backlog.md with jp-spec-kit
+# Verifies complete setup of Backlog.md with flowspec
 
 set -e
 
@@ -71,7 +71,7 @@ echo "=== 2. Backlog.md Configuration ==="
 test_check "backlog/ directory exists" "[ -d backlog ]"
 test_check "config.yml exists" "[ -f backlog/config.yml ]"
 test_check "tasks/ directory exists" "[ -d backlog/tasks ]"
-test_check_output "Project name is jp-spec-kit" "grep 'project_name' backlog/config.yml" "jp-spec-kit"
+test_check_output "Project name is flowspec" "grep 'project_name' backlog/config.yml" "flowspec"
 echo ""
 
 echo "=== 3. MCP Configuration ==="
@@ -88,7 +88,7 @@ echo ""
 
 echo "=== 5. Task Management ==="
 test_check "Tasks exist in backlog" "[ -n \"\$(ls -A backlog/tasks/)\" ]"
-test_check_output "Can read task-1" "cat 'backlog/tasks/task-1 - Integrate-Backlog.md-with-jp-spec-kit.md'" "Integrate Backlog.md"
+test_check_output "Can read task-1" "cat 'backlog/tasks/task-1 - Integrate-Backlog.md-with-flowspec.md'" "Integrate Backlog.md"
 echo ""
 
 echo "=== 6. Git Integration ==="
@@ -96,7 +96,7 @@ test_check "backlog/ is tracked by git" "git ls-files backlog/ | grep -q config.
 test_check ".mcp.json is tracked by git" "git ls-files .mcp.json"
 echo ""
 
-echo "=== 7. jp-spec-kit Integration Points ==="
+echo "=== 7. flowspec Integration Points ==="
 test_check "templates/ directory exists" "[ -d templates ]"
 test_check "tasks-template.md exists" "[ -f templates/tasks-template.md ]"
 test_check ".claude/commands/flowspec/ exists" "[ -d .claude/commands/flowspec ]"

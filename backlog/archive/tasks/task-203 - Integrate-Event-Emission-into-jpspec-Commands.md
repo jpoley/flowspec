@@ -1,6 +1,6 @@
 ---
 id: task-203
-title: Integrate Event Emission into /jpspec Commands
+title: Integrate Event Emission into /flowspec Commands
 status: Done
 assignee:
   - '@pm-planner'
@@ -17,17 +17,17 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Add event emission to all /jpspec workflow commands (assess, specify, plan, implement, validate, operate). Events emitted after successful command completion.
+Add event emission to all /flowspec workflow commands (assess, specify, plan, implement, validate, operate). Events emitted after successful command completion.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Emit events from /jpspec:assess (workflow.assessed)
-- [ ] #2 Emit events from /jpspec:specify (spec.created, tasks.created)
-- [ ] #3 Emit events from /jpspec:plan (plan.created, adr.created)
-- [ ] #4 Emit events from /jpspec:implement (implement.completed)
-- [ ] #5 Emit events from /jpspec:validate (validate.completed)
-- [ ] #6 Emit events from /jpspec:operate (deploy.completed)
+- [ ] #1 Emit events from /flowspec:assess (workflow.assessed)
+- [ ] #2 Emit events from /flowspec:specify (spec.created, tasks.created)
+- [ ] #3 Emit events from /flowspec:plan (plan.created, adr.created)
+- [ ] #4 Emit events from /flowspec:implement (implement.completed)
+- [ ] #5 Emit events from /flowspec:validate (validate.completed)
+- [ ] #6 Emit events from /flowspec:operate (deploy.completed)
 - [x] #7 Integration tests verifying event payloads for each command
 <!-- AC:END -->
 
@@ -43,14 +43,14 @@ Created comprehensive hooks CLI with event emission capabilities:
 - `specify hooks audit` - View execution history
 - `specify hooks test` - Test individual hooks
 
-This provides manual testing capability and serves as reference for /jpspec integration.
+This provides manual testing capability and serves as reference for /flowspec integration.
 
-## /jpspec Integration Status
+## /flowspec Integration Status
 
-The hooks CLI provides the foundation for /jpspec command integration:
+The hooks CLI provides the foundation for /flowspec command integration:
 - Events can be manually emitted for testing
 - All event types from EventType enum are supported
-- Future work: Add emit_event() calls in /jpspec command implementations
+- Future work: Add emit_event() calls in /flowspec command implementations
 
 ## Files Created
 - src/specify_cli/hooks/cli.py - CLI commands module

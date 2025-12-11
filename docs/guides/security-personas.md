@@ -598,13 +598,13 @@ Success Metrics:
 1. Document the issue (what was wrong?)
 2. Provide expected output
 3. Update persona markdown file with correction
-4. File issue in jp-spec-kit repo
+4. File issue in flowspec repo
 
 **If persona is missing knowledge:**
 1. Identify knowledge gap
 2. Research correct information
 3. Add to persona's knowledge base section
-4. Submit PR to jp-spec-kit
+4. Submit PR to flowspec
 
 ### Continuous Improvement
 
@@ -616,8 +616,8 @@ Personas improve through:
 
 **Contributing:**
 ```bash
-# 1. Clone jp-spec-kit
-git clone https://github.com/yourorg/jp-spec-kit
+# 1. Clone flowspec
+git clone https://github.com/yourorg/flowspec
 
 # 2. Edit persona
 vim .claude/skills/security-analyst.md

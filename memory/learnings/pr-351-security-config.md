@@ -130,4 +130,4 @@ This suggests we need stronger enforcement via pre-commit hooks.
 
 ## References
 
-- [PR #351](https://github.com/jpoley/jp-spec-kit/pull/351) - Original PR with Copilot review
+- [PR #351](https://github.com/jpoley/flowspec/pull/351) - Original PR with Copilot review

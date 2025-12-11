@@ -42,9 +42,9 @@ specify security scan --format sarif --output security-results.sarif
     {
       "tool": {
         "driver": {
-          "name": "JP Spec Kit Security Scanner",
+          "name": "Flowspec Security Scanner",
           "version": "1.0.0",
-          "informationUri": "https://github.com/jpoley/jp-spec-kit",
+          "informationUri": "https://github.com/jpoley/flowspec",
           "semanticVersion": "1.0.0",
           "rules": [
             {
@@ -143,9 +143,9 @@ specify security scan --format sarif --output security-results.sarif
 ```json
 "tool": {
   "driver": {
-    "name": "JP Spec Kit Security Scanner",
+    "name": "Flowspec Security Scanner",
     "version": "1.0.0",
-    "informationUri": "https://github.com/jpoley/jp-spec-kit",
+    "informationUri": "https://github.com/jpoley/flowspec",
     "semanticVersion": "1.0.0"
   }
 }
@@ -285,7 +285,7 @@ GitHub uses `security-severity` to determine visual priority in the Security tab
   uses: github/codeql-action/upload-sarif@v3
   with:
     sarif_file: security-results.sarif
-    category: jp-spec-kit-security
+    category: flowspec-security
     wait-for-processing: true
 ```
 
@@ -299,7 +299,7 @@ GitHub uses `security-severity` to determine visual priority in the Security tab
 **In GitHub Security Tab:**
 1. Navigate to repository **Security** tab
 2. Click **Code scanning alerts**
-3. Filter by tool: `jp-spec-kit-security`
+3. Filter by tool: `flowspec-security`
 4. View findings by severity, status, branch
 
 **In Pull Requests:**
@@ -422,7 +422,7 @@ Fix: Add complete tool.driver object
     {
       "tool": {
         "driver": {
-          "name": "JP Spec Kit Security Scanner",
+          "name": "Flowspec Security Scanner",
           "version": "1.0.0",
           "rules": [
             {
@@ -526,7 +526,7 @@ cat $GITHUB_WORKSPACE/security-results.sarif
 **Verify category:**
 ```yaml
 # Ensure unique category per tool
-category: jp-spec-kit-security
+category: flowspec-security
 ```
 
 ### Annotations Not Showing in PR

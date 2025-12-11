@@ -1,8 +1,8 @@
 """
-Backlog.md integration module for jp-spec-kit.
+Backlog.md integration module for flowspec.
 
 This module provides task generation and management integration between
-jp-spec-kit specs and Backlog.md task management system.
+flowspec specs and Backlog.md task management system.
 """
 
 from .parser import TaskParser

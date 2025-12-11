@@ -129,9 +129,9 @@ def export_to_sarif(findings: List[Finding], tool: str) -> dict:
         "runs": [{
             "tool": {
                 "driver": {
-                    "name": "JP Spec Kit Security",
+                    "name": "Flowspec Security",
                     "version": "1.0.0",
-                    "informationUri": "https://github.com/yourusername/jp-spec-kit"
+                    "informationUri": "https://github.com/yourusername/flowspec"
                 }
             },
             "results": [

@@ -4,7 +4,7 @@
 **Date**: 2025-12-09
 **Author**: Enterprise Software Architect
 **Related Tasks**: task-357, task-358, task-359, task-360
-**Product**: Flowspec (formerly JP Spec Kit)
+**Product**: Flowspec (formerly Flowspec)
 
 ---
 

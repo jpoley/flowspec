@@ -1,6 +1,6 @@
 # Security Facts for AI Tools
 
-This document contains key security facts that AI tools (Claude Code, skills, commands) should be aware of when working with the JP Spec Kit security system.
+This document contains key security facts that AI tools (Claude Code, skills, commands) should be aware of when working with the Flowspec security system.
 
 ## Core Security Principles
 

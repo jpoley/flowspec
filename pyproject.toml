@@ -5,7 +5,7 @@ version = "0.2.354"
 
 
 
-description = "JP Spec Kit - A layered extension of GitHub Spec Kit with multi-language support and advanced agent orchestration for Spec-Driven Development (SDD)."
+description = "Flowspec - A layered extension of GitHub Spec Kit with multi-language support and advanced agent orchestration for Spec-Driven Development (SDD)."
 requires-python = ">=3.11"
 dependencies = [
     "typer",

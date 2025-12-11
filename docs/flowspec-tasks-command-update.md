@@ -20,7 +20,7 @@ Updated the `/flow:tasks` slash command to output tasks in Backlog.md format ins
 
 ## Changes Made
 
-### File: `/home/jpoley/ps/jp-spec-kit/templates/commands/tasks.md`
+### File: `/home/jpoley/ps/flowspec/templates/commands/tasks.md`
 
 **Updated sections:**
 

@@ -19,7 +19,7 @@ priority: medium
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Create a git post-commit hook that detects changes to backlog task files and emits corresponding jp-spec-kit events.
+Create a git post-commit hook that detects changes to backlog task files and emits corresponding flowspec events.
 
 **Context**: Backlog.md stores tasks as markdown files in `backlog/tasks/`. When these files change (via `backlog task edit`, `backlog task create`, etc.), git sees the file modifications. A post-commit hook can parse these changes and emit events.
 

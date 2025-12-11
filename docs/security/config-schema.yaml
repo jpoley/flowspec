@@ -1,6 +1,6 @@
 # Security Configuration Schema
 #
-# This file documents the security configuration options for jp-spec-kit.
+# This file documents the security configuration options for flowspec.
 # Place your configuration in `.flowspec/security-config.yml` at the project root.
 
 # Scanner Configuration

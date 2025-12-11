@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-release.py - Release workflow via PR for jp-spec-kit
+release.py - Release workflow via PR for flowspec
 
 Usage:
     ./scripts/release.py                    # Auto-increment patch (0.2.343 → 0.2.344)
@@ -232,7 +232,7 @@ Workflow:
         print("Error: Can only specify one of --major, --minor, --patch")
         sys.exit(1)
 
-    print("\n JP Spec Kit Release Script (PR Workflow)\n")
+    print("\n Flowspec Release Script (PR Workflow)\n")
     print("=" * 60)
 
     # Safety check: Verify we're on main branch
@@ -348,7 +348,7 @@ Workflow:
     pr_title = f"Release v{new_version}"
     pr_body = f"""## Release v{new_version}
 
-This PR releases version **{new_version}** of JP Spec Kit.
+This PR releases version **{new_version}** of Flowspec.
 
 ### Changes
 - Version bump: `{current_version}` → `{new_version}`

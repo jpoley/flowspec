@@ -1,6 +1,6 @@
 ---
 id: task-247
-title: 'Plan /jpspec:security Architecture and Platform Design'
+title: 'Plan /flowspec:security Architecture and Platform Design'
 status: Done
 assignee:
   - '@platform-engineer'
@@ -15,7 +15,7 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Create comprehensive architecture and platform design for the /jpspec:security commands feature, including ADRs, system design, CI/CD integration, and observability.
+Create comprehensive architecture and platform design for the /flowspec:security commands feature, including ADRs, system design, CI/CD integration, and observability.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
@@ -34,7 +34,7 @@ Create comprehensive architecture and platform design for the /jpspec:security c
 Architecture design complete:
 
 Strategic Framing:
-- Created docs/architecture/jpspec-security-architecture.md
+- Created docs/architecture/flowspec-security-architecture.md
 - Business value analysis: >95% pre-production vulnerability catch rate
 - Investment justification: Build native (reference Raptor patterns)
 - Platform quality assessment (7 C's): Clarity 9/10, Consistency 9/10, Composability 10/10
@@ -69,7 +69,7 @@ ADR-008: Security MCP Server Architecture (v2.0)
 Layered Architecture:
 ┌─────────────────────────────────────────┐
 │ User Interface Layer                    │
-│ (/jpspec:security + specify security)   │
+│ (/flowspec:security + specify security)   │
 ├─────────────────────────────────────────┤
 │ Workflow Orchestration Layer            │
 │ (scan, triage, fix, audit coordinators) │
@@ -98,12 +98,12 @@ Next Steps:
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
-Platform design complete for /jpspec:security commands.
+Platform design complete for /flowspec:security commands.
 
 ## Deliverables Created
 
 ### 1. Platform Engineering Documentation
-- **docs/platform/jpspec-security-platform.md**: Comprehensive platform design covering DORA metrics, CI/CD integration, tool dependency management, DevSecOps patterns, observability architecture, and infrastructure as code
+- **docs/platform/flowspec-security-platform.md**: Comprehensive platform design covering DORA metrics, CI/CD integration, tool dependency management, DevSecOps patterns, observability architecture, and infrastructure as code
 - **docs/platform/security-cicd-integration.md**: Detailed CI/CD integration guide for GitHub Actions, GitLab CI, Jenkins, and CircleCI with performance optimization strategies
 
 ### 2. Infrastructure as Code
@@ -137,7 +137,7 @@ Three-stage integration:
 
 ### 7. DevSecOps Integration
 - **Security Gates**: Severity-based blocking (critical/high block, medium warn)
-- **Policy as Code**: .jpspec/security-policy.yml for configurable gates
+- **Policy as Code**: .flowspec/security-policy.yml for configurable gates
 - **Emergency Bypass**: Requires approval + audit trail
 - **SBOM Integration**: CycloneDX format for compliance
 
@@ -170,6 +170,6 @@ Created 7 backlog tasks for infrastructure implementation:
 ## Next Steps
 1. Review platform design documents
 2. Begin implementation with task-248 (CI/CD pipeline)
-3. Test workflow on JP Spec Kit repository
+3. Test workflow on Flowspec repository
 4. Iterate based on performance benchmarks
 <!-- SECTION:NOTES:END -->

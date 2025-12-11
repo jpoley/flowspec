@@ -23,7 +23,7 @@ While implementing the audit report generator, we added a configuration option `
 
 ### The Implementation Pattern
 
-In `/home/jpoley/ps/jp-spec-kit/src/specify_cli/security/reporter/generator.py` (lines 175-179):
+In `/home/jpoley/ps/flowspec/src/specify_cli/security/reporter/generator.py` (lines 175-179):
 
 ```python
 # Skip false positives unless explicitly included via config
@@ -159,6 +159,6 @@ When adding ANY configuration option:
 ## References
 
 - **PR**: #362 (closed without merge)
-- **File**: `/home/jpoley/ps/jp-spec-kit/tests/security/reporter/test_generator.py` (line 242)
-- **Implementation**: `/home/jpoley/ps/jp-spec-kit/src/specify_cli/security/reporter/generator.py` (lines 175-179)
+- **File**: `/home/jpoley/ps/flowspec/tests/security/reporter/test_generator.py` (line 242)
+- **Implementation**: `/home/jpoley/ps/flowspec/src/specify_cli/security/reporter/generator.py` (lines 175-179)
 - **Pattern**: AAA (Arrange-Act-Assert) testing pattern

@@ -8,12 +8,12 @@
 
 ## Executive Summary
 
-The Backlog.md MCP integration with jp-spec-kit is **fully installed, configured, and operational**. All components have been verified and are ready for use.
+The Backlog.md MCP integration with flowspec is **fully installed, configured, and operational**. All components have been verified and are ready for use.
 
 ### ✅ What's Working
 
 - ✅ Backlog.md CLI installed (v1.20.1)
-- ✅ Backlog.md project initialized (jp-spec-kit)
+- ✅ Backlog.md project initialized (flowspec)
 - ✅ MCP server configured in `.mcp.json`
 - ✅ Directory structure created with 4 demo tasks
 - ✅ All CLI commands functional
@@ -47,11 +47,11 @@ $ which npm
 
 ### 2. Backlog.md Project Configuration ✅
 
-**Location**: `/home/jpoley/ps/jp-spec-kit/backlog/`
+**Location**: `/home/jpoley/ps/flowspec/backlog/`
 
 **config.yml**:
 ```yaml
-project_name: "jp-spec-kit"
+project_name: "flowspec"
 default_status: "To Do"
 statuses: ["To Do", "In Progress", "Done"]
 labels: []
@@ -84,8 +84,8 @@ backlog/
 ├── docs/
 ├── drafts/
 └── tasks/
-    ├── task-1 - Integrate-Backlog.md-with-jp-spec-kit.md
-    ├── task-2 - Implement-task-parser-for-jp-spec-kit-format.md
+    ├── task-1 - Integrate-Backlog.md-with-flowspec.md
+    ├── task-2 - Implement-task-parser-for-flowspec-format.md
     ├── task-3 - Implement-Backlog.md-file-writer.md
     └── task-4 - Create-dependency-graph-builder.md
 ```
@@ -134,7 +134,7 @@ Options:
 ```bash
 $ backlog search "integrate"
 Tasks:
-  task-1 - Integrate Backlog.md with jp-spec-kit (In Progress) [score 0.701]
+  task-1 - Integrate Backlog.md with flowspec (In Progress) [score 0.701]
 ```
 **Result**: ✅ Search working
 
@@ -147,10 +147,10 @@ $ backlog task list
 
 #### Test 3: Task Viewing
 ```bash
-$ cat backlog/tasks/task-1 - Integrate-Backlog.md-with-jp-spec-kit.md
+$ cat backlog/tasks/task-1 - Integrate-Backlog.md-with-flowspec.md
 ---
 id: task-1
-title: Integrate Backlog.md with jp-spec-kit
+title: Integrate Backlog.md with flowspec
 status: In Progress
 assignee: []
 created_date: '2025-11-24 01:11'
@@ -165,7 +165,7 @@ dependencies: []
 #### Test 4: Overview
 ```bash
 $ backlog overview
-jp-spec-kit - Project Overview
+flowspec - Project Overview
 ===============================
 Status Overview:
   To Do: 3 tasks (75%)
@@ -185,8 +185,8 @@ $ git add backlog/ .mcp.json
 $ git status --short
 M  .mcp.json
 A  backlog/config.yml
-A  backlog/tasks/task-1 - Integrate-Backlog.md-with-jp-spec-kit.md
-A  backlog/tasks/task-2 - Implement-task-parser-for-jp-spec-kit-format.md
+A  backlog/tasks/task-1 - Integrate-Backlog.md-with-flowspec.md
+A  backlog/tasks/task-2 - Implement-task-parser-for-flowspec-format.md
 A  backlog/tasks/task-3 - Implement-Backlog.md-file-writer.md
 A  backlog/tasks/task-4 - Create-dependency-graph-builder.md
 ```
@@ -199,8 +199,8 @@ A  backlog/tasks/task-4 - Create-dependency-graph-builder.md
 
 | Task ID | Title | Status | Labels |
 |---------|-------|--------|--------|
-| task-1 | Integrate Backlog.md with jp-spec-kit | In Progress | integration, priority-high |
-| task-2 | Implement task parser for jp-spec-kit format | To Do | US1, foundational, P0 |
+| task-1 | Integrate Backlog.md with flowspec | In Progress | integration, priority-high |
+| task-2 | Implement task parser for flowspec format | To Do | US1, foundational, P0 |
 | task-3 | Implement Backlog.md file writer | To Do | US1, foundational, P0 |
 | task-4 | Create dependency graph builder | To Do | US1, foundational, P0 |
 
@@ -300,7 +300,7 @@ Tasks are markdown files with YAML frontmatter:
 
 ```bash
 # Edit task directly
-vim backlog/tasks/task-1 - Integrate-Backlog.md-with-jp-spec-kit.md
+vim backlog/tasks/task-1 - Integrate-Backlog.md-with-flowspec.md
 
 # Task format:
 ---
@@ -317,11 +317,11 @@ Task description and notes go here.
 
 ---
 
-## Integration with jp-spec-kit Workflows
+## Integration with flowspec Workflows
 
 ### Current State
 
-**Existing jp-spec-kit Commands** (Unchanged):
+**Existing flowspec Commands** (Unchanged):
 - `/flow:specify` - Create feature specifications
 - `/flow:plan` - Create implementation plans
 - `/flow:research` - Execute research workflow
@@ -472,7 +472,7 @@ backlog search "." # Triggers re-index
 - [x] Document setup ✅
 
 ### Short Term (Implementation)
-- [ ] Implement task parser for jp-spec-kit format
+- [ ] Implement task parser for flowspec format
 - [ ] Implement Backlog.md task generator
 - [ ] Enhance `/flow:tasks` command
 - [ ] Test end-to-end workflow
@@ -503,7 +503,7 @@ backlog search "." # Triggers re-index
 
 ### backlog/config.yml
 ```yaml
-project_name: "jp-spec-kit"
+project_name: "flowspec"
 default_status: "To Do"
 statuses: ["To Do", "In Progress", "Done"]
 labels: []
@@ -519,7 +519,7 @@ default_port: 6420
 
 - **Backlog.md Documentation**: https://github.com/MrLesk/Backlog.md
 - **MCP Protocol**: https://modelcontextprotocol.io
-- **jp-spec-kit PRD**: `docs/prd-backlog-md-integration.md`
+- **flowspec PRD**: `docs/prd-backlog-md-integration.md`
 - **Integration Summary**: `docs/backlog-md-integration-summary.md`
 
 ---
@@ -537,7 +537,7 @@ All components are in place:
 - CLI functional
 - Ready for AI-powered task management
 
-**You can now use Backlog.md with jp-spec-kit for complete spec-driven task management with AI assistance.**
+**You can now use Backlog.md with flowspec for complete spec-driven task management with AI assistance.**
 
 ---
 

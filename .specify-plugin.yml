@@ -1,11 +1,11 @@
-# JP Spec Kit Plugin Manifest
-# Declares jp-spec-kit as a layered extension of github/spec-kit
+# Flowspec Plugin Manifest
+# Declares flowspec as a layered extension of github/spec-kit
 
-name: jp-spec-kit
+name: flowspec
 version: 0.0.20
 type: layered-extension
 author: jpoley
-repository: https://github.com/jpoley/jp-spec-kit
+repository: https://github.com/jpoley/flowspec
 
 # Base dependency
 extends:
@@ -78,7 +78,7 @@ installation:
       files: all
     
     - name: extension
-      source: jpoley/jp-spec-kit
+      source: jpoley/flowspec
       version: 0.0.20
       files:
         - templates/commands/flowspec/**
@@ -100,4 +100,4 @@ installation:
 # Upgrade behavior
 upgrade:
   sync_base: true
-  description: "Pull latest spec-kit, then re-apply jp-spec-kit overlay"
+  description: "Pull latest spec-kit, then re-apply flowspec overlay"

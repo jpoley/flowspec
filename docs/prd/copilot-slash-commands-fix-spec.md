@@ -715,7 +715,7 @@ backlog task create "Add CI check for agent sync drift" \
 
 # Task 8: Update documentation for dual-agent support
 backlog task create "Update documentation for VS Code Copilot support" \
-  -d "Document how jp-spec-kit supports both Claude Code CLI and VS Code Copilot with setup instructions and screenshots" \
+  -d "Document how flowspec supports both Claude Code CLI and VS Code Copilot with setup instructions and screenshots" \
   --ac "README.md mentions both .claude/commands/ and .github/agents/ directories" \
   --ac "CLAUDE.md documents sync script usage and workflow" \
   --ac "New guide created: docs/guides/vscode-copilot-setup.md with setup steps" \

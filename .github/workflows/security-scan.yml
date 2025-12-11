@@ -1,4 +1,4 @@
-# Reusable Security Scan Workflow for JP Spec Kit
+# Reusable Security Scan Workflow for Flowspec
 #
 # This workflow provides security scanning capabilities using specify security commands.
 # It can be called from other workflows to perform security scans with configurable options.
@@ -90,7 +90,7 @@ jobs:
           restore-keys: |
             semgrep-${{ runner.os }}-
 
-      - name: Install JP Spec Kit
+      - name: Install Flowspec
         run: |
           pip install uv
           # Install from local checkout (development version with security commands)

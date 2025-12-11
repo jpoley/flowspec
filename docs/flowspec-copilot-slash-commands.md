@@ -1,6 +1,6 @@
 # Issue: `/flow:` slash commands not appearing in VS Code Copilot Chat
 
-**Repository:** https://github.com/jpoley/jp-spec-kit  
+**Repository:** https://github.com/jpoley/flowspec  
 **Labels:** `bug`, `copilot`, `documentation`  
 **Priority:** High  
 **Created:** 2025-12-07
@@ -57,7 +57,7 @@ mode: agent
 
 ## Root Cause Analysis
 
-Research into [github/spec-kit](https://github.com/jpoley/jp-spec-kit) reveals that **VS Code Copilot uses a completely different directory structure and file format** than Claude Code:
+Research into [github/spec-kit](https://github.com/jpoley/flowspec) reveals that **VS Code Copilot uses a completely different directory structure and file format** than Claude Code:
 
 ### Agent Directory Comparison
 
@@ -198,10 +198,10 @@ $ARGUMENTS
 
 ## References
 
-- [github/spec-kit repository](https://github.com/jpoley/jp-spec-kit)
-- [AGENTS.md - Agent configuration](https://github.com/jpoley/jp-spec-kit/blob/main/AGENTS.md)
-- [Command File Formats](https://github.com/jpoley/jp-spec-kit/blob/main/AGENTS.md#command-file-formats)
-- [Copilot directory convention](https://github.com/jpoley/jp-spec-kit/blob/main/AGENTS.md#directory-conventions)
+- [github/spec-kit repository](https://github.com/jpoley/flowspec)
+- [AGENTS.md - Agent configuration](https://github.com/jpoley/flowspec/blob/main/AGENTS.md)
+- [Command File Formats](https://github.com/jpoley/flowspec/blob/main/AGENTS.md#command-file-formats)
+- [Copilot directory convention](https://github.com/jpoley/flowspec/blob/main/AGENTS.md#directory-conventions)
 
 ---
 
@@ -210,7 +210,7 @@ $ARGUMENTS
 If you need this working immediately, run:
 
 ```bash
-# From jp-spec-kit repo root
+# From flowspec repo root
 mkdir -p .github/agents
 
 # For each command, copy and modify the frontmatter
@@ -226,7 +226,7 @@ cp .claude/commands/flow.specify.md .github/agents/flowspec.specify.md
 Or use spec-kit's CLI to regenerate:
 
 ```bash
-uvx --from git+https://github.com/jpoley/jp-spec-kit.git specify init --here --force --ai copilot
+uvx --from git+https://github.com/jpoley/flowspec.git specify init --here --force --ai copilot
 ```
 
 **Warning:** The spec-kit command will overwrite files. Back up customizations first.

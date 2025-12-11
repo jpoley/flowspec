@@ -1,5 +1,5 @@
 {
-  "name": "JP Spec Kit Dev Environment",
+  "name": "Flowspec Dev Environment",
   "image": "mcr.microsoft.com/devcontainers/python:3.11-bookworm",
 
   "features": {
@@ -27,7 +27,7 @@
         "streetsidesoftware.code-spell-checker"
       ],
       "settings": {
-        "python.defaultInterpreterPath": "/workspaces/jp-spec-kit/.venv/bin/python",
+        "python.defaultInterpreterPath": "/workspaces/flowspec/.venv/bin/python",
         "python.terminal.activateEnvironment": false,
         "python.testing.pytestEnabled": true,
         "python.testing.unittestEnabled": false,
@@ -56,7 +56,7 @@
   },
 
   "mounts": [
-    "source=${localWorkspaceFolder}/backlog,target=/workspaces/jp-spec-kit/backlog,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/backlog,target=/workspaces/flowspec/backlog,type=bind,consistency=cached",
     // Mount .gitconfig for Linux
     "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig-host,type=bind,readonly,platform=linux",
     // Mount .gitconfig for Windows
@@ -73,24 +73,24 @@
     "source=${localEnv:HOME}/.config/github-copilot,target=/home/vscode/.config/github-copilot,type=bind,consistency=cached,platform=linux",
     // Mount github-copilot config for Windows
     "source=${localEnv:USERPROFILE}/.config/github-copilot,target=/home/vscode/.config/github-copilot,type=bind,consistency=cached,platform=win32",
-    "source=jp-spec-kit-vscode-extensions,target=/home/vscode/.vscode-server/extensions,type=volume"
+    "source=flowspec-vscode-extensions,target=/home/vscode/.vscode-server/extensions,type=volume"
   ],
 
   "remoteEnv": {
-    "GITHUB_JPSPEC": "${localEnv:GITHUB_JPSPEC}",
+    "GITHUB_FLOWSPEC": "${localEnv:GITHUB_FLOWSPEC}",
     "OPENAI_API_KEY": "${localEnv:OPENAI_API_KEY}",
     "GOOGLE_API_KEY": "${localEnv:GOOGLE_API_KEY}",
     "PYTHONUNBUFFERED": "1",
     "UV_SYSTEM_PYTHON": "1",
-    "VIRTUAL_ENV": "/workspaces/jp-spec-kit/.venv",
-    "PATH": "/workspaces/jp-spec-kit/.venv/bin:/home/vscode/.local/share/pnpm:/home/vscode/.cargo/bin:/home/vscode/.local/bin:${containerEnv:PATH}"
+    "VIRTUAL_ENV": "/workspaces/flowspec/.venv",
+    "PATH": "/workspaces/flowspec/.venv/bin:/home/vscode/.local/share/pnpm:/home/vscode/.cargo/bin:/home/vscode/.local/bin:${containerEnv:PATH}"
   },
 
   "initializeCommand": "pwsh -Command \"New-Item -ItemType Directory -Force -Path '${localEnv:HOME}/.claude','${localEnv:HOME}/.config/github-copilot'\"",
   "onCreateCommand": "curl -LsSf https://astral.sh/uv/install.sh | sh",
   "postCreateCommand": "bash .devcontainer/post-create.sh",
   "postStartCommand": "cp /home/vscode/.gitconfig-host /home/vscode/.gitconfig 2>/dev/null || true; git config --global --add safe.directory ${containerWorkspaceFolder}",
-  "postAttachCommand": "echo '--- JP Spec Kit Dev Environment Ready ---' && uv --version && python --version",
+  "postAttachCommand": "echo '--- Flowspec Dev Environment Ready ---' && uv --version && python --version",
 
   "forwardPorts": [],
 
@@ -100,5 +100,5 @@
   },
 
   "remoteUser": "vscode",
-  "workspaceFolder": "/workspaces/jp-spec-kit"
+  "workspaceFolder": "/workspaces/flowspec"
 }

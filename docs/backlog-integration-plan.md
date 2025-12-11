@@ -1,6 +1,6 @@
 # JP Flowspec - Backlog
 
-**Project:** jp-spec-kit
+**Project:** flowspec
 **Last Updated:** 2025-11-24
 **Source:** [docs/copilot-next.md](docs/copilot-next.md) - Backlog.md Integration Analysis
 
@@ -8,7 +8,7 @@
 
 ## Overview
 
-This backlog contains structured tasks for integrating Backlog.md task management into jp-spec-kit, organized by implementation phase and priority.
+This backlog contains structured tasks for integrating Backlog.md task management into flowspec, organized by implementation phase and priority.
 
 ### Priority Legend
 - **P0 - Critical**: Must be done first, blocks other work
@@ -59,11 +59,11 @@ backlog --help
 
 ---
 
-### TASK-002: Initialize Backlog.md in jp-spec-kit
+### TASK-002: Initialize Backlog.md in flowspec
 
 ```yaml
 id: task-002
-title: Initialize Backlog.md in jp-spec-kit
+title: Initialize Backlog.md in flowspec
 status: To Do
 priority: P0
 phase: 1
@@ -73,10 +73,10 @@ estimated_effort: 10 minutes
 ```
 
 **Description:**
-Initialize backlog.md in the jp-spec-kit project with MCP integration mode for AI agent support.
+Initialize backlog.md in the flowspec project with MCP integration mode for AI agent support.
 
 **Acceptance Criteria:**
-- [ ] Run `backlog init jp-spec-kit --defaults --integration-mode mcp`
+- [ ] Run `backlog init flowspec --defaults --integration-mode mcp`
 - [ ] Verify `backlog/` directory created with proper structure:
   - `backlog/config.yml`
   - `backlog/tasks/`
@@ -88,8 +88,8 @@ Initialize backlog.md in the jp-spec-kit project with MCP integration mode for A
 
 **Commands:**
 ```bash
-cd /home/jpoley/ps/jp-spec-kit
-backlog init jp-spec-kit --defaults --integration-mode mcp
+cd /home/jpoley/ps/flowspec
+backlog init flowspec --defaults --integration-mode mcp
 ls -la backlog/
 cat backlog/config.yml
 ```
@@ -110,18 +110,18 @@ estimated_effort: 15 minutes
 ```
 
 **Description:**
-Customize backlog/config.yml with jp-spec-kit specific settings, statuses, and labels.
+Customize backlog/config.yml with flowspec specific settings, statuses, and labels.
 
 **Acceptance Criteria:**
 - [ ] Add custom statuses: `["To Do", "In Progress", "Review", "Blocked", "Done"]`
-- [ ] Add jp-spec-kit labels: `["foundation", "slash-commands", "agents", "documentation", "ci-cd", "infrastructure"]`
+- [ ] Add flowspec labels: `["foundation", "slash-commands", "agents", "documentation", "ci-cd", "infrastructure"]`
 - [ ] Add milestones: `["Phase 1: Foundation", "Phase 2: Slash Commands", "Phase 3: Agents", "Phase 4: Docs", "Phase 5: CI/CD", "Phase 6: Polish"]`
 - [ ] Set appropriate defaults for the project
 
 **Implementation:**
 Edit `backlog/config.yml`:
 ```yaml
-project_name: "jp-spec-kit"
+project_name: "flowspec"
 default_status: "To Do"
 statuses: ["To Do", "In Progress", "Review", "Blocked", "Done"]
 labels: ["foundation", "slash-commands", "agents", "documentation", "ci-cd", "infrastructure", "mcp", "testing"]
@@ -232,7 +232,7 @@ estimated_effort: 20 minutes
 ```
 
 **Description:**
-Verify all key backlog.md CLI commands work correctly in the jp-spec-kit project.
+Verify all key backlog.md CLI commands work correctly in the flowspec project.
 
 **Acceptance Criteria:**
 - [ ] `backlog task list` - Lists all tasks
@@ -1021,7 +1021,7 @@ estimated_effort: 30 minutes
 ```
 
 **Description:**
-Create task templates for common task types in jp-spec-kit.
+Create task templates for common task types in flowspec.
 
 **Acceptance Criteria:**
 - [ ] Feature task template
@@ -1075,7 +1075,7 @@ estimated_effort: 20 minutes
 ```
 
 **Description:**
-Fine-tune labels and milestones based on jp-spec-kit workflow needs.
+Fine-tune labels and milestones based on flowspec workflow needs.
 
 **Acceptance Criteria:**
 - [ ] Review label usage after initial implementation

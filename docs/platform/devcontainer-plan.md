@@ -1,6 +1,6 @@
 # Devcontainer Implementation Plan
 
-**Task**: task-337 - Devcontainer Support for JP-Spec-Kit Build and Runtime
+**Task**: task-337 - Devcontainer Support for flowspec Build and Runtime
 **Status**: Planned
 **Date**: 2025-12-08
 **Authors**: Software Architect Agent, Platform Engineer Agent
@@ -119,7 +119,7 @@ This plan defines the devcontainer implementation for Flowspec, enabling consist
   ],
 
   "remoteEnv": {
-    "GITHUB_JPSPEC": "${localEnv:GITHUB_JPSPEC}",
+    "GITHUB_FLOWSPEC": "${localEnv:GITHUB_FLOWSPEC}",
     "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
     "PYTHONUNBUFFERED": "1",
     "UV_SYSTEM_PYTHON": "1",

@@ -1,10 +1,10 @@
 {
-  "name": "jp-spec-kit",
+  "name": "flowspec",
   "version": "0.0.20",
   "description": "Comprehensive Spec-Driven Development toolkit with multi-language support, specialized agents, and integrated security/observability tools",
   "author": "Jason Poley",
-  "homepage": "https://github.com/jpoley/jp-spec-kit",
-  "repository": "https://github.com/jpoley/jp-spec-kit",
+  "homepage": "https://github.com/jpoley/flowspec",
+  "repository": "https://github.com/jpoley/flowspec",
   "license": "MIT",
   "keywords": [
     "spec-driven",

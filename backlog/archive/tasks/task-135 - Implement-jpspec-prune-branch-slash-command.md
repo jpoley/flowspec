@@ -1,6 +1,6 @@
 ---
 id: task-135
-title: 'Implement /jpspec:prune-branch slash command'
+title: 'Implement /flowspec:prune-branch slash command'
 status: Done
 assignee:
   - '@claude'
@@ -36,7 +36,7 @@ Create a slash command that safely prunes local branches that have been merged a
 ## Implementation Plan
 
 <!-- SECTION:PLAN:BEGIN -->
-1. Create slash command file at .claude/commands/jpspec/prune-branch.md
+1. Create slash command file at .claude/commands/flowspec/prune-branch.md
 2. Implement git fetch --prune logic
 3. Implement detection of gone/merged branches
 4. Implement dry-run vs force mode logic
@@ -48,7 +48,7 @@ Create a slash command that safely prunes local branches that have been merged a
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
-Implemented /jpspec:prune-branch slash command that:
+Implemented /flowspec:prune-branch slash command that:
 
 - Fetches from all remotes with --prune to sync tracking info
 - Identifies branches with upstream "gone" status
@@ -59,5 +59,5 @@ Implemented /jpspec:prune-branch slash command that:
 - Includes clear output formatting with reasons
 - Handles edge cases (not in git repo, no remote, no branches to prune)
 
-Tested git commands against current repo - found stale branch jpspec-backlog-integration-tasks-v2 that would be correctly identified for pruning.
+Tested git commands against current repo - found stale branch flowspec-backlog-integration-tasks-v2 that would be correctly identified for pruning.
 <!-- SECTION:NOTES:END -->

@@ -1,6 +1,6 @@
 ---
 id: task-095
-title: Document backlog.md state mapping to /jpspec workflow
+title: Document backlog.md state mapping to /flowspec workflow
 status: Done
 assignee: []
 created_date: '2025-11-28 15:57'
@@ -16,14 +16,14 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Create comprehensive documentation explaining how backlog.md states map to and synchronize with /jpspec workflow phases
+Create comprehensive documentation explaining how backlog.md states map to and synchronize with /flowspec workflow phases
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
 - [x] #1 Documentation created at docs/guides/workflow-state-mapping.md
-- [x] #2 Mapping table shows each backlog.md state and corresponding /jpspec command
-- [x] #3 Documentation explains how states are created from jpspec_workflow.yml
+- [x] #2 Mapping table shows each backlog.md state and corresponding /flowspec command
+- [x] #3 Documentation explains how states are created from flowspec_workflow.yml
 - [x] #4 Documentation shows how to create custom states in backlog.md
 - [x] #5 Documentation explains state transition rules and enforcement
 - [x] #6 Documentation includes examples of valid and invalid state transitions

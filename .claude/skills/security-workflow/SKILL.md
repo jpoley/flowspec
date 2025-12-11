@@ -501,9 +501,9 @@ Security scans should output SARIF 2.1.0 format for GitHub Code Scanning integra
     {
       "tool": {
         "driver": {
-          "name": "JP Spec Kit Security Scanner",
+          "name": "Flowspec Security Scanner",
           "version": "1.0.0",
-          "informationUri": "https://github.com/jpoley/jp-spec-kit"
+          "informationUri": "https://github.com/jpoley/flowspec"
         }
       },
       "results": [

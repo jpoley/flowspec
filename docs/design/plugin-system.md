@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-This document describes a plugin architecture for JP Spec Kit that enables pluggable **workflows**, **commands**, **agents/squads**, **stacks**, and **integrations** while preserving the spec-driven foundation and backlog.md workflow. The system builds on the existing layered extension model (`.specify-plugin.yml`) to create a full plugin ecosystem.
+This document describes a plugin architecture for Flowspec that enables pluggable **workflows**, **commands**, **agents/squads**, **stacks**, and **integrations** while preserving the spec-driven foundation and backlog.md workflow. The system builds on the existing layered extension model (`.specify-plugin.yml`) to create a full plugin ecosystem.
 
 ---
 
@@ -17,7 +17,7 @@ This document describes a plugin architecture for JP Spec Kit that enables plugg
 
 ### Goals
 
-1. **Extensibility Without Forking**: Enable users to add custom workflows, commands, agents, stacks, and integrations without modifying core JP Spec Kit code.
+1. **Extensibility Without Forking**: Enable users to add custom workflows, commands, agents, stacks, and integrations without modifying core Flowspec code.
 
 2. **Spec-Driven Foundation**: Preserve the PRD → Plan → Implement → Validate workflow as the backbone; plugins extend but don't replace this flow.
 
@@ -102,7 +102,7 @@ So that my team uses only approved, signed plugins.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           JP Spec Kit Core                                   │
+│                           Flowspec Core                                   │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐             │
 │  │ Workflow Engine │  │  Backlog.md     │  │  CLI / Claude   │             │
 │  │ (SDD Phases)    │  │  Integration    │  │  Commands       │             │
@@ -763,7 +763,7 @@ async def startup():
 | **Unsigned** | No verification | Warning on install, blocked by policy |
 | **Self-Signed** | Author signature | Manual trust approval |
 | **Verified** | Registry-verified author | Author identity confirmed |
-| **Certified** | JP Spec Kit certified | Security audit passed |
+| **Certified** | Flowspec certified | Security audit passed |
 
 ### 8.2 Signing and Verification
 
@@ -1532,4 +1532,4 @@ my-plugin/
 
 ---
 
-*This design document was created as part of the JP Spec Kit Spec-Driven Development process. For questions or feedback, please open an issue in the repository.*
+*This design document was created as part of the Flowspec Spec-Driven Development process. For questions or feedback, please open an issue in the repository.*

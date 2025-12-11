@@ -1,7 +1,7 @@
 """
-Backlog.md file writer for jp-spec-kit tasks.
+Backlog.md file writer for flowspec tasks.
 
-Generates Backlog.md format task files from parsed jp-spec-kit tasks.
+Generates Backlog.md format task files from parsed flowspec tasks.
 """
 
 from datetime import datetime

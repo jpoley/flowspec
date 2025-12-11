@@ -1,4 +1,4 @@
-# JPSpec Commands Audit: Task Management Integration Analysis
+# Flowspec Commands Audit: Task Management Integration Analysis
 
 **Audit Date**: 2025-11-28
 **Auditor**: Claude Agent

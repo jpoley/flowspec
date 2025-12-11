@@ -21,7 +21,7 @@ BUG FIX: Documentation contains outdated branding references and deployment is b
 
 Issues:
 1. ~35 references to "Specflow/specflow" need updating to "flowspec"
-2. ~120 references to "JP Spec/jpspec" need updating to "flowspec"  
+2. ~120 references to "JP Spec/flowspec" need updating to "flowspec"  
 3. docfx.json uses old "Specflow" branding
 4. docs.yml workflow uses "Specflow" in footer
 5. GitHub Pages deployment failing due to environment protection rules
@@ -34,7 +34,7 @@ Original scope (architecture docs) merged into this fix.
 - [x] #1 Update docfx.json branding from Specflow to flowspec
 - [x] #2 Update docs.yml workflow footer branding
 - [x] #3 Rename all Specflow references in docs/ to flowspec
-- [x] #4 Update JP Spec/jpspec references to flowspec where appropriate
+- [x] #4 Update JP Spec/flowspec references to flowspec where appropriate
 - [ ] #5 Verify docs build locally with docfx
 - [x] #6 Document GitHub Pages environment protection rule fix needed
 <!-- AC:END -->

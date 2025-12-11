@@ -55,7 +55,7 @@ def full_config():
     """A complete workflow configuration matching WORKFLOW_DESIGN_SPEC.md."""
     return {
         "version": "1.0",
-        "description": "Default JP Spec Kit specification-driven development workflow",
+        "description": "Default Flowspec specification-driven development workflow",
         "states": [
             {"name": "Specified", "description": "Feature specification created"},
             {"name": "Researched", "description": "Business viability researched"},

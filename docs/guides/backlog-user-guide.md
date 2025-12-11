@@ -74,7 +74,7 @@ Completed Feature
 
 ### Prerequisites
 
-- Flowspec installed: `uv tool install specify-cli --from git+https://github.com/jpoley/jp-spec-kit.git`
+- Flowspec installed: `uv tool install specify-cli --from git+https://github.com/jpoley/flowspec.git`
 - Node.js 18+ or npm/pnpm
 - Git repository initialized
 - Claude Code (optional, for AI integration)
@@ -738,7 +738,7 @@ fi
 
 **Effective Labeling**:
 ```yaml
-# User story (required for jp-spec-kit integration)
+# User story (required for flowspec integration)
 labels: [US1]
 
 # Phase/type
@@ -950,13 +950,13 @@ backlog board --filter US1  # Instead of viewing all tasks
 
 **Resources**:
 - [Backlog.md Documentation](https://github.com/MrLesk/Backlog.md)
-- [Flowspec Issues](https://github.com/jpoley/jp-spec-kit/issues)
+- [Flowspec Issues](https://github.com/jpoley/flowspec/issues)
 - [MCP Protocol Docs](https://modelcontextprotocol.io)
 
 **Report Issues**:
 ```bash
 # For Flowspec integration issues
-# Open issue at: https://github.com/jpoley/jp-spec-kit/issues
+# Open issue at: https://github.com/jpoley/flowspec/issues
 
 # For Backlog.md tool issues
 # Open issue at: https://github.com/MrLesk/Backlog.md/issues

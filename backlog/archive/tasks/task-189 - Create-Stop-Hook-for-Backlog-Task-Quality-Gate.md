@@ -16,7 +16,7 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Implement Stop hook to enforce backlog task quality gate before session ends. This aligns with JP Spec Kit's workflow validation approach (see workflow-engine-review.md) without requiring external database state.
+Implement Stop hook to enforce backlog task quality gate before session ends. This aligns with Flowspec's workflow validation approach (see workflow-engine-review.md) without requiring external database state.
 
 Cross-reference: See docs/prd/claude-capabilities-review.md Section 2.1 for hooks gap analysis.
 <!-- SECTION:DESCRIPTION:END -->

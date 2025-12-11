@@ -189,7 +189,7 @@ CodeQL outputs SARIF (Static Analysis Results Interchange Format):
 
 CodeQL SARIF files are located at:
 - Default: `results.sarif` (from CodeQL CLI)
-- jp-spec-kit: `docs/security/codeql-results.sarif`
+- flowspec: `docs/security/codeql-results.sarif`
 
 ```python
 # Read SARIF file

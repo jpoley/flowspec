@@ -47,12 +47,12 @@ Environment variable override:
 
 ### Step 1: Verify Project Context
 
-Before proceeding, verify this is a valid jp-spec-kit project:
+Before proceeding, verify this is a valid flowspec project:
 
 ```bash
 # Check for project markers
 if [ ! -f "flowspec_workflow.yml" ] && [ ! -f "flowspec_workflow.yml" ] && [ ! -d ".claude" ]; then
-  echo "Error: This doesn't appear to be a jp-spec-kit project"
+  echo "Error: This doesn't appear to be a flowspec project"
   echo "Run '/speckit:init' first to initialize the project"
   exit 1
 fi

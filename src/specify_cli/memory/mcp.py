@@ -1,6 +1,6 @@
 """MCP Resource - Expose task memory via MCP protocol.
 
-This module extends the JP Spec Kit MCP server to expose task memory files
+This module extends the Flowspec MCP server to expose task memory files
 as resources via the Model Context Protocol. This enables MCP-compatible
 AI agents (like VS Code Copilot) to access task context on demand.
 

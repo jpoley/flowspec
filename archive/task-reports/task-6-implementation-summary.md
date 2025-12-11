@@ -14,7 +14,7 @@
 
 ### 1. Updated `/flow:tasks` Command Template
 
-**File Modified**: `/home/jpoley/ps/jp-spec-kit/templates/commands/tasks.md`
+**File Modified**: `/home/jpoley/ps/flowspec/templates/commands/tasks.md`
 
 **Changes Made**:
 
@@ -73,13 +73,13 @@ The updated command integrates seamlessly with the backlog module built in tasks
 Created comprehensive documentation:
 
 1. **Implementation Guide**:
-   - `/home/jpoley/ps/jp-spec-kit/docs/flowspec-tasks-command-update.md`
+   - `/home/jpoley/ps/flowspec/docs/flowspec-tasks-command-update.md`
    - Detailed explanation of changes
    - Workflow diagrams
    - Self-critique assessment
 
 2. **Testing Guide**:
-   - `/home/jpoley/ps/jp-spec-kit/docs/task-6-testing-guide.md`
+   - `/home/jpoley/ps/flowspec/docs/task-6-testing-guide.md`
    - Step-by-step testing instructions
    - Multiple test scenarios
    - Validation checklists
@@ -294,7 +294,7 @@ ls -la backlog/tasks/
 
 ### Detailed Testing
 
-See: `/home/jpoley/ps/jp-spec-kit/docs/task-6-testing-guide.md`
+See: `/home/jpoley/ps/flowspec/docs/task-6-testing-guide.md`
 
 ---
 

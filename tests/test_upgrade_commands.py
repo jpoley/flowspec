@@ -36,8 +36,8 @@ class TestUpgradeToolsComponents:
     """Tests for UPGRADE_TOOLS_COMPONENTS constant."""
 
     def test_contains_jp_spec_kit(self):
-        """jp-spec-kit is a valid component."""
-        assert "jp-spec-kit" in UPGRADE_TOOLS_COMPONENTS
+        """flowspec is a valid component."""
+        assert "flowspec" in UPGRADE_TOOLS_COMPONENTS
 
     def test_contains_spec_kit(self):
         """spec-kit is a valid component."""
@@ -48,14 +48,14 @@ class TestUpgradeToolsComponents:
         assert "backlog" in UPGRADE_TOOLS_COMPONENTS
 
 
-class TestGetInstalledJpSpecKitVersion:
+class TestGetInstalledFlowspecKitVersion:
     """Tests for _get_installed_jp_spec_kit_version helper function."""
 
     def test_parses_version_from_specify_output(self):
         """Extracts version number from 'specify version' output."""
         mock_result = MagicMock()
         mock_result.returncode = 0
-        mock_result.stdout = "jp-spec-kit 0.2.317\nspec-kit 0.1.0\n"
+        mock_result.stdout = "flowspec 0.2.317\nspec-kit 0.1.0\n"
 
         with patch("subprocess.run", return_value=mock_result):
             version = _get_installed_jp_spec_kit_version()
@@ -78,7 +78,7 @@ class TestGetInstalledJpSpecKitVersion:
             assert version is None
 
 
-class TestUpgradeJpSpecKit:
+class TestUpgradeFlowspecKit:
     """Tests for _upgrade_jp_spec_kit helper function."""
 
     def test_already_at_latest_version(self):
@@ -306,7 +306,7 @@ class TestUpgradeSpecKit:
                 assert "Could not determine latest spec-kit version" in message
 
     def test_reinstall_from_git_success(self):
-        """Successful spec-kit upgrade via jp-spec-kit reinstall."""
+        """Successful spec-kit upgrade via flowspec reinstall."""
         with patch("specify_cli.get_spec_kit_installed_version") as mock_installed:
             # Return old version first, then new version after install
             mock_installed.side_effect = ["1.0.0", "2.0.0"]
@@ -336,7 +336,7 @@ class TestUpgradeToolsCommand:
         result = runner.invoke(app, ["upgrade-tools", "--help"])
         assert result.exit_code == 0
         assert "CLI tools" in result.output
-        assert "jp-spec-kit" in result.output
+        assert "flowspec" in result.output
         assert "spec-kit" in result.output
         assert "backlog-md" in result.output
 
@@ -388,7 +388,7 @@ class TestUpgradeToolsCommand:
                     with patch("specify_cli._upgrade_spec_kit") as mock_sk:
                         with patch("specify_cli._upgrade_backlog_md") as mock_bl:
                             result = runner.invoke(
-                                app, ["upgrade-tools", "-c", "jp-spec-kit"]
+                                app, ["upgrade-tools", "-c", "flowspec"]
                             )
                             assert result.exit_code == 0
                             mock_jp.assert_called_once()
@@ -430,13 +430,13 @@ class TestUpgradeRepoCommand:
         assert "upgrade-tools" in result.output
 
     def test_source_repo_detection(self):
-        """Detects jp-spec-kit source repository and blocks upgrade."""
+        """Detects flowspec source repository and blocks upgrade."""
         import os
         import tempfile
 
         with tempfile.TemporaryDirectory() as tmpdir:
             # Create source repo marker
-            marker_path = os.path.join(tmpdir, ".jp-spec-kit-source")
+            marker_path = os.path.join(tmpdir, ".flowspec-source")
             with open(marker_path, "w") as f:
                 f.write("")
 

@@ -1,4 +1,4 @@
-# ADR-001: Backlog.md CLI Integration for JPSpec Commands
+# ADR-001: Backlog.md CLI Integration for Flowspec Commands
 
 **Status**: Accepted
 **Date**: 2025-11-28

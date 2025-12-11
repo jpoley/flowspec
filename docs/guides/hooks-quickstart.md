@@ -551,4 +551,4 @@ golangci-lint run
 - Validate your config: `specify hooks validate`
 - Test hooks individually: `specify hooks test <hook-name> <event-type>`
 - View execution history: `specify hooks audit`
-- Check GitHub issues: https://github.com/jpoley/jp-spec-kit/issues
+- Check GitHub issues: https://github.com/jpoley/flowspec/issues

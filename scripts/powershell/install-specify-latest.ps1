@@ -2,7 +2,7 @@
 param(
   [ValidateSet('ssh','https')][string]$Method = 'https',
   [string]$Owner = 'jpoley',
-  [string]$Repo = 'jp-spec-kit'
+  [string]$Repo = 'flowspec'
 )
 
 $ErrorActionPreference = 'Stop'

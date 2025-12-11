@@ -7,8 +7,8 @@ This guide shows how to iterate on the `specify` CLI locally without publishing 
 ## 1. Clone and Switch Branches
 
 ```bash
-git clone https://github.com/jpoley/jp-spec-kit.git
-cd jp-spec-kit
+git clone https://github.com/jpoley/flowspec.git
+cd flowspec
 # Work on a feature branch
 git checkout -b your-feature-branch
 ```
@@ -60,7 +60,7 @@ You can also point uvx at a specific branch without merging:
 ```bash
 # Push your working branch first
 git push origin your-feature-branch
-uvx --from git+https://github.com/jpoley/jp-spec-kit.git@your-feature-branch specify init demo-branch-test --script ps
+uvx --from git+https://github.com/jpoley/flowspec.git@your-feature-branch specify init demo-branch-test --script ps
 ```
 
 ### 4a. Absolute Path uvx (Run From Anywhere)
@@ -68,19 +68,19 @@ uvx --from git+https://github.com/jpoley/jp-spec-kit.git@your-feature-branch spe
 If you're in another directory, use an absolute path instead of `.`:
 
 ```bash
-uvx --from /path/to/jp-spec-kit specify --help
-uvx --from /path/to/jp-spec-kit specify init demo-anywhere --ai copilot --ignore-agent-tools --script sh
+uvx --from /path/to/flowspec specify --help
+uvx --from /path/to/flowspec specify init demo-anywhere --ai copilot --ignore-agent-tools --script sh
 ```
 
 Set an environment variable for convenience:
 ```bash
-export SPECFLOW_SRC=/path/to/jp-spec-kit
+export SPECFLOW_SRC=/path/to/flowspec
 uvx --from "$SPECFLOW_SRC" specify init demo-env --ai copilot --ignore-agent-tools --script ps
 ```
 
 (Optional) Define a shell function:
 ```bash
-specify-dev() { uvx --from /path/to/jp-spec-kit specify "$@"; }
+specify-dev() { uvx --from /path/to/flowspec specify "$@"; }
 # Then
 specify-dev --help
 ```
@@ -139,7 +139,7 @@ specify init demo --skip-tls --ai gemini --ignore-agent-tools --script ps
 | Run CLI directly | `python -m src.specify_cli --help` |
 | Editable install | `uv pip install -e .` then `specify ...` |
 | Local uvx run (repo root) | `uvx --from . specify ...` |
-| Local uvx run (abs path) | `uvx --from /path/to/jp-spec-kit specify ...` |
+| Local uvx run (abs path) | `uvx --from /path/to/flowspec specify ...` |
 | Git branch uvx | `uvx --from git+URL@branch specify ...` |
 | Build wheel | `uv build` |
 

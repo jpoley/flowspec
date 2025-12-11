@@ -1,7 +1,7 @@
 """Core data models for Unified Finding Format (UFFormat).
 
 This module defines the canonical security finding schema used across all
-security scanners in JP Spec Kit. It provides:
+security scanners in Flowspec. It provides:
 
 1. Scanner-agnostic data model (any tool can map to this)
 2. SARIF 2.1.0 compatibility (export to industry standard)

@@ -1,6 +1,6 @@
 ---
 id: task-195
-title: Create JP Spec Kit Plugin Package
+title: Create Flowspec Plugin Package
 status: To Do
 assignee:
   - '@kinsale'
@@ -18,7 +18,7 @@ priority: low
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Package JP Spec Kit as a Claude Code plugin for easy installation and community sharing. This is a strategic long-term goal.
+Package Flowspec as a Claude Code plugin for easy installation and community sharing. This is a strategic long-term goal.
 
 Cross-reference: See docs/prd/claude-capabilities-review.md Section 2.8 for plugin assessment.
 <!-- SECTION:DESCRIPTION:END -->

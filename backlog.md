@@ -1,6 +1,6 @@
 # Backlog.md Integration - Quick Reference
 
-This file provides quick access to Backlog.md functionality for the jp-spec-kit project.
+This file provides quick access to Backlog.md functionality for the flowspec project.
 
 ## 🚀 Quick Commands
 
@@ -46,7 +46,7 @@ Ask Claude:
 
 ## 📊 Current Project Status
 
-**Project**: jp-spec-kit
+**Project**: flowspec
 **MCP Integration**: ✅ Configured
 **Tasks**: See `backlog/tasks/`
 

@@ -1,6 +1,6 @@
 # Claude Code Hooks
 
-JP Spec Kit uses Claude Code hooks to provide automated safety checks and code quality enforcement.
+Flowspec uses Claude Code hooks to provide automated safety checks and code quality enforcement.
 
 ## Implemented Hooks
 

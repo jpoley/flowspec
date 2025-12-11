@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-This document evaluates whether JP Spec Kit should add primary support for Anthropic's **tool-search-tool** feature. After extensive research, the recommendation is **NOT to add support** due to a fundamental scope mismatch: tool-search-tool is an API implementation detail for developers building Claude-powered applications, not a user-facing tool for Spec-Driven Development practitioners.
+This document evaluates whether Flowspec should add primary support for Anthropic's **tool-search-tool** feature. After extensive research, the recommendation is **NOT to add support** due to a fundamental scope mismatch: tool-search-tool is an API implementation detail for developers building Claude-powered applications, not a user-facing tool for Spec-Driven Development practitioners.
 
 ---
 
@@ -104,9 +104,9 @@ Designed for applications with large tool catalogs (10+ tools) where:
 
 ---
 
-## Analysis: Fit for JP Spec Kit
+## Analysis: Fit for Flowspec
 
-### What JP Spec Kit IS
+### What Flowspec IS
 
 | Category | Description |
 |----------|-------------|
@@ -128,7 +128,7 @@ Designed for applications with large tool catalogs (10+ tools) where:
 
 ### Comparison Matrix
 
-| Aspect | JP Spec Kit | tool-search-tool |
+| Aspect | Flowspec | tool-search-tool |
 |--------|-------------|------------------|
 | **Audience** | SDD practitioners | API developers |
 | **Abstraction Level** | User workflows | API implementation |
@@ -142,12 +142,12 @@ Designed for applications with large tool catalogs (10+ tools) where:
 
 ### Primary Reason: Scope Mismatch
 
-JP Spec Kit and tool-search-tool operate at fundamentally different abstraction levels:
+Flowspec and tool-search-tool operate at fundamentally different abstraction levels:
 
 ```
 ┌────────────────────────────────────────────────────────────┐
 │                    User Layer                               │
-│  JP Spec Kit users execute workflows via Claude Code       │
+│  Flowspec users execute workflows via Claude Code       │
 │  (/flow:specify, /flow:plan, etc.)                    │
 └────────────────────────────────────────────────────────────┘
                               │
@@ -162,7 +162,7 @@ JP Spec Kit and tool-search-tool operate at fundamentally different abstraction 
 ┌────────────────────────────────────────────────────────────┐
 │                    API Layer                                │
 │  tool-search-tool operates here                            │
-│  JP Spec Kit has no presence at this layer                 │
+│  Flowspec has no presence at this layer                 │
 └────────────────────────────────────────────────────────────┘
 ```
 
@@ -170,7 +170,7 @@ JP Spec Kit and tool-search-tool operate at fundamentally different abstraction 
 
 #### 1. No Integration Path
 
-JP Spec Kit does not make Claude API calls. It provides:
+Flowspec does not make Claude API calls. It provides:
 - Slash commands that Claude Code executes
 - Templates that structure workflows
 - Task management via Backlog.md
@@ -182,7 +182,7 @@ There is literally nothing to integrate. tool-search-tool requires:
 
 #### 2. Wrong Audience
 
-| JP Spec Kit User | tool-search-tool User |
+| Flowspec User | tool-search-tool User |
 |-----------------|----------------------|
 | Wants to write specs faster | Wants to optimize API token usage |
 | Uses Claude Code as a tool | Builds applications that use Claude |
@@ -190,10 +190,10 @@ There is literally nothing to integrate. tool-search-tool requires:
 
 #### 3. User Confusion
 
-If JP Spec Kit documented tool-search-tool:
+If Flowspec documented tool-search-tool:
 - Users would ask: "How do I use this?"
 - Answer: "You don't — it's for API developers"
-- Result: Confusion about JP Spec Kit's purpose
+- Result: Confusion about Flowspec's purpose
 
 #### 4. Maintenance Burden
 
@@ -201,12 +201,12 @@ If JP Spec Kit documented tool-search-tool:
 |---------|--------|
 | Beta status | Could change without notice |
 | API updates | Would require tracking Anthropic changes |
-| Support questions | No actionable answers for JP Spec Kit users |
+| Support questions | No actionable answers for Flowspec users |
 | Documentation drift | Would become outdated quickly |
 
 #### 5. Precedent Concern
 
-Adding tool-search-tool would suggest JP Spec Kit documents all Claude API features. This is not the project's mission.
+Adding tool-search-tool would suggest Flowspec documents all Claude API features. This is not the project's mission.
 
 ---
 
@@ -226,7 +226,7 @@ tool-search-tool will **always** be an API implementation detail. Even if it:
 - Is widely adopted
 - Shows strong performance
 
-It will remain irrelevant to JP Spec Kit users because they don't build Claude API applications.
+It will remain irrelevant to Flowspec users because they don't build Claude API applications.
 
 ---
 
@@ -322,10 +322,10 @@ response = client.messages.create(
 )
 ```
 
-This code would be written by developers building Claude-powered applications, not by JP Spec Kit users.
+This code would be written by developers building Claude-powered applications, not by Flowspec users.
 
 ---
 
-**Document Author**: Claude (via JP Spec Kit evaluation workflow)
+**Document Author**: Claude (via Flowspec evaluation workflow)
 **Review Status**: Complete
 **Next Review**: Not applicable (Never verdict)

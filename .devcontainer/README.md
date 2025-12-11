@@ -1,4 +1,4 @@
-# JP Spec Kit Devcontainer
+# Flowspec Devcontainer
 
 Development container for consistent, reproducible development environments across all machines.
 
@@ -14,8 +14,8 @@ Development container for consistent, reproducible development environments acro
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/jpoley/jp-spec-kit
-   cd jp-spec-kit
+   git clone https://github.com/jpoley/flowspec
+   cd flowspec
    ```
 
 2. **Open in VS Code**:
@@ -90,7 +90,7 @@ These tools use traditional API keys (set in your host environment):
 
 ```bash
 # Required for GitHub operations (backlog, gh CLI)
-export GITHUB_JPSPEC="ghp_..."
+export GITHUB_FLOWSPEC="ghp_..."
 
 # Optional: For API-based AI CLIs
 export OPENAI_API_KEY="sk-..."      # For codex CLI
@@ -122,7 +122,7 @@ The devcontainer automatically forwards these to the container.
 | Tool | Command | Description |
 |------|---------|-------------|
 | backlog.md | `backlog` | Task management CLI |
-| specify | `specify` | JP Spec Kit CLI |
+| specify | `specify` | Flowspec CLI |
 
 ### VS Code Extensions
 
@@ -164,7 +164,7 @@ Ready for Development!
 
 | Host Path | Container Path | Purpose | Mode |
 |-----------|---------------|---------|------|
-| `./backlog/` | `/workspaces/jp-spec-kit/backlog/` | Task persistence | Read-Write |
+| `./backlog/` | `/workspaces/flowspec/backlog/` | Task persistence | Read-Write |
 | `~/.gitconfig` | `/home/vscode/.gitconfig-host` | Git configuration (copied to `/home/vscode/.gitconfig` on start) | Read-Only |
 | `~/.ssh/` | `/home/vscode/.ssh/` | SSH keys | Read-Only |
 | `~/.claude/` | `/home/vscode/.claude/` | Claude config | Read-Write |

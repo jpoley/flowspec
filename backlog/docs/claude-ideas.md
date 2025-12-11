@@ -1,4 +1,4 @@
-# JP Spec Kit - Repository Improvement Ideas
+# Flowspec - Repository Improvement Ideas
 
 **Generated**: 2025-11-27
 **Scope**: Comprehensive repository analysis covering code quality, architecture, testing, documentation, DX, security, CI/CD, and strategic enhancements
@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-JP Spec Kit is a mature, well-structured toolkit for Spec-Driven Development with strong foundations. This document identifies **52 improvement opportunities** across 10 categories, prioritized by impact and effort. Key themes include:
+Flowspec is a mature, well-structured toolkit for Spec-Driven Development with strong foundations. This document identifies **52 improvement opportunities** across 10 categories, prioritized by impact and effort. Key themes include:
 
 1. **Completing in-progress features** (Satellite Mode, provider implementations)
 2. **Strengthening CI/CD** (missing ci.yml, security scanning, type checking)
@@ -119,7 +119,7 @@ src/specify_cli/
 
 **Recommendation**: Fill in actual values:
 ```markdown
-# JP Spec Kit Constitution
+# Flowspec Constitution
 
 ## Core Principles
 
@@ -615,7 +615,7 @@ Add `specify --install-completion` command.
 **Recommendation**: Add `.devcontainer/`:
 ```json
 {
-  "name": "JP Spec Kit Dev",
+  "name": "Flowspec Dev",
   "image": "mcr.microsoft.com/devcontainers/python:3.11",
   "features": {
     "ghcr.io/devcontainers/features/node:1": {}
@@ -723,7 +723,7 @@ All checks passed!
 
 **Recommendation**: Create `specify stats`:
 ```
-JP Spec Kit Project Statistics
+Flowspec Project Statistics
 ==============================
 Velocity (last 7 days):
   Tasks completed: 5
@@ -844,7 +844,7 @@ name: Spec Kit Integration
 on: [push]
 jobs:
   validate:
-    uses: jpoley/jp-spec-kit/.github/workflows/validate.yml@main
+    uses: jpoley/flowspec/.github/workflows/validate.yml@main
 ```
 
 **Impact**: Medium | **Effort**: Medium | **Priority**: 3
@@ -855,7 +855,7 @@ jobs:
 
 **Current State**: MCP integration via external tools.
 
-**Recommendation**: Create `@jp-spec-kit/mcp-server`:
+**Recommendation**: Create `@flowspec/mcp-server`:
 - Direct spec/plan/task CRUD
 - Task status updates
 - Spec validation
@@ -1058,7 +1058,7 @@ Enable spec/plan generation without human-in-loop.
 
 ## Conclusion
 
-JP Spec Kit has strong foundations but needs focused effort on:
+Flowspec has strong foundations but needs focused effort on:
 
 1. **CI/CD hardening** - Missing workflow is a critical gap
 2. **Satellite Mode completion** - The flagship feature is incomplete

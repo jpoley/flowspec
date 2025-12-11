@@ -1,13 +1,13 @@
 ---
 id: task-113
-title: 'Update /jpspec:validate to use backlog.md CLI'
+title: 'Update /flowspec:validate to use backlog.md CLI'
 status: Done
 assignee:
   - '@claude-agent'
 created_date: '2025-11-28 16:56'
 updated_date: '2025-11-29 05:17'
 labels:
-  - jpspec
+  - flowspec
   - backlog-integration
   - validate
   - P1
@@ -31,13 +31,13 @@ Modify the validate.md command to integrate backlog.md task management. QA, Secu
 - [x] #4 Security Engineer validates security-related ACs
 - [x] #5 Tech Writer creates/updates documentation tasks in backlog
 - [x] #6 Release Manager verifies Definition of Done before marking tasks Done
-- [x] #7 Test: Run /jpspec:validate and verify task validation workflow
+- [x] #7 Test: Run /flowspec:validate and verify task validation workflow
 <!-- AC:END -->
 
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
-Verified /jpspec:validate backlog.md CLI integration.
+Verified /flowspec:validate backlog.md CLI integration.
 
 Analysis:
 - validate.md already had complete backlog integration from previous work

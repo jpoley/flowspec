@@ -4,7 +4,7 @@
 
 **Strategic Objective**: Eliminate content divergence between command development and distribution by establishing a single source of truth architecture.
 
-**Business Problem**: Currently, developers working on jp-spec-kit use significantly enhanced command files (3-7x larger with backlog integration) that are NOT distributed to end users. This creates:
+**Business Problem**: Currently, developers working on flowspec use significantly enhanced command files (3-7x larger with backlog integration) that are NOT distributed to end users. This creates:
 - Inconsistent user experience (developers get superior commands)
 - Maintenance burden (duplicate content requiring manual sync)
 - Risk of feature drift (enhancements stay local, never reach users)
@@ -32,7 +32,7 @@
 │                  (DUAL SOURCE OF TRUTH)                      │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
-│  Development (jp-spec-kit)         Distribution (end users) │
+│  Development (flowspec)         Distribution (end users) │
 │  ┌──────────────────────┐          ┌──────────────────────┐│
 │  │ .claude/commands/    │          │ .claude/commands/    ││
 │  │   flowspec/            │          │   flowspec.*.md        ││
@@ -120,7 +120,7 @@
 ### 2.1 Proposed Directory Structure
 
 ```
-jp-spec-kit/
+flowspec/
 ├── templates/commands/              ◄─── SINGLE SOURCE OF TRUTH
 │   ├── flowspec/
 │   │   ├── implement.md             (20KB - enhanced with backlog)
@@ -519,11 +519,11 @@ for template_file in templates_dir.glob("*.md"):
 **Target State** (pseudocode):
 ```python
 def dev-setup(force: bool = False):
-    """Set up jp-spec-kit source repo for dev-setuping."""
+    """Set up flowspec source repo for dev-setuping."""
 
     # 1. Verify source repository
-    if not (project_path / ".jp-spec-kit-source").exists():
-        error("This command is only for jp-spec-kit source repo")
+    if not (project_path / ".flowspec-source").exists():
+        error("This command is only for flowspec source repo")
 
     # 2. Create symlinks for BOTH speckit and flowspec
     for namespace in ["speckit", "flowspec"]:
@@ -826,7 +826,7 @@ jobs:
 
 2. **Test dev-setup locally** (1 hour)
    ```bash
-   # In jp-spec-kit source repo
+   # In flowspec source repo
    rm -rf .claude/commands/*
    uv tool install . --force
    specify dev-setup
@@ -1200,7 +1200,7 @@ The following architectural principles should be added to `/speckit.constitution
 **Rationale**: Ensures developers test the exact content that will be distributed, prevents divergence.
 
 **Guidelines**:
-- ✅ DO use `specify dev-setup` in jp-spec-kit source repo
+- ✅ DO use `specify dev-setup` in flowspec source repo
 - ✅ DO verify symlinks resolve correctly
 - ✅ DO restart Claude Code after running dev-setup
 - ❌ DON'T commit direct files to `.claude/commands/` in source repo

@@ -12,7 +12,7 @@ echo "Running pre-push security scan..."
 # Check if specify is available
 if ! command -v specify &> /dev/null; then
     echo "Warning: 'specify' command not found - skipping security scan"
-    echo "Install with: uv tool install specify-cli --from git+https://github.com/jpoley/jp-spec-kit.git"
+    echo "Install with: uv tool install specify-cli --from git+https://github.com/jpoley/flowspec.git"
     exit 0
 fi
 

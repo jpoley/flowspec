@@ -1,12 +1,12 @@
 ---
 id: task-115
-title: End-to-end integration tests for jpspec + backlog.md
+title: End-to-end integration tests for flowspec + backlog.md
 status: Done
 assignee: []
 created_date: '2025-11-28 16:56'
 updated_date: '2025-12-04 01:25'
 labels:
-  - jpspec
+  - flowspec
   - backlog-integration
   - testing
   - e2e
@@ -24,7 +24,7 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Create comprehensive end-to-end tests that verify the complete jpspec workflow uses backlog.md correctly from specification through deployment.
+Create comprehensive end-to-end tests that verify the complete flowspec workflow uses backlog.md correctly from specification through deployment.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
@@ -37,13 +37,13 @@ Create comprehensive end-to-end tests that verify the complete jpspec workflow u
 - [x] #6 Test verifies no tasks remain in To Do after full workflow (all Done or blocked)
 - [x] #7 Test can run in CI (uses temporary backlog directory)
 - [x] #8 Test documents expected backlog CLI call sequence
-- [x] #9 All e2e tests pass: pytest tests/test_jpspec_e2e.py
+- [x] #9 All e2e tests pass: pytest tests/test_flowspec_e2e.py
 <!-- AC:END -->
 
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
-E2E tests implemented in tests/test_jpspec_e2e.py
+E2E tests implemented in tests/test_flowspec_e2e.py
 
 All 13 tests pass covering:
 - Full feature lifecycle (assess → specify → plan → implement → validate → operate)

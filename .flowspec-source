@@ -1,12 +1,12 @@
-# JP Spec Kit Source Repository Marker
+# Flowspec Source Repository Marker
 #
-# This file indicates that this directory is the source repository for jp-spec-kit,
+# This file indicates that this directory is the source repository for flowspec,
 # NOT a project that was initialized with `specify init`.
 #
 # When this file is present:
 # - `specify init` will warn and skip to avoid clobbering source files
 # - `specify upgrade` will warn and skip to avoid overwriting development work
-# - The repository can use its own /speckit.* and /jpspec:* commands for dogfooding
+# - The repository can use its own /speckit.* and /flowspec:* commands for dogfooding
 #
 # DO NOT DELETE THIS FILE unless you want to treat this as a regular project.
 

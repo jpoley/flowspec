@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-This document evaluates whether JP Spec Kit should add primary support for **claude-trace**, a tool that intercepts and records API communications between Claude Code and Anthropic's API. After extensive research, the recommendation is **NOT to add support at this time** due to critical stability issues (14 open bugs) and misalignment with JP Spec Kit's Spec-Driven Development mission.
+This document evaluates whether Flowspec should add primary support for **claude-trace**, a tool that intercepts and records API communications between Claude Code and Anthropic's API. After extensive research, the recommendation is **NOT to add support at this time** due to critical stability issues (14 open bugs) and misalignment with Flowspec's Spec-Driven Development mission.
 
 ---
 
@@ -153,7 +153,7 @@ claude-trace --output ./traces -- claude "write tests"
 
 ---
 
-## Analysis: Fit for JP Spec Kit
+## Analysis: Fit for Flowspec
 
 ### Potential Value
 
@@ -176,7 +176,7 @@ claude-trace --output ./traces -- claude "write tests"
 
 ### Alignment Assessment
 
-| JP Spec Kit Goal | claude-trace Contribution |
+| Flowspec Goal | claude-trace Contribution |
 |------------------|---------------------------|
 | Write better specs | None |
 | Generate better tasks | None |
@@ -214,7 +214,7 @@ The tool has 14 open issues including:
 
 #### 2. Misalignment with SDD Mission
 
-| JP Spec Kit Mission | claude-trace Reality |
+| Flowspec Mission | claude-trace Reality |
 |--------------------|--------------------|
 | Improve developer productivity | Provides debugging info |
 | Streamline SDD workflows | No workflow integration |
@@ -224,7 +224,7 @@ The tool has 14 open issues including:
 #### 3. Limited Applicability
 
 ```
-JP Spec Kit supports:
+Flowspec supports:
 ├── Claude Code (claude-trace works)
 ├── Other AI agents (claude-trace doesn't work)
 ├── CLI workflows (claude-trace adds friction)
@@ -238,7 +238,7 @@ JP Spec Kit supports:
 | **Monorepo dependency** | Not standalone, updates tied to larger project |
 | **Interception fragility** | Node.js internals could change |
 | **Claude Code updates** | Could break compatibility |
-| **Support burden** | JP Spec Kit would need to troubleshoot |
+| **Support burden** | Flowspec would need to troubleshoot |
 
 #### 5. Existing Alternatives
 
@@ -416,6 +416,6 @@ trace-2025-11-28/
 
 ---
 
-**Document Author**: Claude (via JP Spec Kit evaluation workflow)
+**Document Author**: Claude (via Flowspec evaluation workflow)
 **Review Status**: Complete
 **Next Review**: Q1 2026 (if stability improves)

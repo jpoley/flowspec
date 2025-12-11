@@ -277,7 +277,7 @@ Follows POSIX conventions:
 ## References
 
 - Task-099: Workflow Config Validation CLI Command
-- `/home/jpoley/ps/jp-spec-kit/src/specify_cli/workflow/config.py`
-- `/home/jpoley/ps/jp-spec-kit/src/specify_cli/workflow/validator.py`
-- `/home/jpoley/ps/jp-spec-kit/tests/test_cli_workflow_validate.py`
+- `/home/jpoley/ps/flowspec/src/specify_cli/workflow/config.py`
+- `/home/jpoley/ps/flowspec/src/specify_cli/workflow/validator.py`
+- `/home/jpoley/ps/flowspec/tests/test_cli_workflow_validate.py`
 - CLAUDE.md: Updated with `specify workflow validate` documentation

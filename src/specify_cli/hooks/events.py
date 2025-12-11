@@ -1,4 +1,4 @@
-"""Event model schema for jp-spec-kit hooks.
+"""Event model schema for flowspec hooks.
 
 This module defines the canonical event types and payload structure for the
 hook system. Events are emitted by /flowspec commands and backlog operations,
@@ -26,7 +26,7 @@ from typing import Any
 
 
 class EventType(str, Enum):
-    """Canonical event types for jp-spec-kit workflow.
+    """Canonical event types for flowspec workflow.
 
     Event naming follows <domain>.<action> convention:
     - Domain: workflow phase or component (spec, plan, task, implement, etc.)

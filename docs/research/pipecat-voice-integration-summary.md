@@ -14,7 +14,7 @@
 
 | Criteria | Assessment |
 |----------|------------|
-| **Language Compatibility** | Python 3.10+ (jp-spec-kit uses 3.11+) |
+| **Language Compatibility** | Python 3.10+ (flowspec uses 3.11+) |
 | **Maturity** | Production-ready (9.1k stars, 1.5k forks, active development) |
 | **Documentation** | Comprehensive (docs.pipecat.ai) |
 | **Integration Ecosystem** | 60+ service integrations (STT, TTS, LLM) |
@@ -192,7 +192,7 @@ Bot: Confirms with user verbally
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    JP SPEC KIT + PIPECAT                        │
+│                    FLOWSPEC + PIPECAT                           │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
 │  ┌──────────────────────────────────────────────────────────┐   │
@@ -205,7 +205,7 @@ Bot: Confirms with user verbally
 │                            │                                     │
 │                            ↓ Function Calls                      │
 │  ┌──────────────────────────────────────────────────────────┐   │
-│  │                 JP SPEC KIT CORE (EXISTING)               │   │
+│  │                 FLOWSPEC CORE (EXISTING)                  │   │
 │  │  ┌──────────┐  ┌──────────┐  ┌──────────┐               │   │
 │  │  │  CLI     │  │  Slash   │  │ Backlog  │               │   │
 │  │  │ specify  │  │ Commands │  │   .md    │               │   │

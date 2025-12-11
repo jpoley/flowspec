@@ -3,7 +3,7 @@
 ## Quick Start Testing
 
 ### Prerequisites
-- jp-spec-kit installed and configured
+- flowspec installed and configured
 - `specify` CLI available in PATH
 - Claude Code with access to slash commands
 
@@ -347,9 +347,9 @@ After running tests, verify:
 **Solution:** Use `--overwrite` flag or delete existing backlog directory
 
 ### Issue: specify command not found
-**Solution:** Install jp-spec-kit CLI:
+**Solution:** Install flowspec CLI:
 ```bash
-uv tool install /home/jpoley/ps/jp-spec-kit --force
+uv tool install /home/jpoley/ps/flowspec --force
 ```
 
 ## Performance Testing

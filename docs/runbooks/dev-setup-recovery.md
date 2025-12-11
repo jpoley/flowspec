@@ -2,7 +2,7 @@
 
 ## Overview
 
-This runbook provides procedures for recovering from dev-setup validation failures in the JP Spec Kit project. Use this when CI/CD checks fail or local development encounters inconsistencies.
+This runbook provides procedures for recovering from dev-setup validation failures in the Flowspec project. Use this when CI/CD checks fail or local development encounters inconsistencies.
 
 ## Quick Reference
 
@@ -441,7 +441,7 @@ Monitor these indicators in GitHub Actions:
 ### Dashboard
 
 Access real-time status:
-- **CI/CD**: https://github.com/jpoley/jp-spec-kit/actions
+- **CI/CD**: https://github.com/jpoley/flowspec/actions
 - **Test Results**: See latest workflow run
 - **Coverage**: Review test coverage reports in workflow artifacts
 - **Recent Failures**: Filter actions by status:failed

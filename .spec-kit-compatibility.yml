@@ -1,7 +1,7 @@
-# JP Spec Kit - Spec Kit Compatibility Matrix
-# This file declares which versions of jp-spec-kit are compatible with upstream spec-kit
+# Flowspec - Spec Kit Compatibility Matrix
+# This file declares which versions of flowspec are compatible with upstream spec-kit
 
-jp-spec-kit:
+flowspec:
   version: "0.0.90"
   type: "layered-extension"
   description: "Multi-language, multi-agent extension for spec-kit with flowspec commands"
@@ -15,7 +15,7 @@ jp-spec-kit:
       recommended: "0.0.90"
       repository: "github/spec-kit"
   
-  # What jp-spec-kit provides as extension layer
+  # What flowspec provides as extension layer
   provides:
     commands:
       - name: "flow:specify"
@@ -55,18 +55,18 @@ jp-spec-kit:
   # Installation methods
   installation:
     uv:
-      method: "uv tool install specify-cli --from git+https://github.com/jpoley/jp-spec-kit.git"
+      method: "uv tool install specify-cli --from git+https://github.com/jpoley/flowspec.git"
       supports_upgrade: true
     
     git:
-      method: "git clone https://github.com/jpoley/jp-spec-kit.git"
+      method: "git clone https://github.com/jpoley/flowspec.git"
       supports_upgrade: true
   
   # Upgrade strategy
   upgrade:
     strategy: "two-stage"
-    description: "Downloads base spec-kit templates, then overlays jp-spec-kit extensions"
-    precedence: "jp-spec-kit overrides spec-kit where conflicts exist"
+    description: "Downloads base spec-kit templates, then overlays flowspec extensions"
+    precedence: "flowspec overrides spec-kit where conflicts exist"
 
 # Backlog.md compatibility
 backlog-md:

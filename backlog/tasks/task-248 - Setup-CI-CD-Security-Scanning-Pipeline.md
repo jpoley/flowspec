@@ -113,7 +113,7 @@ Create a reusable GitHub Actions workflow that integrates /flow:security command
 **Duration**: 3 hours
 
 1. **Test 1: Small (10K LOC)**
-   - Use jp-spec-kit itself
+   - Use flowspec itself
    - Verify scan completes in <1 minute
    - Check cache hit on second run
 2. **Test 2: Medium (50K LOC)**

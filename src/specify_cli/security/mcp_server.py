@@ -1,4 +1,4 @@
-"""Security Scanner MCP Server for JP Spec Kit.
+"""Security Scanner MCP Server for Flowspec.
 
 This MCP server exposes security scanning capabilities through the
 Model Context Protocol, enabling AI agents, IDEs, and dashboards

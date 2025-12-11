@@ -88,5 +88,5 @@ Please see our [Contributing Guide](CONTRIBUTING.md) for information on how to c
 
 ## Support
 
-For support, please check our [Support Guide](SUPPORT.md) or open an issue on [GitHub](https://github.com/jpoley/jp-spec-kit/issues).
+For support, please check our [Support Guide](SUPPORT.md) or open an issue on [GitHub](https://github.com/jpoley/flowspec/issues).
 

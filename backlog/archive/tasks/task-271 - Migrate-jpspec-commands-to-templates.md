@@ -1,6 +1,6 @@
 ---
 id: task-271
-title: Migrate jpspec commands to templates
+title: Migrate flowspec commands to templates
 status: Done
 assignee:
   - '@template-migrator'
@@ -16,13 +16,13 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Move enhanced jpspec commands from .claude/commands/jpspec/ to templates/commands/jpspec/ to establish single source of truth
+Move enhanced flowspec commands from .claude/commands/flowspec/ to templates/commands/flowspec/ to establish single source of truth
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [x] #1 Create templates/commands/jpspec/ directory
-- [x] #2 Copy all 9 enhanced jpspec commands to templates (implement, research, validate, plan, specify, operate, assess, prune-branch, _backlog-instructions)
+- [x] #1 Create templates/commands/flowspec/ directory
+- [x] #2 Copy all 9 enhanced flowspec commands to templates (implement, research, validate, plan, specify, operate, assess, prune-branch, _backlog-instructions)
 - [x] #3 Verify file sizes match enhanced versions (implement.md ~20KB, not 3KB)
 - [x] #4 Verify content is complete with backlog integration
 - [x] #5 Update documentation referencing new locations
@@ -31,5 +31,5 @@ Move enhanced jpspec commands from .claude/commands/jpspec/ to templates/command
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
-Copied enhanced jpspec commands from .claude to templates
+Copied enhanced flowspec commands from .claude to templates
 <!-- SECTION:NOTES:END -->

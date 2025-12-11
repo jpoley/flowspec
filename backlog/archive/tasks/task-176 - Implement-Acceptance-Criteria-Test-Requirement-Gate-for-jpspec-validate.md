@@ -1,6 +1,6 @@
 ---
 id: task-176
-title: 'Implement Acceptance Criteria Test Requirement Gate for /jpspec:validate'
+title: 'Implement Acceptance Criteria Test Requirement Gate for /flowspec:validate'
 status: To Do
 assignee: []
 created_date: '2025-11-30 20:06'
@@ -89,7 +89,7 @@ Generate `./tests/ac-coverage.json` mapping ACs to tests:
 - [ ] AC1: Create pytest marker @pytest.mark.ac("AC description") for test-to-AC mapping
 - [ ] AC2: Implement AC coverage scanner that parses PRD and matches to test markers
 - [ ] AC3: Generate ac-coverage.json manifest after test run
-- [ ] AC4: Add AC coverage check to /jpspec:implement exit gate
+- [ ] AC4: Add AC coverage check to /flowspec:implement exit gate
 - [ ] AC5: Block transition to validate if any AC lacks test coverage
 - [ ] AC6: Add --ac-coverage flag to specify CLI for manual coverage check
 - [ ] AC7: Support multiple test frameworks (pytest, jest, go test) via plugins

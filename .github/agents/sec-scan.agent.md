@@ -118,7 +118,7 @@ browser = await playwright.chromium.launch(headless=True)
 # Create browser context
 context = await browser.new_context(
     viewport={"width": 1920, "height": 1080},
-    user_agent="JpSpecKit-DAST-Scanner/1.0",
+    user_agent="FlowspecKit-DAST-Scanner/1.0",
     ignore_https_errors=False,  # Fail on invalid certs
 )
 

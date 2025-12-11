@@ -2,7 +2,7 @@
 
 ## Summary
 
-jp-spec-kit now has **full agents.md specification support** with a Python integration layer that dynamically loads agent contexts into Claude Code slash commands.
+flowspec now has **full agents.md specification support** with a Python integration layer that dynamically loads agent contexts into Claude Code slash commands.
 
 ## What Was Implemented
 

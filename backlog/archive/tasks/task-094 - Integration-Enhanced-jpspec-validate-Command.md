@@ -1,6 +1,6 @@
 ---
 id: task-094
-title: 'Integration - Enhanced /jpspec:validate Command'
+title: 'Integration - Enhanced /flowspec:validate Command'
 status: Done
 assignee: []
 created_date: '2025-11-28 15:56'
@@ -22,7 +22,7 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Wire all phases together into the enhanced /jpspec:validate slash command. This task creates the main command file that orchestrates the complete workflow from task loading through PR generation, with proper error handling and user feedback at each stage.
+Wire all phases together into the enhanced /flowspec:validate slash command. This task creates the main command file that orchestrates the complete workflow from task loading through PR generation, with proper error handling and user feedback at each stage.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
@@ -32,8 +32,8 @@ Wire all phases together into the enhanced /jpspec:validate slash command. This 
 - [x] #3 Each phase reports progress to user before execution (e.g., 'Phase 1: Running automated tests...')
 - [x] #4 Phase failures halt workflow with clear error message indicating which phase failed and why
 - [x] #5 Command can be re-run after fixing issues - handles partial completion state gracefully
-- [x] #6 Updates .claude/commands/jpspec/validate.md with the enhanced implementation
-- [x] #7 Updates templates/commands/jpspec/validate.md to match the enhanced version
+- [x] #6 Updates .claude/commands/flowspec/validate.md with the enhanced implementation
+- [x] #7 Updates templates/commands/flowspec/validate.md to match the enhanced version
 - [x] #8 Includes comprehensive help text explaining the workflow and expected inputs
 <!-- AC:END -->
 
@@ -43,7 +43,7 @@ Wire all phases together into the enhanced /jpspec:validate slash command. This 
 ## Implementation Summary (2025-12-01)
 
 ### What Was Implemented
-Enhanced the /jpspec:validate command with comprehensive phased orchestration workflow. Implemented 7 distinct phases (0-6) with detailed progress reporting, error handling, and recovery mechanisms.
+Enhanced the /flowspec:validate command with comprehensive phased orchestration workflow. Implemented 7 distinct phases (0-6) with detailed progress reporting, error handling, and recovery mechanisms.
 
 ### Key Features
 - Phase 0: Task Discovery & Load - Automatic task detection or explicit task-id
@@ -70,6 +70,6 @@ Enhanced the /jpspec:validate command with comprehensive phased orchestration wo
 - Human approval gate in Phase 6 before PR creation
 
 ### Files Modified
-- .claude/commands/jpspec/validate.md - Enhanced with full phased workflow
-- templates/commands/jpspec/validate.md - Synchronized with enhanced version
+- .claude/commands/flowspec/validate.md - Enhanced with full phased workflow
+- templates/commands/flowspec/validate.md - Synchronized with enhanced version
 <!-- SECTION:NOTES:END -->

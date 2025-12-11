@@ -14,7 +14,7 @@ priority: medium
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Document how jp-spec-kit supports both Claude Code CLI and VS Code Copilot with setup instructions and screenshots
+Document how flowspec supports both Claude Code CLI and VS Code Copilot with setup instructions and screenshots
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria

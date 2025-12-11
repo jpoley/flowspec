@@ -5,7 +5,7 @@
  * silent parsing failures caused by malformed task data.
  *
  * Common issues this catches:
- * - [P] markers in titles (from jp-spec-kit)
+ * - [P] markers in titles (from flowspec)
  * - [US#] markers in titles
  * - T### prefixes in titles
  * - YAML-breaking characters in titles/filenames
@@ -129,7 +129,7 @@ export function validateBacklogTask(task: TaskInput): BacklogTaskValidation {
 
 /**
  * Sanitizes a title for safe use in Backlog.md
- * Removes jp-spec-kit markers and ensures YAML compatibility
+ * Removes flowspec markers and ensures YAML compatibility
  *
  * @param title - The raw title to sanitize
  * @returns Sanitized title safe for Backlog.md
@@ -192,16 +192,16 @@ export function validateTaskFilename(filename: string): BacklogTaskValidation {
 }
 
 /**
- * Extracts jp-spec-kit metadata from a task title and returns labels
+ * Extracts flowspec metadata from a task title and returns labels
  *
- * @param title - The title containing jp-spec-kit markers
+ * @param title - The title containing flowspec markers
  * @returns Object with sanitized title and extracted labels
  *
  * @example
- * extractJpSpecKitMetadata('[P] [US1] Add feature')
+ * extractFlowspecKitMetadata('[P] [US1] Add feature')
  * // Returns: { title: 'Add feature', labels: ['parallelizable', 'US1'] }
  */
-export function extractJpSpecKitMetadata(title: string): {
+export function extractFlowspecKitMetadata(title: string): {
   title: string;
   labels: string[];
 } {

@@ -116,4 +116,4 @@ Check that the corresponding API key environment variable is set.
 
 ## Support
 
-Report issues at: https://github.com/jpoley/jp-spec-kit/issues
+Report issues at: https://github.com/jpoley/flowspec/issues

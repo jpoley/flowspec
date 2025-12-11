@@ -67,7 +67,7 @@ All command development occurs in `templates/commands/`:
 
 **Source Repository** (Flowspec):
 ```
-jp-spec-kit/
+flowspec/
 ├── templates/commands/              ◄─── CANONICAL SOURCE
 │   ├── flowspec/
 │   │   ├── implement.md             (20KB enhanced)
@@ -87,7 +87,7 @@ jp-spec-kit/
 │       ├── implement.md → ../../../templates/commands/speckit/implement.md
 │       └── ... (all files as symlinks)
 │
-└── .jp-spec-kit-source              ◄─── MARKER FILE
+└── .flowspec-source              ◄─── MARKER FILE
 ```
 
 **User Projects** (created via `specify init`):
@@ -425,13 +425,13 @@ git push origin feature-branch
 
 ### Workflow 6: Initial Setup (New Contributors)
 
-**Goal**: Set up jp-spec-kit for development.
+**Goal**: Set up flowspec for development.
 
 **Step 1: Clone and Install**
 ```bash
 # Clone repository
-git clone https://github.com/jpoley/jp-spec-kit.git
-cd jp-spec-kit
+git clone https://github.com/jpoley/flowspec.git
+cd flowspec
 
 # Install dependencies
 uv sync
@@ -468,7 +468,7 @@ make dev-validate
 
 **Step 4: Test Claude Code Integration**
 ```bash
-# Open jp-spec-kit in Claude Code
+# Open flowspec in Claude Code
 # Verify commands appear in slash command menu:
 # - /flow:implement
 # - /flow:research
@@ -1130,7 +1130,7 @@ specify dev-setup --force
 - `--force`: Recreate symlinks even if they exist
 
 **Behavior**:
-1. Verifies `.jp-spec-kit-source` marker file exists
+1. Verifies `.flowspec-source` marker file exists
 2. Creates `.claude/commands/{namespace}/` directories
 3. Iterates through `templates/commands/{namespace}/*.md`
 4. Creates symlinks with relative paths
@@ -1138,7 +1138,7 @@ specify dev-setup --force
 
 **Output**:
 ```
-Setting up jp-spec-kit for development...
+Setting up flowspec for development...
 
 Creating symlinks for speckit commands...
 ✓ Created symlink: .claude/commands/speckit/implement.md
@@ -1154,7 +1154,7 @@ Creating symlinks for flowspec commands...
 ```
 
 **Error Handling**:
-- Fails if not in source repository (no `.jp-spec-kit-source` marker)
+- Fails if not in source repository (no `.flowspec-source` marker)
 - Warns if template directory doesn't exist
 - Reports symlink creation failures
 
@@ -1215,7 +1215,7 @@ The project includes automated validation in CI/CD pipelines:
 
 ## Glossary
 
-- **Dev-Setup**: Process of setting up jp-spec-kit repository for development using symlinks
+- **Dev-Setup**: Process of setting up flowspec repository for development using symlinks
 - **Single Source of Truth**: Architecture pattern where one canonical location exists for data
 - **Symlink**: Symbolic link that references another file
 - **Template**: Canonical command file in `templates/commands/`

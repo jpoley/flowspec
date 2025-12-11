@@ -1,6 +1,6 @@
 ---
 id: task-177
-title: 'Implement /jpspec:assess Command for SDD Workflow Suitability Evaluation'
+title: 'Implement /flowspec:assess Command for SDD Workflow Suitability Evaluation'
 status: To Do
 assignee: []
 created_date: '2025-11-30 20:07'
@@ -20,13 +20,13 @@ priority: high
 
 <!-- SECTION:NOTES:BEGIN -->
 ## Summary
-Implement the /jpspec:assess command as the entry point to the jpspec workflow. This command evaluates whether the full SDD workflow is appropriate for a given feature and outputs a recommendation (Full/Light/Skip).
+Implement the /flowspec:assess command as the entry point to the flowspec workflow. This command evaluates whether the full SDD workflow is appropriate for a given feature and outputs a recommendation (Full/Light/Skip).
 
 ## Command Purpose
 
-Before starting any jpspec workflow, users run:
+Before starting any flowspec workflow, users run:
 ```bash
-/jpspec:assess Build a user authentication system
+/flowspec:assess Build a user authentication system
 ```
 
 ## Assessment Criteria
@@ -92,18 +92,18 @@ assess → implement → validate (tests only)
 ```
 
 ## Acceptance Criteria
-- [ ] AC1: Create .claude/commands/jpspec/assess.md command template
+- [ ] AC1: Create .claude/commands/flowspec/assess.md command template
 - [ ] AC2: Implement complexity scoring algorithm (effort, components, integrations)
 - [ ] AC3: Implement risk scoring (security, compliance, data sensitivity)
 - [ ] AC4: Implement architecture impact analysis
 - [ ] AC5: Generate assessment report at ./docs/assess/{feature}-assessment.md
 - [ ] AC6: Output recommendation with confidence score
 - [ ] AC7: Provide specific next-step commands based on recommendation
-- [ ] AC8: Add assessment to jpspec_workflow.yml as entry workflow
+- [ ] AC8: Add assessment to flowspec_workflow.yml as entry workflow
 - [ ] AC9: Allow user to override recommendation with --mode {full|light|skip} flag
 
 ## Integration Points
-- Output assessment report is input to /jpspec:specify
+- Output assessment report is input to /flowspec:specify
 - Assessment mode determines required artifacts for downstream phases
 - Recommendation stored in workflow state for gate validation
 <!-- SECTION:NOTES:END -->

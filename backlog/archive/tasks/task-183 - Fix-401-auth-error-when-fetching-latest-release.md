@@ -37,7 +37,7 @@ All fail with 401 Unauthorized.
 
 **Likely Root Causes:**
 1. **Incorrect API URL** - May be hitting a wrong endpoint or malformed URL
-2. **Wrong repo reference** - `github/spec-kit` looks wrong; should likely be `jpoley/jp-spec-kit`
+2. **Wrong repo reference** - `github/spec-kit` looks wrong; should likely be `jpoley/flowspec`
 3. **Sending invalid/stale auth header** - If a token is being sent but is invalid, GitHub returns 401
 4. **Rate limiting edge case** - Though this typically returns 403, not 401
 
@@ -49,7 +49,7 @@ All fail with 401 Unauthorized.
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [x] #1 Verify correct repository path is used (jpoley/jp-spec-kit, not github/spec-kit)
+- [x] #1 Verify correct repository path is used (jpoley/flowspec, not github/spec-kit)
 - [x] #2 CLI can fetch latest release from public repos without any authentication
 - [x] #3 If an invalid token is present, either skip it or handle the 401 gracefully
 - [x] #4 Add unit tests for release fetching from public repos
@@ -70,9 +70,9 @@ Files changed:
 
 All 1102 tests passing.
 
-PR #167: https://github.com/jpoley/jp-spec-kit/pull/167
+PR #167: https://github.com/jpoley/flowspec/pull/167
 
-PR #169: https://github.com/jpoley/jp-spec-kit/pull/169 (replaces closed #167)
+PR #169: https://github.com/jpoley/flowspec/pull/169 (replaces closed #167)
 
 Fix details:
 - Added skip_auth parameter to _github_headers

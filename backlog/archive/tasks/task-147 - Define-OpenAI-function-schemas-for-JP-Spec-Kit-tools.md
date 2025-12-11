@@ -1,6 +1,6 @@
 ---
 id: task-147
-title: Define OpenAI function schemas for JP Spec Kit tools
+title: Define OpenAI function schemas for Flowspec tools
 status: To Do
 assignee:
   - '@pm-planner'
@@ -18,7 +18,7 @@ priority: high
 
 ## Description
 
-Create src/specify_cli/voice/tools/schemas.py with OpenAI function calling schemas for all JP Spec Kit operations: run_specify_command, list_backlog_tasks, update_task_status, create_task, run_plan_command. Reference: docs/research/pipecat-voice-integration-summary.md Function Calling Integration section
+Create src/specify_cli/voice/tools/schemas.py with OpenAI function calling schemas for all Flowspec operations: run_specify_command, list_backlog_tasks, update_task_status, create_task, run_plan_command. Reference: docs/research/pipecat-voice-integration-summary.md Function Calling Integration section
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->

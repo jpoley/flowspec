@@ -828,7 +828,7 @@ cat backlog/tasks/task-012*.md
 Report if you encounter:
 - Bugs in Backlog.md tool
 - MCP integration failures
-- jp-spec-kit integration problems
+- flowspec integration problems
 - Documentation errors
 
 ### How to Report
@@ -837,7 +837,7 @@ Report if you encounter:
 https://github.com/MrLesk/Backlog.md/issues
 
 **For Flowspec integration issues**:
-https://github.com/jpoley/jp-spec-kit/issues
+https://github.com/jpoley/flowspec/issues
 
 **Include in report**:
 ```bash
@@ -865,7 +865,7 @@ tail -50 ~/.local/state/claude-code/logs/mcp-backlog.log
 ### Community Help
 
 - **Discord**: [Flowspec community](https://discord.gg/...)
-- **GitHub Discussions**: https://github.com/jpoley/jp-spec-kit/discussions
+- **GitHub Discussions**: https://github.com/jpoley/flowspec/discussions
 - **Stack Overflow**: Tag with `flowspec` and `backlog-md`
 
 ### Quick Diagnostic

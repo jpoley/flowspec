@@ -12,7 +12,7 @@ After analysis, we determined:
 
 ## Current State Analysis
 
-The script at `/home/jpoley/ps/jp-spec-kit-task-085/scripts/bash/run-local-ci.sh` is a 388-line bash script that simulates CI/CD pipelines locally. It has two execution modes:
+The script at `/home/jpoley/ps/flowspec-task-085/scripts/bash/run-local-ci.sh` is a 388-line bash script that simulates CI/CD pipelines locally. It has two execution modes:
 1. **Direct mode**: Runs Python/uv commands directly
 2. **act mode**: Uses `act` (GitHub Actions runner) with Docker
 
@@ -202,7 +202,7 @@ esac
 
 **Linux (Ubuntu 22.04)**:
 ```bash
-cd /home/jpoley/ps/jp-spec-kit-task-085
+cd /home/jpoley/ps/flowspec-task-085
 ./scripts/bash/run-local-ci.sh
 ```
 
@@ -210,7 +210,7 @@ Expected: All 10 steps pass
 
 **macOS (Monterey 12+)**:
 ```bash
-cd /path/to/jp-spec-kit
+cd /path/to/flowspec
 ./scripts/bash/run-local-ci.sh
 ```
 
@@ -283,4 +283,4 @@ Created task for macOS CI matrix integration:
 
 - Task-085: Local CI Simulation Script
 - AC #9: "Test on Linux and macOS"
-- Script: `/home/jpoley/ps/jp-spec-kit-task-085/scripts/bash/run-local-ci.sh`
+- Script: `/home/jpoley/ps/flowspec-task-085/scripts/bash/run-local-ci.sh`

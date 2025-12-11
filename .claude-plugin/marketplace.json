@@ -1,20 +1,20 @@
 {
-  "name": "jp-spec-kit-marketplace",
+  "name": "flowspec-marketplace",
   "version": "1.0.0",
-  "description": "Official marketplace for JP Spec Kit - A comprehensive Spec-Driven Development toolkit",
+  "description": "Official marketplace for Flowspec - A comprehensive Spec-Driven Development toolkit",
   "owner": {
     "name": "Jason Poley",
     "url": "https://github.com/jpoley"
   },
   "plugins": [
     {
-      "name": "jp-spec-kit",
+      "name": "flowspec",
       "source": ".",
       "description": "Comprehensive Spec-Driven Development toolkit with multi-language support, specialized agents, and integrated security/observability tools",
       "version": "0.0.20",
       "author": "Jason Poley",
-      "homepage": "https://github.com/jpoley/jp-spec-kit",
-      "repository": "https://github.com/jpoley/jp-spec-kit",
+      "homepage": "https://github.com/jpoley/flowspec",
+      "repository": "https://github.com/jpoley/flowspec",
       "license": "MIT",
       "keywords": [
         "spec-driven",
@@ -46,19 +46,19 @@
   ],
   "installation": {
     "instructions": [
-      "Add marketplace: /plugin marketplace add jpoley/jp-spec-kit",
-      "Install plugin: /plugin install jp-spec-kit",
+      "Add marketplace: /plugin marketplace add jpoley/flowspec",
+      "Install plugin: /plugin install flowspec",
       "Verify installation: /flow:specify --help"
     ],
     "alternativeMethods": [
-      "Direct from GitHub: /plugin install jpoley/jp-spec-kit",
-      "Local development: /plugin install /path/to/jp-spec-kit",
+      "Direct from GitHub: /plugin install jpoley/flowspec",
+      "Local development: /plugin install /path/to/flowspec",
       "CLI tool (multi-agent): pip install specify-cli"
     ]
   },
   "support": {
-    "documentation": "https://github.com/jpoley/jp-spec-kit/blob/main/README.md",
-    "issues": "https://github.com/jpoley/jp-spec-kit/issues",
-    "discussions": "https://github.com/jpoley/jp-spec-kit/discussions"
+    "documentation": "https://github.com/jpoley/flowspec/blob/main/README.md",
+    "issues": "https://github.com/jpoley/flowspec/issues",
+    "discussions": "https://github.com/jpoley/flowspec/discussions"
   }
 }

@@ -1,6 +1,6 @@
 ---
 id: task-177
-title: 'Implement /jpspec:assess Command as Workflow Entry Point'
+title: 'Implement /flowspec:assess Command as Workflow Entry Point'
 status: Done
 assignee: []
 created_date: '2025-11-30 21:32'
@@ -13,7 +13,7 @@ priority: high
 ---
 
 <!-- AC:BEGIN -->
-- [x] AC1: Create .claude/commands/jpspec/assess.md slash command template
+- [x] AC1: Create .claude/commands/flowspec/assess.md slash command template
 - [x] AC2: Implement complexity scoring (effort, components, integrations)
 - [x] AC3: Implement risk scoring (security, compliance, data sensitivity)
 - [x] AC4: Implement architecture impact scoring
@@ -28,11 +28,11 @@ priority: high
 
 <!-- SECTION:NOTES:BEGIN -->
 ## Summary
-Implement /jpspec:assess as the mandatory entry point to the jpspec workflow. This command evaluates complexity, risk, and architecture impact to recommend Full SDD, Spec-Light, or Skip SDD.
+Implement /flowspec:assess as the mandatory entry point to the flowspec workflow. This command evaluates complexity, risk, and architecture impact to recommend Full SDD, Spec-Light, or Skip SDD.
 
 ## Command Usage
 ```bash
-/jpspec:assess Build a user authentication system with OAuth2 and MFA
+/flowspec:assess Build a user authentication system with OAuth2 and MFA
 ```
 
 ## Assessment Output
@@ -82,14 +82,14 @@ Path: `./docs/assess/{feature-slug}-assessment.md`
 
 ## Next Steps
 Based on **{recommendation}** mode:
-1. Run: `/jpspec:specify {feature}`
+1. Run: `/flowspec:specify {feature}`
 2. Then: {subsequent commands based on mode}
 
 ## Override
 To override this recommendation:
 ```bash
-/jpspec:specify --mode full {feature}
-/jpspec:specify --mode light {feature}
+/flowspec:specify --mode full {feature}
+/flowspec:specify --mode light {feature}
 ```
 ```
 

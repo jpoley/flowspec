@@ -16,12 +16,12 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Add new command to upgrade globally installed CLI tools (jp-spec-kit, spec-kit, backlog.md) at their default per-user installation locations. Currently the version command shows upgrades available but `specify upgrade` only upgrades repo templates, not the actual tools.
+Add new command to upgrade globally installed CLI tools (flowspec, spec-kit, backlog.md) at their default per-user installation locations. Currently the version command shows upgrades available but `specify upgrade` only upgrades repo templates, not the actual tools.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [x] #1 specify upgrade-tools upgrades jp-spec-kit via uv tool upgrade specify-cli
+- [x] #1 specify upgrade-tools upgrades flowspec via uv tool upgrade specify-cli
 - [x] #2 specify upgrade-tools upgrades backlog.md via pnpm/npm add -g backlog-md@latest
 - [x] #3 --component flag allows upgrading single component
 - [x] #4 --dry-run shows what would be upgraded without making changes
@@ -33,7 +33,7 @@ Add new command to upgrade globally installed CLI tools (jp-spec-kit, spec-kit, 
 
 <!-- SECTION:NOTES:BEGIN -->
 Implementation completed:
-- New upgrade-tools command upgrades jp-spec-kit via uv tool upgrade
+- New upgrade-tools command upgrades flowspec via uv tool upgrade
 - Upgrades backlog-md via pnpm/npm add -g backlog-md@latest
 - --component/-c flag allows single component upgrade
 - --dry-run shows what would be upgraded

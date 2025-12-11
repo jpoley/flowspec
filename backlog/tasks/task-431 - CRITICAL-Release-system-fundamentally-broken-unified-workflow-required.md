@@ -77,7 +77,7 @@ No handoff between workflows. No GITHUB_TOKEN limitation issue.
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
-Implementation PR: https://github.com/jpoley/jp-spec-kit/pull/728
+Implementation PR: https://github.com/jpoley/flowspec/pull/728
 
 Changes made:
 1. Rewrote release.yml as unified workflow that handles the entire release process

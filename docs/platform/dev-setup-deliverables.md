@@ -122,7 +122,7 @@ Complete platform and testing infrastructure has been designed and implemented t
 1. Non-symlink .md files detection
 2. Broken symlinks detection
 3. Speckit structure verification
-4. Jpspec structure verification (when exists)
+4. Flowspec structure verification (when exists)
 
 **Developer experience**:
 - Color-coded output (red/green/yellow)

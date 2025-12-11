@@ -379,7 +379,7 @@ CodeQL provides semantic code analysis with dataflow tracking, catching vulnerab
 - Best-in-class dataflow analysis
 - Catches bugs Semgrep misses
 - Worth offering for open source projects
-- Many JP Spec Kit users on GitHub Enterprise
+- Many Flowspec users on GitHub Enterprise
 
 **Why Not Make It Default?**
 - Licensing restrictions

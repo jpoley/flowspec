@@ -1,1 +1,1 @@
-"""Tests for jp-spec-kit."""
+"""Tests for flowspec."""

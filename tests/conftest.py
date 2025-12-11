@@ -1,4 +1,4 @@
-"""Pytest configuration and fixtures for jp-spec-kit tests.
+"""Pytest configuration and fixtures for flowspec tests.
 
 IMPORTANT: All test fixtures use tmp_path for isolation - files are auto-cleaned after tests.
 Mock task DESCRIPTIONS contain "MOCK" to distinguish from real tasks.

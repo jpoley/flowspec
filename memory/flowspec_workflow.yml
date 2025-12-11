@@ -1,4 +1,4 @@
-# JP Spec Kit Workflow Configuration
+# Flowspec Workflow Configuration
 # ==============================================================================
 #
 # This file defines the state machine for /flowspec command workflows in
@@ -10,7 +10,7 @@
 #   - Agent loops: Inner/outer loop classification for execution model
 #
 # Configuration Version: 1.1
-# Compatible with: jp-spec-kit v0.0.136+
+# Compatible with: flowspec v0.0.136+
 #
 # References:
 #   - docs/reference/artifact-path-patterns.md

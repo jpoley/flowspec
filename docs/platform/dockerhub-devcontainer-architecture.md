@@ -142,7 +142,7 @@ Container starts with:                  │
 ## File Structure
 
 ```
-jp-spec-kit/
+flowspec/
 ├── .devcontainer/
 │   ├── Dockerfile              # Image definition
 │   ├── devcontainer.json       # Local development config

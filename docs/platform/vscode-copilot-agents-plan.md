@@ -42,7 +42,7 @@ templates/commands/*.md (canonical source)
 
 ### 1.3 File Counts
 
-- **Jpspec commands**: 15 files (workflow orchestration)
+- **Flowspec commands**: 15 files (workflow orchestration)
 - **Speckit commands**: 8 files (utilities)
 - **Total**: 23 agent files to generate
 
@@ -206,7 +206,7 @@ hooks:
 
 ## 6. Tool Mapping
 
-### 6.1 Jpspec Commands (Full Workflow)
+### 6.1 Flowspec Commands (Full Workflow)
 
 ```yaml
 tools:

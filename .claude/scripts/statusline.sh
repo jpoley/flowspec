@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# JP Spec Kit - Custom Statusline for Claude Code
+# Flowspec - Custom Statusline for Claude Code
 # Format: [Phase] task-ID (N/M) | branch*
 #
 # Example output: [Impl] task-188 (2/5) | feature-auth*

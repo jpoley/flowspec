@@ -1,6 +1,6 @@
 ---
 id: task-337
-title: Devcontainer Support for JP-Spec-Kit Build and Runtime
+title: Devcontainer Support for flowspec Build and Runtime
 status: Done
 assignee:
   - '@backend-engineer'
@@ -17,7 +17,7 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Enable jp-spec-kit and its associated agents to run and build within a devcontainer environment. This provides consistent, reproducible development environments across different machines and platforms, supporting both local development and CI/CD pipelines.
+Enable flowspec and its associated agents to run and build within a devcontainer environment. This provides consistent, reproducible development environments across different machines and platforms, supporting both local development and CI/CD pipelines.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
@@ -45,7 +45,7 @@ Enable jp-spec-kit and its associated agents to run and build within a devcontai
    - Node.js 20 feature for CLI tools
    - pnpm package manager (preferred over npm)
    - VS Code extensions (Python, Ruff, YAML)
-   - Environment variable forwarding (GITHUB_JPSPEC, ANTHROPIC_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY)
+   - Environment variable forwarding (GITHUB_FLOWSPEC, ANTHROPIC_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY)
    - Volume mounts for backlog and git config
 
 2. Create `.devcontainer/post-create.sh` with:
@@ -142,7 +142,7 @@ pnpm install -g backlog.md
 
 **Environment Variables Forwarded:**
 - ANTHROPIC_API_KEY
-- GITHUB_JPSPEC
+- GITHUB_FLOWSPEC
 - OPENAI_API_KEY
 - GOOGLE_API_KEY
 

@@ -1,6 +1,6 @@
 {
-  "description": "Claude Code settings for JP Spec Kit project",
-  "projectName": "JP Spec Kit",
+  "description": "Claude Code settings for Flowspec project",
+  "projectName": "Flowspec",
   "allowedTools": [
     "Read",
     "Write",

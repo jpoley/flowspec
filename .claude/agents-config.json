@@ -1,5 +1,5 @@
 {
-  "description": "Configuration mapping for jp-spec-kit agents following agents.md specification",
+  "description": "Configuration mapping for flowspec agents following agents.md specification",
   "agents": {
     "sre-agent": {
       "file": "sre-agent.md",

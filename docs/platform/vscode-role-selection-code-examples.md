@@ -12,7 +12,7 @@ This document provides concrete code examples for implementing role-based VS Cod
 **File**: `/flowspec_workflow.yml`
 
 ```yaml
-# JPSpec Workflow Configuration
+# Flowspec Workflow Configuration
 version: "1.1"
 
 # ... existing states, workflows, transitions ...

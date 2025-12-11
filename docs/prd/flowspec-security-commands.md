@@ -800,7 +800,7 @@ SQL query uses string formatting with user input, enabling injection attacks.
 ```
 
 #### FR5.3: CI/CD Integration
-- Support `JPSPEC_SECURITY_ENABLED=true` environment variable
+- Support `FLOWSPEC_SECURITY_ENABLED=true` environment variable
 - GitHub Actions example workflow in documentation:
 
 ```yaml
@@ -817,7 +817,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install JP Flowspec
-        run: pip install jp-spec-kit
+        run: pip install flowspec
       - name: Security Scan
         run: /flow:security scan --fail-on critical,high
       - name: Upload Results
@@ -963,7 +963,7 @@ New dependencies for this feature:
 - `libcst` (for fix generation): Syntax-preserving Python parser
 - `tree-sitter` (optional): Multi-language AST parsing for non-Python fixes
 
-**Constraint**: Keep total `pip install jp-spec-kit` size <100MB
+**Constraint**: Keep total `pip install flowspec` size <100MB
 
 ### NFR5: Maintainability
 
@@ -2076,7 +2076,7 @@ During the discovery phase (Section 7), track these metrics to validate assumpti
 
 **Privacy**:
 - No code or vulnerability details sent (only counts and metadata)
-- Opt-in via `JPSPEC_TELEMETRY=1` environment variable
+- Opt-in via `FLOWSPEC_TELEMETRY=1` environment variable
 - Anonymous UUID per installation (no PII)
 
 **Implementation**:

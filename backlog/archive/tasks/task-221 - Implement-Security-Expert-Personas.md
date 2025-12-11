@@ -40,7 +40,7 @@ Create 4 security-focused expert personas borrowed from Raptor patterns: @securi
 - Integration: Claude skills system (.claude/skills/)
 
 ### Strategic Context
-Expert personas provide specialized security knowledge on-demand, reducing token usage by loading expertise only when needed. Borrowed from Raptor's approach but adapted to JP Spec Kit's architecture.
+Expert personas provide specialized security knowledge on-demand, reducing token usage by loading expertise only when needed. Borrowed from Raptor's approach but adapted to Flowspec's architecture.
 
 ### Implementation Steps
 
@@ -198,7 +198,7 @@ Expert personas provide specialized security knowledge on-demand, reducing token
    - Guide input corpus generation
 
 3. Design integration points (future)
-   - Link to /jpspec:security fuzz command (v2.0)
+   - Link to /flowspec:security fuzz command (v2.0)
    - Provide fuzzing configuration templates
    - Analyze fuzzing results
 

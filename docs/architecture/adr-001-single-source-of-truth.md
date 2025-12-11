@@ -31,7 +31,7 @@ implement.md file sizes:
 - nanofuse .claude/commands/implement.md:    2,933 bytes (user gets minimal)
 ```
 
-End users get a vastly inferior experience (3KB stub) compared to what jp-spec-kit developers use during development (20KB enhanced).
+End users get a vastly inferior experience (3KB stub) compared to what flowspec developers use during development (20KB enhanced).
 
 ---
 

@@ -172,7 +172,7 @@ specify reset --vscode-role all
 Add new top-level section:
 
 ```yaml
-# JPSpec Workflow Configuration
+# Flowspec Workflow Configuration
 version: "1.1"
 
 # ... existing states, workflows, transitions ...

@@ -1,5 +1,5 @@
 """
-Dependency graph builder for jp-spec-kit tasks.
+Dependency graph builder for flowspec tasks.
 
 Builds and visualizes task dependencies to help with planning and execution.
 """

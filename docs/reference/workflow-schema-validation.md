@@ -319,7 +319,7 @@ The schema supports versioning through:
 
 1. **Config version field**: `version: "1.0"` in the YAML
 2. **Schema version**: `metadata.schema_version` field
-3. **Schema $id**: `https://jp-spec-kit/schemas/flowspec_workflow.schema.json`
+3. **Schema $id**: `https://flowspec/schemas/flowspec_workflow.schema.json`
 
 When updating the schema:
 - Maintain backward compatibility when possible

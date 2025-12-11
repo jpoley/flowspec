@@ -18,20 +18,20 @@ priority: high
 
 <!-- SECTION:NOTES:BEGIN -->
 ## Summary
-Create comprehensive documentation of the complete jpspec workflow showing all artifacts, their inputs, outputs, and validation requirements at each transition.
+Create comprehensive documentation of the complete flowspec workflow showing all artifacts, their inputs, outputs, and validation requirements at each transition.
 
 ## Documentation Deliverable
 
 Create `docs/reference/workflow-artifact-flow.md`:
 
 ```markdown
-# JPSpec Workflow Artifact Flow
+# Flowspec Workflow Artifact Flow
 
 ## Complete Workflow Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                          JPSpec Workflow Pipeline                            │
+│                          Flowspec Workflow Pipeline                            │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌──────────┐        ┌──────────┐        ┌──────────┐        ┌──────────┐
@@ -80,7 +80,7 @@ Create `docs/reference/workflow-artifact-flow.md`:
 ## Transition Details
 
 ### Transition 1: Entry → Assessed
-**Command:** `/jpspec:assess`
+**Command:** `/flowspec:assess`
 **Input:** User feature description (free text)
 **Output:** Assessment Report
 **Location:** `./docs/assess/{feature}-assessment.md`
@@ -88,7 +88,7 @@ Create `docs/reference/workflow-artifact-flow.md`:
 **Gate:** None (entry point)
 
 ### Transition 2: Assessed → Specified  
-**Command:** `/jpspec:specify`
+**Command:** `/flowspec:specify`
 **Input:** Assessment Report
 **Output:** PRD + Backlog Tasks
 **Location:** `./docs/prd/{feature}.md`, `./backlog/tasks/*.md`
@@ -105,7 +105,7 @@ Create `docs/reference/workflow-artifact-flow.md`:
 - [ ] AC4: Add validation mode options for each artifact type
 - [ ] AC5: Document rework/rollback transitions and their artifact impacts
 - [ ] AC6: Include examples of artifact content at each stage
-- [ ] AC7: Cross-reference with jpspec_workflow.yml for programmatic lookup
+- [ ] AC7: Cross-reference with flowspec_workflow.yml for programmatic lookup
 - [ ] AC8: Add troubleshooting section for common artifact validation failures
 
 ## Dependencies

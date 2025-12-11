@@ -1,6 +1,6 @@
 ---
 id: task-131
-title: Create Mermaid.js diagram for /jpspec command → agent workflow
+title: Create Mermaid.js diagram for /flowspec command → agent workflow
 status: Done
 assignee:
   - '@claude-agent-7'
@@ -16,12 +16,12 @@ priority: high
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Create a comprehensive Mermaid.js flowchart diagram that visualizes all /jpspec slash commands and their sub-agent invocations. The diagram should clearly show the orchestration patterns (parallel vs sequential execution), data flow between agents, and phase transitions. This diagram will render natively in GitHub markdown and be version-controlled as text.
+Create a comprehensive Mermaid.js flowchart diagram that visualizes all /flowspec slash commands and their sub-agent invocations. The diagram should clearly show the orchestration patterns (parallel vs sequential execution), data flow between agents, and phase transitions. This diagram will render natively in GitHub markdown and be version-controlled as text.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [x] #1 Diagram includes all 6 /jpspec commands: specify, plan, research, implement, validate, operate
+- [x] #1 Diagram includes all 6 /flowspec commands: specify, plan, research, implement, validate, operate
 - [x] #2 Diagram shows all 12+ sub-agents with correct mappings to their parent commands
 - [x] #3 Parallel execution patterns are visually distinct from sequential patterns (e.g., using subgraphs or different arrow styles)
 - [x] #4 Phase transitions are clearly labeled (e.g., Phase 1: Implementation, Phase 2: Code Review)
@@ -32,15 +32,15 @@ Create a comprehensive Mermaid.js flowchart diagram that visualizes all /jpspec 
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
-Created comprehensive Mermaid.js flowchart diagram for jpspec workflow.
+Created comprehensive Mermaid.js flowchart diagram for flowspec workflow.
 
 ## Summary
 
-Created  with complete visualization of all jpspec commands, agents, and execution patterns.
+Created  with complete visualization of all flowspec commands, agents, and execution patterns.
 
 ## Key Features
 
-1. **Complete Command Coverage**: All 6 jpspec commands included (specify, plan, research, implement, validate, operate)
+1. **Complete Command Coverage**: All 6 flowspec commands included (specify, plan, research, implement, validate, operate)
 2. **15 Sub-Agents Mapped**: Accurate mappings from task-105 audit
 3. **Execution Patterns Visualized**: 
    - Parallel execution (orange boxes) for plan Phase 1, implement Phase 1, validate Phase 1
@@ -66,5 +66,5 @@ Created  with complete visualization of all jpspec commands, agents, and executi
 - Constitutional development explanation
 - Related documentation links
 
-The diagram provides a clear, comprehensive visualization suitable for onboarding, reference, and understanding the complete jpspec workflow architecture.
+The diagram provides a clear, comprehensive visualization suitable for onboarding, reference, and understanding the complete flowspec workflow architecture.
 <!-- SECTION:NOTES:END -->

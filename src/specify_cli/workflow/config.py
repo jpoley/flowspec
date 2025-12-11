@@ -539,7 +539,7 @@ class WorkflowConfig:
 
         Example:
             >>> config.description
-            'Default JP Spec Kit specification-driven development workflow'
+            'Default Flowspec specification-driven development workflow'
         """
         return str(self._data.get("description", ""))
 

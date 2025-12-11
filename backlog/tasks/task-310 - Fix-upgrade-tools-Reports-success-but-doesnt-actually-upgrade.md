@@ -22,7 +22,7 @@ priority: high
 **Observed Behavior:**
 ```
 Component      Current    Available    Status
-jp-spec-kit    0.2.328    0.2.332      ✓ Installed version 0.2.328 (was: 0.2.328)
+flowspec    0.2.328    0.2.332      ✓ Installed version 0.2.328 (was: 0.2.328)
 ```
 
 Notice: Status shows ✓ success, but version stayed at 0.2.328 (should be 0.2.332).
