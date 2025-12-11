@@ -1,10 +1,10 @@
 ---
 id: task-368
 title: 'Feature: Task Memory - Persistent Context Management'
-status: In Progress
+status: Done
 assignee: []
 created_date: '2025-12-09 15:50'
-updated_date: '2025-12-09 16:01'
+updated_date: '2025-12-11 20:25'
 labels:
   - architecture
   - planning
@@ -29,14 +29,14 @@ Design and implement Task Memory, a persistent context management system that:
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Task Memory is created automatically when task transitions to In Progress
-- [ ] #2 Context persists across Claude Code sessions
-- [ ] #3 Context persists across different machines (via git or backlog)
-- [ ] #4 Context is automatically cleaned up on task Done or Archive
-- [ ] #5 User can view current Task Memory contents
-- [ ] #6 User can manually edit/optimize Task Memory
-- [ ] #7 Task Memory is distinct from general session compact
-- [ ] #8 Integration with backlog.md task lifecycle events
+- [x] #1 Task Memory is created automatically when task transitions to In Progress
+- [x] #2 Context persists across Claude Code sessions
+- [x] #3 Context persists across different machines (via git or backlog)
+- [x] #4 Context is automatically cleaned up on task Done or Archive
+- [x] #5 User can view current Task Memory contents
+- [x] #6 User can manually edit/optimize Task Memory
+- [x] #7 Task Memory is distinct from general session compact
+- [x] #8 Integration with backlog.md task lifecycle events
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -83,3 +83,33 @@ Design and implement Task Memory, a persistent context management system that:
 - task-388: CI/CD integration and PR automation
 - task-383: Advanced features - search, import, export
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+## Implementation Notes (2025-12-11)
+
+All 8 acceptance criteria have been implemented:
+
+1. **Automatic Memory Creation**: LifecycleManager.on_state_change() creates memory when task transitions to In Progress
+2. **Session Persistence**: Markdown files in backlog/memory/ persist across Claude Code sessions
+3. **Cross-Machine Sync**: Git-tracked files with automatic sync via MCP resources
+4. **Automatic Cleanup**: Memory archived on Done, deleted on Archive
+5. **View Contents**: `specify memory show <task-id>` CLI command + MCP resources
+6. **Manual Edit**: Direct markdown editing + `specify memory append` CLI
+7. **Distinct from Session Compact**: Task-specific storage separate from general context
+8. **Backlog Integration**: Claude Code PostToolUse hooks intercept `backlog task edit` commands
+
+### Files Created/Modified:
+- `.claude/hooks/post-tool-use-task-memory-lifecycle.py` - PostToolUse hook
+- `.backlog/hooks/post-task-update.sh` - Bash wrapper hook
+- `.backlog/config.yml` - Hook configuration
+- `tests/integration/test_memory_lifecycle_hooks.py` - 15 integration tests
+
+### Test Coverage:
+- 174 unit tests (src/specify_cli/memory/)
+- 16 E2E lifecycle tests
+- 39 E2E sync tests  
+- 15 integration tests for hooks
+- Total: 244 memory-related tests passing
+<!-- SECTION:NOTES:END -->

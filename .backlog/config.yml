@@ -1,0 +1,57 @@
+# Backlog.md Configuration for Flowspec
+# This configuration enables Task Memory lifecycle integration
+
+# Hook Configuration
+# Hooks are triggered on task lifecycle events
+hooks:
+  # Post-task-update hook triggers after task status changes
+  post_task_update:
+    enabled: true
+    command: ".backlog/hooks/post-task-update.sh"
+    timeout: 10  # seconds
+    fail_open: true  # Don't block backlog operations on hook failure
+
+# Task Memory Configuration
+memory:
+  # Where task memories are stored
+  storage:
+    active_dir: "backlog/memory"
+    archive_dir: "backlog/memory/archive"
+    template_dir: "templates/memory"
+
+  # Default template for new memories
+  default_template: "default"
+
+  # Lifecycle triggers
+  lifecycle:
+    # Create memory when task transitions to In Progress
+    create_on: "In Progress"
+    # Archive memory when task transitions to Done
+    archive_on: "Done"
+    # Delete archived memory on Archive (permanent deletion)
+    delete_on: "Archive"
+
+  # Cleanup settings
+  cleanup:
+    # Archive active memories older than this (days)
+    archive_older_than: 90
+    # Delete archived memories older than this (days)
+    delete_archived_older_than: 365
+
+# CLAUDE.md Integration
+claude_md:
+  # Path to backlog CLAUDE.md file
+  path: "backlog/CLAUDE.md"
+
+  # Section name for active task context
+  section: "Active Task Context"
+
+  # Import format for task memory
+  import_format: "@import memory/{task_id}.md"
+
+# Logging
+logging:
+  # Log file for hook operations
+  file: ".specify/logs/task-memory-hook.log"
+  # Log level: DEBUG, INFO, WARNING, ERROR
+  level: "INFO"
