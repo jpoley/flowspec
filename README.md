@@ -1,6 +1,6 @@
 <div align="center">
-    <img src="./images/jp-spec-kit.jpeg"/>
-    <h1>JP Spec Kit</h1>
+    <img src="./images/flowspec.png"/>
+    <h1>flowspec</h1>
     <h3><em>Spec-Driven Development with AI-Powered Task Management</em></h3>
 </div>
 
