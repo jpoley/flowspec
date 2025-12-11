@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://jp-spec-kit/schemas/specflow_workflow.schema.json",
-  "title": "JP Spec Kit Workflow Configuration",
-  "description": "Schema for validating specflow_workflow.yml configuration files that define the spec-driven development workflow state machine, workflows, transitions, and agent assignments.",
+  "title": "Specflow Workflow Configuration",
+  "description": "Schema for validating specflow_workflow.yml configuration files that define the spec-driven development workflow state machine, workflows, transitions, agent assignments, and role-based command namespaces for VS Code Copilot.",
   "type": "object",
   "required": ["version", "states", "workflows", "transitions"],
   "additionalProperties": false,
@@ -10,13 +10,58 @@
     "version": {
       "type": "string",
       "pattern": "^\\d+\\.\\d+$",
-      "description": "Configuration version (e.g., '1.0', '1.1')",
+      "description": "Configuration version (e.g., '1.0', '1.1', '2.0')",
       "examples": ["1.0", "1.1", "2.0"]
     },
     "description": {
       "type": "string",
       "minLength": 1,
       "description": "Human-readable description of the workflow configuration"
+    },
+    "roles": {
+      "type": "object",
+      "description": "Role-based command namespace configuration for VS Code Copilot agent handoffs and command visibility",
+      "required": ["primary", "show_all_commands", "definitions"],
+      "additionalProperties": false,
+      "properties": {
+        "primary": {
+          "type": "string",
+          "enum": ["arch", "dev", "sec", "qa", "ops", "all"],
+          "description": "Primary role selection - what role the user identifies with. PM removed as PM work is done via /specflow workflow commands.",
+          "default": "dev"
+        },
+        "show_all_commands": {
+          "type": "boolean",
+          "description": "Show all commands regardless of role selection",
+          "default": false
+        },
+        "definitions": {
+          "type": "object",
+          "description": "Role definitions mapping roles to commands and agents. PM role removed as PM work is done via /specflow workflow commands.",
+          "required": ["arch", "dev", "sec", "qa", "ops", "all"],
+          "additionalProperties": false,
+          "properties": {
+            "arch": {
+              "$ref": "#/$defs/role"
+            },
+            "dev": {
+              "$ref": "#/$defs/role"
+            },
+            "sec": {
+              "$ref": "#/$defs/role"
+            },
+            "qa": {
+              "$ref": "#/$defs/role"
+            },
+            "ops": {
+              "$ref": "#/$defs/role"
+            },
+            "all": {
+              "$ref": "#/$defs/role"
+            }
+          }
+        }
+      }
     },
     "states": {
       "type": "array",
@@ -169,6 +214,42 @@
     }
   },
   "$defs": {
+    "role": {
+      "type": "object",
+      "description": "A role definition for VS Code Copilot command namespaces",
+      "required": ["display_name", "icon", "commands", "agents"],
+      "additionalProperties": false,
+      "properties": {
+        "display_name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable display name for the role (e.g., 'Product Manager', 'Developer')"
+        },
+        "icon": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Emoji icon representing the role (e.g., '📋', '💻', '🔒')"
+        },
+        "commands": {
+          "type": "array",
+          "description": "List of command verbs associated with this role (e.g., ['build', 'debug', 'refactor'])",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "agents": {
+          "type": "array",
+          "description": "List of agent identities assigned to this role (e.g., ['@frontend-engineer', '@backend-engineer'])",
+          "items": {
+            "type": "string",
+            "pattern": "^@[a-z][a-z0-9-]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
     "state": {
       "type": "object",
       "description": "A workflow state definition with optional description",
