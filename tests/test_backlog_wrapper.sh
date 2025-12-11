@@ -50,6 +50,9 @@ setup_test_env() {
     # Initialize a backlog project
     backlog init --defaults test-project >/dev/null 2>&1
 
+    # Disable remote operations to speed up tests (avoids network timeouts)
+    backlog config set remoteOperations false >/dev/null 2>&1
+
     # Initialize specify hooks (minimal config)
     mkdir -p .specify/hooks
     cat > .specify/hooks/hooks.yaml <<'EOF'
@@ -84,7 +87,8 @@ test_passthrough() {
 test_exit_code_success() {
     test_start "Wrapper preserves exit code 0 on success"
 
-    "$BK_WRAPPER" task list >/dev/null 2>&1
+    # Use --plain flag to avoid interactive output
+    "$BK_WRAPPER" task list --plain >/dev/null 2>&1
     exit_code=$?
 
     if [[ $exit_code -eq 0 ]]; then
@@ -100,13 +104,15 @@ test_exit_code_success() {
 test_exit_code_failure() {
     test_start "Wrapper preserves non-zero exit code on failure"
 
-    "$BK_WRAPPER" task view nonexistent-task >/dev/null 2>&1 || exit_code=$?
+    # Use 'task edit' which returns non-zero for missing tasks
+    # (Unlike 'task view' which returns 0 even for missing tasks)
+    "$BK_WRAPPER" task edit nonexistent-task -s "Done" >/dev/null 2>&1 || exit_code=$?
 
     if [[ ${exit_code:-0} -ne 0 ]]; then
         test_pass
         return 0
     else
-        test_fail "Expected non-zero exit code, got $exit_code"
+        test_fail "Expected non-zero exit code, got ${exit_code:-0}"
         return 1
     fi
 }
@@ -250,8 +256,8 @@ test_no_events_on_failure() {
     # Clear audit log
     rm -f .specify/hooks/audit.log
 
-    # Run a failing command
-    "$BK_WRAPPER" task view nonexistent-task >/dev/null 2>&1 || true
+    # Run a failing command (task edit returns non-zero for missing tasks)
+    "$BK_WRAPPER" task edit nonexistent-task -s "Done" >/dev/null 2>&1 || true
 
     # Audit log should not be created or should be empty
     if [[ ! -f .specify/hooks/audit.log ]]; then
@@ -278,15 +284,18 @@ test_zsh_compatibility() {
         return 0
     fi
 
-    # Run wrapper under zsh
-    output=$(zsh -c "'$BK_WRAPPER' task list" 2>&1) || exit_code=$?
-    exit_code=${exit_code:-0}
+    # Run wrapper under zsh (use --plain flag to avoid interactive output)
+    # Note: zsh -c returns 0 on success, so we just check if command runs
+    zsh -c "'$BK_WRAPPER' task list --plain" >/dev/null 2>&1
+    exit_code=$?
 
     if [[ $exit_code -eq 0 ]]; then
         test_pass
         return 0
     else
-        test_fail "Wrapper failed under zsh: $output"
+        # Re-run to capture output for error message
+        output=$(zsh -c "'$BK_WRAPPER' task list --plain" 2>&1 || true)
+        test_fail "Wrapper failed under zsh (exit $exit_code): $output"
         return 1
     fi
 }

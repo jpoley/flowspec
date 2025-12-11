@@ -15,11 +15,12 @@
 
 set -euo pipefail
 
-# Capture all arguments
+# Capture all arguments in array for consistent access
 ARGS=("$@")
 
 # Run the original backlog command and capture output + exit code
 # We need to capture stdout to extract task IDs from create commands
+# Note: We combine stdout/stderr for output parsing, but track exit code separately
 output=$(backlog "${ARGS[@]}" 2>&1) || exit_code=$?
 exit_code=${exit_code:-0}
 
@@ -28,9 +29,9 @@ echo "$output"
 
 # Only emit events if backlog succeeded
 if [[ $exit_code -eq 0 ]]; then
-    # Parse command structure
-    CMD="${1:-}"
-    SUBCMD="${2:-}"
+    # Parse command structure (use array for consistency)
+    CMD="${ARGS[0]:-}"
+    SUBCMD="${ARGS[1]:-}"
 
     # Only process task commands
     if [[ "$CMD" == "task" || "$CMD" == "tasks" ]]; then
@@ -45,8 +46,8 @@ if [[ $exit_code -eq 0 ]]; then
                 ;;
 
             edit)
-                # Get task ID (third argument)
-                TASK_ID="${3:-}"
+                # Get task ID (third argument - index 2 in 0-based array)
+                TASK_ID="${ARGS[2]:-}"
 
                 if [[ -n "$TASK_ID" ]]; then
                     # Check for status flag (-s or --status)
