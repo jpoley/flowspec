@@ -5,7 +5,7 @@ status: Done
 assignee:
   - '@claude-agent-2'
 created_date: '2025-12-12 01:15'
-updated_date: '2025-12-12 01:44'
+updated_date: '2025-12-12 22:07'
 labels:
   - claude-improves
   - source-repo
@@ -43,6 +43,8 @@ Expected format: skill-name/SKILL.md for consistency with other skills.
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
+PR #805 merged to main on 2025-12-12.
+
 Restructured 8 standalone skill .md files to directory format:
 - exploit-researcher/SKILL.md
 - fuzzing-strategist/SKILL.md

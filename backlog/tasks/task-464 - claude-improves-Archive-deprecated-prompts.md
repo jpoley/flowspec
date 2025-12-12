@@ -2,10 +2,9 @@
 id: task-464
 title: 'claude-improves: Archive deprecated prompts'
 status: Done
-assignee:
-  - '@claude-agent-1'
+assignee: []
 created_date: '2025-12-12 01:15'
-updated_date: '2025-12-12 22:04'
+updated_date: '2025-12-12 22:07'
 labels:
   - claude-improves
   - source-repo
