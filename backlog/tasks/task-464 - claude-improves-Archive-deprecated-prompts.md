@@ -1,11 +1,11 @@
 ---
 id: task-464
 title: 'claude-improves: Archive deprecated prompts'
-status: In Progress
+status: Done
 assignee:
   - '@claude-agent-1'
 created_date: '2025-12-12 01:15'
-updated_date: '2025-12-12 01:41'
+updated_date: '2025-12-12 22:04'
 labels:
   - claude-improves
   - source-repo
@@ -30,7 +30,7 @@ These clutter the prompts directory and may cause confusion.
 - [x] #1 Create .github/prompts/archive/ directory
 - [x] #2 Move all *DEPRECATED* files to archive directory
 - [x] #3 Verify no deprecated files remain in main prompts directory
-- [ ] #4 Update any documentation referencing these prompts
+- [x] #4 Update any documentation referencing these prompts
 <!-- AC:END -->
 
 ## Implementation Notes
@@ -54,4 +54,6 @@ Files moved:
 - specflow._DEPRECATED_validate.prompt.md
 
 No documentation updates needed - docs/research/claude-repair.md already documents this cleanup as a recommended fix.
+
+Task completed - PR #801 merged 2025-12-12. All acceptance criteria met.
 <!-- SECTION:NOTES:END -->
