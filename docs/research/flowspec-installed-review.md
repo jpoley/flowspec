@@ -7,7 +7,7 @@
 ## Prompt
 
 ```
-Perform a comprehensive source-to-deployment audit of the Flowspec/Speckit framework. Analyze what the framework provides vs. what actually gets deployed when users run `specify init` or `dev-setup`. Generate a detailed report at `./docs/research/framework-deployment-audit.md`.
+Perform a comprehensive source-to-deployment audit of the Flowspec/Speckit framework. Analyze what the framework provides vs. what actually gets deployed when users run `specify init` and on this repo `dev-setup`. Generate a detailed report at `./docs/research/framework-deployment-audit.md`.
 
 ## Analysis Goals
 
