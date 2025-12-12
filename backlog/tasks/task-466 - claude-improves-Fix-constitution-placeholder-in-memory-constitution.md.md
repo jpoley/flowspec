@@ -1,11 +1,11 @@
 ---
 id: task-466
 title: 'claude-improves: Fix constitution placeholder in memory/constitution.md'
-status: In Progress
+status: Done
 assignee:
   - '@claude-agent-3'
 created_date: '2025-12-12 01:15'
-updated_date: '2025-12-12 01:42'
+updated_date: '2025-12-12 01:43'
 labels:
   - claude-improves
   - source-repo
