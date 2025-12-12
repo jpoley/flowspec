@@ -5,7 +5,7 @@ status: Done
 assignee:
   - '@claude-agent-2'
 created_date: '2025-12-12 01:15'
-updated_date: '2025-12-12 01:43'
+updated_date: '2025-12-12 01:44'
 labels:
   - claude-improves
   - source-repo
@@ -54,4 +54,8 @@ Restructured 8 standalone skill .md files to directory format:
 - security-triage/SKILL.md
 
 All skills verified functional in new directory structure.
+
+Updated documentation:
+- memory/claude-skills.md: Documented all 17 skills organized by category
+- CLAUDE.md: Updated skill count to reflect 17 total skills (5 core workflow + 12 security)
 <!-- SECTION:NOTES:END -->
