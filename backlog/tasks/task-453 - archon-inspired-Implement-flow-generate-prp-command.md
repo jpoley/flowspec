@@ -1,9 +1,10 @@
 ---
 id: task-453
 title: 'archon-inspired: Implement /flow:generate-prp command'
-status: To Do
+status: Done
 assignee: []
 created_date: '2025-12-12 01:00'
+updated_date: '2025-12-12 19:37'
 labels:
   - archon-inspired
   - architecture
