@@ -1,9 +1,11 @@
 ---
 id: task-452
 title: 'archon-inspired: Implement /flow:intake command for feature intake'
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - '@backend-engineer'
 created_date: '2025-12-12 01:00'
+updated_date: '2025-12-12 01:43'
 labels:
   - archon-inspired
   - architecture

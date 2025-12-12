@@ -40,6 +40,7 @@ backlog task edit 42 -s Done     # Complete task
 # Setup & Configuration Commands
 /flow:init      # Initialize constitution (greenfield/brownfield)
 /flow:reset     # Re-run workflow configuration prompts
+/flow:intake    # Process INITIAL docs to create backlog tasks with context
 
 # Utility Commands (stateless, run anytime)
 /dev:debug          # Debugging assistance
