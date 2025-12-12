@@ -14,10 +14,10 @@ import yaml
 # Persona file paths
 SKILLS_DIR = Path(__file__).parent.parent.parent / ".claude" / "skills"
 PERSONAS = [
-    "security-analyst.md",
-    "patch-engineer.md",
-    "fuzzing-strategist.md",
-    "exploit-researcher.md",
+    "security-analyst",
+    "patch-engineer",
+    "fuzzing-strategist",
+    "exploit-researcher",
 ]
 
 
@@ -27,13 +27,13 @@ class TestPersonaFiles:
     @pytest.mark.parametrize("persona_file", PERSONAS)
     def test_persona_file_exists(self, persona_file: str):
         """Test that persona file exists."""
-        persona_path = SKILLS_DIR / persona_file
+        persona_path = SKILLS_DIR / persona_file / "SKILL.md"
         assert persona_path.exists(), f"Persona file not found: {persona_path}"
 
     @pytest.mark.parametrize("persona_file", PERSONAS)
     def test_persona_has_yaml_frontmatter(self, persona_file: str):
         """Test that persona has valid YAML frontmatter."""
-        persona_path = SKILLS_DIR / persona_file
+        persona_path = SKILLS_DIR / persona_file / "SKILL.md"
         content = persona_path.read_text()
 
         # Check for YAML frontmatter
@@ -60,7 +60,7 @@ class TestPersonaFiles:
     @pytest.mark.parametrize("persona_file", PERSONAS)
     def test_persona_has_required_sections(self, persona_file: str):
         """Test that persona has all required sections."""
-        persona_path = SKILLS_DIR / persona_file
+        persona_path = SKILLS_DIR / persona_file / "SKILL.md"
         content = persona_path.read_text()
 
         required_sections = [
@@ -80,7 +80,7 @@ class TestPersonaFiles:
     @pytest.mark.parametrize("persona_file", PERSONAS)
     def test_persona_has_example_interactions(self, persona_file: str):
         """Test that persona has example interactions or use cases."""
-        persona_path = SKILLS_DIR / persona_file
+        persona_path = SKILLS_DIR / persona_file / "SKILL.md"
         content = persona_path.read_text()
 
         # Should have either "Example Interactions" or detailed "Use Cases"
@@ -98,7 +98,7 @@ class TestSecurityAnalystPersona:
     @pytest.fixture
     def persona_content(self) -> str:
         """Load @security-analyst persona content."""
-        return (SKILLS_DIR / "security-analyst.md").read_text()
+        return (SKILLS_DIR / "security-analyst" / "SKILL.md").read_text()
 
     def test_has_owasp_knowledge(self, persona_content: str):
         """Test that persona includes OWASP Top 10 mapping."""
@@ -134,7 +134,7 @@ class TestPatchEngineerPersona:
     @pytest.fixture
     def persona_content(self) -> str:
         """Load @patch-engineer persona content."""
-        return (SKILLS_DIR / "patch-engineer.md").read_text()
+        return (SKILLS_DIR / "patch-engineer" / "SKILL.md").read_text()
 
     def test_has_fix_patterns(self, persona_content: str):
         """Test that persona includes security fix patterns."""
@@ -176,7 +176,7 @@ class TestFuzzingStrategistPersona:
     @pytest.fixture
     def persona_content(self) -> str:
         """Load @fuzzing-strategist persona content."""
-        return (SKILLS_DIR / "fuzzing-strategist.md").read_text()
+        return (SKILLS_DIR / "fuzzing-strategist" / "SKILL.md").read_text()
 
     def test_has_fuzzing_tools(self, persona_content: str):
         """Test that persona includes fuzzing tools."""
@@ -213,7 +213,7 @@ class TestExploitResearcherPersona:
     @pytest.fixture
     def persona_content(self) -> str:
         """Load @exploit-researcher persona content."""
-        return (SKILLS_DIR / "exploit-researcher.md").read_text()
+        return (SKILLS_DIR / "exploit-researcher" / "SKILL.md").read_text()
 
     def test_has_attack_surface_analysis(self, persona_content: str):
         """Test that persona includes attack surface analysis."""
@@ -257,13 +257,11 @@ class TestPersonaIntegration:
     def test_all_personas_reference_each_other(self):
         """Test that personas reference each other appropriately."""
         for persona_file in PERSONAS:
-            content = (SKILLS_DIR / persona_file).read_text()
+            content = (SKILLS_DIR / persona_file / "SKILL.md").read_text()
 
             # Each persona should reference at least 2 other personas
             # Check for both @persona-name and "persona name" formats
-            other_personas = [
-                p.replace(".md", "") for p in PERSONAS if p != persona_file
-            ]
+            other_personas = [p for p in PERSONAS if p != persona_file]
             references = sum(
                 1
                 for p in other_personas
@@ -277,7 +275,7 @@ class TestPersonaIntegration:
     def test_consistent_formatting(self):
         """Test that all personas follow consistent formatting."""
         for persona_file in PERSONAS:
-            content = (SKILLS_DIR / persona_file).read_text()
+            content = (SKILLS_DIR / persona_file / "SKILL.md").read_text()
 
             # Check consistent section markers
             assert re.search(r"^## ", content, re.MULTILINE), (
@@ -342,7 +340,7 @@ class TestProgressiveDisclosure:
     def test_personas_are_independent_files(self):
         """Test that each persona is its own file."""
         for persona_file in PERSONAS:
-            persona_path = SKILLS_DIR / persona_file
+            persona_path = SKILLS_DIR / persona_file / "SKILL.md"
             assert persona_path.exists()
             assert persona_path.is_file()
 
