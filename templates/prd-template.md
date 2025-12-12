@@ -166,6 +166,51 @@ As a {user role}, I want {goal} so that {benefit}.
 | {Risk 1} | High/Medium/Low | High/Medium/Low | {Mitigation strategy} |
 | {Risk 2} | High/Medium/Low | High/Medium/Low | {Mitigation strategy} |
 
+## Feature Validation Plan
+
+> Specific validation steps for this feature. Not generic "run tests" but feature-specific validation recipes.
+
+### Commands
+
+<!-- Exact shell commands to validate this feature -->
+<!-- Include test commands, lint checks, and feature-specific validations -->
+
+```bash
+# Run feature-specific unit tests
+{pytest tests/path/to/feature/ -v}
+
+# Run feature-specific integration tests
+{pytest tests/integration/feature/ -v}
+
+# Run linting for affected files
+{ruff check src/path/to/feature/}
+
+# Feature-specific validation (if applicable)
+{custom validation command}
+```
+
+### Expected Success
+
+<!-- What does successful validation look like? Be specific. -->
+
+| Validation | Success Criteria |
+|------------|------------------|
+| Unit Tests | {e.g., "All tests in tests/feature/ pass (currently X tests)"} |
+| Integration Tests | {e.g., "API returns 200 for happy path, proper errors for edge cases"} |
+| Lint | {e.g., "Zero errors from ruff check on affected files"} |
+| Manual Check | {e.g., "Feature visible in UI at /path, behaves as specified"} |
+| Performance | {e.g., "Response time < 200ms for typical requests"} |
+
+### Known Failure Modes
+
+<!-- Common ways validation can fail and what they indicate -->
+
+| Failure Pattern | What It Means | How to Fix |
+|-----------------|---------------|------------|
+| {e.g., "Import error in tests"} | {e.g., "Missing dependency or circular import"} | {e.g., "Check imports, run uv sync"} |
+| {e.g., "Timeout in integration test"} | {e.g., "External service unavailable or slow"} | {e.g., "Check service health, increase timeout"} |
+| {e.g., "Assertion error on response shape"} | {e.g., "API contract changed"} | {e.g., "Update test expectations or fix API"} |
+
 ## Out of Scope
 
 - {Explicitly excluded item 1}
