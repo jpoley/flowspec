@@ -211,6 +211,38 @@ As a {user role}, I want {goal} so that {benefit}.
 | {e.g., "Timeout in integration test"} | {e.g., "External service unavailable or slow"} | {e.g., "Check service health, increase timeout"} |
 | {e.g., "Assertion error on response shape"} | {e.g., "API contract changed"} | {e.g., "Update test expectations or fix API"} |
 
+## Loop Classification
+
+> Explicit inner vs outer loop classification for this feature. Helps agents understand which tasks require fast implementation cycles vs careful planning review.
+
+### Inner Loop Responsibilities
+
+<!-- Fast, implementation-focused tasks handled by coding agents -->
+<!-- These run frequently during development with quick feedback -->
+
+- [ ] {e.g., "Write unit tests for new function"}
+- [ ] {e.g., "Implement API endpoint"}
+- [ ] {e.g., "Fix linting errors"}
+- [ ] {e.g., "Add input validation"}
+- [ ] {e.g., "Create database migration"}
+
+### Outer Loop Responsibilities
+
+<!-- Planning-focused tasks requiring human review or approval -->
+<!-- These involve architectural decisions, security review, or stakeholder sign-off -->
+
+- [ ] {e.g., "Review architecture decision"}
+- [ ] {e.g., "Approve API contract changes"}
+- [ ] {e.g., "Validate security requirements met"}
+- [ ] {e.g., "Sign off on data model changes"}
+- [ ] {e.g., "Approve production deployment"}
+
+<!-- Reference:
+- Inner Loop: docs/reference/inner-loop.md
+- Outer Loop: docs/reference/outer-loop.md
+- Agent Classification: docs/reference/agent-loop-classification.md
+-->
+
 ## Out of Scope
 
 - {Explicitly excluded item 1}
