@@ -35,5 +35,24 @@ These clutter the prompts directory and may cause confusion.
 ## Implementation Notes
 
 <!-- SECTION:NOTES:BEGIN -->
-PR #801 merged to main on 2025-12-12. All acceptance criteria verified complete.
+Archived 13 deprecated prompts to .github/prompts/archive/
+
+Files moved:
+- specflow._DEPRECATED_assess.prompt.md
+- specflow._DEPRECATED_implement.prompt.md
+- specflow._DEPRECATED_operate.prompt.md
+- specflow._DEPRECATED_plan.prompt.md
+- specflow._DEPRECATED_prune-branch.prompt.md
+- specflow._DEPRECATED_research.prompt.md
+- specflow._DEPRECATED_security_fix.prompt.md
+- specflow._DEPRECATED_security_report.prompt.md
+- specflow._DEPRECATED_security_triage.prompt.md
+- specflow._DEPRECATED_security_web.prompt.md
+- specflow._DEPRECATED_security_workflow.prompt.md
+- specflow._DEPRECATED_specify.prompt.md
+- specflow._DEPRECATED_validate.prompt.md
+
+No documentation updates needed - docs/research/claude-repair.md already documents this cleanup as a recommended fix.
+
+Task completed - PR #801 merged 2025-12-12. All acceptance criteria met.
 <!-- SECTION:NOTES:END -->
