@@ -776,7 +776,7 @@ These ADRs should be created as separate tasks:
 ---
 
 #### Task 4.3: Implement Agent GPG Signing
-**Description**: GPG sign commits with agent-specific keys
+**Description**: GNU Privacy Guard (GPG) sign commits with agent-specific keys
 
 **Dependencies**: Task 2.3
 
