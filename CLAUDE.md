@@ -267,9 +267,27 @@ flowspec/
 ├── memory/                 # Constitution & specs
 ├── scripts/bash/           # Automation scripts
 ├── backlog/                # Task management
-├── .claude/commands/       # Slash command implementations
+├── .github/agents/         # VS Code Copilot agents (auto-generated from templates)
+├── .claude/commands/       # Slash command implementations (symlinks to templates/)
 └── .claude/skills/         # Model-invoked skills (17 skills: 5 core workflow + 12 security)
 ```
+
+### VS Code Copilot Agent Sync
+
+The `.github/agents/` directory contains agent files for VS Code Copilot Chat, auto-generated from Claude Code commands:
+
+```bash
+# Regenerate agents from templates
+./scripts/bash/sync-copilot-agents.sh
+
+# Validate agents are in sync (CI check)
+./scripts/bash/sync-copilot-agents.sh --validate
+
+# Preview changes without writing
+./scripts/bash/sync-copilot-agents.sh --dry-run
+```
+
+See [VS Code Copilot Setup Guide](docs/guides/vscode-copilot-setup.md) for usage details.
 
 ### Template Files in memory/
 
