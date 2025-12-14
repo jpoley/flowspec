@@ -323,11 +323,25 @@ Implementation is NOT complete until all three are delivered.
 | Agent | Support | Included in Devcontainer |
 |-------|---------|--------------------------|
 | [Claude Code](https://www.anthropic.com/claude-code) | Fully supported (primary) | ✅ |
+| [VS Code Copilot Chat](https://code.visualstudio.com/docs/copilot/overview) | Fully supported | - |
 | [GitHub Copilot CLI](https://githubnext.com/projects/copilot-cli/) | Fully supported | ✅ |
 | [Codex CLI](https://github.com/openai/codex) | Fully supported | ✅ |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | Fully supported | ✅ |
 | [Cursor](https://cursor.sh/) | Fully supported | - |
 | [Windsurf](https://windsurf.com/) | Fully supported | - |
+
+### VS Code Copilot Chat Integration
+
+Flowspec commands are available in VS Code Copilot Chat via agent files in `.github/agents/`:
+
+```
+# Use @flow-specify in Copilot Chat
+@flow-specify Build a user authentication system
+
+# Or select from command picker (Ctrl+Shift+P → "Copilot: Select Agent")
+```
+
+Agent files are auto-generated from Claude Code commands. See [VS Code Copilot Setup Guide](docs/guides/vscode-copilot-setup.md) for details.
 
 ### Devcontainer: All AI Agents Pre-Installed
 
@@ -344,6 +358,12 @@ specify init my-project --ai claude,copilot,cursor-agent
 
 ```
 project/
+├── .claude/commands/           # Claude Code slash commands (symlinks)
+│   ├── flow/                   # /flow:* commands
+│   └── speckit/                # /speckit:* commands
+├── .github/
+│   ├── agents/                 # VS Code Copilot agents (auto-generated)
+│   └── workflows/              # GitHub Actions CI/CD
 ├── .devcontainer/              # Devcontainer configuration
 │   └── devcontainer.json       # Uses jpoley/flowspec-agents image
 ├── docs/
