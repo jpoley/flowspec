@@ -4,7 +4,7 @@
 
 set -e
 
-cd /Users/jasonpoley/brainclean/flowspec
+cd "$(dirname "$0")/.."
 
 echo "Creating Phase 1: Foundation tasks..."
 
