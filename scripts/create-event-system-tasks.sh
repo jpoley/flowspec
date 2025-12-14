@@ -361,7 +361,7 @@ backlog task create "Implement Container Cleanup Automation" \
   --ac "Script container-cleanup.sh task-id" \
   --ac "Saves container logs before removal" \
   --ac "Emits container.stopped event with exit code" \
-  --ac "Force-kill containers running over 24 hours" \
+  --ac "Force-kill containers running >24 hours" \
   -l "agent-event-system,phase-5,infrastructure,devops,container" \
   --priority medium --plain
 
