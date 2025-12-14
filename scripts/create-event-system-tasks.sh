@@ -339,7 +339,7 @@ backlog task create "Implement Runtime Secret Injection" \
   --ac "Reads secrets from host keychain or secret service" \
   --ac "Injects via environment variables" \
   --ac "Secrets never written to disk or logs" \
-  --ac "Emits container.secrets_injected event names only" \
+  --ac "Emits container.secrets_injected event (secret names only, never values)" \
   -l "agent-event-system,phase-5,infrastructure,security,devsecops,container" \
   --priority high --plain
 
