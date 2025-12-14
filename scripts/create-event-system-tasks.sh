@@ -241,7 +241,7 @@ backlog task create "Implement Pre-Commit Quality Gate - Test" \
   --ac "Pre-commit hook calls quality-gates/test.sh" \
   --ac "Runs pytest vitest or go test based on project" \
   --ac "Smart test selection for affected tests only" \
-  --ac "Emits quality_gate events" \
+  --ac "Emits quality-gate events" \
   --ac "Configurable timeout default 600s" \
   -l "agent-event-system,phase-4,infrastructure,quality,cicd,git-workflow" \
   --priority high --plain
