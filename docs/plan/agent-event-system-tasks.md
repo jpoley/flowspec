@@ -13,7 +13,7 @@
 
 ## Executive Summary
 
-This plan defines **39 tasks** across **8 phases** to implement a unified Agent Event System. The system provides:
+This plan defines **40 tasks** across **8 phases** to implement a unified Agent Event System. The system provides:
 
 1. **Unified Observability**: JSONL event stream for all agent, task, git, and container operations
 2. **Action Vocabulary**: 55+ standardized actions with guaranteed event emission
