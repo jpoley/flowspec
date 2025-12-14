@@ -264,7 +264,7 @@ test_task_id_parsing() {
 
     setup_test_repo
 
-    # Create task with complex ID
+    # Create task with decimal ID (task-N.M format)
     create_task_file "task-204.01"
     git add backlog/tasks/
     git commit --quiet -m "Add task-204.01"
@@ -272,10 +272,42 @@ test_task_id_parsing() {
     # Run hook
     output=$(DRY_RUN=true ./scripts/hooks/post-commit-backlog-events.sh 2>&1 || true)
 
-    if echo "$output" | grep -q "task-204.01"; then
+    # Verify:
+    # 1. task.created event is emitted
+    # 2. Task ID is correctly parsed as "task-204.01" (not truncated)
+    if echo "$output" | grep -q "task.created" && echo "$output" | grep -q "task-204.01"; then
         log_pass "Task ID parsing"
     else
-        log_fail "Task ID parsing - expected task-204.01 in output"
+        log_fail "Task ID parsing - expected task.created event with task-204.01"
+        echo "  Output: $output"
+    fi
+
+    cleanup_test_repo
+}
+
+# Test 7: Parse malformed task ID robustly (multiple consecutive dots)
+test_parse_malformed_task_id() {
+    log_test "Parse malformed task ID robustly"
+    ((TESTS_RUN++))
+
+    setup_test_repo
+
+    # Create a file with malformed ID (task-1..2 - multiple consecutive dots)
+    # The regex should extract "task-1" (the valid prefix) not "task-1..2"
+    mkdir -p backlog/tasks
+    echo "---\nid: task-1..2\nstatus: To Do\n---\nTest" > "backlog/tasks/task-1..2 - Bad-Task.md"
+    git add backlog/tasks/
+    git commit --quiet -m "Add malformed task"
+
+    # Run hook
+    output=$(DRY_RUN=true ./scripts/hooks/post-commit-backlog-events.sh 2>&1 || true)
+
+    # Should parse the valid prefix "task-1" from "task-1..2"
+    # This is robust error handling - extract what we can
+    if echo "$output" | grep -q "task-1" && ! echo "$output" | grep -q "task-1\.\."; then
+        log_pass "Parse malformed task ID robustly"
+    else
+        log_fail "Parse malformed task ID - should extract 'task-1' from 'task-1..2'"
         echo "  Output: $output"
     fi
 
@@ -302,6 +334,7 @@ main() {
     test_ac_change_detection
     test_idempotent_no_changes
     test_task_id_parsing
+    test_parse_malformed_task_id
 
     echo ""
     echo "==========================================="

@@ -146,7 +146,9 @@ class TestSanitizePath:
         """Test sanitizing macOS home directory path."""
         result = sanitize_path("/Users/john/Documents/code.py")
         assert "john" not in result
-        assert "/home/<" in result or "/Users/<" in result
+        # macOS paths should preserve /Users/ prefix, not become /home/
+        assert "/Users/<" in result
+        assert ">/Documents/code.py" in result
 
     def test_non_home_path_unchanged(self):
         """Test that non-home paths are not modified."""

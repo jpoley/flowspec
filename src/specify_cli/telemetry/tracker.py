@@ -68,7 +68,7 @@ def sanitize_path(path: str | Path) -> str:
     """
     path_str = str(path)
 
-    # Hash home directory usernames
+    # Hash home directory usernames - only replace the home directory segment
     match = PII_PATTERNS["home_path"].search(path_str)
     if match:
         home_path = match.group()
@@ -76,7 +76,12 @@ def sanitize_path(path: str | Path) -> str:
         if len(parts) >= 3:
             username = parts[2]
             hashed = hash_pii(username)
-            path_str = path_str.replace(f"/{username}/", f"/<{hashed}>/")
+            # Use regex to only replace the home directory segment, not all occurrences
+            path_str = re.sub(
+                rf"^(/(?:home|Users)/){re.escape(username)}(/|$)",
+                rf"\1<{hashed}>\2",
+                path_str,
+            )
 
     return path_str
 

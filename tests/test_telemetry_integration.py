@@ -170,14 +170,19 @@ class TestAgentInvocationTracking:
             ):
                 raise ValueError("Agent failed")
 
+        # Note: This code IS reachable - pytest.raises catches the exception
+        # and allows execution to continue after the with block
         events = self._read_events(tmp_path)
         assert len(events) == 2
         assert events[0]["event_type"] == "agent.started"
         assert events[1]["event_type"] == "agent.failed"
         assert events[1]["agent"] == "qa-engineer"
 
-    def test_track_agent_invocation_decorator(self, tmp_path: Path):
+    def test_track_agent_invocation_decorator(self, tmp_path: Path, monkeypatch):
         """Test tracking agent invocation with decorator."""
+        # Change cwd to tmp_path since decorator uses cwd() for project_root
+        monkeypatch.chdir(tmp_path)
+        enable_telemetry(tmp_path)  # Re-enable after chdir
 
         @track_agent_invocation_decorator(
             agent="frontend-engineer", role="dev", command="/flow:implement"
@@ -185,19 +190,16 @@ class TestAgentInvocationTracking:
         def implement_ui():
             return "done"
 
-        # Need to manually track since decorator doesn't have project_root
-        with track_agent_invocation(
-            agent="frontend-engineer",
-            role="dev",
-            command="/flow:implement",
-            project_root=tmp_path,
-        ):
-            pass  # Agent work
+        # Actually call the decorated function to test the decorator
+        result = implement_ui()
 
+        assert result == "done"
         events = self._read_events(tmp_path)
         assert len(events) == 2
         assert events[0]["event_type"] == "agent.started"
+        assert events[0]["agent"] == "frontend-engineer"
         assert events[1]["event_type"] == "agent.completed"
+        assert events[1]["agent"] == "frontend-engineer"
 
     def _read_events(self, project_root: Path) -> list[dict]:
         """Read events from telemetry file."""
@@ -329,6 +331,8 @@ class TestWorkflowTracking:
             ):
                 raise RuntimeError("Validation failed")
 
+        # Note: This code IS reachable - pytest.raises catches the exception
+        # and allows execution to continue after the with block
         events = self._read_events(tmp_path)
         assert len(events) == 2
         assert events[0]["event_type"] == "workflow.started"

@@ -3255,7 +3255,7 @@ def init(
                     if no_hooks:
                         tracker.complete(
                             "hooks",
-                            f"created {len(created_files)} hook files (all disabled, use --no-hooks)",
+                            f"created {len(created_files)} hook files (all disabled via --no-hooks)",
                         )
                     else:
                         tracker.complete(

@@ -213,7 +213,7 @@ This directory contains custom hooks for the Flowspec workflow.
 
 ## Enabled by Default
 
-The following hooks are **enabled by default** for code quality:
+When hooks are scaffolded (without `--no-hooks`), these 3 hooks are **enabled**:
 
 | Hook | Event | Description |
 |------|-------|-------------|
@@ -221,7 +221,7 @@ The following hooks are **enabled by default** for code quality:
 | `lint-code` | `task.completed` | Runs linter and formatter on task completion |
 | `quality-gate` | `validate.started` | Checks code quality before validation |
 
-The `update-changelog` hook is opt-in (disabled by default).
+**Not enabled by default**: The `update-changelog` hook is opt-in (set `enabled: true` to use it).
 
 To disable all hooks during init, use: `specify init --no-hooks`
 

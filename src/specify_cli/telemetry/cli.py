@@ -27,11 +27,12 @@ from .config import (
     load_telemetry_config,
 )
 from .integration import (
-    track_agent_invocation as _track_agent,
     track_handoff,
     track_role_selection as _track_role,
 )
-from .tracker import DEFAULT_TELEMETRY_DIR, DEFAULT_TELEMETRY_FILE
+from .events import RoleEvent
+from .tracker import DEFAULT_TELEMETRY_DIR, DEFAULT_TELEMETRY_FILE, track_role_event
+from .writer import TelemetryWriter
 
 telemetry_app = typer.Typer(
     name="telemetry",
@@ -80,13 +81,7 @@ def _count_telemetry_events(telemetry_path: Path) -> int:
     Returns:
         Number of events in the file, or 0 if file doesn't exist or is unreadable.
     """
-    if not telemetry_path.exists():
-        return 0
-    try:
-        with telemetry_path.open("r") as f:
-            return sum(1 for line in f if line.strip())
-    except OSError:
-        return 0
+    return TelemetryWriter(telemetry_path).count_events()
 
 
 def _read_telemetry_events(
@@ -586,9 +581,14 @@ def track_agent_command(
             console.print("[dim]Telemetry disabled, event not recorded[/dim]")
         return
 
-    # Use context manager but just enter/exit immediately to record the event
-    with _track_agent(agent=agent, command=command, role=role, project_root=root):
-        pass
+    # Emit a single agent.invoked event (not started+completed from context manager)
+    track_role_event(
+        RoleEvent.AGENT_INVOKED,
+        role=role,
+        agent=agent,
+        command=command,
+        project_root=root,
+    )
 
     if not quiet:
         console.print(f"[green]✓[/green] Tracked agent invocation: {agent}")

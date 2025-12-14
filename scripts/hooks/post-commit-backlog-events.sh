@@ -48,11 +48,12 @@ log_warn() { echo -e "${YELLOW}[backlog-events]${NC} $*" >&2; }
 log_debug() { [[ "$VERBOSE" == true ]] && echo -e "${BLUE}[backlog-events]${NC} $*" || true; }
 
 # Parse task ID from filename
-# Input: backlog/tasks/task-123 - Some-Title.md
-# Output: task-123
+# Input: backlog/tasks/task-123 - Some-Title.md or task-204.01 - Title.md
+# Output: task-123 or task-204.01
 parse_task_id() {
     local filename="$1"
-    basename "$filename" | sed -E 's/^(task-[0-9.]+).*/\1/'
+    # Match task-N or task-N.M format (not multiple dots like task-1..2)
+    basename "$filename" | sed -E 's/^(task-[0-9]+(\.[0-9]+)?).*/\1/'
 }
 
 # Get frontmatter field from task file
@@ -85,7 +86,7 @@ emit_event() {
     log_info "Emitting: $event_type for $task_id"
 
     if [[ "$DRY_RUN" == true ]]; then
-        log_debug "  [dry-run] $SPECIFY_CMD hooks emit $event_type --task-id $task_id ${extra_args[*]:-}"
+        log_debug "  [dry-run] $SPECIFY_CMD hooks emit $event_type --task-id $task_id ${extra_args[*]}"
         return 0
     fi
 
@@ -188,8 +189,8 @@ main() {
     while IFS=$'\t' read -r status file; do
         [[ -z "$file" ]] && continue
 
-        # Only process task files (task-*.md, including decimal IDs like task-204.01)
-        if [[ ! "$file" =~ task-[0-9.]+.*\.md$ ]]; then
+        # Only process task files (task-N.md or task-N.M.md, not malformed like task-1..2.md)
+        if [[ ! "$file" =~ task-[0-9]+(\.[0-9]+)?.*\.md$ ]]; then
             log_debug "Skipping non-task file: $file"
             continue
         fi
