@@ -1,9 +1,11 @@
 ---
 id: task-482
-title: "claude-improves: Add pre-commit configuration template"
+title: 'claude-improves: Add pre-commit configuration template'
 status: To Do
-assignee: []
+assignee:
+  - '@muckross'
 created_date: '2025-12-12 01:15'
+updated_date: '2025-12-14 17:48'
 labels:
   - claude-improves
   - templates
