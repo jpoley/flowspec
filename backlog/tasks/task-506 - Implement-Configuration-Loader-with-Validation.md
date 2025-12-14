@@ -1,0 +1,31 @@
+---
+id: task-506
+title: Implement Configuration Loader with Validation
+status: To Do
+assignee: []
+created_date: '2025-12-14 03:35'
+updated_date: '2025-12-14 03:35'
+labels:
+  - agent-event-system
+  - phase-1
+  - infrastructure
+  - configuration
+dependencies:
+  - task-505
+priority: high
+---
+
+## Description
+
+<!-- SECTION:DESCRIPTION:BEGIN -->
+Build configuration loader that validates and merges defaults with user overrides.
+<!-- SECTION:DESCRIPTION:END -->
+
+## Acceptance Criteria
+<!-- AC:BEGIN -->
+- [ ] #1 Configuration class GitWorkflowConfig in Python
+- [ ] #2 Load from git-workflow.yml with fallback to defaults
+- [ ] #3 Emit system.config_change event on reload
+- [ ] #4 CLI command specify config show
+- [ ] #5 Unit tests for all config sections
+<!-- AC:END -->
