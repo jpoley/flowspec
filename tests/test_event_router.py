@@ -648,6 +648,22 @@ class TestMcpHandler:
 
             assert result is False
 
+    def test_mcp_handler_rejects_file_scheme(self):
+        """Test McpHandler rejects file:// URLs (security)."""
+        handler = McpHandler(server_url="file:///etc/passwd")
+
+        result = handler.handle({"event_type": "test"})
+
+        assert result is False  # Should reject file:// scheme
+
+    def test_mcp_handler_rejects_invalid_scheme(self):
+        """Test McpHandler rejects non-http(s) schemes."""
+        handler = McpHandler(server_url="ftp://example.com/events")
+
+        result = handler.handle({"event_type": "test"})
+
+        assert result is False  # Should reject ftp:// scheme
+
     def test_mcp_handler_local_forward(self):
         """Test McpHandler local forwarding (logs debug)."""
         handler = McpHandler(server_name="test-server")

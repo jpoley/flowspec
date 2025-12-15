@@ -150,9 +150,23 @@ class McpHandler(EventHandler):
             return False
 
     def _forward_http(self, event: dict[str, Any]) -> bool:
-        """Forward event via HTTP."""
+        """Forward event via HTTP.
+
+        Security: Only allows http:// and https:// schemes to prevent
+        file:// attacks via urllib.
+        """
         try:
+            import urllib.parse
             import urllib.request
+
+            # Validate URL scheme to prevent file:// attacks (security requirement)
+            parsed = urllib.parse.urlparse(self.server_url)
+            if parsed.scheme not in ("http", "https"):
+                logger.error(
+                    f"McpHandler: Invalid URL scheme '{parsed.scheme}'. "
+                    "Only http:// and https:// are allowed."
+                )
+                return False
 
             data = json.dumps(event).encode("utf-8")
             req = urllib.request.Request(
@@ -162,7 +176,7 @@ class McpHandler(EventHandler):
                 method="POST",
             )
 
-            with urllib.request.urlopen(req, timeout=self.timeout) as response:
+            with urllib.request.urlopen(req, timeout=self.timeout) as response:  # nosec B310
                 return response.status == 200
 
         except Exception as e:
@@ -172,7 +186,9 @@ class McpHandler(EventHandler):
     def _forward_local(self, event: dict[str, Any]) -> bool:
         """Forward event to local MCP server via tool call."""
         # This would integrate with the MCP client if available
-        logger.debug(f"McpHandler would forward to {self.server_name}: {event.get('event_type')}")
+        logger.debug(
+            f"McpHandler would forward to {self.server_name}: {event.get('event_type')}"
+        )
         # For now, just log (actual MCP integration depends on runtime context)
         return True
 
