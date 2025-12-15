@@ -2,9 +2,10 @@
 id: task-510
 title: Integrate MCP Server with Event Emission
 status: To Do
-assignee: []
+assignee:
+  - '@chamonix'
 created_date: '2025-12-14 03:35'
-updated_date: '2025-12-14 03:35'
+updated_date: '2025-12-15 01:33'
 labels:
   - agent-event-system
   - phase-2

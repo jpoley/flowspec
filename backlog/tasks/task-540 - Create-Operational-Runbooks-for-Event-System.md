@@ -2,9 +2,10 @@
 id: task-540
 title: Create Operational Runbooks for Event System
 status: To Do
-assignee: []
+assignee:
+  - '@chamonix'
 created_date: '2025-12-14 03:35'
-updated_date: '2025-12-14 03:35'
+updated_date: '2025-12-15 01:33'
 labels:
   - agent-event-system
   - phase-8
