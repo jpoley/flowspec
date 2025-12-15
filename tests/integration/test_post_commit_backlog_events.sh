@@ -285,29 +285,28 @@ test_task_id_parsing() {
     cleanup_test_repo
 }
 
-# Test 7: Parse malformed task ID robustly (multiple consecutive dots)
-test_parse_malformed_task_id() {
-    log_test "Parse malformed task ID robustly"
+# Test 7: Reject malformed task files (multiple consecutive dots)
+test_reject_malformed_task_file() {
+    log_test "Reject malformed task file"
     ((TESTS_RUN++))
 
     setup_test_repo
 
     # Create a file with malformed ID (task-1..2 - multiple consecutive dots)
-    # The regex should extract "task-1" (the valid prefix) not "task-1..2"
+    # The stricter regex should reject files that don't match the expected format
     mkdir -p backlog/tasks
-    echo "---\nid: task-1..2\nstatus: To Do\n---\nTest" > "backlog/tasks/task-1..2 - Bad-Task.md"
+    printf '%s\n' "---" "id: task-1..2" "status: To Do" "---" "Test" > "backlog/tasks/task-1..2 - Bad-Task.md"
     git add backlog/tasks/
     git commit --quiet -m "Add malformed task"
 
-    # Run hook
-    output=$(DRY_RUN=true ./scripts/hooks/post-commit-backlog-events.sh 2>&1 || true)
+    # Run hook with verbose to see debug output
+    output=$(DRY_RUN=true VERBOSE=true ./scripts/hooks/post-commit-backlog-events.sh 2>&1 || true)
 
-    # Should parse the valid prefix "task-1" from "task-1..2"
-    # This is robust error handling - extract what we can
-    if echo "$output" | grep -q "task-1" && ! echo "$output" | grep -q "task-1\.\."; then
-        log_pass "Parse malformed task ID robustly"
+    # Should skip the malformed file (doesn't match task-N or task-N.M format)
+    if echo "$output" | grep -q "Skipping non-task file"; then
+        log_pass "Reject malformed task file"
     else
-        log_fail "Parse malformed task ID - should extract 'task-1' from 'task-1..2'"
+        log_fail "Reject malformed task file - should skip files with invalid IDs"
         echo "  Output: $output"
     fi
 
@@ -334,7 +333,7 @@ main() {
     test_ac_change_detection
     test_idempotent_no_changes
     test_task_id_parsing
-    test_parse_malformed_task_id
+    test_reject_malformed_task_file
 
     echo ""
     echo "==========================================="

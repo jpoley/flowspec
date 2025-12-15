@@ -50,9 +50,12 @@ log_debug() { [[ "$VERBOSE" == true ]] && echo -e "${BLUE}[backlog-events]${NC} 
 # Parse task ID from filename
 # Input: backlog/tasks/task-123 - Some-Title.md or task-204.01 - Title.md
 # Output: task-123 or task-204.01
+# Note: Malformed IDs like "task-1..2" are sanitized by extracting the valid
+#       prefix "task-1". This is intentional - the function extracts the longest
+#       valid task ID prefix from the filename.
 parse_task_id() {
     local filename="$1"
-    # Match task-N or task-N.M format (not multiple dots like task-1..2)
+    # Match task-N or task-N.M format - extracts valid prefix from malformed IDs
     basename "$filename" | sed -E 's/^(task-[0-9]+(\.[0-9]+)?).*/\1/'
 }
 
@@ -62,7 +65,8 @@ get_field() {
     local file="$1"
     local field="$2"
     # Extract value from YAML frontmatter between --- markers
-    sed -n '/^---$/,/^---$/p' "$file" | grep -E "^${field}:" | head -1 | sed -E "s/^${field}:\s*'?([^']*)'?$/\1/" | tr -d "'"
+    # Only removes surrounding quotes, preserves quotes within values
+    sed -n '/^---$/,/^---$/p' "$file" | grep -E "^${field}:" | head -1 | sed -E "s/^${field}:\s*//" | sed -E "s/^(['\"])(.*)\1$/\2/"
 }
 
 # Count checked acceptance criteria
@@ -70,9 +74,10 @@ get_field() {
 count_ac() {
     local file="$1"
     local checked total
-    # Use grep -c with || true to suppress exit code, then default to 0 if empty
-    checked=$(grep -c '^\- \[x\]' "$file" 2>/dev/null) || checked=0
-    total=$(grep -c '^\- \[.\]' "$file" 2>/dev/null) || total=0
+    # Use { grep || true; } to handle no-match case (grep returns 1 when no matches)
+    # This is required with pipefail to prevent script exit on zero checked ACs
+    checked=$({ grep '^\- \[x\]' "$file" 2>/dev/null || true; } | wc -l)
+    total=$({ grep '^\- \[.\]' "$file" 2>/dev/null || true; } | wc -l)
     echo "${checked}/${total}"
 }
 
@@ -86,7 +91,7 @@ emit_event() {
     log_info "Emitting: $event_type for $task_id"
 
     if [[ "$DRY_RUN" == true ]]; then
-        log_debug "  [dry-run] $SPECIFY_CMD hooks emit $event_type --task-id $task_id ${extra_args[*]}"
+        log_debug "  [dry-run] $SPECIFY_CMD hooks emit $event_type --task-id $task_id ${extra_args[*]:-}"
         return 0
     fi
 
@@ -145,9 +150,10 @@ process_modified_task() {
     current_ac=$(count_ac "$file")
 
     # Get previous AC count from HEAD~1
+    # Use { grep || true; } to handle no-match case with pipefail
     local prev_checked prev_total_count
-    prev_checked=$(git show "HEAD~1:$file" 2>/dev/null | grep -c '^\- \[x\]') || prev_checked=0
-    prev_total_count=$(git show "HEAD~1:$file" 2>/dev/null | grep -c '^\- \[.\]') || prev_total_count=0
+    prev_checked=$(git show "HEAD~1:$file" 2>/dev/null | { grep '^\- \[x\]' || true; } | wc -l)
+    prev_total_count=$(git show "HEAD~1:$file" 2>/dev/null | { grep '^\- \[.\]' || true; } | wc -l)
     prev_ac="${prev_checked}/${prev_total_count}"
 
     log_debug "  AC: $prev_ac -> $current_ac"
@@ -189,8 +195,8 @@ main() {
     while IFS=$'\t' read -r status file; do
         [[ -z "$file" ]] && continue
 
-        # Only process task files (task-N.md or task-N.M.md, not malformed like task-1..2.md)
-        if [[ ! "$file" =~ task-[0-9]+(\.[0-9]+)?.*\.md$ ]]; then
+        # Only process task files matching format: task-N - Title.md or task-N.M - Title.md
+        if [[ ! "$file" =~ task-[0-9]+(\.[0-9]+)?( - .+)?\.md$ ]]; then
             log_debug "Skipping non-task file: $file"
             continue
         fi

@@ -170,8 +170,9 @@ class TestAgentInvocationTracking:
             ):
                 raise ValueError("Agent failed")
 
-        # Note: This code IS reachable - pytest.raises catches the exception
-        # and allows execution to continue after the with block
+        # The code below IS reachable: pytest.raises is a context manager that
+        # catches the expected exception and suppresses it, allowing the test
+        # to continue and verify the events that were recorded before/during the failure.
         events = self._read_events(tmp_path)
         assert len(events) == 2
         assert events[0]["event_type"] == "agent.started"
@@ -331,8 +332,9 @@ class TestWorkflowTracking:
             ):
                 raise RuntimeError("Validation failed")
 
-        # Note: This code IS reachable - pytest.raises catches the exception
-        # and allows execution to continue after the with block
+        # The code below IS reachable: pytest.raises is a context manager that
+        # catches the expected exception and suppresses it, allowing the test
+        # to continue and verify the events that were recorded before/during the failure.
         events = self._read_events(tmp_path)
         assert len(events) == 2
         assert events[0]["event_type"] == "workflow.started"

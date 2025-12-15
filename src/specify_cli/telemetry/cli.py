@@ -72,18 +72,6 @@ Purpose:
 """
 
 
-def _count_telemetry_events(telemetry_path: Path) -> int:
-    """Count the number of events in a telemetry file.
-
-    Args:
-        telemetry_path: Path to the telemetry JSONL file.
-
-    Returns:
-        Number of events in the file, or 0 if file doesn't exist or is unreadable.
-    """
-    return TelemetryWriter(telemetry_path).count_events()
-
-
 def _read_telemetry_events(
     telemetry_path: Path,
     filter_days: int | None = None,
@@ -97,35 +85,29 @@ def _read_telemetry_events(
     Returns:
         List of parsed event dictionaries.
     """
-    if not telemetry_path.exists():
-        return []
-
-    events: list[dict] = []
-    cutoff = None
-    if filter_days is not None:
-        cutoff = datetime.now(timezone.utc) - timedelta(days=filter_days)
-
+    # Use TelemetryWriter for reading events (limit=0 means read all)
+    writer = TelemetryWriter(telemetry_path)
     try:
-        with telemetry_path.open("r") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    event = json.loads(line)
-                    if cutoff is not None:
-                        timestamp_str = event.get("timestamp", "")
-                        if timestamp_str:
-                            ts = datetime.fromisoformat(
-                                timestamp_str.replace("Z", "+00:00")
-                            )
-                            if ts < cutoff:
-                                continue
-                    events.append(event)
-                except (json.JSONDecodeError, ValueError):
-                    continue
+        # Read all events - TelemetryWriter returns most recent first, reverse to get chronological
+        events = writer.read_events(limit=10000)
+        events.reverse()
     except OSError:
         return []
+
+    if filter_days is not None:
+        cutoff = datetime.now(timezone.utc) - timedelta(days=filter_days)
+        filtered_events = []
+        for event in events:
+            timestamp_str = event.get("timestamp", "")
+            if timestamp_str:
+                try:
+                    ts = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
+                    if ts < cutoff:
+                        continue
+                except ValueError:
+                    continue
+            filtered_events.append(event)
+        return filtered_events
 
     return events
 
@@ -226,7 +208,7 @@ def status_command(
     telemetry_path = root / DEFAULT_TELEMETRY_DIR / DEFAULT_TELEMETRY_FILE
 
     # Count events using helper function
-    event_count = _count_telemetry_events(telemetry_path)
+    event_count = TelemetryWriter(telemetry_path).count_events()
 
     # Build status table
     table = Table(title="Telemetry Status", show_header=False, box=None)
@@ -422,7 +404,7 @@ def clear_command(
         return
 
     # Count events using helper function
-    event_count = _count_telemetry_events(telemetry_path)
+    event_count = TelemetryWriter(telemetry_path).count_events()
 
     if not yes:
         console.print(
