@@ -2,8 +2,10 @@
 id: task-329
 title: Create .github/agents/ directory structure
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-08 22:28'
+updated_date: '2025-12-15 01:48'
 labels:
   - implement
   - infrastructure

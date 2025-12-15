@@ -2,8 +2,10 @@
 id: task-333
 title: Test commands in VS Code and VS Code Insiders
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-08 22:28'
+updated_date: '2025-12-15 01:48'
 labels:
   - test
   - copilot

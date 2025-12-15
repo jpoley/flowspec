@@ -2,9 +2,10 @@
 id: task-364
 title: 'Schema: Add vscode_roles to flowspec_workflow.yml'
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-09 15:14'
-updated_date: '2025-12-09 15:46'
+updated_date: '2025-12-15 01:49'
 labels:
   - infrastructure
   - schema

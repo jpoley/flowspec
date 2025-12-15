@@ -2,8 +2,10 @@
 id: task-501
 title: 'claude-improves-again: Implement gather-learnings helper skill'
 status: To Do
-assignee: []
+assignee:
+  - '@muckross'
 created_date: '2025-12-14 03:07'
+updated_date: '2025-12-15 01:50'
 labels:
   - context-engineering
   - skills

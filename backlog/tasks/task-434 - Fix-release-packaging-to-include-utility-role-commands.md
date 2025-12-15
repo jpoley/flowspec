@@ -2,9 +2,10 @@
 id: task-434
 title: Fix release packaging to include utility role commands
 status: Done
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-11 01:02'
-updated_date: '2025-12-11 01:03'
+updated_date: '2025-12-15 01:49'
 labels:
   - bug
   - release

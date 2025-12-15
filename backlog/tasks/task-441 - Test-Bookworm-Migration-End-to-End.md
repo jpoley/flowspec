@@ -2,8 +2,10 @@
 id: task-441
 title: Test Bookworm Migration End-to-End
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-11 04:14'
+updated_date: '2025-12-15 01:49'
 labels:
   - qa
   - testing

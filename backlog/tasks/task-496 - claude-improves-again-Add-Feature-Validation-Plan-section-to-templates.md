@@ -2,8 +2,10 @@
 id: task-496
 title: 'claude-improves-again: Add Feature Validation Plan section to templates'
 status: To Do
-assignee: []
+assignee:
+  - '@muckross'
 created_date: '2025-12-14 03:06'
+updated_date: '2025-12-15 01:50'
 labels:
   - context-engineering
   - templates

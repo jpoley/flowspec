@@ -2,9 +2,10 @@
 id: task-361
 title: 'Design: Role Selection in Init/Reset Commands'
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-09 15:13'
-updated_date: '2025-12-09 15:47'
+updated_date: '2025-12-15 01:49'
 labels:
   - infrastructure
   - commands

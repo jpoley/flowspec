@@ -2,9 +2,10 @@
 id: task-293
 title: LLM Customization Accuracy Tests
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-04 16:20'
-updated_date: '2025-12-04 16:31'
+updated_date: '2025-12-15 01:48'
 labels:
   - constitution-cleanup
 dependencies:

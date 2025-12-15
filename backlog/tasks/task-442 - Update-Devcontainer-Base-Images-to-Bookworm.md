@@ -2,8 +2,10 @@
 id: task-442
 title: Update Devcontainer Base Images to Bookworm
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-11 04:16'
+updated_date: '2025-12-15 01:49'
 labels:
   - infrastructure
   - devcontainer

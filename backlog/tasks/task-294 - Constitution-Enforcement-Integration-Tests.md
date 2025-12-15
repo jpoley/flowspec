@@ -2,9 +2,10 @@
 id: task-294
 title: Constitution Enforcement Integration Tests
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-04 16:22'
-updated_date: '2025-12-04 16:31'
+updated_date: '2025-12-15 01:48'
 labels:
   - constitution-cleanup
 dependencies: []

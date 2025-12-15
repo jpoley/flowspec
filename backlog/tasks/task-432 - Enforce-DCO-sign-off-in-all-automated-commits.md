@@ -2,8 +2,10 @@
 id: task-432
 title: Enforce DCO sign-off in all automated commits
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-10 22:17'
+updated_date: '2025-12-15 01:49'
 labels:
   - compliance
   - ci-cd

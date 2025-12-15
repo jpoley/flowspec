@@ -2,8 +2,10 @@
 id: task-438
 title: 'Documentation: GitHub Setup Features User Guide'
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-11 04:13'
+updated_date: '2025-12-15 01:49'
 labels:
   - docs
   - github

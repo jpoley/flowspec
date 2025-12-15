@@ -2,8 +2,10 @@
 id: task-488
 title: 'claude-improves-again: Add INITIAL feature intake template'
 status: To Do
-assignee: []
+assignee:
+  - '@muckross'
 created_date: '2025-12-14 03:06'
+updated_date: '2025-12-15 01:50'
 labels:
   - context-engineering
   - templates

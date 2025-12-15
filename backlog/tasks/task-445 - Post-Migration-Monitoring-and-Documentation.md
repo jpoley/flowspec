@@ -2,8 +2,10 @@
 id: task-445
 title: Post-Migration Monitoring and Documentation
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-11 04:17'
+updated_date: '2025-12-15 01:49'
 labels:
   - infrastructure
   - monitoring

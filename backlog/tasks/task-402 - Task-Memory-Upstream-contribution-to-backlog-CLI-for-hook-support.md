@@ -2,8 +2,10 @@
 id: task-402
 title: 'Task Memory: Upstream contribution to backlog CLI for hook support'
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-09 15:58'
+updated_date: '2025-12-15 01:49'
 labels:
   - upstream
   - contribution

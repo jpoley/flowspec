@@ -2,8 +2,10 @@
 id: task-311.03
 title: Enable auto-delete branch on PR merge in GitHub repo settings
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-08 01:43'
+updated_date: '2025-12-15 01:48'
 labels:
   - ci
   - github-actions

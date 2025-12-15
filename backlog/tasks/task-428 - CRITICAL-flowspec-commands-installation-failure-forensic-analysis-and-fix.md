@@ -2,9 +2,10 @@
 id: task-428
 title: 'CRITICAL: /flowspec commands installation failure - forensic analysis and fix'
 status: Done
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-10 20:17'
-updated_date: '2025-12-11 03:03'
+updated_date: '2025-12-15 01:49'
 labels:
   - critical
   - release

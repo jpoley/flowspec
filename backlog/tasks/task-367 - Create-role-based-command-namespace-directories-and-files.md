@@ -2,9 +2,10 @@
 id: task-367
 title: Create role-based command namespace directories and files
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-09 15:47'
-updated_date: '2025-12-09 15:47'
+updated_date: '2025-12-15 01:49'
 labels:
   - infrastructure
   - commands

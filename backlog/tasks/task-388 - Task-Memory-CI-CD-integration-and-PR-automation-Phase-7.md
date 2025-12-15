@@ -2,8 +2,10 @@
 id: task-388
 title: 'Task Memory: CI/CD integration and PR automation (Phase 7)'
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-09 15:57'
+updated_date: '2025-12-15 01:49'
 labels:
   - infrastructure
   - ci-cd

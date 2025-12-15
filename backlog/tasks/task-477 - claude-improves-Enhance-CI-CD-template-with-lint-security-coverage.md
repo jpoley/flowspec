@@ -1,9 +1,11 @@
 ---
 id: task-477
-title: "claude-improves: Enhance CI/CD template with lint, security, coverage"
+title: 'claude-improves: Enhance CI/CD template with lint, security, coverage'
 status: To Do
-assignee: []
+assignee:
+  - '@kinsale'
 created_date: '2025-12-12 01:15'
+updated_date: '2025-12-15 01:49'
 labels:
   - claude-improves
   - templates

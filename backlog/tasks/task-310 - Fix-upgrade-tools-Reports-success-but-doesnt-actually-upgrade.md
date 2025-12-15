@@ -2,8 +2,10 @@
 id: task-310
 title: 'Fix upgrade-tools: Reports success but doesn''t actually upgrade'
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-08 01:40'
+updated_date: '2025-12-15 01:48'
 labels:
   - bug
   - cli

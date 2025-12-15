@@ -2,8 +2,10 @@
 id: task-383
 title: 'Task Memory: Advanced features - search, import, export (Phase 6)'
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-09 15:57'
+updated_date: '2025-12-15 01:49'
 labels:
   - infrastructure
   - cli

@@ -2,9 +2,10 @@
 id: task-435
 title: Add specify remove command to purge specify artifacts from a directory
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-11 01:03'
-updated_date: '2025-12-11 01:03'
+updated_date: '2025-12-15 01:49'
 labels:
   - feature
 dependencies: []

@@ -2,8 +2,10 @@
 id: task-310.02
 title: Remove unnecessary uv tool upgrade attempt
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-08 01:41'
+updated_date: '2025-12-15 01:48'
 labels:
   - bug
   - cli

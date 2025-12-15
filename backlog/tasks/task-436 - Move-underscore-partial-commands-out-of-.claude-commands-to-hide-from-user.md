@@ -2,9 +2,10 @@
 id: task-436
 title: Move underscore partial commands out of .claude/commands to hide from user
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-11 01:03'
-updated_date: '2025-12-11 01:03'
+updated_date: '2025-12-15 01:49'
 labels:
   - bug
   - ux

@@ -1,9 +1,11 @@
 ---
 id: task-467
-title: "claude-improves: Document standalone security skills in CLAUDE.md"
+title: 'claude-improves: Document standalone security skills in CLAUDE.md'
 status: To Do
-assignee: []
+assignee:
+  - '@kinsale'
 created_date: '2025-12-12 01:15'
+updated_date: '2025-12-15 01:49'
 labels:
   - claude-improves
   - source-repo

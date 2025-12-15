@@ -2,8 +2,10 @@
 id: task-429
 title: Create flowspec CLI ASCII logo
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-10 20:51'
+updated_date: '2025-12-15 01:49'
 labels:
   - cli
   - branding

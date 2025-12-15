@@ -2,9 +2,10 @@
 id: task-437
 title: Implement GitHub Project Setup Features (vfarcic/dot-ai pattern)
 status: Done
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-11 03:27'
-updated_date: '2025-12-11 04:13'
+updated_date: '2025-12-15 01:49'
 labels:
   - enhancement
   - infrastructure

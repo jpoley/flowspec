@@ -3,9 +3,9 @@ id: task-381
 title: 'Task Memory: Git synchronization and conflict resolution (Phase 4)'
 status: Done
 assignee:
-  - '@backend-engineer'
+  - '@adare'
 created_date: '2025-12-09 15:56'
-updated_date: '2025-12-11 08:21'
+updated_date: '2025-12-15 01:49'
 labels:
   - infrastructure
   - git

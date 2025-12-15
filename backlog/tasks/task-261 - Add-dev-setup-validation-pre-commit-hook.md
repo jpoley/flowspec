@@ -2,9 +2,10 @@
 id: task-261
 title: Add dev-setup validation pre-commit hook
 status: Done
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-03 13:54'
-updated_date: '2025-12-06 02:20'
+updated_date: '2025-12-15 01:48'
 labels:
   - infrastructure
   - hooks

@@ -2,8 +2,10 @@
 id: task-336
 title: Update documentation for VS Code Copilot support
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-08 22:28'
+updated_date: '2025-12-15 01:48'
 labels:
   - docs
   - 'workflow:Planned'

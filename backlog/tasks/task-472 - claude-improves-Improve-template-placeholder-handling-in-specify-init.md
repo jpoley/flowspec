@@ -1,9 +1,11 @@
 ---
 id: task-472
-title: "claude-improves: Improve template placeholder handling in specify init"
+title: 'claude-improves: Improve template placeholder handling in specify init'
 status: To Do
-assignee: []
+assignee:
+  - '@kinsale'
 created_date: '2025-12-12 01:15'
+updated_date: '2025-12-15 01:49'
 labels:
   - claude-improves
   - cli

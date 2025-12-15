@@ -2,8 +2,10 @@
 id: task-430
 title: Create flowspec-cli to replace specify init for AI tool management
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-10 20:52'
+updated_date: '2025-12-15 01:49'
 labels:
   - cli
   - flowspec

@@ -2,9 +2,10 @@
 id: task-365
 title: 'CI/CD: Role-Based Validation Workflows'
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-09 15:14'
-updated_date: '2025-12-09 15:48'
+updated_date: '2025-12-15 01:49'
 labels:
   - infrastructure
   - cicd

@@ -1,9 +1,11 @@
 ---
 id: task-481
-title: "claude-improves: Add deployment completeness report to specify init"
+title: 'claude-improves: Add deployment completeness report to specify init'
 status: To Do
-assignee: []
+assignee:
+  - '@kinsale'
 created_date: '2025-12-12 01:15'
+updated_date: '2025-12-15 01:49'
 labels:
   - claude-improves
   - cli

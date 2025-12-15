@@ -3,9 +3,9 @@ id: task-439
 title: Migrate Dockerfile to Bookworm
 status: Done
 assignee:
-  - '@myself'
+  - '@adare'
 created_date: '2025-12-11 04:14'
-updated_date: '2025-12-11 04:37'
+updated_date: '2025-12-15 01:49'
 labels:
   - infrastructure
   - docker

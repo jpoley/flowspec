@@ -2,8 +2,10 @@
 id: task-498
 title: 'claude-improves-again: Require examples in PRDs'
 status: To Do
-assignee: []
+assignee:
+  - '@muckross'
 created_date: '2025-12-14 03:06'
+updated_date: '2025-12-15 01:50'
 labels:
   - context-engineering
   - templates

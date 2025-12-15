@@ -2,8 +2,10 @@
 id: task-443
 title: Run Security Scans on Bookworm Images
 status: To Do
-assignee: []
+assignee:
+  - '@adare'
 created_date: '2025-12-11 04:17'
+updated_date: '2025-12-15 01:49'
 labels:
   - security
   - docker

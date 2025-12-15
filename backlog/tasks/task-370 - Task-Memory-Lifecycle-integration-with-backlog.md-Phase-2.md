@@ -3,9 +3,9 @@ id: task-370
 title: 'Task Memory: Lifecycle integration with backlog.md (Phase 2)'
 status: Done
 assignee:
-  - '@backend-engineer'
+  - '@adare'
 created_date: '2025-12-09 15:56'
-updated_date: '2025-12-11 08:21'
+updated_date: '2025-12-15 01:49'
 labels:
   - infrastructure
   - integration
