@@ -2,9 +2,10 @@
 id: task-538
 title: Create Event System Performance Benchmarks
 status: To Do
-assignee: []
+assignee:
+  - '@chamonix'
 created_date: '2025-12-14 03:35'
-updated_date: '2025-12-14 03:35'
+updated_date: '2025-12-15 01:31'
 labels:
   - agent-event-system
   - phase-8

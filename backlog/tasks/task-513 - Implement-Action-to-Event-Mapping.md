@@ -2,9 +2,10 @@
 id: task-513
 title: Implement Action to Event Mapping
 status: To Do
-assignee: []
+assignee:
+  - '@chamonix'
 created_date: '2025-12-14 03:35'
-updated_date: '2025-12-14 03:35'
+updated_date: '2025-12-15 01:31'
 labels:
   - agent-event-system
   - phase-3

@@ -2,9 +2,10 @@
 id: task-486
 title: Implement JSONL Event Writer Library
 status: To Do
-assignee: []
+assignee:
+  - '@chamonix'
 created_date: '2025-12-14 02:42'
-updated_date: '2025-12-14 03:04'
+updated_date: '2025-12-15 01:33'
 labels:
   - agent-event-system
   - phase-1

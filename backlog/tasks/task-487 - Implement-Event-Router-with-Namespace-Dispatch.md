@@ -2,8 +2,10 @@
 id: task-487
 title: Implement Event Router with Namespace Dispatch
 status: To Do
-assignee: []
+assignee:
+  - '@chamonix'
 created_date: '2025-12-14 03:06'
+updated_date: '2025-12-15 01:33'
 labels:
   - agent-event-system
   - phase-1
