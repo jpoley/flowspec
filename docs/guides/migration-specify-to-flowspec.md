@@ -93,6 +93,11 @@ The following environment variable names remain unchanged:
   _(This variable retains the old 'specify' naming for backward compatibility. It may be renamed to `FLOWSPEC_FEATURE` in a future release, but for now, please continue to use `SPECIFY_FEATURE`.)_
 - `GITHUB_FLOWSPEC` - GitHub token for API requests
 
+> **Note:** The environment variable for the GitHub token remains `GITHUB_FLOWSPEC` for backward compatibility, even though the package and command have been renamed to `flowspec`.  
+> If you previously set `GITHUB_FLOWSPEC` in your CI/CD or local environment, you do **not** need to change it.  
+> There is currently **no** support for an alternative variable name such as `GITHUB_FLOWSPEC_TOKEN`.  
+>  
+> This variable should contain a valid GitHub personal access token with the necessary permissions for API requests made by flowspec.
 ## Slash Commands
 
 All slash commands remain unchanged:
