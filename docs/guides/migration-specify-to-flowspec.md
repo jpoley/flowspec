@@ -89,7 +89,8 @@ pytest_plugins = ["flowspec_ac"]
 ## Environment Variables
 
 The following environment variable names remain unchanged:
-- `SPECIFY_FEATURE` - Override feature detection for non-Git repos
+- `SPECIFY_FEATURE` - Override feature detection for non-Git repos  
+  _(This variable retains the old 'specify' naming for backward compatibility. It may be renamed to `FLOWSPEC_FEATURE` in a future release, but for now, please continue to use `SPECIFY_FEATURE`.)_
 - `GITHUB_FLOWSPEC` - GitHub token for API requests
 
 ## Slash Commands
