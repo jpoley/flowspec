@@ -193,7 +193,9 @@ class TestUpgradeBacklogMd:
 
     def test_already_at_latest_version(self):
         """Returns success when already at latest version."""
-        with patch("flowspec_cli.check_backlog_installed_version", return_value="1.0.0"):
+        with patch(
+            "flowspec_cli.check_backlog_installed_version", return_value="1.0.0"
+        ):
             with patch("flowspec_cli.get_npm_latest_version", return_value="1.0.0"):
                 success, message = _upgrade_backlog_md(dry_run=False)
                 assert success is True
@@ -201,7 +203,9 @@ class TestUpgradeBacklogMd:
 
     def test_dry_run_shows_would_upgrade(self):
         """Dry run shows what would be upgraded."""
-        with patch("flowspec_cli.check_backlog_installed_version", return_value="1.0.0"):
+        with patch(
+            "flowspec_cli.check_backlog_installed_version", return_value="1.0.0"
+        ):
             with patch("flowspec_cli.get_npm_latest_version", return_value="2.0.0"):
                 success, message = _upgrade_backlog_md(dry_run=True)
                 assert success is True
@@ -209,7 +213,9 @@ class TestUpgradeBacklogMd:
 
     def test_handles_no_available_version(self):
         """Returns failure when available version cannot be determined."""
-        with patch("flowspec_cli.check_backlog_installed_version", return_value="1.0.0"):
+        with patch(
+            "flowspec_cli.check_backlog_installed_version", return_value="1.0.0"
+        ):
             with patch("flowspec_cli.get_npm_latest_version", return_value=None):
                 success, message = _upgrade_backlog_md(dry_run=False)
                 assert success is False
@@ -217,7 +223,9 @@ class TestUpgradeBacklogMd:
 
     def test_no_package_manager(self):
         """Returns failure when no package manager found."""
-        with patch("flowspec_cli.check_backlog_installed_version", return_value="1.0.0"):
+        with patch(
+            "flowspec_cli.check_backlog_installed_version", return_value="1.0.0"
+        ):
             with patch("flowspec_cli.get_npm_latest_version", return_value="2.0.0"):
                 with patch("flowspec_cli.detect_package_manager", return_value=None):
                     success, message = _upgrade_backlog_md(dry_run=False)
@@ -226,7 +234,9 @@ class TestUpgradeBacklogMd:
 
     def test_package_manager_binary_removed(self):
         """Gracefully handles package manager binary removal after detection."""
-        with patch("flowspec_cli.check_backlog_installed_version", return_value="1.0.0"):
+        with patch(
+            "flowspec_cli.check_backlog_installed_version", return_value="1.0.0"
+        ):
             with patch("flowspec_cli.get_npm_latest_version", return_value="2.0.0"):
                 with patch("flowspec_cli.detect_package_manager", return_value="npm"):
                     with patch("subprocess.run", side_effect=FileNotFoundError()):
@@ -237,7 +247,9 @@ class TestUpgradeBacklogMd:
 
     def test_uses_correct_package_name_npm(self):
         """Verifies npm install uses 'backlog.md' (with period, not hyphen)."""
-        with patch("flowspec_cli.check_backlog_installed_version", return_value="1.0.0"):
+        with patch(
+            "flowspec_cli.check_backlog_installed_version", return_value="1.0.0"
+        ):
             with patch("flowspec_cli.get_npm_latest_version", return_value="2.0.0"):
                 with patch("flowspec_cli.detect_package_manager", return_value="npm"):
                     captured_cmd = []
@@ -257,7 +269,9 @@ class TestUpgradeBacklogMd:
 
     def test_uses_correct_package_name_pnpm(self):
         """Verifies pnpm add uses 'backlog.md' (with period, not hyphen)."""
-        with patch("flowspec_cli.check_backlog_installed_version", return_value="1.0.0"):
+        with patch(
+            "flowspec_cli.check_backlog_installed_version", return_value="1.0.0"
+        ):
             with patch("flowspec_cli.get_npm_latest_version", return_value="2.0.0"):
                 with patch("flowspec_cli.detect_package_manager", return_value="pnpm"):
                     captured_cmd = []

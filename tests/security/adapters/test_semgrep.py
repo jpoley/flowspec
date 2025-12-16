@@ -144,7 +144,9 @@ class TestSemgrepAdapterScanning:
     @pytest.fixture
     def mock_adapter(self):
         """Create adapter with mocked discovery."""
-        with patch("flowspec_cli.security.adapters.semgrep.ToolDiscovery") as mock_class:
+        with patch(
+            "flowspec_cli.security.adapters.semgrep.ToolDiscovery"
+        ) as mock_class:
             mock_discovery = MagicMock()
             mock_discovery.is_available.return_value = True
             mock_discovery.find_tool.return_value = Path("/usr/bin/semgrep")
@@ -300,7 +302,9 @@ class TestSeverityMapping:
 
     @pytest.fixture
     def adapter(self):
-        with patch("flowspec_cli.security.adapters.semgrep.ToolDiscovery") as mock_class:
+        with patch(
+            "flowspec_cli.security.adapters.semgrep.ToolDiscovery"
+        ) as mock_class:
             mock_discovery = MagicMock()
             mock_discovery.is_available.return_value = True
             mock_class.return_value = mock_discovery
@@ -335,7 +339,9 @@ class TestCWEExtraction:
 
     @pytest.fixture
     def adapter(self):
-        with patch("flowspec_cli.security.adapters.semgrep.ToolDiscovery") as mock_class:
+        with patch(
+            "flowspec_cli.security.adapters.semgrep.ToolDiscovery"
+        ) as mock_class:
             mock_discovery = MagicMock()
             mock_class.return_value = mock_discovery
             yield SemgrepAdapter()
@@ -403,7 +409,9 @@ class TestReferenceExtraction:
 
     @pytest.fixture
     def adapter(self):
-        with patch("flowspec_cli.security.adapters.semgrep.ToolDiscovery") as mock_class:
+        with patch(
+            "flowspec_cli.security.adapters.semgrep.ToolDiscovery"
+        ) as mock_class:
             mock_discovery = MagicMock()
             mock_class.return_value = mock_discovery
             yield SemgrepAdapter()
@@ -453,7 +461,9 @@ class TestFindingConversion:
 
     @pytest.fixture
     def adapter(self):
-        with patch("flowspec_cli.security.adapters.semgrep.ToolDiscovery") as mock_class:
+        with patch(
+            "flowspec_cli.security.adapters.semgrep.ToolDiscovery"
+        ) as mock_class:
             mock_discovery = MagicMock()
             mock_class.return_value = mock_discovery
             yield SemgrepAdapter()

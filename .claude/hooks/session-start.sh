@@ -108,7 +108,7 @@ import sys
 import os
 sys.path.insert(0, os.environ.get("PROJECT_DIR", "."))
 try:
-    from src.specify_cli.memory.injector import ContextInjector
+    from src.flowspec_cli.memory.injector import ContextInjector
     injector = ContextInjector(Path(os.environ.get("PROJECT_DIR", ".")))
     injector.update_active_task(os.environ.get("FIRST_TASK_ID", ""))
 except Exception:

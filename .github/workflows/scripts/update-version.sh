@@ -43,8 +43,8 @@ if ! grep -qF "version = \"$PYTHON_VERSION\"" pyproject.toml; then
 fi
 echo "Updated pyproject.toml to $PYTHON_VERSION"
 
-# Update src/specify_cli/__init__.py - REQUIRED
-INIT_FILE="src/specify_cli/__init__.py"
+# Update src/flowspec_cli/__init__.py - REQUIRED
+INIT_FILE="src/flowspec_cli/__init__.py"
 if [[ ! -f "$INIT_FILE" ]]; then
   echo "ERROR: $INIT_FILE not found" >&2
   exit 1

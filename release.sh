@@ -45,12 +45,12 @@ if [ -f "pyproject.toml" ]; then
   echo "Updated pyproject.toml to $new_version"
 fi
 
-# Update __version__ in src/specify_cli/__init__.py
-if [ -f "src/specify_cli/__init__.py" ]; then
-  echo "Updating src/specify_cli/__init__.py..."
-  sed -i.bak 's/__version__ = "[^"]*"/__version__ = "'"$new_version"'"/' src/specify_cli/__init__.py && rm -f src/specify_cli/__init__.py.bak
-  files_to_add="$files_to_add src/specify_cli/__init__.py"
-  echo "Updated src/specify_cli/__init__.py to $new_version"
+# Update __version__ in src/flowspec_cli/__init__.py
+if [ -f "src/flowspec_cli/__init__.py" ]; then
+  echo "Updating src/flowspec_cli/__init__.py..."
+  sed -i.bak 's/__version__ = "[^"]*"/__version__ = "'"$new_version"'"/' src/flowspec_cli/__init__.py && rm -f src/flowspec_cli/__init__.py.bak
+  files_to_add="$files_to_add src/flowspec_cli/__init__.py"
+  echo "Updated src/flowspec_cli/__init__.py to $new_version"
 fi
 
 # Update package.json if it exists and we have the tools

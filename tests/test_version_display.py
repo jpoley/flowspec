@@ -245,7 +245,9 @@ class TestGetAllComponentVersions:
             ),
             patch("flowspec_cli.get_npm_latest_version", return_value="1.26.4"),
             patch("flowspec_cli.get_spec_kit_installed_version", return_value="0.0.20"),
-            patch("flowspec_cli.check_backlog_installed_version", return_value="1.23.0"),
+            patch(
+                "flowspec_cli.check_backlog_installed_version", return_value="1.23.0"
+            ),
         ):
             result = get_all_component_versions()
 
@@ -277,7 +279,9 @@ class TestVersionCliCommand:
             patch("flowspec_cli.get_github_latest_release", return_value="1.0.0"),
             patch("flowspec_cli.get_npm_latest_version", return_value="1.26.4"),
             patch("flowspec_cli.get_spec_kit_installed_version", return_value="0.0.20"),
-            patch("flowspec_cli.check_backlog_installed_version", return_value="1.23.0"),
+            patch(
+                "flowspec_cli.check_backlog_installed_version", return_value="1.23.0"
+            ),
         ):
             result = runner.invoke(app, ["version"])
 
@@ -313,7 +317,9 @@ class TestVersionUpgradeIndicators:
             ),
             patch("flowspec_cli.get_npm_latest_version", return_value="99.0.0"),
             patch("flowspec_cli.get_spec_kit_installed_version", return_value="0.0.20"),
-            patch("flowspec_cli.check_backlog_installed_version", return_value="1.23.0"),
+            patch(
+                "flowspec_cli.check_backlog_installed_version", return_value="1.23.0"
+            ),
         ):
             show_version_info(detailed=True)
             captured = capsys.readouterr()
@@ -328,7 +334,9 @@ class TestVersionUpgradeIndicators:
             ),
             patch("flowspec_cli.get_npm_latest_version", return_value="99.0.0"),
             patch("flowspec_cli.get_spec_kit_installed_version", return_value="0.0.20"),
-            patch("flowspec_cli.check_backlog_installed_version", return_value="1.23.0"),
+            patch(
+                "flowspec_cli.check_backlog_installed_version", return_value="1.23.0"
+            ),
         ):
             show_version_info(detailed=True)
             captured = capsys.readouterr()
@@ -340,7 +348,9 @@ class TestVersionUpgradeIndicators:
             patch("flowspec_cli.get_github_latest_release", return_value=None),
             patch("flowspec_cli.get_npm_latest_version", return_value=None),
             patch("flowspec_cli.get_spec_kit_installed_version", return_value="0.0.20"),
-            patch("flowspec_cli.check_backlog_installed_version", return_value="1.23.0"),
+            patch(
+                "flowspec_cli.check_backlog_installed_version", return_value="1.23.0"
+            ),
         ):
             show_version_info(detailed=True)
             captured = capsys.readouterr()
