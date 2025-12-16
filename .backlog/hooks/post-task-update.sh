@@ -86,7 +86,7 @@ import sys
 
 sys.path.insert(0, 'src')
 
-from specify_cli.memory.lifecycle import LifecycleManager
+from flowspec_cli.memory.lifecycle import LifecycleManager
 
 # Read from environment variables (safe from shell injection)
 task_id = os.environ.get('HOOK_TASK_ID', '')

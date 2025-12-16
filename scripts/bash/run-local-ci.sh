@@ -331,7 +331,7 @@ run_direct() {
 
     # Step 8: Check test coverage
     print_step "Step 8: Checking test coverage"
-    if uv run pytest tests/ --cov=src/specify_cli --cov-report=term-missing --cov-fail-under=0; then
+    if uv run pytest tests/ --cov=src/flowspec_cli --cov-report=term-missing --cov-fail-under=0; then
         print_success "Coverage report generated"
     else
         print_warning "Coverage check had issues"

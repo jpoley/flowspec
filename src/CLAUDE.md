@@ -1,6 +1,6 @@
 # Source Code Standards
 
-## specify_cli/
+## flowspec_cli/
 
 The main CLI package for Flowspec.
 
@@ -49,7 +49,7 @@ pytest tests/
 pytest tests/test_cli.py::test_init_command
 
 # With coverage
-pytest tests/ --cov=src/specify_cli --cov-report=html
+pytest tests/ --cov=src/flowspec_cli --cov-report=html
 
 # Watch mode
 ptw tests/
