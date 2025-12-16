@@ -108,7 +108,7 @@ jobs:
           TOML_VERSION=$(grep -Po '(?<=^version = ")[^"]*' pyproject.toml || echo "")
 
           # Get version from __init__.py
-          INIT_VERSION=$(grep -Po '(?<=__version__ = ")[^"]*' src/specify_cli/__init__.py || echo "")
+          INIT_VERSION=$(grep -Po '(?<=__version__ = ")[^"]*' src/flowspec_cli/__init__.py || echo "")
 
           echo "Expected version: $TAG_VERSION"
           echo "pyproject.toml: $TOML_VERSION"

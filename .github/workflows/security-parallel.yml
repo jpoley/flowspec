@@ -40,7 +40,7 @@ jobs:
       fail-fast: false
       matrix:
         component:
-          - src/specify_cli  # Backend Python code
+          - src/flowspec_cli  # Backend Python code
           - tests            # Test suite
           - scripts          # Automation scripts
           # Add more components as needed:
