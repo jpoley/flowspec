@@ -84,7 +84,7 @@ else
   echo "⚠️ No constitution found"
   echo ""
   echo "To create one:"
-  echo "  1. Run: specify init --here"
+  echo "  1. Run: flowspec init --here"
   echo "  2. Then: Run /speckit:constitution to customize"
   echo ""
   echo "Proceeding without constitution..."
@@ -93,7 +93,7 @@ fi
 
 If no constitution exists:
 - Warn the user
-- Suggest creating one with `specify init --here`
+- Suggest creating one with `flowspec init --here`
 - Continue with command (constitution is recommended but not required)
 
 ### 2. If Constitution Exists, Check Validation Status
@@ -250,7 +250,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 | Command | Purpose |
 |---------|---------|
-| `specify init --here` | Initialize constitution if missing |
+| `flowspec init --here` | Initialize constitution if missing |
 | `/speckit:constitution` | Interactive constitution customization |
 | `specify constitution validate` | Check validation status and show report |
 | `specify constitution show` | Display current constitution |
@@ -642,7 +642,7 @@ backlog task list --plain | grep -i "<feature-keyword>"
 After successfully completing this command (PRD created and tasks defined), emit the workflow event:
 
 ```bash
-specify hooks emit spec.created \
+flowspec hooks emit spec.created \
   --spec-id "$FEATURE_ID" \
   --task-id "$TASK_ID" \
   -f docs/prd/$FEATURE_ID-spec.md

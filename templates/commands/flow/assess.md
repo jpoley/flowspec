@@ -290,7 +290,7 @@ Before completing:
 After successfully completing this command (assessment report generated), emit the workflow event:
 
 ```bash
-specify hooks emit workflow.assessed \
+flowspec hooks emit workflow.assessed \
   --spec-id "$FEATURE_ID" \
   --task-id "$TASK_ID" \
   -f docs/assess/$FEATURE_ID-assessment.md

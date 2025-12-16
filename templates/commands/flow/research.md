@@ -435,7 +435,7 @@ After the research and business validation agents complete their work:
 After successfully completing this command (research and validation reports generated), emit the workflow event:
 
 ```bash
-specify hooks emit research.completed \
+flowspec hooks emit research.completed \
   --spec-id "$FEATURE_ID" \
   --task-id "$TASK_ID" \
   -f docs/research/$FEATURE_ID-research.md \

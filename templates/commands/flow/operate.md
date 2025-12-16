@@ -424,7 +424,7 @@ Deliver comprehensive operational package with:
 After successfully completing this command (deployment complete, operational readiness achieved), emit the workflow event:
 
 ```bash
-specify hooks emit deploy.completed \
+flowspec hooks emit deploy.completed \
   --spec-id "$FEATURE_ID" \
   --task-id "$TASK_ID" \
   -f .github/workflows/$FEATURE_ID.yml \

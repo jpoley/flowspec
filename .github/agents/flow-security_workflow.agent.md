@@ -397,7 +397,7 @@ Users can optionally enable pre-commit security scanning:
 
 ```bash
 # Enable pre-commit hook
-specify hooks enable pre-commit-security
+flowspec hooks enable pre-commit-security
 
 # Configure in .specify/hooks/hooks.yaml
 cat > .specify/hooks/hooks.yaml << 'EOF'

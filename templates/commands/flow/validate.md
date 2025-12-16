@@ -995,7 +995,7 @@ If a phase fails, fix the issue and re-run the command. The workflow will resume
 After successfully completing this command (all validation phases passed, PR created), emit the workflow event:
 
 ```bash
-specify hooks emit validate.completed \
+flowspec hooks emit validate.completed \
   --spec-id "$FEATURE_ID" \
   --task-id "$TASK_ID" \
   -f docs/qa/$FEATURE_ID-qa-report.md \
@@ -1014,21 +1014,21 @@ After validation completes, track the agents that were invoked for analytics (if
 # Track each agent that was invoked during this command (silently, will be no-op if disabled)
 
 # Track the command execution with user's role
-specify telemetry track-role "$CURRENT_ROLE" --command /flow:validate -q
+flowspec telemetry track-role "$CURRENT_ROLE" --command /flow:validate -q
 
 # QA Guardian agent was invoked in Phase 2:
-specify telemetry track-agent quality-guardian --command /flow:validate -q
+flowspec telemetry track-agent quality-guardian --command /flow:validate -q
 
 # Security Engineer agent was invoked in Phase 2:
-specify telemetry track-agent secure-by-design-engineer --command /flow:validate -q
+flowspec telemetry track-agent secure-by-design-engineer --command /flow:validate -q
 
 # Technical Writer agent was invoked in Phase 3:
-specify telemetry track-agent technical-writer --command /flow:validate -q
+flowspec telemetry track-agent technical-writer --command /flow:validate -q
 ```
 
 Replace `$CURRENT_ROLE` with the user's current role (dev, pm, qa, etc.).
 
 This enables workflow analytics for understanding agent usage patterns. The tracking is:
-- **Opt-in only**: Only recorded if user has enabled telemetry via `specify telemetry enable`
+- **Opt-in only**: Only recorded if user has enabled telemetry via `flowspec telemetry enable`
 - **Privacy-first**: Project names are hashed, no PII collected
 - **Fail-safe**: Commands will not fail if telemetry is unavailable

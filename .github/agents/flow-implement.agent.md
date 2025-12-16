@@ -49,7 +49,7 @@ else
   echo "⚠️ No constitution found"
   echo ""
   echo "To create one:"
-  echo "  1. Run: specify init --here"
+  echo "  1. Run: flowspec init --here"
   echo "  2. Then: Run /speckit:constitution to customize"
   echo ""
   echo "Proceeding without constitution..."
@@ -58,7 +58,7 @@ fi
 
 If no constitution exists:
 - Warn the user
-- Suggest creating one with `specify init --here`
+- Suggest creating one with `flowspec init --here`
 - Continue with command (constitution is recommended but not required)
 
 ### 2. If Constitution Exists, Check Validation Status
@@ -215,7 +215,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 | Command | Purpose |
 |---------|---------|
-| `specify init --here` | Initialize constitution if missing |
+| `flowspec init --here` | Initialize constitution if missing |
 | `/speckit:constitution` | Interactive constitution customization |
 | `specify constitution validate` | Check validation status and show report |
 | `specify constitution show` | Display current constitution |
@@ -473,13 +473,13 @@ Before starting implementation, you MUST run the quality gate:
 
 ```bash
 # Run quality gate on spec.md
-specify gate
+flowspec gate
 
 # Alternative: Override threshold if needed
-specify gate --threshold 60
+flowspec gate --threshold 60
 
 # Emergency bypass (NOT RECOMMENDED - use only with explicit user approval)
-specify gate --force
+flowspec gate --force
 ```
 
 **Quality Gate Exit Codes:**
@@ -509,7 +509,7 @@ Action Required:
 3. When quality ≥70, re-run: /flow:implement
 
 OR (not recommended without user approval):
-  specify gate --force
+  flowspec gate --force
 ```
 
 **--force Bypass:**
@@ -1150,7 +1150,7 @@ Implementation is **code + documents + tests**. All three are mandatory delivera
 After successfully completing this command (implementation done, reviews passed, pre-PR validation complete), emit the workflow event:
 
 ```bash
-specify hooks emit implement.completed \
+flowspec hooks emit implement.completed \
   --spec-id "$FEATURE_ID" \
   --task-id "$TASK_ID" \
   -f src/$FEATURE_ID/
@@ -1168,25 +1168,25 @@ After implementation completes, track the agents that were invoked for analytics
 # Track each agent that was invoked during this command (silently, will be no-op if disabled)
 
 # Track the command execution
-specify telemetry track-role "$CURRENT_ROLE" --command /flow:implement -q
+flowspec telemetry track-role "$CURRENT_ROLE" --command /flow:implement -q
 
 # If frontend work was done:
-specify telemetry track-agent frontend-engineer --command /flow:implement -q
+flowspec telemetry track-agent frontend-engineer --command /flow:implement -q
 
 # If backend work was done:
-specify telemetry track-agent backend-engineer --command /flow:implement -q
+flowspec telemetry track-agent backend-engineer --command /flow:implement -q
 
 # If AI/ML work was done:
-specify telemetry track-agent ai-ml-engineer --command /flow:implement -q
+flowspec telemetry track-agent ai-ml-engineer --command /flow:implement -q
 
 # If code reviews were performed:
-specify telemetry track-agent frontend-code-reviewer --command /flow:implement -q
-specify telemetry track-agent backend-code-reviewer --command /flow:implement -q
+flowspec telemetry track-agent frontend-code-reviewer --command /flow:implement -q
+flowspec telemetry track-agent backend-code-reviewer --command /flow:implement -q
 ```
 
 Replace `$CURRENT_ROLE` with the user's current role (dev, pm, qa, etc.).
 
 This enables workflow analytics for understanding agent usage patterns. The tracking is:
-- **Opt-in only**: Only recorded if user has enabled telemetry via `specify telemetry enable`
+- **Opt-in only**: Only recorded if user has enabled telemetry via `flowspec telemetry enable`
 - **Privacy-first**: Project names are hashed, no PII collected
 - **Fail-safe**: Commands will not fail if telemetry is unavailable

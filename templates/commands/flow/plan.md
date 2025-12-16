@@ -432,7 +432,7 @@ After both agents complete:
 After successfully completing this command (architecture and platform designs created), emit the workflow event:
 
 ```bash
-specify hooks emit plan.created \
+flowspec hooks emit plan.created \
   --spec-id "$FEATURE_ID" \
   --task-id "$TASK_ID" \
   -f docs/adr/$FEATURE_ID-architecture.md \

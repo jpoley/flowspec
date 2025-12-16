@@ -16,7 +16,7 @@ else
   echo "⚠️ No constitution found"
   echo ""
   echo "To create one:"
-  echo "  1. Run: specify init --here"
+  echo "  1. Run: flowspec init --here"
   echo "  2. Then: Run /speckit:constitution to customize"
   echo ""
   echo "Proceeding without constitution..."
@@ -25,7 +25,7 @@ fi
 
 If no constitution exists:
 - Warn the user
-- Suggest creating one with `specify init --here`
+- Suggest creating one with `flowspec init --here`
 - Continue with command (constitution is recommended but not required)
 
 ### 2. If Constitution Exists, Check Validation Status
@@ -182,7 +182,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 | Command | Purpose |
 |---------|---------|
-| `specify init --here` | Initialize constitution if missing |
+| `flowspec init --here` | Initialize constitution if missing |
 | `/speckit:constitution` | Interactive constitution customization |
 | `specify constitution validate` | Check validation status and show report |
 | `specify constitution show` | Display current constitution |
