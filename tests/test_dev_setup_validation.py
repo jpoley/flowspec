@@ -99,7 +99,7 @@ class TestSymlinkOnlyRule:
             )
             + "\n\nAll .md files must be symlinks to templates/commands/\n"
             "\nTo fix:\n"
-            "  uv run specify dev-setup --force\n"
+            "  uv run flowspec dev-setup --force\n"
         )
 
 
@@ -130,7 +130,7 @@ class TestSymlinkResolution:
                 for s, t in broken_symlinks
             )
             + "\n\nTo fix:\n"
-            "  uv run specify dev-setup --force\n"
+            "  uv run flowspec dev-setup --force\n"
         )
 
     def test_all_symlinks_point_to_templates(
@@ -159,7 +159,7 @@ class TestSymlinkResolution:
             )
             + f"\n\nAll symlinks must point to {templates_commands_dir}\n"
             "\nTo fix:\n"
-            "  uv run specify dev-setup --force\n"
+            "  uv run flowspec dev-setup --force\n"
         )
 
 
@@ -203,7 +203,7 @@ class TestTemplateCoverage:
             + "\n".join(f"  - {t}" for t in sorted(missing_symlinks))
             + "\n\nEvery active template must have a corresponding symlink\n"
             "\nTo fix:\n"
-            "  uv run specify dev-setup --force\n"
+            "  uv run flowspec dev-setup --force\n"
         )
 
     def test_speckit_templates_have_symlinks(
@@ -235,7 +235,7 @@ class TestTemplateCoverage:
             + "\n".join(f"  - {t}" for t in sorted(missing_symlinks))
             + "\n\nEvery template must have a corresponding symlink\n"
             "\nTo fix:\n"
-            "  uv run specify dev-setup --force\n"
+            "  uv run flowspec dev-setup --force\n"
         )
 
     def test_no_orphan_symlinks_in_flowspec(
@@ -259,7 +259,7 @@ class TestTemplateCoverage:
                 f"  - {s} (no matching template)" for s in sorted(orphan_symlinks)
             )
             + "\n\nTo fix:\n"
-            "  uv run specify dev-setup --force\n"
+            "  uv run flowspec dev-setup --force\n"
         )
 
     def test_no_orphan_symlinks_in_speckit(
@@ -287,7 +287,7 @@ class TestTemplateCoverage:
                 f"  - {s} (no matching template)" for s in sorted(orphan_symlinks)
             )
             + "\n\nTo fix:\n"
-            "  uv run specify dev-setup --force\n"
+            "  uv run flowspec dev-setup --force\n"
         )
 
 
@@ -312,7 +312,7 @@ class TestSubdirectoryStructure:
             "Missing expected subdirectories in .claude/commands/:\n"
             + "\n".join(f"  - {d}/" for d in sorted(missing_dirs))
             + "\n\nTo fix:\n"
-            "  uv run specify dev-setup --force\n"
+            "  uv run flowspec dev-setup --force\n"
         )
 
     def test_no_unexpected_subdirectories(self, claude_commands_dir: Path) -> None:
@@ -333,7 +333,7 @@ class TestSubdirectoryStructure:
             + "\n".join(f"  - {d}/" for d in sorted(unexpected_dirs))
             + f"\n\nExpected: {sorted(EXPECTED_COMMAND_NAMESPACES)}\n"
             "\nTo fix:\n"
-            "  uv run specify dev-setup --force\n"
+            "  uv run flowspec dev-setup --force\n"
         )
 
     def test_no_md_files_at_root_level(self, claude_commands_dir: Path) -> None:
@@ -348,7 +348,7 @@ class TestSubdirectoryStructure:
             + "\n".join(f"  - {f.name}" for f in root_md_files)
             + "\n\nAll .md files must be in flowspec/ or speckit/ subdirectories\n"
             "\nTo fix:\n"
-            "  uv run specify dev-setup --force\n"
+            "  uv run flowspec dev-setup --force\n"
         )
 
 
@@ -371,5 +371,5 @@ class TestDevSetupDirectoryStructure:
             "Missing required dev-setup directories:\n"
             + "\n".join(f"  - {p}" for p in missing_paths)
             + "\n\nTo initialize dev-setup:\n"
-            "  uv run specify dev-setup\n"
+            "  uv run flowspec dev-setup\n"
         )
