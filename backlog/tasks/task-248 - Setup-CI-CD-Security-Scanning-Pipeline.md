@@ -63,7 +63,7 @@ Create a reusable GitHub Actions workflow that integrates /flow:security command
 4. **Install Tools**:
    ```bash
    pip install uv
-   uv tool install specify-cli
+   uv tool install flowspec-cli
    pip install semgrep==1.50.0
    ```
 5. **Run Security Scan**:

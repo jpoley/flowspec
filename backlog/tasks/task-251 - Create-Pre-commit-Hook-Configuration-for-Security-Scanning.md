@@ -126,7 +126,7 @@ Create pre-commit hook template and setup script for fast local security scannin
    ```
 
 2. Add error handling:
-   - Check for specify-cli installation
+   - Check for flowspec-cli installation
    - Verify Python version (3.11+)
    - Handle permission issues
 

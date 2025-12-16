@@ -7,7 +7,7 @@ assignee:
 created_date: '2025-11-27 21:53'
 updated_date: '2025-12-04 17:07'
 labels:
-  - specify-cli
+  - flowspec-cli
   - claude-code
   - plugin
   - marketplace

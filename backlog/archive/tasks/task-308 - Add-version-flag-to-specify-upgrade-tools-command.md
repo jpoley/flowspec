@@ -34,7 +34,7 @@ specify install --version 0.2.322
 ```
 
 **Implementation Notes:**
-- Pass version to `uv tool install specify-cli --from git+...@vX.X.X`
+- Pass version to `uv tool install flowspec-cli --from git+...@vX.X.X`
 - Validate version exists as a tag
 - Show available versions with `specify upgrade-tools --list-versions`
 <!-- SECTION:DESCRIPTION:END -->

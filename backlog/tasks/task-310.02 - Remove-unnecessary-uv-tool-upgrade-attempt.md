@@ -19,9 +19,9 @@ priority: medium
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Remove or skip the `uv tool upgrade specify-cli` attempt at lines 3973-3986.
+Remove or skip the `uv tool upgrade flowspec-cli` attempt at lines 3973-3986.
 
-**Rationale**: `specify-cli` is installed from git, not PyPI. The `uv tool upgrade` command cannot upgrade git-installed packages - it always returns success without doing anything useful.
+**Rationale**: `flowspec-cli` is installed from git, not PyPI. The `uv tool upgrade` command cannot upgrade git-installed packages - it always returns success without doing anything useful.
 
 **Current behavior**: Wastes time trying `uv tool upgrade`, then falls through to git install anyway.
 

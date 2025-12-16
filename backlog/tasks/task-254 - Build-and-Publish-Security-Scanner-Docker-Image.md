@@ -15,12 +15,12 @@ priority: low
 ## Description
 
 <!-- SECTION:DESCRIPTION:BEGIN -->
-Create Docker image with Semgrep and specify-cli for air-gapped and highly controlled environments. Optimize for size (<200MB) and publish to GHCR.
+Create Docker image with Semgrep and flowspec-cli for air-gapped and highly controlled environments. Optimize for size (<200MB) and publish to GHCR.
 <!-- SECTION:DESCRIPTION:END -->
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Create Dockerfile with Python 3.11, Semgrep, uv, specify-cli
+- [ ] #1 Create Dockerfile with Python 3.11, Semgrep, uv, flowspec-cli
 - [ ] #2 Optimize image size (<200MB using slim base and multi-stage build)
 - [ ] #3 Publish to GHCR (ghcr.io/yourusername/flowspeckit-security-scanner:version)
 - [ ] #4 Add image usage to CI/CD pipeline as alternative scan method
@@ -34,7 +34,7 @@ Create Docker image with Semgrep and specify-cli for air-gapped and highly contr
 ## Implementation Plan: Build and Publish Security Scanner Docker Image
 
 ### Overview
-Create an optimized Docker image containing Semgrep and specify-cli for air-gapped and highly controlled environments.
+Create an optimized Docker image containing Semgrep and flowspec-cli for air-gapped and highly controlled environments.
 
 ### Step-by-Step Implementation
 
@@ -56,7 +56,7 @@ Create an optimized Docker image containing Semgrep and specify-cli for air-gapp
    # Install uv for faster Python installs
    RUN pip install --no-cache-dir uv
    
-   # Install specify-cli and semgrep
+   # Install flowspec-cli and semgrep
    WORKDIR /build
    COPY pyproject.toml README.md ./
    COPY src ./src
@@ -195,7 +195,7 @@ Create an optimized Docker image containing Semgrep and specify-cli for air-gapp
 
 3. Verify image meets size target:
    - Baseline: python:3.11-slim ~125MB
-   - With specify-cli + semgrep: target <200MB
+   - With flowspec-cli + semgrep: target <200MB
    - If exceeds 200MB, investigate and optimize
 
 #### Step 4: Create GitHub Actions Workflow for Image Build
@@ -381,14 +381,14 @@ Create an optimized Docker image containing Semgrep and specify-cli for air-gapp
    - Measure performance difference
 
 ### Dependencies
-- specify-cli package ready for installation
+- flowspec-cli package ready for installation
 - Semgrep version pinned in requirements
 - GHCR access configured
 
 ### Testing Checklist
 - [ ] Image builds successfully
 - [ ] Image size <200MB
-- [ ] specify-cli works in container
+- [ ] flowspec-cli works in container
 - [ ] semgrep works in container
 - [ ] Volume mounts work correctly
 - [ ] Scan produces valid results

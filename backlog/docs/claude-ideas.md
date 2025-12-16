@@ -771,7 +771,7 @@ Top Contributors:
 1. Cache release metadata (TTL: 1 hour)
 2. Cache repository info (TTL: 24 hours)
 3. Use etag/last-modified for conditional requests
-4. Store cache in `~/.cache/specify-cli/`
+4. Store cache in `~/.cache/flowspec-cli/`
 
 **Impact**: Medium | **Effort**: Medium | **Priority**: 2
 

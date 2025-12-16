@@ -7,7 +7,7 @@ assignee:
 created_date: '2025-11-27 21:54'
 updated_date: '2025-12-05 16:30'
 labels:
-  - specify-cli
+  - flowspec-cli
   - ci-cd
   - inner-loop
   - 'workflow:Specified'

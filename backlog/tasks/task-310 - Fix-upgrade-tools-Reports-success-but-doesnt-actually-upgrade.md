@@ -38,7 +38,7 @@ The issue is in `_upgrade_jp_spec_kit()` at line 3973-3986 in `src/specify_cli/_
 if not target_version:
     try:
         result = subprocess.run(
-            ["uv", "tool", "upgrade", "specify-cli"],
+            ["uv", "tool", "upgrade", "flowspec-cli"],
             capture_output=True,
             text=True,
             check=False,
@@ -55,15 +55,15 @@ git_url = f"git+https://github.com/{EXTENSION_REPO_OWNER}/{EXTENSION_REPO_NAME}.
 git_url = f"{git_url}@v{install_version}"
 ```
 
-**The Bug:** When `uv tool upgrade specify-cli` returns `returncode == 0` but the version didn't actually change (because `uv` thinks it's already up-to-date), the code checks if `new_version > current_version`. Since the versions are equal, it does NOT return early - this part is correct.
+**The Bug:** When `uv tool upgrade flowspec-cli` returns `returncode == 0` but the version didn't actually change (because `uv` thinks it's already up-to-date), the code checks if `new_version > current_version`. Since the versions are equal, it does NOT return early - this part is correct.
 
 **However**, the code then falls through to the git install section (lines 3988-4010), which DOES install from git. The issue is that `_get_installed_jp_spec_kit_version()` runs `specify version` which invokes the **same Python process that's already running** - it can't detect the newly installed version because the `specify` binary being executed might be cached or the shell hasn't refreshed its PATH cache.
 
-**Additionally**, there's a more subtle issue: `uv tool upgrade` may return success (0) even when no upgrade was needed, because `specify-cli` was installed via git, not PyPI. The `uv tool upgrade` command doesn't know about the GitHub release versions.
+**Additionally**, there's a more subtle issue: `uv tool upgrade` may return success (0) even when no upgrade was needed, because `flowspec-cli` was installed via git, not PyPI. The `uv tool upgrade` command doesn't know about the GitHub release versions.
 
 ## Technical Details
 
-1. `uv tool upgrade specify-cli` returns 0 but doesn't upgrade (package not on PyPI, installed from git)
+1. `uv tool upgrade flowspec-cli` returns 0 but doesn't upgrade (package not on PyPI, installed from git)
 2. Version check `new_version > current_version` is false (0.2.328 == 0.2.328)
 3. Falls through to git install section
 4. Git install succeeds with `check=True`

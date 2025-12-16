@@ -6,7 +6,7 @@ assignee: []
 created_date: '2025-11-27 21:53'
 updated_date: '2025-11-30 16:41'
 labels:
-  - specify-cli
+  - flowspec-cli
   - hooks
   - claude-code
 dependencies: []

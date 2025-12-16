@@ -190,7 +190,7 @@ $ unzip -l spec-kit-template-claude-sh-v0.2.344.zip | grep commands
 - Verify packages contain `/flowspec` commands
 
 ### Phase 5: Verification (~20 min)
-- Fresh install: `uv tool install specify-cli --from git+https://github.com/jpoley/flowspec.git`
+- Fresh install: `uv tool install flowspec-cli --from git+https://github.com/jpoley/flowspec.git`
 - Run: `specify init test-project --ai claude`
 - Verify `/flow:*` commands present and functional
 - Verify `/pm:*` commands present and functional
@@ -215,7 +215,7 @@ $ unzip -l spec-kit-template-claude-sh-v0.2.344.zip | grep commands
 
 When user runs:
 ```bash
-uv tool install specify-cli --from git+https://github.com/jpoley/flowspec.git
+uv tool install flowspec-cli --from git+https://github.com/jpoley/flowspec.git
 specify init my-project --ai claude
 ```
 

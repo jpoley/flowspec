@@ -182,7 +182,7 @@ Created complete DAST infrastructure for web application security testing:
 ### Dependencies
 
 - Added playwright>=1.40.0 as optional dependency
-- Installed via: `pip install 'specify-cli[dast]'`
+- Installed via: `pip install 'flowspec-cli[dast]'`
 - Browser installation: `playwright install chromium`
 
 ## Changes Made
