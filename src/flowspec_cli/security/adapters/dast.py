@@ -110,7 +110,7 @@ class DASTAdapter(ScannerAdapter):
         if not self.is_available():
             msg = (
                 "Playwright is not available. Install with: "
-                "pip install 'specify-cli[dast]' or pip install playwright && "
+                "pip install 'flowspec-cli[dast]' or pip install playwright && "
                 "playwright install chromium"
             )
             raise RuntimeError(msg)
@@ -157,7 +157,7 @@ class DASTAdapter(ScannerAdapter):
         return """To install Playwright for DAST scanning:
 
 1. Install the Python package:
-   pip install 'specify-cli[dast]'
+   pip install 'flowspec-cli[dast]'
 
    Or install Playwright separately:
    pip install playwright
@@ -204,7 +204,7 @@ class DASTAdapterAsync(DASTAdapter):
         if not self.is_available():
             msg = (
                 "Playwright is not available. Install with: "
-                "pip install 'specify-cli[dast]' or pip install playwright && "
+                "pip install 'flowspec-cli[dast]' or pip install playwright && "
                 "playwright install chromium"
             )
             raise RuntimeError(msg)

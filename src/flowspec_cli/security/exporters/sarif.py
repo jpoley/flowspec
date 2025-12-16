@@ -111,7 +111,7 @@ class SARIFExporter(BaseExporter):
                 "driver": {
                     "name": scanner,
                     "version": self.tool_version,
-                    "informationUri": f"https://specify-cli.dev/security/{scanner}",
+                    "informationUri": f"https://flowspec-cli.dev/security/{scanner}",
                     "rules": list(rules.values()),
                 }
             },

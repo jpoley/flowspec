@@ -75,7 +75,7 @@ class CICDIntegration:
         steps.append(
             {
                 "name": "Install dependencies",
-                "run": "pip install specify-cli semgrep bandit",
+                "run": "pip install flowspec-cli semgrep bandit",
             }
         )
 
@@ -122,7 +122,7 @@ class CICDIntegration:
                 "stage": "security",
                 "image": f"python:{self.python_version}",
                 "before_script": [
-                    "pip install specify-cli semgrep bandit",
+                    "pip install flowspec-cli semgrep bandit",
                 ],
                 "script": [
                     f"specify security scan --fail-on {self.fail_on_severity} --output gl-sast-report.json --format json",
@@ -162,7 +162,7 @@ class CICDIntegration:
                     "inputs": {"versionSpec": self.python_version},
                 },
                 {
-                    "script": "pip install specify-cli semgrep bandit",
+                    "script": "pip install flowspec-cli semgrep bandit",
                     "displayName": "Install security tools",
                 },
                 {

@@ -95,7 +95,7 @@ class TestGitHubHeaders:
         headers = _github_headers(None)
         assert "Authorization" not in headers
         assert headers["Accept"] == "application/vnd.github+json"
-        assert headers["User-Agent"] == "flowspec/specify-cli"
+        assert headers["User-Agent"] == "flowspec/flowspec-cli"
         assert headers["X-GitHub-Api-Version"] == "2022-11-28"
 
     def test_headers_with_valid_token(self):
@@ -132,7 +132,7 @@ class TestGitHubHeaders:
             assert "Authorization" not in headers
             # Other headers should still be present
             assert headers["Accept"] == "application/vnd.github+json"
-            assert headers["User-Agent"] == "flowspec/specify-cli"
+            assert headers["User-Agent"] == "flowspec/flowspec-cli"
 
     def test_skip_auth_with_cli_token_still_skips(self):
         """skip_auth=True ignores cli token too."""

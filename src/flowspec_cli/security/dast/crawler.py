@@ -120,7 +120,7 @@ class PlaywrightCrawler:
         except ImportError as e:
             msg = (
                 "Playwright is not installed. Install with: "
-                "pip install 'specify-cli[dast]' or pip install playwright"
+                "pip install 'flowspec-cli[dast]' or pip install playwright"
             )
             raise ImportError(msg) from e
 

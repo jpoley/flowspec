@@ -110,8 +110,8 @@ class TestSecurityScanWorkflow:
         assert "uv pip install --system ." in workflow_content, (
             "Should use 'uv pip install --system .' for local installation"
         )
-        assert "uv tool install specify-cli" not in workflow_content, (
-            "Should not use 'uv tool install specify-cli'"
+        assert "uv tool install flowspec-cli" not in workflow_content, (
+            "Should not use 'uv tool install flowspec-cli'"
         )
 
     def test_jq_has_error_handling(self, workflow_content):

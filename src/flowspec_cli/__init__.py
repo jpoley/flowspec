@@ -13,12 +13,12 @@
 Specify CLI - Setup tool for Specify projects
 
 Usage:
-    uvx specify-cli.py init <project-name>
-    uvx specify-cli.py init .
-    uvx specify-cli.py init --here
+    uvx flowspec-cli.py init <project-name>
+    uvx flowspec-cli.py init .
+    uvx flowspec-cli.py init --here
 
 Or install globally:
-    uv tool install --from specify-cli.py specify-cli
+    uv tool install --from flowspec-cli.py flowspec-cli
     specify init <project-name>
     specify init .
     specify init --here
@@ -80,7 +80,7 @@ def _github_headers(cli_token: str | None = None, *, skip_auth: bool = False) ->
     """
     headers = {
         "Accept": "application/vnd.github+json",
-        "User-Agent": "flowspec/specify-cli",
+        "User-Agent": "flowspec/flowspec-cli",
         "X-GitHub-Api-Version": "2022-11-28",
     }
     if not skip_auth:
@@ -3942,7 +3942,7 @@ def _get_installed_jp_spec_kit_version() -> Optional[str]:
 def _upgrade_jp_spec_kit(
     dry_run: bool = False, target_version: str | None = None
 ) -> tuple[bool, str]:
-    """Upgrade flowspec (specify-cli) via uv tool.
+    """Upgrade flowspec (flowspec-cli) via uv tool.
 
     Args:
         dry_run: If True, only show what would be done
@@ -3991,7 +3991,7 @@ def _upgrade_jp_spec_kit(
     if not target_version:
         try:
             result = subprocess.run(
-                ["uv", "tool", "upgrade", "specify-cli"],
+                ["uv", "tool", "upgrade", "flowspec-cli"],
                 capture_output=True,
                 text=True,
                 check=False,
@@ -4014,7 +4014,7 @@ def _upgrade_jp_spec_kit(
                 "tool",
                 "install",
                 "--force",
-                "specify-cli",
+                "flowspec-cli",
                 "--from",
                 git_url,
             ],
@@ -4111,7 +4111,7 @@ def _upgrade_spec_kit(dry_run: bool = False) -> tuple[bool, str]:
                 "tool",
                 "install",
                 "--force",
-                "specify-cli",
+                "flowspec-cli",
                 "--from",
                 "git+https://github.com/jpoley/flowspec.git",
             ],
@@ -4207,7 +4207,7 @@ def upgrade_tools(
     It does NOT upgrade repository templates (use 'specify upgrade-repo' for that).
 
     Tools upgraded:
-    - flowspec (specify-cli): via uv tool upgrade
+    - flowspec (flowspec-cli): via uv tool upgrade
     - spec-kit: base templates bundled in flowspec (triggers flowspec reinstall)
     - backlog-md: via npm/pnpm global install
 
