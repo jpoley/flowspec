@@ -1,0 +1,797 @@
+{
+  "source": {
+    "type": "image",
+    "image": {
+      "name": "docker/desktop-storage-provisioner",
+      "digest": "sha256:c027a58fa0bb1f8ff35555e068fc8d1a67173782978e25d0450bac0eb5848cd7",
+      "tags": [
+        "v2.0"
+      ],
+      "manifest": {
+        "schemaVersion": 2,
+        "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+        "config": {
+          "mediaType": "application/vnd.docker.container.image.v1+json",
+          "size": 731,
+          "digest": "sha256:c027a58fa0bb1f8ff35555e068fc8d1a67173782978e25d0450bac0eb5848cd7"
+        },
+        "layers": [
+          {
+            "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+            "size": 17505284,
+            "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d"
+          }
+        ]
+      },
+      "config": {
+        "architecture": "arm64",
+        "created": "2021-04-26T17:06:00.503800228Z",
+        "history": [
+          {
+            "created": "2021-04-26T17:06:00.503800228Z",
+            "created_by": "COPY /go/src/github.com/docker/pinata/common/cmd/storage-provisioner/storage-provisioner /storage-provisioner # buildkit",
+            "comment": "buildkit.dockerfile.v0"
+          },
+          {
+            "created": "2021-04-26T17:06:00.503800228Z",
+            "created_by": "ENTRYPOINT [\"/storage-provisioner\"]",
+            "comment": "buildkit.dockerfile.v0",
+            "empty_layer": true
+          }
+        ],
+        "os": "linux",
+        "rootfs": {
+          "type": "layers",
+          "diff_ids": [
+            "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999"
+          ]
+        },
+        "config": {
+          "Entrypoint": [
+            "/storage-provisioner"
+          ],
+          "Env": [
+            "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+          ],
+          "WorkingDir": "/"
+        }
+      },
+      "raw_manifest": "eyJzY2hlbWFWZXJzaW9uIjoyLCJtZWRpYVR5cGUiOiJhcHBsaWNhdGlvbi92bmQuZG9ja2VyLmRpc3RyaWJ1dGlvbi5tYW5pZmVzdC52Mitqc29uIiwiY29uZmlnIjp7Im1lZGlhVHlwZSI6ImFwcGxpY2F0aW9uL3ZuZC5kb2NrZXIuY29udGFpbmVyLmltYWdlLnYxK2pzb24iLCJzaXplIjo3MzEsImRpZ2VzdCI6InNoYTI1NjpjMDI3YTU4ZmEwYmIxZjhmZjM1NTU1ZTA2OGZjOGQxYTY3MTczNzgyOTc4ZTI1ZDA0NTBiYWMwZWI1ODQ4Y2Q3In0sImxheWVycyI6W3sibWVkaWFUeXBlIjoiYXBwbGljYXRpb24vdm5kLmRvY2tlci5pbWFnZS5yb290ZnMuZGlmZi50YXIuZ3ppcCIsInNpemUiOjE3NTA1Mjg0LCJkaWdlc3QiOiJzaGEyNTY6MzRkZTU5ZjM5OWNkNzBmZGJkNDBjMjRiNDFjNzgzNDY0NGY3MTZhMjBlZTRmOThhN2NhNzg3N2ExYTdmOGUyZCJ9XX0=",
+      "raw_config": "eyJhcmNoaXRlY3R1cmUiOiJhcm02NCIsImNvbmZpZyI6eyJFbnYiOlsiUEFUSD0vdXNyL2xvY2FsL3NiaW46L3Vzci9sb2NhbC9iaW46L3Vzci9zYmluOi91c3IvYmluOi9zYmluOi9iaW4iXSwiRW50cnlwb2ludCI6WyIvc3RvcmFnZS1wcm92aXNpb25lciJdLCJXb3JraW5nRGlyIjoiLyIsIk9uQnVpbGQiOm51bGx9LCJjcmVhdGVkIjoiMjAyMS0wNC0yNlQxNzowNjowMC41MDM4MDAyMjhaIiwiaGlzdG9yeSI6W3siY3JlYXRlZCI6IjIwMjEtMDQtMjZUMTc6MDY6MDAuNTAzODAwMjI4WiIsImNyZWF0ZWRfYnkiOiJDT1BZIC9nby9zcmMvZ2l0aHViLmNvbS9kb2NrZXIvcGluYXRhL2NvbW1vbi9jbWQvc3RvcmFnZS1wcm92aXNpb25lci9zdG9yYWdlLXByb3Zpc2lvbmVyIC9zdG9yYWdlLXByb3Zpc2lvbmVyICMgYnVpbGRraXQiLCJjb21tZW50IjoiYnVpbGRraXQuZG9ja2VyZmlsZS52MCJ9LHsiY3JlYXRlZCI6IjIwMjEtMDQtMjZUMTc6MDY6MDAuNTAzODAwMjI4WiIsImNyZWF0ZWRfYnkiOiJFTlRSWVBPSU5UIFtcIi9zdG9yYWdlLXByb3Zpc2lvbmVyXCJdIiwiY29tbWVudCI6ImJ1aWxka2l0LmRvY2tlcmZpbGUudjAiLCJlbXB0eV9sYXllciI6dHJ1ZX1dLCJvcyI6ImxpbnV4Iiwicm9vdGZzIjp7InR5cGUiOiJsYXllcnMiLCJkaWZmX2lkcyI6WyJzaGEyNTY6MTcwNmU0NDQxZGY0NDFjZjNlNDhkZDdlZjdmY2Q4ZGJjNWFiNTZjNGRkNGYzZDE0ZTYyMGJkOGE3YTkxZjk5OSJdfX0=",
+      "distro": {},
+      "platform": {
+        "os": "linux",
+        "architecture": "arm64"
+      },
+      "size": 17505284
+    }
+  },
+  "attestations": null,
+  "artifacts": [
+    {
+      "type": "golang",
+      "namespace": "github.com/beorn7",
+      "name": "perks",
+      "version": "1.0.1",
+      "purl": "pkg:golang/github.com/beorn7/perks@1.0.1",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/cespare",
+      "name": "xxhash",
+      "version": "2.1.1",
+      "purl": "pkg:golang/github.com/cespare/xxhash@2.1.1#v2",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/davecgh",
+      "name": "go-spew",
+      "version": "1.1.1",
+      "purl": "pkg:golang/github.com/davecgh/go-spew@1.1.1",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/docker",
+      "name": "pinata",
+      "version": "UNKNOWN",
+      "purl": "pkg:golang/github.com/docker/pinata@UNKNOWN",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/gogo",
+      "name": "protobuf",
+      "version": "1.3.1",
+      "purl": "pkg:golang/github.com/gogo/protobuf@1.3.1",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/golang",
+      "name": "groupcache",
+      "version": "0.0.0-20200121045136-8c9f03a8e57e",
+      "purl": "pkg:golang/github.com/golang/groupcache@0.0.0-20200121045136-8c9f03a8e57e",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/golang",
+      "name": "protobuf",
+      "version": "1.3.5",
+      "purl": "pkg:golang/github.com/golang/protobuf@1.3.5",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/google",
+      "name": "go-cmp",
+      "version": "0.4.0",
+      "purl": "pkg:golang/github.com/google/go-cmp@0.4.0",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/google",
+      "name": "gofuzz",
+      "version": "1.1.0",
+      "purl": "pkg:golang/github.com/google/gofuzz@1.1.0",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/google",
+      "name": "uuid",
+      "version": "1.1.1",
+      "purl": "pkg:golang/github.com/google/uuid@1.1.1",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/googleapis",
+      "name": "gnostic",
+      "version": "0.3.0",
+      "purl": "pkg:golang/github.com/googleapis/gnostic@0.3.0",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/hashicorp",
+      "name": "golang-lru",
+      "version": "0.5.4",
+      "purl": "pkg:golang/github.com/hashicorp/golang-lru@0.5.4",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/json-iterator",
+      "name": "go",
+      "version": "1.1.9",
+      "purl": "pkg:golang/github.com/json-iterator/go@1.1.9",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/matttproud",
+      "name": "golang_protobuf_extensions",
+      "version": "1.0.1",
+      "purl": "pkg:golang/github.com/matttproud/golang_protobuf_extensions@1.0.1",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/miekg",
+      "name": "dns",
+      "version": "1.1.29",
+      "purl": "pkg:golang/github.com/miekg/dns@1.1.29",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/modern-go",
+      "name": "concurrent",
+      "version": "0.0.0-20180306012644-bacd9c7ef1dd",
+      "purl": "pkg:golang/github.com/modern-go/concurrent@0.0.0-20180306012644-bacd9c7ef1dd",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/modern-go",
+      "name": "reflect2",
+      "version": "1.0.1",
+      "purl": "pkg:golang/github.com/modern-go/reflect2@1.0.1",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/pkg",
+      "name": "errors",
+      "version": "0.9.1",
+      "purl": "pkg:golang/github.com/pkg/errors@0.9.1",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/prometheus",
+      "name": "client_golang",
+      "version": "1.5.1",
+      "purl": "pkg:golang/github.com/prometheus/client_golang@1.5.1",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/prometheus",
+      "name": "client_model",
+      "version": "0.2.0",
+      "purl": "pkg:golang/github.com/prometheus/client_model@0.2.0",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/prometheus",
+      "name": "common",
+      "version": "0.9.1",
+      "purl": "pkg:golang/github.com/prometheus/common@0.9.1",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/prometheus",
+      "name": "procfs",
+      "version": "0.0.11",
+      "purl": "pkg:golang/github.com/prometheus/procfs@0.0.11",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "github.com/sirupsen",
+      "name": "logrus",
+      "version": "1.5.0",
+      "purl": "pkg:golang/github.com/sirupsen/logrus@1.5.0",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "golang.org/x",
+      "name": "crypto",
+      "version": "0.0.0-20200323165209-0ec3e9974c59",
+      "purl": "pkg:golang/golang.org/x/crypto@0.0.0-20200323165209-0ec3e9974c59",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "golang.org/x",
+      "name": "net",
+      "version": "0.0.0-20200320220750-118fecf932d8",
+      "purl": "pkg:golang/golang.org/x/net@0.0.0-20200320220750-118fecf932d8",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "golang.org/x",
+      "name": "oauth2",
+      "version": "0.0.0-20200107190931-bf48bf16ab8d",
+      "purl": "pkg:golang/golang.org/x/oauth2@0.0.0-20200107190931-bf48bf16ab8d",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "golang.org/x",
+      "name": "sys",
+      "version": "0.0.0-20200323222414-85ca7c5b95cd",
+      "purl": "pkg:golang/golang.org/x/sys@0.0.0-20200323222414-85ca7c5b95cd",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "golang.org/x",
+      "name": "text",
+      "version": "0.3.2",
+      "purl": "pkg:golang/golang.org/x/text@0.3.2",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "golang.org/x",
+      "name": "time",
+      "version": "0.0.0-20191024005414-555d28b269f0",
+      "purl": "pkg:golang/golang.org/x/time@0.0.0-20191024005414-555d28b269f0",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "gopkg.in",
+      "name": "inf.v0",
+      "version": "0.9.1",
+      "purl": "pkg:golang/gopkg.in/inf.v0@0.9.1",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "gopkg.in",
+      "name": "yaml.v2",
+      "version": "2.2.8",
+      "purl": "pkg:golang/gopkg.in/yaml.v2@2.2.8",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "k8s.io",
+      "name": "api",
+      "version": "0.17.4",
+      "purl": "pkg:golang/k8s.io/api@0.17.4",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "k8s.io",
+      "name": "apimachinery",
+      "version": "0.17.4",
+      "purl": "pkg:golang/k8s.io/apimachinery@0.17.4",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "k8s.io",
+      "name": "client-go",
+      "version": "0.17.4",
+      "purl": "pkg:golang/k8s.io/client-go@0.17.4",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "k8s.io",
+      "name": "klog",
+      "version": "1.0.0",
+      "purl": "pkg:golang/k8s.io/klog@1.0.0",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "k8s.io",
+      "name": "kube-openapi",
+      "version": "0.0.0-20200204173128-addea2498afe",
+      "purl": "pkg:golang/k8s.io/kube-openapi@0.0.0-20200204173128-addea2498afe",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "k8s.io",
+      "name": "utils",
+      "version": "0.0.0-20200322164244-327a8059b905",
+      "purl": "pkg:golang/k8s.io/utils@0.0.0-20200322164244-327a8059b905",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "sigs.k8s.io",
+      "name": "sig-storage-lib-external-provisioner",
+      "version": "4.1.0+incompatible",
+      "purl": "pkg:golang/sigs.k8s.io/sig-storage-lib-external-provisioner@4.1.0%2Bincompatible",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "namespace": "sigs.k8s.io",
+      "name": "yaml",
+      "version": "1.2.0",
+      "purl": "pkg:golang/sigs.k8s.io/yaml@1.2.0",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    },
+    {
+      "type": "golang",
+      "name": "stdlib",
+      "version": "1.14.15",
+      "purl": "pkg:golang/stdlib@1.14.15",
+      "locations": [
+        {
+          "path": "/storage-provisioner",
+          "digest": "sha256:34de59f399cd70fdbd40c24b41c7834644f716a20ee4f98a7ca7877a1a7f8e2d",
+          "diff_id": "sha256:1706e4441df441cf3e48dd7ef7fcd8dbc5ab56c4dd4f3d14e620bd8a7a91f999",
+          "file_digests": {
+            "sha1": "0f5fb134a791724c14d0621415c8441add5a08af",
+            "sha256": "e81d720cc13aa0fd840424afe600aa46a5bd8851a508f0ea4660c1b18f24e26d"
+          }
+        }
+      ]
+    }
+  ],
+  "descriptor": {
+    "name": "docker-scout",
+    "version": "1.18.3",
+    "sbom_version": "11"
+  }
+}
+

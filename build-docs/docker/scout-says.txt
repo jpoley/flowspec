@@ -1,0 +1,121 @@
+
+
+  Target   │  jpoley/flowspec-agents:latest   
+    digest │  8e97f6425d3a                    
+
+## Recommended fixes
+
+  Base image is  python:3.11-bookworm 
+
+  Name            │  3.11-bookworm                                                             
+  Digest          │  sha256:cefd7fc80951bea610de241b419e90171294f3d9a6e05c200682c6898ae12fea   
+  Vulnerabilities │    0C     3H     7M   166L     4?                                          
+  Pushed          │ 3 weeks ago                                                                
+  Size            │ 369 MB                                                                     
+  Packages        │ 587                                                                        
+  Flavor          │ debian                                                                     
+  OS              │ 12                                                                         
+  Runtime         │ 3.11.14                                                                    
+
+                                                                                                                                                                                                              
+  │ The base image is also available under the supported tag(s) `3.11.14-bookworm`. If you want to display recommendations specifically for a different tag, please re-run the command using the `--tag` flag. 
+
+
+
+Refresh base image
+  Rebuild the image using a newer base image version. Updating this may result in breaking changes.
+
+
+            Tag            │                  Details                   │   Pushed   │          Vulnerabilities            
+───────────────────────────┼────────────────────────────────────────────┼────────────┼─────────────────────────────────────
+   3.11-bookworm           │ Benefits:                                  │ 6 days ago │    0C     3H     7M   166L     4?   
+  Newer image for same tag │ • Patch runtime version update             │            │                                     
+  Also known as:           │ • Same OS detected                         │            │                                     
+  • 3.11.14-bookworm       │ • Newer image for same tag                 │            │                                     
+                           │ • Image is smaller by 1.2 KB               │            │                                     
+                           │ • Tag was pushed more recently             │            │                                     
+                           │ • Image has same number of vulnerabilities │            │                                     
+                           │ • Image contains equal number of packages  │            │                                     
+                           │                                            │            │                                     
+                           │ Image details:                             │            │                                     
+                           │ • Size: 369 MB                             │            │                                     
+                           │ • Flavor: debian                           │            │                                     
+                           │ • OS: 12                                   │            │                                     
+                           │ • Runtime: 3.11.14                         │            │                                     
+                           │                                            │            │                                     
+                           │                                            │            │                                     
+                           │                                            │            │                                     
+
+
+Change base image
+  The list displays new recommended tags in descending order, where the top results are rated as most suitable.
+
+
+              Tag              │                         Details                         │   Pushed   │          Vulnerabilities            
+───────────────────────────────┼─────────────────────────────────────────────────────────┼────────────┼─────────────────────────────────────
+   3.14-bookworm               │ Benefits:                                               │ 6 days ago │    0C     3H     6M   166L     4?   
+  Minor runtime version update │ • Same OS detected                                      │            │                  -1                 
+  Also known as:               │ • Minor runtime version update                          │            │                                     
+  • 3.14.2-bookworm            │ • Image contains 17 fewer packages                      │            │                                     
+  • 3-bookworm                 │ • Tag was pushed more recently                          │            │                                     
+  • bookworm                   │ • Image has similar size                                │            │                                     
+                               │ • Image introduces no new vulnerability but removes 1   │            │                                     
+                               │                                                         │            │                                     
+                               │ Image details:                                          │            │                                     
+                               │ • Size: 374 MB                                          │            │                                     
+                               │ • Flavor: debian                                        │            │                                     
+                               │ • OS: 12                                                │            │                                     
+                               │ • Runtime: 3.14.2                                       │            │                                     
+                               │                                                         │            │                                     
+                               │                                                         │            │                                     
+                               │                                                         │            │                                     
+   3.13-bookworm               │ Benefits:                                               │ 6 days ago │    0C     3H     6M   166L     4?   
+  Minor runtime version update │ • Same OS detected                                      │            │                  -1                 
+  Also known as:               │ • Minor runtime version update                          │            │                                     
+  • 3.13.11-bookworm           │ • Image contains 17 fewer packages                      │            │                                     
+                               │ • Tag was pushed more recently                          │            │                                     
+                               │ • Image has similar size                                │            │                                     
+                               │ • Image introduces no new vulnerability but removes 1   │            │                                     
+                               │                                                         │            │                                     
+                               │ Image details:                                          │            │                                     
+                               │ • Size: 372 MB                                          │            │                                     
+                               │ • Flavor: debian                                        │            │                                     
+                               │ • OS: 12                                                │            │                                     
+                               │ • Runtime: 3.13.11                                      │            │                                     
+                               │                                                         │            │                                     
+                               │                                                         │            │                                     
+                               │                                                         │            │                                     
+   3.12-bookworm               │ Benefits:                                               │ 6 days ago │    0C     3H     7M   166L     4?   
+  Minor runtime version update │ • Same OS detected                                      │            │                                     
+  Also known as:               │ • Minor runtime version update                          │            │                                     
+  • 3.12.12-bookworm           │ • Image contains 17 fewer packages                      │            │                                     
+                               │ • Tag was pushed more recently                          │            │                                     
+                               │ • Image has similar size                                │            │                                     
+                               │ • Image has same number of vulnerabilities              │            │                                     
+                               │                                                         │            │                                     
+                               │ Image details:                                          │            │                                     
+                               │ • Size: 370 MB                                          │            │                                     
+                               │ • Flavor: debian                                        │            │                                     
+                               │ • OS: 12                                                │            │                                     
+                               │ • Runtime: 3.12.12                                      │            │                                     
+                               │                                                         │            │                                     
+                               │                                                         │            │                                     
+                               │                                                         │            │                                     
+   alpine                      │ Benefits:                                               │ 6 days ago │    0C     0H     0M     0L          
+  Tag is preferred tag         │ • Minor runtime version update                          │            │           -3     -7   -166     -4   
+  Also known as:               │ • Image is smaller by 335 MB                            │            │                                     
+  • alpine3.23                 │ • Image contains 546 fewer packages                     │            │                                     
+  • 3.14.2-alpine              │ • Tag is preferred tag                                  │            │                                     
+  • 3.14.2-alpine3.23          │ • Tag was pushed more recently                          │            │                                     
+  • 3.14-alpine3.23            │ • Image introduces no new vulnerability but removes 176 │            │                                     
+  • 3-alpine                   │ • alpine was pulled 41K times last month                │            │                                     
+                               │                                                         │            │                                     
+                               │ Image details:                                          │            │                                     
+                               │ • Size: 18 MB                                           │            │                                     
+                               │ • Flavor: alpine                                        │            │                                     
+                               │ • OS: 3.23                                              │            │                                     
+                               │ • Runtime: 3.14.2                                       │            │                                     
+                               │                                                         │            │                                     
+                               │                                                         │            │                                     
+                               │                                                         │            │                                     
+
