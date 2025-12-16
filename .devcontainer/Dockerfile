@@ -2,7 +2,7 @@
 # Published to Docker Hub: jpoley/flowspec-agents
 #
 # This Dockerfile builds a pre-configured development environment with:
-# - Python 3.13 + uv package manager (Alpine-based, zero vulnerabilities)
+# - Python 3.13 + uv package manager (Alpine-based)
 # - Node.js 20 + pnpm
 # - AI coding assistant CLIs (Claude Code, Codex, Gemini, GitHub Copilot)
 # - Task management (backlog.md)
@@ -11,8 +11,10 @@
 # Usage:
 #   docker pull jpoley/flowspec-agents:latest
 #   Or reference in devcontainer.json: "image": "jpoley/flowspec-agents:latest"
-
-FROM python:3.13-alpine
+#
+# Security: This image is built with SBOM and SLSA provenance attestations
+# Pin base image with digest for reproducibility and security scanning
+FROM python:3.13-alpine@sha256:51b5354ed44df6e1a3b3faf6d3a3d40da129621046b6d5a707b7c1f44d258ed6
 
 # Install system dependencies
 # - bash: required for scripts and shell compatibility
@@ -26,6 +28,8 @@ FROM python:3.13-alpine
 # - zsh: developer-friendly shell
 # - shadow: for usermod/groupmod
 # - sudo: for privilege escalation
+# - jq: for JSON processing in scripts
+# - tar/gzip: for extracting downloads
 RUN apk add --no-cache \
     bash \
     git \
@@ -38,19 +42,37 @@ RUN apk add --no-cache \
     openssl-dev \
     zsh \
     shadow \
-    sudo
+    sudo \
+    jq \
+    tar \
+    gzip
 
-# Install pnpm globally
-RUN npm install -g pnpm
-
-# Fix npm vulnerabilities by upgrading vulnerable packages globally
-# - CVE-2025-64756: glob@11.0.3 -> 11.1.0 (command injection vulnerability)
-# - CVE-2022-25883: semver@7.0.0 -> 7.5.4 (ReDoS vulnerability, fix >= 7.5.2)
-RUN npm install -g glob@11.1.0 semver@7.5.4 \
+# Upgrade npm to latest version to fix vulnerabilities in npm's internal dependencies
+# - CVE-2025-64756: glob@11.0.3 -> 11.1.0 (command injection in npm's bundled glob)
+# This upgrades npm itself, not just global packages
+RUN npm install -g npm@latest \
     && npm cache clean --force
 
-# Install GitHub CLI
-RUN apk add --no-cache github-cli
+# Install pnpm globally (after npm upgrade to use patched npm)
+RUN npm install -g pnpm
+
+# Install GitHub CLI from official releases (not Alpine package)
+# Alpine's github-cli package has outdated dependencies including:
+# - CVE-2025-66564: sigstore/timestamp-authority@1.2.9 -> 2.0.3 (memory exhaustion)
+# Download latest release directly from GitHub for security updates
+ARG GH_VERSION=2.83.2
+ARG TARGETARCH
+RUN case "${TARGETARCH}" in \
+        "amd64") GH_ARCH="linux_amd64" ;; \
+        "arm64") GH_ARCH="linux_arm64" ;; \
+        *) echo "Unsupported arch: ${TARGETARCH}" && exit 1 ;; \
+    esac \
+    && curl -sL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_${GH_ARCH}.tar.gz" -o /tmp/gh.tar.gz \
+    && tar -xzf /tmp/gh.tar.gz -C /tmp \
+    && mv "/tmp/gh_${GH_VERSION}_${GH_ARCH}/bin/gh" /usr/local/bin/gh \
+    && chmod +x /usr/local/bin/gh \
+    && rm -rf /tmp/gh* \
+    && gh --version
 
 # Create vscode user (matching devcontainer convention)
 RUN addgroup -g 1000 vscode \
@@ -64,7 +86,7 @@ WORKDIR /home/vscode
 
 # Set up environment variables
 ENV PNPM_HOME="/home/vscode/.local/share/pnpm"
-ENV PATH="/home/vscode/.local/bin:${PNPM_HOME}:${PATH}"
+ENV PATH="/home/vscode/.local/bin:${PNPM_HOME}:/usr/local/bin:${PATH}"
 
 # Install uv (installs to ~/.local/bin)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -82,6 +104,12 @@ RUN pnpm install -g @anthropic-ai/claude-code || echo "claude-code install skipp
 # Install task management tools
 RUN pnpm install -g backlog.md || echo "backlog.md install skipped"
 
+# Fix pnpm package vulnerabilities by forcing semver upgrade
+# - CVE-2022-25883: semver@7.0.0 -> 7.5.4 (ReDoS vulnerability)
+# This updates semver in pnpm's global store for all installed packages
+RUN cd "${PNPM_HOME}" && pnpm update semver --latest 2>/dev/null || echo "pnpm semver update skipped" \
+    && pnpm store prune 2>/dev/null || true
+
 # Install Python development tools via uv
 RUN /home/vscode/.local/bin/uv tool install ruff \
     && /home/vscode/.local/bin/uv tool install pytest
@@ -90,7 +118,7 @@ RUN /home/vscode/.local/bin/uv tool install ruff \
 RUN mkdir -p /home/vscode/.config/claude \
     && echo '# flowspec Agents PATH setup' > /home/vscode/.zshenv \
     && echo 'export PNPM_HOME="/home/vscode/.local/share/pnpm"' >> /home/vscode/.zshenv \
-    && echo 'export PATH="/home/vscode/.local/bin:$PNPM_HOME:$PATH"' >> /home/vscode/.zshenv
+    && echo 'export PATH="/home/vscode/.local/bin:$PNPM_HOME:/usr/local/bin:$PATH"' >> /home/vscode/.zshenv
 
 # Create .zshrc with YOLO aliases (commented out by default for safety)
 RUN touch /home/vscode/.zshrc \
@@ -98,7 +126,7 @@ RUN touch /home/vscode/.zshrc \
     && echo '# AI coding agent YOLO aliases (uncomment at your own risk)' >> /home/vscode/.zshrc \
     && echo '# alias claude-yolo="claude --dangerously-skip-permissions"' >> /home/vscode/.zshrc \
     && echo '# alias codex-yolo="codex --dangerously-bypass-approvals-and-sandbox"' >> /home/vscode/.zshrc \
-    && echo '# alias gemini-yolo="gemini --yolo"' >> /home/vscode/.zshrc
+    && echo '# alias gemini-yolo="gemini --yolo"' >> /home/vscode/.zshenv
 
 # Labels for Docker Hub
 LABEL org.opencontainers.image.title="flowspec Agents"
@@ -106,11 +134,14 @@ LABEL org.opencontainers.image.description="Development container with AI coding
 LABEL org.opencontainers.image.source="https://github.com/jpoley/flowspec"
 LABEL org.opencontainers.image.vendor="jpoley"
 LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.base.name="python:3.13-alpine"
+LABEL org.opencontainers.image.base.digest="sha256:51b5354ed44df6e1a3b3faf6d3a3d40da129621046b6d5a707b7c1f44d258ed6"
 
-# Verify installations
+# Verify installations and print versions for debugging
 RUN echo "=== Installation Verification ===" \
     && echo "Python: $(python --version)" \
     && echo "Node: $(node --version)" \
+    && echo "npm: $(npm --version)" \
     && echo "pnpm: $(pnpm --version)" \
     && echo "uv: $(/home/vscode/.local/bin/uv --version)" \
     && echo "gh: $(gh --version | head -1)" \
