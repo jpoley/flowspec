@@ -168,16 +168,16 @@ workflows:
 
 ```bash
 # Validate default flowspec_workflow.yml
-specify workflow validate
+flowspec workflow validate
 
 # Validate custom workflow file
-specify workflow validate --file custom_workflow.yml
+flowspec workflow validate --file custom_workflow.yml
 
 # Show detailed output with warnings
-specify workflow validate --verbose
+flowspec workflow validate --verbose
 
 # JSON output for CI/automation
-specify workflow validate --json
+flowspec workflow validate --json
 
 # Example output:
 # ✓ Schema validation passed
@@ -247,7 +247,7 @@ See [JP Spec + Backlog.md Integration Guide](docs/guides/flowspec-backlog-workfl
 
 ```
 flowspec/
-├── src/specify_cli/        # CLI source code
+├── src/flowspec_cli/       # CLI source code
 ├── tests/                  # Test suite (pytest)
 ├── templates/              # Project templates
 │   ├── docs/               # Workflow artifact directories (copied to project docs/)
@@ -275,7 +275,7 @@ flowspec/
 
 The `memory/constitution.md` file is a **template** for project-specific constitutions. It contains placeholder tokens like `[PROJECT_NAME]`, `[PRINCIPLE_1_NAME]`, etc. that are intentionally left unfilled.
 
-**Purpose**: When users run `specify init` in a new project, they can customize this template with their project-specific values.
+**Purpose**: When users run `flowspec init` in a new project, they can customize this template with their project-specific values.
 
 **Placeholders are intentional** and should NOT be replaced with "Flowspec" values. The flowspec repository itself does not need a filled constitution - it provides the template for other projects.
 

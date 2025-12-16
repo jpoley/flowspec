@@ -100,7 +100,7 @@ dev-fix:
 	@echo "  ✓ Removed"
 	@echo ""
 	@echo "Step 3: Recreating symlinks with dev-setup command..."
-	@uv run specify dev-setup --force
+	@uv run flowspec dev-setup --force
 	@echo ""
 	@echo "Step 4: Validating new setup..."
 	@echo "  - Checking symlinks..."
