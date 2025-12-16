@@ -59,7 +59,7 @@ fi
 # alias claude-yolo='claude --dangerously-skip-permissions'
 # alias codex-yolo='codex --dangerously-bypass-approvals-and-sandbox'
 # alias gemini-yolo='gemini --yolo'
-# alias copilot-yolo='copilot --allow-all-tools'
+# copilot-cli removed due to CVE-2022-25883
 ZSHRC
 
 # -----------------------------------------------------------------------------
@@ -87,8 +87,10 @@ pnpm config set global-bin-dir "$PNPM_HOME"
 echo "   Installing Claude Code CLI..."
 pnpm install -g @anthropic-ai/claude-code || echo "   Warning: claude-code install failed"
 
-echo "   Installing GitHub Copilot CLI..."
-pnpm install -g @githubnext/github-copilot-cli || echo "   Warning: copilot install failed"
+# NOTE: @githubnext/github-copilot-cli REMOVED due to CVE-2022-25883 (semver@7.0.0)
+# Upstream issue: https://github.com/alexbrazier/simple-update-notifier/issues/30
+# echo "   Installing GitHub Copilot CLI..."
+# pnpm install -g @githubnext/github-copilot-cli || echo "   Warning: copilot install failed"
 
 echo "   Installing OpenAI Codex CLI..."
 pnpm install -g @openai/codex || echo "   Warning: codex install failed"
@@ -116,12 +118,13 @@ echo "4. Setting up MCP server configuration..."
 
 mkdir -p /home/vscode/.config/claude
 
+# Use pnpm dlx instead of npx (npm removed from image for CVE-2025-64756)
 cat > /home/vscode/.config/claude/claude_desktop_config.json << 'EOF'
 {
   "mcpServers": {
     "backlog": {
-      "command": "npx",
-      "args": ["-y", "backlog.md"],
+      "command": "pnpm",
+      "args": ["dlx", "backlog.md"],
       "env": {
         "BACKLOG_DIR": "/workspaces/flowspec/backlog"
       }
@@ -177,7 +180,7 @@ echo ""
 echo "Installed CLI tools:"
 command -v flowspec >/dev/null 2>&1 && echo "  - specify:     $(flowspec --version 2>&1 || echo 'installed')" || echo "  - specify:     NOT FOUND"
 command -v claude >/dev/null 2>&1 && echo "  - claude:      $(claude --version 2>&1 || echo 'installed')" || echo "  - claude:      NOT FOUND"
-command -v github-copilot-cli >/dev/null 2>&1 && echo "  - copilot:     installed" || echo "  - copilot:     NOT FOUND"
+# copilot-cli removed due to CVE-2022-25883 (semver vulnerability)
 command -v codex >/dev/null 2>&1 && echo "  - codex:       installed" || echo "  - codex:       NOT FOUND"
 command -v gemini >/dev/null 2>&1 && echo "  - gemini:      installed" || echo "  - gemini:      NOT FOUND"
 command -v backlog >/dev/null 2>&1 && echo "  - backlog:     $(backlog --version 2>&1 || echo 'installed')" || echo "  - backlog:     NOT FOUND"
