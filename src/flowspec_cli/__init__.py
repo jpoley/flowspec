@@ -691,6 +691,7 @@ def check_backlog_installed_version() -> Optional[str]:
             if output and all(c.isdigit() or c == "." for c in output):
                 return output
     except FileNotFoundError:
+        # 'backlog' CLI not in PATH - expected when not installed
         pass
     return None
 
@@ -717,6 +718,7 @@ def check_beads_installed_version() -> Optional[str]:
                     if version and all(c.isdigit() or c == "." for c in version):
                         return version
     except FileNotFoundError:
+        # 'bd' CLI not in PATH - expected when not installed
         pass
     return None
 
@@ -4130,6 +4132,7 @@ def _upgrade_jp_spec_kit(
                 if new_version and compare_semver(new_version, current_version) > 0:
                     return True, f"Upgraded from {current_version} to {new_version}"
         except FileNotFoundError:
+            # uv not found - fall through to git-based installation below
             pass
 
     # Install from git at the specific release tag
