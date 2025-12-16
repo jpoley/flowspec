@@ -32,9 +32,9 @@ rm -rf "$GENRELEASES_DIR"/* || true
 
 rewrite_paths() {
   sed -E \
-    -e 's@(/?)memory/@.specify/memory/@g' \
-    -e 's@(/?)scripts/@.specify/scripts/@g' \
-    -e 's@(/?)templates/@.specify/templates/@g'
+    -e 's@(/?)memory/@.flowspec/memory/@g' \
+    -e 's@(/?)scripts/@.flowspec/scripts/@g' \
+    -e 's@(/?)templates/@.flowspec/templates/@g'
 }
 
 generate_commands() {
@@ -94,7 +94,7 @@ generate_commands() {
     # For md-based agents (Claude, Cursor, etc.), use subdirectory structure for colon-namespacing
     # e.g., .claude/commands/speckit/specify.md -> /speckit:specify
     # For toml-based agents (Gemini, Qwen), use dot notation in filename
-    # e.g., .gemini/commands/speckit.specify.toml -> /speckit.specify
+    # e.g., .gemini/commands/speckit.flowspec.toml -> /speckit.flowspec
     case $ext in
       toml)
         body=$(printf '%s\n' "$body" | sed 's/\\/\\\\/g')
@@ -229,29 +229,29 @@ build_variant() {
   mkdir -p "$base_dir"
   
   # Copy base structure but filter scripts by variant
-  SPEC_DIR="$base_dir/.specify"
+  SPEC_DIR="$base_dir/.flowspec"
   mkdir -p "$SPEC_DIR"
   
-  [[ -d memory ]] && { cp -r memory "$SPEC_DIR/"; echo "Copied memory -> .specify"; }
+  [[ -d memory ]] && { cp -r memory "$SPEC_DIR/"; echo "Copied memory -> .flowspec"; }
   
   # Only copy the relevant script variant directory
   if [[ -d scripts ]]; then
     mkdir -p "$SPEC_DIR/scripts"
     case $script in
       sh)
-        [[ -d scripts/bash ]] && { cp -r scripts/bash "$SPEC_DIR/scripts/"; echo "Copied scripts/bash -> .specify/scripts"; }
+        [[ -d scripts/bash ]] && { cp -r scripts/bash "$SPEC_DIR/scripts/"; echo "Copied scripts/bash -> .flowspec/scripts"; }
         # Copy any script files that aren't in variant-specific directories
         find scripts -maxdepth 1 -type f -exec cp {} "$SPEC_DIR/scripts/" \; 2>/dev/null || true
         ;;
       ps)
-        [[ -d scripts/powershell ]] && { cp -r scripts/powershell "$SPEC_DIR/scripts/"; echo "Copied scripts/powershell -> .specify/scripts"; }
+        [[ -d scripts/powershell ]] && { cp -r scripts/powershell "$SPEC_DIR/scripts/"; echo "Copied scripts/powershell -> .flowspec/scripts"; }
         # Copy any script files that aren't in variant-specific directories
         find scripts -maxdepth 1 -type f -exec cp {} "$SPEC_DIR/scripts/" \; 2>/dev/null || true
         ;;
     esac
   fi
   
-  [[ -d templates ]] && { mkdir -p "$SPEC_DIR/templates"; find templates -type f -not -path "templates/commands/*" -not -name "vscode-settings.json" -exec cp --parents {} "$SPEC_DIR"/ \; ; echo "Copied templates -> .specify/templates"; }
+  [[ -d templates ]] && { mkdir -p "$SPEC_DIR/templates"; find templates -type f -not -path "templates/commands/*" -not -name "vscode-settings.json" -exec cp --parents {} "$SPEC_DIR"/ \; ; echo "Copied templates -> .flowspec/templates"; }
   
   # Copy .languages directory if it exists (flowspec multi-language support)
   if [[ -d .languages ]]; then
