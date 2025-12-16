@@ -21,7 +21,7 @@ Add new command to upgrade globally installed CLI tools (flowspec, spec-kit, bac
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [x] #1 specify upgrade-tools upgrades flowspec via uv tool upgrade specify-cli
+- [x] #1 specify upgrade-tools upgrades flowspec via uv tool upgrade flowspec-cli
 - [x] #2 specify upgrade-tools upgrades backlog.md via pnpm/npm add -g backlog-md@latest
 - [x] #3 --component flag allows upgrading single component
 - [x] #4 --dry-run shows what would be upgraded without making changes

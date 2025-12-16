@@ -7,7 +7,7 @@ assignee:
 created_date: '2025-11-27 21:53'
 updated_date: '2025-12-04 17:07'
 labels:
-  - specify-cli
+  - flowspec-cli
   - feature
   - stacks
   - 'workflow:Specified'
@@ -23,7 +23,7 @@ Allow users to select a technology stack (React+Go, React+Python, Full-Stack Typ
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Add STACK_CONFIG to specify-cli with all 9 stack definitions
+- [ ] #1 Add STACK_CONFIG to flowspec-cli with all 9 stack definitions
 - [ ] #2 Create interactive stack selection UI (arrow keys)
 - [ ] #3 Add --stack CLI flag for non-interactive use
 - [ ] #4 Implement cleanup function to remove unselected stacks

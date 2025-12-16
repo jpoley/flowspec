@@ -32,7 +32,7 @@ Create structured GitHub issue templates following the vfarcic/dot-ai pattern.
 - Steps to reproduce (required)
 - Expected behavior (required)
 - Actual behavior (required)
-- Environment section: Python version, OS, specify-cli version
+- Environment section: Python version, OS, flowspec-cli version
 - Logs textarea with shell rendering
 - Final checklist checkboxes
 
