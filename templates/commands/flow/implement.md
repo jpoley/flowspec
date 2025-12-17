@@ -189,17 +189,43 @@ OR (not recommended without user approval):
 Before starting implementation, check for a PRP document for the active task:
 
 ```bash
-# Extract task ID from arguments or backlog
-TASK_ID="${ARGUMENTS}"
+# Extract task ID from arguments - handles both task IDs and feature descriptions
+INPUT="${ARGUMENTS}"
 
-# If no task ID provided, try to find from backlog
-if [ -z "$TASK_ID" ] || ! [[ "$TASK_ID" =~ ^task-[0-9]+ ]]; then
-  echo "⚠️ No task ID provided. Searching for active tasks..."
+# If no input provided, show active tasks and prompt
+if [ -z "$INPUT" ]; then
+  echo "⚠️ No task ID or feature description provided."
+  echo "Searching for active 'In Progress' tasks..."
   backlog task list -s "In Progress" --plain | head -5
   echo ""
-  echo "Please specify a task ID to check for PRP:"
+  echo "Please specify a task ID or feature description:"
   echo "  /flow:implement task-123"
+  echo "  /flow:implement \"Add user authentication\""
   exit 1
+fi
+
+# Determine if input is already a task ID or needs resolution
+if [[ "$INPUT" =~ ^task-[0-9]+$ ]]; then
+  TASK_ID="$INPUT"
+  echo "✅ Using task ID: $TASK_ID"
+else
+  # Treat input as a feature description - try to resolve via backlog search
+  echo "🔍 '$INPUT' is not a task ID. Searching backlog for matching tasks..."
+  RESOLVED_ID=$(backlog search "$INPUT" --plain 2>/dev/null | awk '/^task-[0-9]+/ {print $1; exit}')
+
+  if [ -n "$RESOLVED_ID" ]; then
+    TASK_ID="$RESOLVED_ID"
+    echo "✅ Resolved feature description to: $TASK_ID"
+  else
+    echo "❌ Could not resolve a task ID from: \"$INPUT\""
+    echo ""
+    echo "Active tasks you can choose from:"
+    backlog task list -s "In Progress" --plain | head -5
+    echo ""
+    echo "Please specify a valid task ID:"
+    echo "  /flow:implement task-123"
+    exit 1
+  fi
 fi
 
 # Check for PRP file
