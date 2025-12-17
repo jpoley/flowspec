@@ -207,7 +207,7 @@ if [ -z "$BRANCH" ]; then
   exit 1
 fi
 
-if ! [[ "$BRANCH" =~ ^[a-z0-9-]+/task-[0-9]+/[a-z0-9-]+$ ]]; then
+if ! echo "$BRANCH" | grep -Eq '^[a-z0-9-]+/task-[0-9]+/[a-z0-9-]+$'; then
   echo "[X] RIGOR VIOLATION (EXEC-002): Branch name must follow format: hostname/task-NNN/slug-description"
   echo "Current branch: $BRANCH"
   echo ""
@@ -347,7 +347,7 @@ if [ -z "$INPUT" ]; then
 fi
 
 # Determine if input is already a task ID or needs resolution
-if [[ "$INPUT" =~ ^task-[0-9]+$ ]]; then
+if echo "$INPUT" | grep -Eq '^task-[0-9]+$'; then
   TASK_ID="$INPUT"
   echo "✅ Using task ID: $TASK_ID"
 else
@@ -1075,7 +1075,7 @@ fi
 # Python SAST check (VALID-002)
 if [ -f "pyproject.toml" ]; then
   echo "Running SAST check..."
-  if command -v bandit &> /dev/null; then
+  if command -v bandit >/dev/null 2>&1; then
     uv run bandit -r src/ -ll
     if [ $? -ne 0 ]; then
       echo "[X] RIGOR VIOLATION (VALID-002): SAST check failed"
@@ -1204,7 +1204,7 @@ if [ -f "package.json" ]; then
       echo "Fix: npm run format"
       exit 1
     fi
-  elif command -v prettier &> /dev/null; then
+  elif command -v prettier >/dev/null 2>&1; then
     # Fall back to prettier --check if available
     prettier --check . 2>/dev/null
     if [ $? -ne 0 ]; then
@@ -1312,14 +1312,13 @@ PRs that fail CI:
 ```bash
 # Check all commits have DCO sign-off (PR-001)
 echo "Checking DCO sign-off..."
-# Use process substitution to avoid subshell variable scope issues
-# NOTE: Process substitution requires bash 4.0+ (most Linux systems; macOS needs upgrade)
+# POSIX-compliant iteration over commit hashes (avoids bash-specific process substitution)
 UNSIGNED_COMMITS=""
-while read -r hash msg; do
+for hash in $(git log origin/main..HEAD --format='%h' 2>/dev/null); do
   if ! git log -1 --format='%B' "$hash" 2>/dev/null | grep -q "Signed-off-by:"; then
     UNSIGNED_COMMITS="$UNSIGNED_COMMITS $hash"
   fi
-done < <(git log origin/main..HEAD --format='%h %s' 2>/dev/null)
+done
 UNSIGNED_COUNT=$(echo "$UNSIGNED_COMMITS" | wc -w)
 
 if [ "$UNSIGNED_COUNT" -gt 0 ]; then
