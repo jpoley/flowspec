@@ -656,9 +656,9 @@ validate_command() {
   fi
 
   # Check for path traversal attempts (e.g., pytest ../../etc/passwd)
-  # Only block /.., ../, or standalone .. to avoid false positives on
-  # legitimate patterns like version ranges (1..10) or test globs
-  if [[ "$cmd" =~ (^|/)\.\.(/|$) ]]; then
+  # Only block /.., ../, or standalone .. (including when space-separated)
+  # to avoid false positives on legitimate patterns like version ranges (1..10)
+  if [[ "$cmd" =~ (^|[[:space:]/])\.\.([[:space:]/]|$) ]]; then
     echo "⚠️ Security: Command contains path traversal (..): $cmd"
     return 1  # Reject commands with path traversal
   fi
