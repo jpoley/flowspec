@@ -149,7 +149,7 @@ As a {user role}, I want {goal} so that {benefit}.
 
 | Example | Location | Relevance to This Feature |
 |---------|----------|---------------------------|
-| Security Example | `examples/mcp/` | Shows security stuff |
+| Security Example | `examples/mcp/README.md` | Shows security stuff |
 
 ### Gotchas / Prior Failures
 
