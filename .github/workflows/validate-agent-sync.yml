@@ -107,7 +107,7 @@ jobs:
           {
             echo "## Agent Sync Auto-Fix"
             echo ""
-            if [ "$FIXED" == "true" ]; then
+            if [ "$FIXED" = "true" ]; then
               echo "✅ **Drift detected and auto-fixed**"
               echo ""
               echo "A commit was pushed to sync agents with templates."
