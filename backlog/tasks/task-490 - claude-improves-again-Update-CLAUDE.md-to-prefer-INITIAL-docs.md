@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - '@muckross'
 created_date: '2025-12-14 03:06'
-updated_date: '2025-12-15 01:50'
+updated_date: '2025-12-17 01:25'
 labels:
   - context-engineering
   - documentation
@@ -24,8 +24,8 @@ Source: docs/research/archon-inspired.md Task 3
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 CLAUDE.md updated with INITIAL doc guidance
-- [ ] #2 Instructions state: read INITIAL doc before /flow:assess or /flow:specify
-- [ ] #3 Documents that INITIAL doc is primary source for feature context
-- [ ] #4 References the INITIAL template location
+- [x] #1 CLAUDE.md updated with INITIAL doc guidance
+- [x] #2 Instructions state: read INITIAL doc before /flow:assess or /flow:specify
+- [x] #3 Documents that INITIAL doc is primary source for feature context
+- [x] #4 References the INITIAL template location
 <!-- AC:END -->

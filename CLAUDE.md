@@ -65,6 +65,54 @@ backlog task edit 42 -s Done     # Complete task
 /qa:review          # Generate checklist
 ```
 
+## INITIAL Document Workflow
+
+**CRITICAL**: Before running `/flow:assess` or `/flow:specify`, ALWAYS look for and read the INITIAL document for the feature.
+
+### What is an INITIAL Document?
+
+INITIAL documents are the **primary source of high-level context** for features. They provide structured, comprehensive context that flows into PRDs, PRPs, and implementation tasks.
+
+### Location and Naming
+
+- **Location**: `docs/features/<feature-slug>-initial.md`
+- **Template**: `templates/docs/initial/initial-feature-template.md`
+- **Example**: `docs/features/backlog-task-management-initial.md`
+
+### When to Read INITIAL Documents
+
+**ALWAYS** check for an INITIAL document before running:
+- `/flow:assess` - Assessment requires understanding the full feature context
+- `/flow:specify` - PRD creation builds directly from INITIAL document content
+
+### What INITIAL Documents Contain
+
+Each INITIAL document includes:
+1. **FEATURE**: Problem statement, desired outcome, constraints, business impact
+2. **EXAMPLES**: Relevant example files, usage patterns, expected behaviors
+3. **DOCUMENTATION**: Links to PRDs, ADRs, external specs, related tasks
+4. **OTHER CONSIDERATIONS**: Gotchas, failures, dependencies, security, performance
+
+### Workflow Integration
+
+```bash
+# 1. Check for INITIAL document
+ls docs/features/*-initial.md
+
+# 2. Read the INITIAL document FIRST
+# (Use Read tool to load docs/features/<feature-slug>-initial.md)
+
+# 3. THEN run assessment or specification
+/flow:assess    # With full context from INITIAL doc
+/flow:specify   # Building PRD from INITIAL doc content
+```
+
+### Key Principle
+
+The INITIAL document is the **canonical source** for feature context. All downstream artifacts (assessments, PRDs, PRPs, tasks) should reference and build upon the context established in the INITIAL document.
+
+If no INITIAL document exists and the user requests `/flow:assess` or `/flow:specify`, suggest creating one first using `/flow:intake` or by manually copying the template.
+
 ## Engineering Subagents
 
 Flowspec includes specialized engineering subagents for implementation tasks. These agents are invoked during `/flow:implement` and provide focused expertise:
