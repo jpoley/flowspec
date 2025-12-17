@@ -31,6 +31,10 @@ from pathlib import Path
 from typing import Any
 
 
+# HTML comment pattern for stripping demo/example content in comments
+HTML_COMMENT_PATTERN = re.compile(r"<!--.*?-->", re.DOTALL)
+
+
 # Required sections in a PRD (case-insensitive matching)
 REQUIRED_PRD_SECTIONS = [
     "executive summary",
@@ -216,11 +220,13 @@ class PRDValidator:
             )
 
         # Count example references (expected in All Needed Context section)
-        example_count = len(EXAMPLE_REFERENCE_PATTERN.findall(content))
+        # Strip HTML comments first so demo tables in comments aren't counted
+        content_without_comments = HTML_COMMENT_PATTERN.sub("", content)
+        example_count = len(EXAMPLE_REFERENCE_PATTERN.findall(content_without_comments))
         if example_count == 0:
             errors.append(
                 "No example references found. Expected at least one table row with "
-                "an examples/ path in the 'All Needed Context' section."
+                "an examples/ path (e.g., | Example Name | `examples/path/file.py` | Description |)."
             )
 
         # Check for empty sections

@@ -527,6 +527,69 @@ Metrics.
         assert result.example_count == 2
         assert result.is_valid  # Has required examples
 
+    def test_validate_html_comments_excluded(
+        self,
+        validator: PRDValidator,
+        tmp_path: Path,
+    ) -> None:
+        """Test that example tables inside HTML comments are not counted.
+
+        This verifies that demo/example tables wrapped in HTML comments
+        (like those in prd-template.md) don't inflate the example count.
+        """
+        content = """# PRD: Auth
+
+## Executive Summary
+
+Summary.
+
+## Problem Statement
+
+Problem.
+
+## User Stories
+
+As a user, I want to login so that I can access.
+
+## Functional Requirements
+
+Requirements.
+
+## Non-Functional Requirements
+
+NFR.
+
+## Success Metrics
+
+Metrics.
+
+## All Needed Context
+
+### Examples
+
+| Example | Location | Relevance to This Feature |
+|---------|----------|---------------------------|
+| Real Example | `examples/auth/handler.py` | Shows real authentication patterns |
+
+<!-- Example of a Good Reference (wrapped in HTML comment to prevent validator from counting it):
+| Example | Location | Relevance to This Feature |
+|---------|----------|---------------------------|
+| Demo Example | `examples/demo/file.py` | This should NOT be counted |
+-->
+
+<!-- Another commented table that should not count:
+| Hidden Example | `examples/hidden/path.py` | Should be excluded |
+-->
+"""
+        prd_file = tmp_path / "auth.md"
+        prd_file.write_text(content)
+
+        result = validator.validate_prd(prd_file)
+
+        # Only the real example outside HTML comments should count
+        assert result.example_count == 1
+        assert result.is_valid  # Has the one required example
+
     def test_validate_empty_section(
         self,
         validator: PRDValidator,
