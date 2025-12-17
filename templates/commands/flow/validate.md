@@ -1119,10 +1119,26 @@ Address each valid Copilot comment:
 
 ```bash
 # Run full validation suite (all commands must pass)
-if uv run ruff format . && uv run ruff check --fix . && uv run pytest tests/ -x -q; then
+FORMAT_STATUS=0
+LINT_STATUS=0
+TEST_STATUS=0
+
+uv run ruff format .
+FORMAT_STATUS=$?
+
+uv run ruff check --fix .
+LINT_STATUS=$?
+
+uv run pytest tests/ -x -q
+TEST_STATUS=$?
+
+if [ "$FORMAT_STATUS" -eq 0 ] && [ "$LINT_STATUS" -eq 0 ] && [ "$TEST_STATUS" -eq 0 ]; then
   echo "[Y] Fixes validated locally"
 else
   echo "[X] Fixes introduced new issues - resolve before pushing"
+  [ "$FORMAT_STATUS" -ne 0 ] && echo "  - Formatting failed"
+  [ "$LINT_STATUS" -ne 0 ] && echo "  - Linting failed"
+  [ "$TEST_STATUS" -ne 0 ] && echo "  - Tests failed"
 fi
 ```
 
