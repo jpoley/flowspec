@@ -109,45 +109,6 @@ class TestDevSetupInitEquivalence:
             f"Commands only: {sorted(command_files - template_files)}"
         )
 
-    def test_spec_symlinks_match_templates(
-        self, claude_commands_dir: Path, templates_dir: Path
-    ) -> None:
-        """Test dev-setup creates spec symlinks for all spec templates.
-
-        Supports two symlink strategies:
-        1. Directory-level symlink: .claude/commands/spec -> templates/commands/spec
-        2. File-level symlinks: individual files are symlinks to template files
-        """
-        spec_templates_dir = templates_dir / "spec"
-        spec_commands_dir = claude_commands_dir / "spec"
-
-        if not spec_templates_dir.exists():
-            pytest.skip("No templates/commands/spec directory")
-        if not spec_commands_dir.exists():
-            pytest.skip("No .claude/commands/spec directory")
-
-        template_files = {
-            f.name for f in spec_templates_dir.glob("*.md") if f.is_file()
-        }
-
-        # Check if directory itself is a symlink (directory-level strategy)
-        if spec_commands_dir.is_symlink():
-            # Directory-level symlink - files inside match templates
-            command_files = {
-                f.name for f in spec_commands_dir.glob("*.md") if f.is_file()
-            }
-        else:
-            # File-level symlinks - check individual symlinks
-            command_files = {
-                f.name for f in spec_commands_dir.glob("*.md") if f.is_symlink()
-            }
-
-        assert template_files == command_files, (
-            f"Speckit symlink mismatch.\n"
-            f"Templates only: {sorted(template_files - command_files)}\n"
-            f"Commands only: {sorted(command_files - template_files)}"
-        )
-
     def test_init_would_copy_same_files(
         self, claude_commands_dir: Path, templates_dir: Path
     ) -> None:
@@ -164,6 +125,7 @@ class TestDevSetupInitEquivalence:
         init_files: set[str] = set()
 
         # Collect active dev-setup files (supports directory or file symlinks)
+        # Note: spec namespace was consolidated into flow namespace
         flowspec_commands = claude_commands_dir / "flow"
         if flowspec_commands.exists():
             is_dir_symlink = flowspec_commands.is_symlink()
@@ -171,32 +133,16 @@ class TestDevSetupInitEquivalence:
                 # If directory is symlink, check is_file; otherwise check is_symlink
                 if is_dir_symlink:
                     if f.is_file() and _is_active_template(f.name):
-                        dev_setup_files.add(f"flowspec/{f.name}")
+                        dev_setup_files.add(f"flow/{f.name}")
                 elif f.is_symlink() and _is_active_template(f.name):
-                    dev_setup_files.add(f"flowspec/{f.name}")
-
-        spec_commands = claude_commands_dir / "spec"
-        if spec_commands.exists():
-            is_dir_symlink = spec_commands.is_symlink()
-            for f in spec_commands.glob("*.md"):
-                if is_dir_symlink:
-                    if f.is_file() and _is_active_template(f.name):
-                        dev_setup_files.add(f"spec/{f.name}")
-                elif f.is_symlink() and _is_active_template(f.name):
-                    dev_setup_files.add(f"spec/{f.name}")
+                    dev_setup_files.add(f"flow/{f.name}")
 
         # Collect active init templates (exclude deprecated)
         flowspec_templates = templates_dir / "flow"
         if flowspec_templates.exists():
             for template in flowspec_templates.glob("*.md"):
                 if template.is_file() and _is_active_template(template.name):
-                    init_files.add(f"flowspec/{template.name}")
-
-        spec_templates = templates_dir / "spec"
-        if spec_templates.exists():
-            for template in spec_templates.glob("*.md"):
-                if template.is_file() and _is_active_template(template.name):
-                    init_files.add(f"spec/{template.name}")
+                    init_files.add(f"flow/{template.name}")
 
         assert dev_setup_files == init_files, (
             f"File set mismatch between dev-setup and init.\n"
