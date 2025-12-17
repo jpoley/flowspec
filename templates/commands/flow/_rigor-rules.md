@@ -238,7 +238,7 @@ Branch names MUST follow the pattern: `{hostname}/task-{id}/{slug-description}`
 ```bash
 BRANCH=$(git branch --show-current 2>/dev/null)
 if [ -n "$BRANCH" ]; then
-  if ! [[ "$BRANCH" =~ ^[a-z0-9-]+/task-[0-9]+/[a-z0-9-]+$ ]]; then
+  if ! echo "$BRANCH" | grep -Eq '^[a-z0-9-]+/task-[0-9]+/[a-z0-9-]+$'; then
     echo "[X] EXEC-002 VIOLATION: Invalid branch name: $BRANCH"
     echo "Expected format: hostname/task-NNN/slug-description"
     echo "Example: $(hostname -s | tr '[:upper:]' '[:lower:]')/task-123/add-feature"
@@ -968,7 +968,7 @@ Iteration branches MUST follow naming pattern: `{original-branch}-v2`, `-v3`, et
 **Validation**:
 ```bash
 BRANCH=$(git branch --show-current 2>/dev/null)
-if [[ "$BRANCH" =~ -v[0-9]+$ ]]; then
+if echo "$BRANCH" | grep -Eq '\-v[0-9]+$'; then
   # This is an iteration branch - validate base exists
   # Use [0-9][0-9]* to require at least one digit for consistency
   BASE_BRANCH=$(echo "$BRANCH" | sed 's/-v[0-9][0-9]*$//')
