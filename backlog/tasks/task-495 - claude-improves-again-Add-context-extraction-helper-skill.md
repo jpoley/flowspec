@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - '@muckross'
 created_date: '2025-12-14 03:06'
-updated_date: '2025-12-15 01:50'
+updated_date: '2025-12-17 01:26'
 labels:
   - context-engineering
   - skills
@@ -25,9 +25,9 @@ Source: docs/research/archon-inspired.md Task 8
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Skill created at .claude/skills/context-extractor/SKILL.md
-- [ ] #2 Accepts path to a PRD file as input
-- [ ] #3 Parses All Needed Context section into structured JSON
-- [ ] #4 Returns code files, docs, examples, gotchas as structured data
-- [ ] #5 Can be invoked by other flow commands
+- [x] #1 Skill created at .claude/skills/context-extractor/SKILL.md
+- [x] #2 Accepts path to a PRD file as input
+- [x] #3 Parses All Needed Context section into structured JSON
+- [x] #4 Returns code files, docs, examples, gotchas as structured data
+- [x] #5 Can be invoked by other flow commands
 <!-- AC:END -->
