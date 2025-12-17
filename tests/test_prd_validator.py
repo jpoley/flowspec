@@ -128,6 +128,14 @@ System must respond within 200ms.
 ## Success Metrics
 
 - Login success rate > 99%
+
+## All Needed Context
+
+### Examples
+
+| Example | Location | Relevance to This Feature |
+|---------|----------|---------------------------|
+| Auth Example | `examples/auth/` | Demonstrates authentication patterns |
 """
 
     @pytest.fixture
@@ -184,6 +192,14 @@ NFR.
 ## Success Metrics
 
 Metrics.
+
+## All Needed Context
+
+### Examples
+
+| Example | Location | Relevance to This Feature |
+|---------|----------|---------------------------|
+| Example | `examples/` | Example patterns |
 """
 
     def test_validate_valid_prd(
@@ -263,6 +279,46 @@ Metrics.
         assert not result.is_valid
         assert any("user stories" in e.lower() for e in result.errors)
 
+    def test_validate_missing_all_needed_context(
+        self,
+        validator: PRDValidator,
+        tmp_path: Path,
+    ) -> None:
+        """Test validating PRD missing All Needed Context section (includes Examples)."""
+        content = """# PRD: Auth
+
+## Executive Summary
+
+Summary.
+
+## Problem Statement
+
+Problem.
+
+## User Stories
+
+As a user, I want to login so that I can access.
+
+## Functional Requirements
+
+Requirements.
+
+## Non-Functional Requirements
+
+NFR.
+
+## Success Metrics
+
+Metrics.
+"""
+        prd_file = tmp_path / "auth.md"
+        prd_file.write_text(content)
+
+        result = validator.validate_prd(prd_file)
+
+        assert not result.is_valid
+        assert any("all needed context" in e.lower() for e in result.errors)
+
     def test_validate_empty_section(
         self,
         validator: PRDValidator,
@@ -292,6 +348,14 @@ NFR.
 ## Success Metrics
 
 Metrics.
+
+## All Needed Context
+
+### Examples
+
+| Example | Location | Relevance to This Feature |
+|---------|----------|---------------------------|
+| Example | `examples/` | Example patterns |
 """
         prd_file = tmp_path / "auth.md"
         prd_file.write_text(content)
@@ -367,6 +431,14 @@ NFR.
 ## Success Metrics
 
 Metrics.
+
+## All Needed Context
+
+### Examples
+
+| Example | Location | Relevance to This Feature |
+|---------|----------|---------------------------|
+| Example | `examples/` | Example patterns |
 """
         prd_file = tmp_path / "auth.md"
         prd_file.write_text(content)
@@ -416,6 +488,14 @@ NFR.
 ## Success Metrics
 
 Metrics.
+
+## All Needed Context
+
+### Examples
+
+| Example | Location | Relevance to This Feature |
+|---------|----------|---------------------------|
+| Example | `examples/` | Example patterns |
 """
         prd_file = tmp_path / "auth.md"
         prd_file.write_text(content)
@@ -462,6 +542,14 @@ NFR.
 ## Success Metrics
 
 Metrics.
+
+## All Needed Context
+
+### Examples
+
+| Example | Location | Relevance to This Feature |
+|---------|----------|---------------------------|
+| Example | `examples/` | Example patterns |
 """
         (prd_dir / "auth.md").write_text(content)
 
