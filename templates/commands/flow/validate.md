@@ -836,31 +836,32 @@ echo "[Y] Branch is up-to-date with main (zero commits behind)"
 # Check all commits in branch for DCO sign-off
 echo "Checking DCO sign-off for all commits..."
 
-# Use process substitution to avoid subshell variable scope issues
-UNSIGNED_COMMITS=""
-while read -r hash msg; do
+# Collect unsigned commits in a temporary file (portable to bash 3.2+)
+UNSIGNED_COMMITS_FILE="$(mktemp -t unsigned_commits.XXXXXX)"
+git log origin/main..HEAD --format='%h %s' 2>/dev/null | while read -r hash msg; do
   # Check for Signed-off-by anywhere in commit body (not just at line start)
   if ! git log -1 --format='%B' "$hash" 2>/dev/null | grep -q "Signed-off-by:"; then
-    UNSIGNED_COMMITS="${UNSIGNED_COMMITS}${hash} ${msg}\n"
+    printf '%s %s\n' "$hash" "$msg" >> "$UNSIGNED_COMMITS_FILE"
   fi
-done < <(git log origin/main..HEAD --format='%h %s' 2>/dev/null)
+done
 
-# Count unsigned commits: use grep -c . because echo -e on empty/newline-only strings
-# produces extra lines that wc -l would count incorrectly
-if [ -n "$UNSIGNED_COMMITS" ]; then
-  UNSIGNED_COUNT=$(echo -e "$UNSIGNED_COMMITS" | grep -c .)
+# Count unsigned commits: use grep -c . because blank lines are ignored
+if [ -s "$UNSIGNED_COMMITS_FILE" ]; then
+  UNSIGNED_COUNT=$(grep -c . "$UNSIGNED_COMMITS_FILE")
   echo "[X] RIGOR VIOLATION (PR-001): $UNSIGNED_COUNT commits missing DCO sign-off"
   echo ""
   echo "Unsigned commits:"
-  echo -e "$UNSIGNED_COMMITS" | while read -r line; do
+  while read -r line; do
     [ -n "$line" ] && echo "  $line"
-  done
+  done < "$UNSIGNED_COMMITS_FILE"
   echo ""
   echo "Fix: Add sign-off to all commits:"
   echo "  git rebase origin/main --exec 'git commit --amend --no-edit -s'"
   echo "  git push --force-with-lease origin \$(git branch --show-current)"
+  rm -f "$UNSIGNED_COMMITS_FILE"
   exit 1
 fi
+rm -f "$UNSIGNED_COMMITS_FILE"
 
 echo "[Y] All commits have DCO sign-off"
 ```
