@@ -176,8 +176,9 @@ If a spec file is found (`$SPEC_FILE` is not empty), extract the "Feature Valida
 if [ -n "$SPEC_FILE" ]; then
   # Extract the Feature Validation Plan section using awk
   # Uses flag-based approach to avoid including next section header
+  # Note: awk ERE supports | alternation without escaping
   FVP_SECTION=$(awk '
-    /^## (Feature Validation Plan|VALIDATION LOOP)/ { in_section=1; print; next }
+    /^## Feature Validation Plan/ || /^## VALIDATION LOOP/ { in_section=1; print; next }
     /^## / && in_section { exit }
     in_section { print }
   ' "$SPEC_FILE")
@@ -208,22 +209,50 @@ Test may fail if database not initialized
 
 #### Step 3: Parse Validation Commands
 
-Extract the commands from the "Commands" subsection. Note: Commands should be listed directly without code block wrappers to avoid parsing ambiguity.
+Extract the commands from the "Commands" subsection.
+
+> **Important**: Commands should be listed directly without code block wrappers (no triple backticks).
+> The parser looks for lines starting with command names (pytest, ruff, etc.) and will NOT
+> correctly extract commands wrapped in markdown code blocks.
+>
+> **Correct format:**
+> ```
+> ### Commands
+> pytest tests/feature/ -v
+> ruff check src/feature/
+> ```
+>
+> **Incorrect format** (commands will be ignored):
+> ```
+> ### Commands
+> ```bash
+> pytest tests/feature/ -v
+> ```
+> ```
 
 ```bash
-# Extract commands from the Commands subsection
-# Looks for lines after "### Commands" until the next "###" header or section end
-VALIDATION_COMMANDS=$(echo "$FVP_SECTION" | awk '
-  BEGIN { in_cmds=0 }
-  /^### Commands/ { in_cmds=1; next }
-  /^###/ && in_cmds { exit }
-  /^## / && in_cmds { exit }
-  in_cmds && /^[^#[:space:]]/ { print }
-  in_cmds && /^[[:space:]]+[^#]/ { print }
-')
+# Check if FVP_SECTION was extracted before parsing
+if [ -z "${FVP_SECTION+x}" ] || [ -z "$FVP_SECTION" ]; then
+  echo "⚠️ Feature Validation Plan section is missing or empty; cannot parse validation commands."
+  VALIDATION_COMMANDS=""
+else
+  # Extract commands from the Commands subsection
+  # Looks for lines after "### Commands" until the next "###" header or section end
+  # Pattern matches:
+  #   - Lines starting with non-whitespace, non-hash chars (direct commands)
+  #   - Indented lines with actual content (not just whitespace)
+  VALIDATION_COMMANDS=$(echo "$FVP_SECTION" | awk '
+    BEGIN { in_cmds=0 }
+    /^### Commands/ { in_cmds=1; next }
+    /^###/ && in_cmds { exit }
+    /^## / && in_cmds { exit }
+    in_cmds && /^[^#[:space:]]/ { print }
+    in_cmds && /^[[:space:]]+[^#[:space:]]/ { gsub(/^[[:space:]]+/, ""); print }
+  ')
 
-if [ -z "$VALIDATION_COMMANDS" ]; then
-  echo "⚠️ No validation commands found in Feature Validation Plan"
+  if [ -z "$VALIDATION_COMMANDS" ]; then
+    echo "⚠️ No validation commands found in Feature Validation Plan"
+  fi
 fi
 ```
 
@@ -273,9 +302,21 @@ SAFE_PATTERNS=(
   "^go test"
 )
 
+# Dangerous shell metacharacters that should not appear in commands
+# These could allow command injection even if prefix matches
+DANGEROUS_CHARS='[;|&$`\\]'
+
 # Validate each command against allowlist
 validate_command() {
   local cmd="$1"
+
+  # First check for dangerous shell metacharacters
+  if [[ "$cmd" =~ $DANGEROUS_CHARS ]]; then
+    echo "⚠️ Security: Command contains shell metacharacters: $cmd"
+    return 1  # Reject commands with potentially dangerous chars
+  fi
+
+  # Then check against allowlist patterns
   for pattern in "${SAFE_PATTERNS[@]}"; do
     if [[ "$cmd" =~ $pattern ]]; then
       return 0  # Safe
@@ -285,17 +326,33 @@ validate_command() {
 }
 
 # Process commands with validation
-echo "$VALIDATION_COMMANDS" | while read -r cmd; do
+# Use here-string (<<<) instead of pipe to avoid subshell
+overall_status=0
+while IFS= read -r cmd; do
   if [ -n "$cmd" ]; then
     if validate_command "$cmd"; then
       echo "✅ Validated: $cmd"
+      # Execute command and capture exit code
       eval "$cmd"
+      exit_code=$?
+      if [ "$exit_code" -eq 0 ]; then
+        echo "✅ Command succeeded: $cmd"
+      else
+        echo "❌ Command failed with exit code $exit_code: $cmd"
+        overall_status=1
+      fi
     else
       echo "⚠️ Command not in allowlist, skipping: $cmd"
       echo "   Add to SAFE_PATTERNS if this is a legitimate test command"
     fi
   fi
-done
+done <<< "$VALIDATION_COMMANDS"
+
+# Check overall status and halt if any command failed
+if [ "$overall_status" -ne 0 ]; then
+  echo "❌ One or more validation commands failed. Halting before Phase 1."
+  exit 1
+fi
 ```
 
 - Validate commands against allowlist before execution
