@@ -292,21 +292,25 @@ Based on user choice:
 ```bash
 # Allowlist of safe command patterns (customize per project)
 # Patterns are anchored at both start and end for security
+# Note: ( +.*)? requires at least one space before arguments
 SAFE_PATTERNS=(
-  "^pytest( .*)?$"
-  "^ruff( .*)?$"
-  "^mypy( .*)?$"
-  "^flowspec( .*)?$"
-  "^npm test( .*)?$"
-  "^npm run [A-Za-z][A-Za-z0-9:_-]*( .*)?$"
-  "^cargo test( .*)?$"
-  "^go test( .*)?$"
+  "^pytest( +.*)?$"
+  "^ruff( +.*)?$"
+  "^mypy( +.*)?$"
+  "^flowspec( +.*)?$"
+  "^npm test( +.*)?$"
+  "^npm run [A-Za-z_][A-Za-z0-9:_-]*( +.*)?$"
+  "^cargo test( +.*)?$"
+  "^go test( +.*)?$"
 )
 
 # Dangerous shell metacharacters that should not appear in commands
 # These could allow command injection even if prefix matches
 # Includes: semicolon, pipe, ampersand, dollar, backtick, backslash,
 #           parentheses, braces, angle brackets, tab, newline
+# Note: '$' is intentionally included to block variable expansion. This also
+#       blocks otherwise-safe commands containing literal $ (e.g., grep patterns).
+# Note: '\\\\' becomes '\\' after $'...' shell parsing, then '\' in the regex.
 DANGEROUS_CHARS=$'[;|&$`\\\\(){}<>\t\n]'
 
 # Validate each command against allowlist
@@ -358,13 +362,14 @@ while IFS= read -r cmd; do
     else
       echo "⚠️ Command not in allowlist, skipping: $cmd"
       echo "   Add to SAFE_PATTERNS if this is a legitimate test command"
+      overall_status=1
     fi
   fi
 done <<< "$VALIDATION_COMMANDS"
 
-# Check overall status and halt if any command failed
+# Check overall status and halt if any command failed or was skipped
 if [ "$overall_status" -ne 0 ]; then
-  echo "❌ One or more validation commands failed. Halting before Phase 1."
+  echo "❌ One or more validation commands failed or were skipped. Halting before Phase 1."
   exit 1
 fi
 ```
