@@ -62,8 +62,9 @@ AC_PATTERN = re.compile(r"(?:AC\d+:?|[-*]\s*\[[ x]\])\s*.+", re.IGNORECASE)
 
 # Example reference pattern: table row with examples/ path
 # Matches rows like: | Example Name | `examples/path` | Description |
+# Excludes placeholder rows with curly braces like: | {Example name} | examples/{path} |
 EXAMPLE_REFERENCE_PATTERN = re.compile(
-    r"^\s*\|\s*[^|]+\s*\|\s*`?examples/[^|`]+`?\s*\|\s*[^|]+\s*\|",
+    r"^\s*\|\s*[^|]+\s*\|\s*`?examples/[^|`{}]+`?\s*\|\s*[^|]+\s*\|",
     re.MULTILINE,
 )
 
@@ -209,12 +210,12 @@ class PRDValidator:
                 "Consider adding AC1, AC2, etc."
             )
 
-        # Count example references in All Needed Context section
+        # Count example references (expected in All Needed Context section)
         example_count = len(EXAMPLE_REFERENCE_PATTERN.findall(content))
         if example_count == 0:
             errors.append(
-                "No example references found in 'All Needed Context' section. "
-                "Expected at least one row with examples/ path in table format."
+                "No example references found. Expected at least one table row with "
+                "an examples/ path in the 'All Needed Context' section."
             )
 
         # Check for empty sections
