@@ -22,6 +22,7 @@ Breaking CLAUDE.md into modular components:
 | `flowspec_workflow.yml` | Workflow configuration | `/flowspec` commands |
 | `flowspec_workflow.schema.json` | Workflow config JSON schema | Validation |
 | `WORKFLOW_DESIGN_SPEC.md` | Workflow system design spec | Reference |
+| `decisions/` | JSONL decision logs (one file per task) | All workflow commands |
 
 ## Using @import Syntax
 
@@ -56,6 +57,60 @@ Claude Code will automatically inline the content when loading the file.
 - **Modular CLAUDE.md**: 211 lines (56% reduction)
 - **Extracted content**: 292 lines across 4 modular files
 - **Result**: More maintainable, less duplication, easier to scan
+
+## Decision Logging
+
+The `memory/decisions/` directory contains JSONL decision logs for all workflow tasks. Each task gets its own `.jsonl` file.
+
+### Directory Structure
+
+```
+memory/decisions/
+├── README.md           # Decision log documentation
+├── task-541.jsonl      # Decision log for task-541
+├── task-542.jsonl      # Decision log for task-542
+└── ...                 # One file per task
+```
+
+### What Gets Logged
+
+All significant decisions made during workflow execution:
+- Technology choices (library, framework, pattern selection)
+- Architecture changes and trade-offs
+- Design pattern decisions
+- Security approach choices
+- Performance trade-offs
+- Breaking changes
+
+### How to Log Decisions
+
+Use the helper script:
+
+```bash
+./scripts/bash/rigor-decision-log.sh \
+  --task task-542 \
+  --phase execution \
+  --decision "Selected JSONL format for decision logs" \
+  --rationale "Append-only, git-friendly, streaming-compatible" \
+  --actor "@backend-engineer" \
+  --alternatives "SQLite,Plain text,YAML"
+```
+
+### JSONL Schema
+
+Each line is a valid JSON object with required and optional fields. See `memory/decisions/README.md` for:
+- Full schema definition
+- Query examples (using `jq`)
+- Best practices for decision logging
+- Integration with rigor rules (EXEC-003, VALID-001)
+
+### Why JSONL?
+
+- **Append-only**: Safe for concurrent writes
+- **Git-friendly**: Line-based format shows clear diffs
+- **Streaming-compatible**: Process one entry at a time
+- **Queryable**: Standard `jq` tool for filtering and analysis
+- **Version-controlled**: Full decision history in git
 
 ## Maintenance
 
