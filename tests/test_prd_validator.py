@@ -475,6 +475,63 @@ Metrics.
         assert not result.is_valid
         assert any("example references" in e.lower() for e in result.errors)
 
+    def test_validate_closing_brace_only_excluded(
+        self,
+        validator: PRDValidator,
+        tmp_path: Path,
+    ) -> None:
+        """Test that rows with only closing braces } are also excluded.
+
+        This verifies that both opening { and closing } braces trigger exclusion,
+        not just opening braces. Catches malformed placeholders like "}Description}"
+        or incomplete template rows.
+        """
+        content = """# PRD: Auth
+
+## Executive Summary
+
+Summary.
+
+## Problem Statement
+
+Problem.
+
+## User Stories
+
+As a user, I want to login so that I can access.
+
+## Functional Requirements
+
+Requirements.
+
+## Non-Functional Requirements
+
+NFR.
+
+## Success Metrics
+
+Metrics.
+
+## All Needed Context
+
+### Examples
+
+| Example | Location | Relevance to This Feature |
+|---------|----------|---------------------------|
+| Example} | `examples/auth/file.py` | Description here |
+| Name | `examples/auth/}path.py` | Description |
+| Valid Name | `examples/auth/valid.py` | }Broken description |
+| Real Example | `examples/auth/handler.py` | Correct description |
+"""
+        prd_file = tmp_path / "auth.md"
+        prd_file.write_text(content)
+
+        result = validator.validate_prd(prd_file)
+
+        # Only the last row (Real Example) has no braces in any column
+        assert result.example_count == 1
+        assert result.is_valid  # Has the one required example
+
     def test_validate_mixed_placeholder_and_real_examples(
         self,
         validator: PRDValidator,
