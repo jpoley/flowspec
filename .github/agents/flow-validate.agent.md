@@ -488,7 +488,7 @@ else
     SPEC_FILE="$PRD_FILE"
     echo "✅ Found PRD referencing task: $SPEC_FILE"
   else
-    echo "⚠️ No PRP/PRD file found for ${TASK_ID}; skipping Feature Validation Plan extraction."
+    echo "ℹ️ No PRP/PRD file found for ${TASK_ID}; skipping Feature Validation Plan extraction."
   fi
 fi
 ```
@@ -516,7 +516,7 @@ if [ -n "$SPEC_FILE" ]; then
   ' "$SPEC_FILE")
 
   if [ -z "$FVP_SECTION" ]; then
-    echo "⚠️ No Feature Validation Plan section found in: $SPEC_FILE"
+    echo "ℹ️ No Feature Validation Plan section found in: $SPEC_FILE"
   else
     echo "✅ Found Feature Validation Plan section"
   fi
@@ -564,26 +564,26 @@ Extract the commands from the "Commands" subsection.
 
 ```bash
 # Check if FVP_SECTION was extracted before parsing
-if [ -z "${FVP_SECTION+x}" ] || [ -z "$FVP_SECTION" ]; then
-  echo "⚠️ Feature Validation Plan section is missing or empty; cannot parse validation commands."
+if [ -z "$FVP_SECTION" ]; then
+  echo "ℹ️ Feature Validation Plan section is missing or empty; skipping command extraction."
   VALIDATION_COMMANDS=""
 else
   # Extract commands from the Commands subsection
   # Looks for lines after "### Commands" until the next "###" header or section end
   # Pattern matches:
   #   - Lines starting with non-whitespace, non-hash chars (direct commands)
-  #   - Indented lines with actual content (not just whitespace)
+  #   - Indented non-comment lines with actual content (strips leading whitespace)
   VALIDATION_COMMANDS=$(echo "$FVP_SECTION" | awk '
     BEGIN { in_cmds=0 }
     /^### Commands/ { in_cmds=1; next }
     /^###/ && in_cmds { exit }
     /^## / && in_cmds { exit }
     in_cmds && /^[^#[:space:]]/ { print }
-    in_cmds && /^[[:space:]]+[^#[:space:]]/ { gsub(/^[[:space:]]+/, ""); print }
+    in_cmds && /^[[:space:]]+[^#]/ { gsub(/^[[:space:]]+/, ""); print }
   ')
 
   if [ -z "$VALIDATION_COMMANDS" ]; then
-    echo "⚠️ No validation commands found in Feature Validation Plan"
+    echo "ℹ️ No validation commands found in Feature Validation Plan"
   fi
 fi
 ```
@@ -623,20 +623,23 @@ Based on user choice:
 
 ```bash
 # Allowlist of safe command patterns (customize per project)
+# Patterns are anchored at both start and end for security
 SAFE_PATTERNS=(
-  "^pytest "
-  "^ruff "
-  "^mypy "
-  "^flowspec "
-  "^npm test"
-  "^npm run "
-  "^cargo test"
-  "^go test"
+  "^pytest( .*)?$"
+  "^ruff( .*)?$"
+  "^mypy( .*)?$"
+  "^flowspec( .*)?$"
+  "^npm test( .*)?$"
+  "^npm run [A-Za-z0-9:_-]+( .*)?$"
+  "^cargo test( .*)?$"
+  "^go test( .*)?$"
 )
 
 # Dangerous shell metacharacters that should not appear in commands
 # These could allow command injection even if prefix matches
-DANGEROUS_CHARS='[;|&$`\\]'
+# Includes: semicolon, pipe, ampersand, dollar, backtick, backslash,
+#           parentheses, braces, angle brackets, newline
+DANGEROUS_CHARS='[;|&$`\\(){}<>]'
 
 # Validate each command against allowlist
 validate_command() {
@@ -664,8 +667,10 @@ while IFS= read -r cmd; do
   if [ -n "$cmd" ]; then
     if validate_command "$cmd"; then
       echo "✅ Validated: $cmd"
-      # Execute command and capture exit code
-      eval "$cmd"
+      # Execute command safely without using eval
+      # Parse command into array and execute directly
+      IFS=' ' read -r -a cmd_parts <<< "$cmd"
+      "${cmd_parts[@]}"
       exit_code=$?
       if [ "$exit_code" -eq 0 ]; then
         echo "✅ Command succeeded: $cmd"
@@ -720,12 +725,12 @@ These results will be included in implementation notes during Phase 5.
 **Error Handling**:
 - If PRD/PRP file not found: Print info message and skip to Phase 1
   ```
-  ℹ️  Phase 0.5 Skipped: No PRD/PRP file found for task-094
+  ℹ️ Phase 0.5 Skipped: No PRD/PRP file found for task-094
      Continuing with standard test suite...
   ```
 - If Feature Validation Plan section not found: Skip to Phase 1
   ```
-  ℹ️  Phase 0.5 Skipped: No Feature Validation Plan in PRD/PRP
+  ℹ️ Phase 0.5 Skipped: No Feature Validation Plan in PRD/PRP
      Continuing with standard test suite...
   ```
 - If any validation command fails: Halt workflow
