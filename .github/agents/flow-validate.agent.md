@@ -1658,14 +1658,14 @@ else
   #   - Lines starting with non-whitespace, non-hash chars (direct commands)
   #   - Indented non-comment lines with actual content (strips leading whitespace)
   # Filters out:
-  #   - Code block markers via /^```/ which matches ``` and ```bash (prefix match)
+  #   - Code block markers via /^```[[:space:]]*$/ which matches standalone fence lines
   #   - This is defense-in-depth: docs say no code blocks, but we handle them gracefully
   VALIDATION_COMMANDS=$(echo "$FVP_SECTION" | awk '
     BEGIN { in_cmds=0; in_code_block=0 }
     /^### Commands/ { in_cmds=1; next }
     /^###/ && in_cmds { exit }
     /^## / && in_cmds { exit }
-    in_cmds && /^```/ { in_code_block = !in_code_block; next }  # Toggle fenced code block state
+    in_cmds && /^```[[:space:]]*$/ { in_code_block = !in_code_block; next }  # Toggle on standalone fence lines only
     in_cmds && in_code_block { next }  # Skip all lines inside fenced code blocks
     in_cmds && /^[^#[:space:]]/ { print }
     in_cmds && /^[[:space:]]+[^#[:space:]]/ { gsub(/^[[:space:]]+/, ""); if (NF > 0) print }
@@ -1713,27 +1713,30 @@ Based on user choice:
 ```bash
 # Allowlist of safe command patterns (customize per project)
 # Patterns are anchored at both start and end for security
-# Note: ( +.*)? requires at least one space before arguments
+# Note: ( .*)? allows optional space and arguments (tolerant of trailing whitespace)
 # Security assumption: npm run/test assumes package.json scripts are trusted.
 #   The allowlist validates command format but not the script content itself.
 SAFE_PATTERNS=(
-  "^pytest( +.*)?$"
-  "^ruff( +.*)?$"
-  "^mypy( +.*)?$"
-  "^flowspec( +.*)?$"
-  "^npm test( +.*)?$"
-  "^npm run [@A-Za-z_][@A-Za-z0-9:._-]*( +.*)?$"
-  "^cargo test( +.*)?$"
-  "^go test( +.*)?$"
+  "^pytest( .*)?$"
+  "^ruff( .*)?$"
+  "^mypy( .*)?$"
+  "^flowspec( .*)?$"
+  "^npm test( .*)?$"
+  "^npm run (@[A-Za-z0-9_-]+/)?[A-Za-z_][A-Za-z0-9:._-]*( .*)?$"
+  "^cargo test( .*)?$"
+  "^go test( .*)?$"
 )
 
 # Dangerous shell metacharacters that should not appear in commands
 # These could allow command injection even if prefix matches
 # Includes: semicolon, pipe, ampersand, dollar, backtick, backslash,
-#           parentheses, braces, angle brackets, tab, newline
+#           parentheses, braces, angle brackets, quotes, tab, newline
 # Note: '$' is intentionally included to block variable expansion. This also
 #       blocks otherwise-safe commands containing literal $ (e.g., grep patterns).
-# Note: '\\\\' in $'...' syntax produces a literal '\' character for the regex pattern.
+# Note: In ANSI-C quoting ($'...'), '\\\\' becomes '\\' in the string, which
+#       the regex engine interprets as a single literal '\' character.
+# Note: Single and double quotes are blocked to prevent shell interpretation attacks
+#       when commands are executed via bash -c.
 #
 # Design trade-off: Security over flexibility. Blocking these characters prevents
 # command injection but also blocks some legitimate use cases. Workarounds:
@@ -1741,7 +1744,7 @@ SAFE_PATTERNS=(
 #     literal character classes like [0-9] instead of \d
 #   - Dollar sign in grep patterns: Run grep manually or use Option 2 (print commands)
 #   - Commands with shell features: Use Option 2 to print and run manually
-DANGEROUS_CHARS=$'[;|&$`\\\\(){}<>\t\n]'
+DANGEROUS_CHARS=$'[;|&$`\\\\(){}\'\"<>\t\n]'
 
 # Validate each command against allowlist
 validate_command() {
@@ -1754,12 +1757,12 @@ validate_command() {
   fi
 
   # Check for path traversal attempts (e.g., pytest ../../etc/passwd)
-  # Pattern requires "/" adjacent to ".." to catch actual path traversal:
-  #   - Matches: /../, /.. at end, ../ at start or after space
+  # Pattern requires "/" or boundary adjacent to ".." to catch actual path traversal:
+  #   - Matches: /../, /.. at end or before space, ../ at start or after space
   #   - Does NOT match: test..py, 1..10, file...name (consecutive dots without /)
   # Limitation: Does not catch URL-encoded (%2e%2e) or UTF-8 encoded traversal.
   #   Such attacks are mitigated by the allowlist and DANGEROUS_CHARS checks.
-  if [[ "$cmd" =~ (^|[[:space:]])\.\./ || "$cmd" =~ /\.\.(\/|$) ]]; then
+  if [[ "$cmd" =~ (^|[[:space:]])\.\.(/|[[:space:]]|$) || "$cmd" =~ /\.\.(/|[[:space:]]|$) ]]; then
     echo "⚠️ Security: Command contains path traversal (..): $cmd"
     return 1  # Reject commands with path traversal
   fi
