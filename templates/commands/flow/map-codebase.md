@@ -1,6 +1,10 @@
 ---
 description: Generate bounded directory tree listings and feature maps for codebase areas.
 mode: agent
+loop: utility
+# Loop Classification: UTILITY
+# This is a utility command that can be used in either loop. It generates codebase
+# maps for context and documentation but doesn't modify code or workflow state.
 ---
 
 ## User Input

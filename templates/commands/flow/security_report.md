@@ -1,5 +1,9 @@
 ---
 description: Generate comprehensive security audit report from scan and triage results using security-reporter skill.
+loop: outer
+# Loop Classification: OUTER LOOP
+# This command generates compliance and audit reports for stakeholders, part of the
+# outer loop's governance and reporting requirements.
 ---
 
 # /flow:security report - Security Audit Report Generator

@@ -1,5 +1,9 @@
 ---
 description: Execute operations workflow using SRE agent for CI/CD, Kubernetes, DevSecOps, observability, and operational excellence.
+loop: outer
+# Loop Classification: OUTER LOOP
+# This command is part of the outer loop (post-commit CI/CD phase). It handles deployment,
+# infrastructure, monitoring, and production operations after code has been validated.
 ---
 
 ## User Input

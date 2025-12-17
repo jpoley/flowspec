@@ -1,5 +1,9 @@
 ---
 description: Execute research and business validation workflow using specialized agents.
+loop: outer
+# Loop Classification: OUTER LOOP
+# This command is part of the outer loop (planning/design phase). It conducts research
+# and business validation to inform feature design and planning decisions.
 ---
 
 ## User Input

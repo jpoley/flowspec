@@ -1,6 +1,10 @@
 ---
 description: Process INITIAL feature intake documents to create backlog tasks with full context memory.
 mode: agent
+loop: outer
+# Loop Classification: OUTER LOOP
+# This command processes feature intake documents and creates backlog tasks. It's part
+# of the outer loop planning phase, preparing features for the SDD workflow.
 ---
 
 ## User Input

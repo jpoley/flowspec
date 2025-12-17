@@ -1,6 +1,10 @@
 ---
 description: Create or update feature specifications using PM planner agent (manages /spec.tasks).
 mode: agent
+loop: outer
+# Loop Classification: OUTER LOOP
+# This command is part of the outer loop (planning/design phase). It creates detailed
+# product requirements and user stories before implementation begins.
 ---
 
 ## User Input

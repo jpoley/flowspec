@@ -1,5 +1,9 @@
 ---
 description: Evaluate if SDD workflow is appropriate for a feature. Output: Full SDD workflow (complex), Spec-light mode (medium), Skip SDD (simple).
+loop: outer
+# Loop Classification: OUTER LOOP
+# This command is part of the outer loop (planning/design phase). It evaluates feature
+# complexity and determines workflow approach before implementation begins.
 ---
 
 ## User Input

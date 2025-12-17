@@ -1,6 +1,10 @@
 ---
 description: Generate PRP (Product Requirements Prompt) context bundles from existing artifacts.
 mode: agent
+loop: utility
+# Loop Classification: UTILITY
+# This is a utility command that can be used in either loop. It generates context
+# bundles from existing artifacts and doesn't modify code or workflow state.
 ---
 
 ## User Input

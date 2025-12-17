@@ -1,5 +1,9 @@
 ---
 description: Reset workflow configuration by re-asking startup questions and regenerating flowspec_workflow.yml
+loop: setup
+# Loop Classification: SETUP
+# This is a configuration command that re-initializes workflow settings. It's not part
+# of regular development loops but used for workflow reconfiguration.
 ---
 
 ## User Input

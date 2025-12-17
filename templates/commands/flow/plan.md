@@ -1,5 +1,9 @@
 ---
 description: Execute planning workflow using project architect and platform engineer agents (builds out /spec.constitution).
+loop: outer
+# Loop Classification: OUTER LOOP
+# This command is part of the outer loop (planning/design phase). It designs system
+# architecture, creates ADRs, and plans technical implementation strategy.
 ---
 
 ## User Input

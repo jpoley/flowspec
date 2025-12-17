@@ -1,5 +1,9 @@
 ---
 description: Integrate security scanning and remediation into the SDD workflow with automatic backlog task creation.
+loop: both
+# Loop Classification: BOTH LOOPS
+# Security commands span both loops: scanning happens in inner loop (pre-commit validation),
+# while compliance reporting and remediation tracking occur in outer loop (CI/CD).
 ---
 
 # /flow:security - Security Workflow Integration

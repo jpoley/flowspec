@@ -1,5 +1,9 @@
 ---
 description: Initialize or setup constitution for a project, handling both greenfield (new) and brownfield (existing) projects
+loop: setup
+# Loop Classification: SETUP
+# This is a one-time setup command that runs before any workflow loop. It initializes
+# project constitution and configuration but is not part of regular development cycles.
 ---
 
 ## User Input

@@ -1,5 +1,10 @@
 ---
 description: Execute validation and quality assurance using QA, security, documentation, and release management agents.
+loop: both
+# Loop Classification: BOTH LOOPS (BRIDGE)
+# This command spans both inner and outer loops. It performs inner loop quality checks
+# (testing, code review) while preparing artifacts for outer loop deployment (release
+# management, documentation). It bridges the transition from development to deployment.
 ---
 
 # /flow:validate - Enhanced Phased Validation Workflow

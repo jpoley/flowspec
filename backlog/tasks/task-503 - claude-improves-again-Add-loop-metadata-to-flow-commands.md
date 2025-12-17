@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - '@muckross'
 created_date: '2025-12-14 03:07'
-updated_date: '2025-12-15 01:50'
+updated_date: '2025-12-17 01:28'
 labels:
   - context-engineering
   - commands
@@ -24,9 +24,9 @@ Source: docs/research/archon-inspired.md Task 16
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Each flow command has loop: Inner or loop: Outer metadata
-- [ ] #2 /flow:specify marked as outer loop
-- [ ] #3 /flow:implement marked as inner loop
-- [ ] #4 /flow:validate documents which loop it spans
-- [ ] #5 Documentation explains loop routing implications
+- [x] #1 Each flow command has loop: Inner or loop: Outer metadata
+- [x] #2 /flow:specify marked as outer loop
+- [x] #3 /flow:implement marked as inner loop
+- [x] #4 /flow:validate documents which loop it spans
+- [x] #5 Documentation explains loop routing implications
 <!-- AC:END -->

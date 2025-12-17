@@ -1,5 +1,9 @@
 ---
 description: Execute implementation using specialized frontend and backend engineer agents with code review.
+loop: inner
+# Loop Classification: INNER LOOP
+# This command is part of the inner loop (implementation/execution phase). It writes
+# production code with fast iteration cycles (edit → run/tests → debug → repeat).
 ---
 
 ## User Input
