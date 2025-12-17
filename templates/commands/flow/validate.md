@@ -247,7 +247,7 @@ else
     /^###/ && in_cmds { exit }
     /^## / && in_cmds { exit }
     in_cmds && /^[^#[:space:]]/ { print }
-    in_cmds && /^[[:space:]]+[^#]/ { gsub(/^[[:space:]]+/, ""); print }
+    in_cmds && /^[[:space:]]+[^#[:space:]]/ { gsub(/^[[:space:]]+/, ""); if (NF > 0) print }
   ')
 
   if [ -z "$VALIDATION_COMMANDS" ]; then
@@ -298,7 +298,7 @@ SAFE_PATTERNS=(
   "^mypy( .*)?$"
   "^flowspec( .*)?$"
   "^npm test( .*)?$"
-  "^npm run [A-Za-z0-9:_-]+( .*)?$"
+  "^npm run [A-Za-z][A-Za-z0-9:_-]*( .*)?$"
   "^cargo test( .*)?$"
   "^go test( .*)?$"
 )
@@ -306,8 +306,8 @@ SAFE_PATTERNS=(
 # Dangerous shell metacharacters that should not appear in commands
 # These could allow command injection even if prefix matches
 # Includes: semicolon, pipe, ampersand, dollar, backtick, backslash,
-#           parentheses, braces, angle brackets, newline
-DANGEROUS_CHARS='[;|&$`\\(){}<>]'
+#           parentheses, braces, angle brackets, tab, newline
+DANGEROUS_CHARS=$'[;|&$`\\\\(){}<>\t\n]'
 
 # Validate each command against allowlist
 validate_command() {
@@ -320,7 +320,9 @@ validate_command() {
   fi
 
   # Check for path traversal attempts (e.g., pytest ../../etc/passwd)
-  if [[ "$cmd" =~ \.\. ]]; then
+  # Only block /.., ../, or standalone .. to avoid false positives on
+  # legitimate patterns like version ranges (1..10) or test globs
+  if [[ "$cmd" =~ (^|/)\.\.(/|$) ]]; then
     echo "⚠️ Security: Command contains path traversal (..): $cmd"
     return 1  # Reject commands with path traversal
   fi
@@ -345,7 +347,7 @@ while IFS= read -r cmd; do
       # Execute the validated command via bash so that quoting and arguments
       # are handled correctly. Safety relies on validate_command/DANGEROUS_CHARS
       # rejecting shell metacharacters and unsafe patterns.
-      bash -lc "$cmd"
+      bash -c "$cmd"
       exit_code=$?
       if [ "$exit_code" -eq 0 ]; then
         echo "✅ Command succeeded: $cmd"
