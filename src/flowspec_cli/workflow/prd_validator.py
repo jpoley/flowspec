@@ -38,6 +38,7 @@ REQUIRED_PRD_SECTIONS = [
     "functional requirements",
     "non-functional requirements",
     "success metrics",
+    "all needed context",  # Includes Examples, Gotchas, External Systems
 ]
 
 # Optional but recommended sections

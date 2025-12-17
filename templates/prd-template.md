@@ -134,7 +134,7 @@ As a {user role}, I want {goal} so that {benefit}.
 - **Specificity**: Clear explanation of which parts of the example apply to this feature
 - **Actionable**: Implementer can extract specific patterns or approaches from the example
 
-**Format**: | Example Name | Location | Relevance to This Feature |
+**Format**: | Example | Location | Relevance to This Feature |
 
 | Example | Location | Relevance to This Feature |
 |---------|----------|---------------------------|
@@ -142,9 +142,15 @@ As a {user role}, I want {goal} so that {benefit}.
 | {Example name} | `examples/{path}` | {How this example relates - be specific about which patterns/functions/approaches apply} |
 
 **Example of a Good Reference**:
+
+| Example | Location | Relevance to This Feature |
+|---------|----------|---------------------------|
 | MCP Security Agent | `examples/mcp/claude_security_agent.py` | Demonstrates MCP server setup and tool registration pattern that applies to our feature's API integration |
 
 **Example of a Poor Reference** (too vague):
+
+| Example | Location | Relevance to This Feature |
+|---------|----------|---------------------------|
 | Security Example | `examples/mcp/` | Shows security stuff |
 
 ### Gotchas / Prior Failures
