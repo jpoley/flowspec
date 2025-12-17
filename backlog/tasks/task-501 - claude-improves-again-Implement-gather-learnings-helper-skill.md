@@ -5,7 +5,7 @@ status: To Do
 assignee:
   - '@muckross'
 created_date: '2025-12-14 03:07'
-updated_date: '2025-12-15 01:50'
+updated_date: '2025-12-17 01:27'
 labels:
   - context-engineering
   - skills
@@ -25,10 +25,10 @@ Source: docs/research/archon-inspired.md Task 14
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Skill created at .claude/skills/gather-learnings/SKILL.md
-- [ ] #2 Reads learning files from memory/learnings directory
-- [ ] #3 Matches entries by relevant file paths
-- [ ] #4 Matches entries by keywords or tags
-- [ ] #5 Returns curated list suitable for PRD/PRP insertion
-- [ ] #6 Can be invoked by /flow:specify and /flow:generate-prp
+- [x] #1 Skill created at .claude/skills/gather-learnings/SKILL.md
+- [x] #2 Reads learning files from memory/learnings directory
+- [x] #3 Matches entries by relevant file paths
+- [x] #4 Matches entries by keywords or tags
+- [x] #5 Returns curated list suitable for PRD/PRP insertion
+- [x] #6 Can be invoked by /flow:specify and /flow:generate-prp
 <!-- AC:END -->
