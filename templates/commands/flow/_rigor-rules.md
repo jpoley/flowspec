@@ -985,12 +985,13 @@ fi
 # Create iteration branch from current
 git checkout -b "$(git branch --show-current)-v2"
 
-# Or calculate next version (POSIX-compliant, uses sed instead of BASH_REMATCH)
+# Or calculate next version (POSIX-compliant)
 CURRENT=$(git branch --show-current)
-if echo "$CURRENT" | grep -Eq '\-v[0-9]+$'; then
-  VERSION=$(echo "$CURRENT" | sed 's/.*-v\([0-9][0-9]*\)$/\1/')
+# Use sed for portable version extraction (not BASH_REMATCH)
+VERSION=$(printf '%s\n' "$CURRENT" | sed -n 's/.*-v\([0-9][0-9]*\)$/\1/p')
+if [ -n "$VERSION" ]; then
   NEXT=$((VERSION + 1))
-  BASE=$(echo "$CURRENT" | sed 's/-v[0-9]*$//')
+  BASE=$(printf '%s\n' "$CURRENT" | sed 's/-v[0-9][0-9]*$//')
   git checkout -b "${BASE}-v${NEXT}"
 else
   git checkout -b "${CURRENT}-v2"
