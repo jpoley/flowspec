@@ -2,8 +2,8 @@
 # Published to Docker Hub: jpoley/flowspec-agents
 #
 # This Dockerfile builds a pre-configured development environment with:
-# - Python 3.13 + uv package manager (Alpine-based, zero vulnerabilities)
-# - Node.js 20 + pnpm
+# - Python 3.13 + uv package manager (Docker Hardened Image - zero CVEs)
+# - Node.js 22 + pnpm
 # - AI coding assistant CLIs (Claude Code, Codex, Gemini, GitHub Copilot)
 # - Task management (backlog.md)
 # - Common development tools
@@ -11,34 +11,33 @@
 # Usage:
 #   docker pull jpoley/flowspec-agents:latest
 #   Or reference in devcontainer.json: "image": "jpoley/flowspec-agents:latest"
+#
+# IMPORTANT: Building this image requires authentication to dhi.io registry:
+#   docker login dhi.io  # Use Docker Hub credentials
+#
+# Security: Uses Docker Hardened Images (DHI) for 95%+ CVE reduction
+# - SLSA Build Level 3 provenance
+# - Complete SBOM included
+# - Apache 2.0 license (free, no restrictions)
+# See: https://www.docker.com/products/hardened-images/
 
-FROM python:3.13-alpine
+# Docker Hardened Image: Python 3.13 Alpine with dev tools
+# Includes: gcc, make, git, linux-headers, libffi-dev, openssl, musl-dev
+# Tag format: <version>-alpine<alpine-version>-dev
+FROM dhi.io/python:3.13-alpine3.22-dev
 
-# Install system dependencies
-# - bash: required for scripts and shell compatibility
-# - git: version control
-# - curl: downloads and health checks
-# - nodejs/npm: for AI CLI tools
-# - build-base: compilation tools for native extensions
-# - linux-headers: kernel headers for some Python packages
-# - libffi-dev: for cffi (used by many Python packages)
-# - openssl-dev: for cryptography packages
-# - zsh: developer-friendly shell
-# - shadow: for usermod/groupmod
-# - sudo: for privilege escalation
+# Install additional system dependencies not included in DHI base
+# DHI already includes: git, gcc, make, linux-headers, libffi-dev, openssl
+# We add: bash, curl, nodejs, npm, zsh, shadow, sudo, github-cli
 RUN apk add --no-cache \
     bash \
-    git \
     curl \
     nodejs \
     npm \
-    build-base \
-    linux-headers \
-    libffi-dev \
-    openssl-dev \
     zsh \
     shadow \
-    sudo
+    sudo \
+    github-cli
 
 # Install pnpm globally
 RUN npm install -g pnpm
@@ -48,9 +47,6 @@ RUN npm install -g pnpm
 # - CVE-2022-25883: semver@7.0.0 -> 7.5.4 (ReDoS vulnerability, fix >= 7.5.2)
 RUN npm install -g glob@11.1.0 semver@7.5.4 \
     && npm cache clean --force
-
-# Install GitHub CLI
-RUN apk add --no-cache github-cli
 
 # Create vscode user (matching devcontainer convention)
 RUN addgroup -g 1000 vscode \
@@ -97,7 +93,7 @@ RUN touch /home/vscode/.zshrc \
     && echo '' >> /home/vscode/.zshrc \
     && echo '# AI coding agent YOLO aliases (uncomment at your own risk)' >> /home/vscode/.zshrc \
     && echo '# alias claude-yolo="claude --dangerously-skip-permissions"' >> /home/vscode/.zshrc \
-    && echo '# alias codex-yolo="codex --dangerously-bypass-approvals-and-sandbox"' >> /home/vscode/.zshrc \
+    && echo '# alias codex-yolo="codex --dangerously-bypass-approvals-and-sandbox"' >> /home/vscode/.zshenv \
     && echo '# alias gemini-yolo="gemini --yolo"' >> /home/vscode/.zshrc
 
 # Labels for Docker Hub
@@ -106,6 +102,8 @@ LABEL org.opencontainers.image.description="Development container with AI coding
 LABEL org.opencontainers.image.source="https://github.com/jpoley/flowspec"
 LABEL org.opencontainers.image.vendor="jpoley"
 LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.base.name="dhi.io/python:3.13-alpine3.22-dev"
+LABEL org.opencontainers.image.base.digest="Docker Hardened Image with SLSA Level 3 provenance"
 
 # Verify installations
 RUN echo "=== Installation Verification ===" \

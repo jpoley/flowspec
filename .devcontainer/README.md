@@ -103,7 +103,11 @@ The devcontainer automatically forwards these to the container.
 
 ### Python Environment
 
-- **Python 3.13** (Alpine-based image with zero base vulnerabilities)
+- **Python 3.13** (Docker Hardened Image - dhi.io/python:3.13-alpine3.22-dev)
+  - Zero CVEs (95%+ reduction vs standard images)
+  - SLSA Build Level 3 provenance
+  - Complete SBOM included
+  - Apache 2.0 license
 - **uv** - Fast Python package manager
 - **ruff** - Linter and formatter
 - **pytest** - Test framework
@@ -349,7 +353,7 @@ jobs:
 ┌─────────────────────────────────────────────────────────────┐
 │                    Devcontainer                              │
 │  ┌─────────────────────────────────────────────────────────┐│
-│  │ Base: python:3.13-alpine (zero base vulnerabilities)    ││
+│  │ Base: dhi.io/python:3.13-alpine3.22-dev (DHI hardened)  ││
 │  └─────────────────────────────────────────────────────────┘│
 │                                                              │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
@@ -374,9 +378,28 @@ jobs:
 └─────────────────────────────────────────────────────────────┘
 ```
 
+## Building the Docker Image
+
+The devcontainer uses a Docker Hardened Image (DHI) as the base. To build locally:
+
+```bash
+# Authenticate to DHI registry (uses Docker Hub credentials)
+docker login dhi.io
+
+# Build the image
+docker build -t jpoley/flowspec-agents:latest .devcontainer/
+```
+
+**Note**: DHI authentication is free - no paid subscription required. Use your Docker Hub username and a Personal Access Token (PAT) as the password.
+
+For more information about Docker Hardened Images, see:
+- [Docker Hardened Images](https://www.docker.com/products/hardened-images/)
+- [DHI Quickstart](https://docs.docker.com/dhi/get-started/)
+
 ## References
 
 - [VS Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers)
 - [Devcontainer Features](https://containers.dev/features)
 - [uv Documentation](https://docs.astral.sh/uv/)
+- [Docker Hardened Images](https://www.docker.com/products/hardened-images/)
 - [CLAUDE.md](../CLAUDE.md) - Development standards

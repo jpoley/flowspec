@@ -2,7 +2,12 @@
 
 ## Status
 
-Proposed
+**Superseded** - See [ADR-013: Docker Hardened Images](ADR-013-docker-hardened-images.md)
+
+> **Note**: This ADR was superseded before implementation. Instead of migrating to
+> Debian Bookworm, we adopted Docker Hardened Images (DHI) with Alpine base,
+> which provides superior security guarantees including zero CVEs, SLSA Level 3
+> provenance, and complete SBOMs. See ADR-013 for the implemented solution.
 
 ## Context
 
