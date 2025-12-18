@@ -22,14 +22,15 @@
 # See: https://www.docker.com/products/hardened-images/
 
 # Docker Hardened Image: Python 3.13 Alpine with dev tools
-# Includes: gcc, make, git, linux-headers, libffi-dev, openssl, musl-dev
+# DHI runtime includes: gcc, musl-dev, libffi-dev, openssl (NOT git/make at runtime)
 # Tag format: <version>-alpine<alpine-version>-dev
 FROM dhi.io/python:3.13-alpine3.22-dev
 
-# Install additional system dependencies not included in DHI base
-# DHI already includes: git, gcc, make, linux-headers, libffi-dev, openssl
-# We add: bash, curl, nodejs, npm, zsh, shadow, sudo, github-cli
+# Install additional system dependencies
+# DHI runtime includes: gcc, musl-dev, libffi-dev, openssl
+# We add: git (not in DHI runtime), bash, curl, nodejs, npm, zsh, shadow, sudo, github-cli
 RUN apk add --no-cache \
+    git \
     bash \
     curl \
     nodejs \
@@ -93,7 +94,7 @@ RUN touch /home/vscode/.zshrc \
     && echo '' >> /home/vscode/.zshrc \
     && echo '# AI coding agent YOLO aliases (uncomment at your own risk)' >> /home/vscode/.zshrc \
     && echo '# alias claude-yolo="claude --dangerously-skip-permissions"' >> /home/vscode/.zshrc \
-    && echo '# alias codex-yolo="codex --dangerously-bypass-approvals-and-sandbox"' >> /home/vscode/.zshenv \
+    && echo '# alias codex-yolo="codex --dangerously-bypass-approvals-and-sandbox"' >> /home/vscode/.zshrc \
     && echo '# alias gemini-yolo="gemini --yolo"' >> /home/vscode/.zshrc
 
 # Labels for Docker Hub
