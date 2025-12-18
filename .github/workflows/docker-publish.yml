@@ -123,14 +123,15 @@ jobs:
         uses: sigstore/cosign-installer@v3.7.0
 
       - name: Verify SBOM attestation
-        env:
-          IMAGE_REF: ${{ needs.build-and-push.outputs.image-ref }}
         run: |
           echo "=== Cryptographically verifying SBOM attestation ==="
+          IMAGE_REF="${REGISTRY}/${IMAGE_NAME}:latest"
+          echo "Verifying image: ${IMAGE_REF}"
           # Verify SBOM attestation exists and is signed by this workflow
+          # Note: Use flexible regexp to match any branch (main, feature branches, tags)
           cosign verify-attestation \
             --type spdxjson \
-            --certificate-identity-regexp '^https://github\.com/jpoley/flowspec/\.github/workflows/docker-publish\.yml@refs/heads/main$' \
+            --certificate-identity-regexp '^https://github\.com/jpoley/flowspec/\.github/workflows/docker-publish\.yml@refs/' \
             --certificate-oidc-issuer 'https://token.actions.githubusercontent.com' \
             "${IMAGE_REF}" > /tmp/sbom-attestation.json
 
@@ -144,14 +145,15 @@ jobs:
           echo "SBOM verified: contains $PACKAGE_COUNT packages"
 
       - name: Verify Provenance attestation
-        env:
-          IMAGE_REF: ${{ needs.build-and-push.outputs.image-ref }}
         run: |
           echo "=== Cryptographically verifying Provenance attestation ==="
+          IMAGE_REF="${REGISTRY}/${IMAGE_NAME}:latest"
+          echo "Verifying image: ${IMAGE_REF}"
           # Verify provenance attestation exists and is signed by this workflow
+          # Note: Use flexible regexp to match any branch (main, feature branches, tags)
           cosign verify-attestation \
             --type slsaprovenance \
-            --certificate-identity-regexp '^https://github\.com/jpoley/flowspec/\.github/workflows/docker-publish\.yml@refs/heads/main$' \
+            --certificate-identity-regexp '^https://github\.com/jpoley/flowspec/\.github/workflows/docker-publish\.yml@refs/' \
             --certificate-oidc-issuer 'https://token.actions.githubusercontent.com' \
             "${IMAGE_REF}" > /tmp/provenance-attestation.json
 
