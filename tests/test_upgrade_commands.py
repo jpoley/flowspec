@@ -127,7 +127,7 @@ class TestUpgradeFlowspecKit:
                         assert "2.0.0" in message
 
     def test_uv_upgrade_fallback_when_version_unchanged(self):
-        """Falls back to git reinstall when uv upgrade returns 0 but version unchanged."""
+        """Upgrades directly via git install (no longer tries uv upgrade first)."""
         with patch("flowspec_cli.__version__", "1.0.0"):
             with patch("flowspec_cli.get_github_latest_release", return_value="2.0.0"):
                 call_count = [0]
@@ -139,46 +139,24 @@ class TestUpgradeFlowspecKit:
                     return result
 
                 with patch("subprocess.run", side_effect=mock_subprocess_run):
-                    # First verify call returns old version, second returns new
-                    version_calls = [0]
-
-                    def mock_get_version():
-                        version_calls[0] += 1
-                        if version_calls[0] == 1:
-                            return "1.0.0"  # First check - same as before
-                        return "2.0.0"  # After git reinstall
-
-                    with patch(
-                        "flowspec_cli._get_installed_jp_spec_kit_version",
-                        side_effect=mock_get_version,
-                    ):
-                        success, message = _upgrade_jp_spec_kit(dry_run=False)
-                        assert success is True
-                        # Should have tried both uv upgrade and git reinstall
-                        assert call_count[0] >= 2
+                    success, message = _upgrade_jp_spec_kit(dry_run=False)
+                    assert success is True
+                    # Should only call git install once (no longer tries uv upgrade)
+                    assert call_count[0] == 1
+                    assert "Upgraded from 1.0.0 to 2.0.0" in message
 
     def test_uv_not_found_fallback(self):
-        """Falls back to reinstall when uv upgrade fails."""
+        """Returns error when uv tool install fails with FileNotFoundError."""
         with patch("flowspec_cli.__version__", "1.0.0"):
             with patch("flowspec_cli.get_github_latest_release", return_value="2.0.0"):
-                # First call (uv tool upgrade) raises FileNotFoundError
-                # Second call (uv tool install) succeeds
+                # uv tool install raises FileNotFoundError
                 def mock_subprocess_run(cmd, **kwargs):
-                    if "upgrade" in cmd:
-                        raise FileNotFoundError()
-                    result = MagicMock()
-                    result.returncode = 0
-                    return result
+                    raise FileNotFoundError()
 
                 with patch("subprocess.run", side_effect=mock_subprocess_run):
-                    with patch(
-                        "flowspec_cli._get_installed_jp_spec_kit_version",
-                        return_value="2.0.0",
-                    ):
-                        success, message = _upgrade_jp_spec_kit(dry_run=False)
-                        assert success is True
-                        # Code returns "Installed version X (was: Y)"
-                        assert "Installed" in message or "Upgraded" in message
+                    success, message = _upgrade_jp_spec_kit(dry_run=False)
+                    assert success is False
+                    assert "uv not found" in message
 
 
 class TestUpgradeBacklogMd:
@@ -540,3 +518,150 @@ class TestVersionHint:
             assert "upgrade-tools" in result.output
             # Should NOT say just "upgrade" without specifying tools
             # This is the key fix - the hint should be accurate
+
+
+class TestVersionTrackingFile:
+    """Tests for .flowspec/.version tracking file functions."""
+
+    # Import at class level to avoid mixed import style warnings
+    import flowspec_cli as _fc
+
+    def test_write_creates_version_file(self, tmp_path):
+        """write_version_tracking_file creates .flowspec/.version file."""
+        self._fc.write_version_tracking_file(
+            tmp_path,
+            flowspec_version="1.0.0",
+            backlog_version="2.0.0",
+            beads_version="3.0.0",
+            is_upgrade=False,
+        )
+
+        version_file = tmp_path / ".flowspec" / ".version"
+        assert version_file.exists()
+        content = version_file.read_text()
+        assert "[versions]" in content
+        assert 'flowspec = "1.0.0"' in content
+        assert 'backlog = "2.0.0"' in content
+        assert 'beads = "3.0.0"' in content
+        assert "[metadata]" in content
+        assert "installed_at" in content
+
+    def test_read_returns_parsed_data(self, tmp_path):
+        """read_version_tracking_file returns parsed TOML data."""
+        # Use explicit empty string to exclude beads (None triggers auto-detect)
+        with patch("flowspec_cli.check_beads_installed_version", return_value=None):
+            self._fc.write_version_tracking_file(
+                tmp_path,
+                flowspec_version="1.0.0",
+                backlog_version="2.0.0",
+                beads_version=None,
+                is_upgrade=False,
+            )
+
+        result = self._fc.read_version_tracking_file(tmp_path)
+        assert result is not None
+        assert result["versions"]["flowspec"] == "1.0.0"
+        assert result["versions"]["backlog"] == "2.0.0"
+        assert (
+            "beads" not in result["versions"]
+        )  # Not included when auto-detect returns None
+        assert "installed_at" in result["metadata"]
+
+    def test_read_returns_none_for_missing_file(self, tmp_path):
+        """read_version_tracking_file returns None when file doesn't exist."""
+        result = self._fc.read_version_tracking_file(tmp_path)
+        assert result is None
+
+    def test_upgrade_preserves_installed_at(self, tmp_path):
+        """Upgrade preserves installed_at and adds upgraded_at."""
+        # Initial install
+        self._fc.write_version_tracking_file(
+            tmp_path,
+            flowspec_version="1.0.0",
+            backlog_version=None,
+            beads_version=None,
+            is_upgrade=False,
+        )
+
+        initial = self._fc.read_version_tracking_file(tmp_path)
+        original_installed_at = initial["metadata"]["installed_at"]
+
+        # Upgrade
+        self._fc.write_version_tracking_file(
+            tmp_path,
+            flowspec_version="2.0.0",
+            backlog_version=None,
+            beads_version=None,
+            is_upgrade=True,
+        )
+
+        upgraded = self._fc.read_version_tracking_file(tmp_path)
+        assert upgraded["versions"]["flowspec"] == "2.0.0"
+        assert upgraded["metadata"]["installed_at"] == original_installed_at
+        assert "upgraded_at" in upgraded["metadata"]
+        assert upgraded["metadata"]["upgraded_at"] != original_installed_at
+
+    def test_upgrade_sets_installed_at_if_missing(self, tmp_path):
+        """Upgrade sets installed_at if not present (pre-existing repo)."""
+        # Manually create version file without metadata section
+        flowspec_dir = tmp_path / ".flowspec"
+        flowspec_dir.mkdir(parents=True)
+        version_file = flowspec_dir / ".version"
+        version_file.write_text('[versions]\nflowspec = "1.0.0"\n\n[metadata]\n')
+
+        # Upgrade should set installed_at since it's missing
+        self._fc.write_version_tracking_file(
+            tmp_path,
+            flowspec_version="2.0.0",
+            backlog_version=None,
+            beads_version=None,
+            is_upgrade=True,
+        )
+
+        result = self._fc.read_version_tracking_file(tmp_path)
+        assert "installed_at" in result["metadata"]
+        assert "upgraded_at" in result["metadata"]
+
+    def test_timestamps_are_utc(self, tmp_path):
+        """Timestamps should be UTC timezone-aware."""
+        self._fc.write_version_tracking_file(
+            tmp_path,
+            flowspec_version="1.0.0",
+            backlog_version=None,
+            beads_version=None,
+            is_upgrade=False,
+        )
+
+        result = self._fc.read_version_tracking_file(tmp_path)
+        # UTC ISO format includes +00:00 or Z suffix
+        installed_at = result["metadata"]["installed_at"]
+        assert "+00:00" in installed_at or installed_at.endswith("Z")
+
+    def test_read_handles_invalid_toml(self, tmp_path):
+        """read_version_tracking_file returns None for invalid TOML."""
+        flowspec_dir = tmp_path / ".flowspec"
+        flowspec_dir.mkdir(parents=True)
+        version_file = flowspec_dir / ".version"
+        version_file.write_text("this is not valid TOML { broken")
+
+        result = self._fc.read_version_tracking_file(tmp_path)
+        assert result is None
+
+    def test_write_error_does_not_raise(self, tmp_path):
+        """write_version_tracking_file doesn't raise on write errors."""
+        # Create read-only directory to cause write error
+        flowspec_dir = tmp_path / ".flowspec"
+        flowspec_dir.mkdir(parents=True, mode=0o444)
+
+        # Should not raise, just log warning
+        try:
+            self._fc.write_version_tracking_file(
+                tmp_path,
+                flowspec_version="1.0.0",
+                backlog_version=None,
+                beads_version=None,
+                is_upgrade=False,
+            )
+        finally:
+            # Restore permissions for cleanup
+            flowspec_dir.chmod(0o755)
