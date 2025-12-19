@@ -6544,6 +6544,26 @@ def security_scan(
         "-o",
         help="Output file (defaults to stdout)",
     ),
+    create_tasks: bool = typer.Option(
+        False,
+        "--create-tasks",
+        help="Create backlog tasks for findings",
+    ),
+    task_severity: Optional[str] = typer.Option(
+        None,
+        "--task-severity",
+        help="Severity threshold for task creation (e.g., 'critical,high')",
+    ),
+    group_by_cwe: bool = typer.Option(
+        False,
+        "--group-by-cwe",
+        help="Group findings by CWE when creating tasks",
+    ),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        help="Show what tasks would be created without creating them",
+    ),
 ):
     """Run security scan on target directory.
 
@@ -6561,6 +6581,9 @@ def security_scan(
         flowspec security scan --tool semgrep            # Specify scanner
         flowspec security scan --fail-on critical        # Fail only on critical
         flowspec security scan --format json -o out.json # JSON output to file
+        flowspec security scan --create-tasks            # Create backlog tasks
+        flowspec security scan --create-tasks --task-severity critical,high
+        flowspec security scan --create-tasks --group-by-cwe --dry-run
     """
     import json
 
@@ -6678,6 +6701,76 @@ def security_scan(
             markdown = exporter.export(findings)
             output.write_text(markdown)
             console.print(f"\n[green]✓ Markdown report written to {output}[/green]")
+
+    # Create backlog tasks if requested
+    if create_tasks and findings:
+        from flowspec_cli.security.integrations.backlog import (
+            create_backlog_tasks_via_cli,
+            create_tasks_from_findings,
+        )
+
+        console.print("\n[bold blue]Creating backlog tasks for findings...[/bold blue]")
+
+        # Filter findings by severity if specified
+        findings_for_tasks = findings
+        if task_severity:
+            # Parse severity filter (e.g., "critical,high")
+            severity_filters = [s.strip().lower() for s in task_severity.split(",")]
+            severity_order = {
+                Severity.CRITICAL: 0,
+                Severity.HIGH: 1,
+                Severity.MEDIUM: 2,
+                Severity.LOW: 3,
+                Severity.INFO: 4,
+            }
+
+            # Create mapping of severity string to enum
+            severity_map = {
+                "critical": Severity.CRITICAL,
+                "high": Severity.HIGH,
+                "medium": Severity.MEDIUM,
+                "low": Severity.LOW,
+                "info": Severity.INFO,
+            }
+
+            # Filter findings
+            filtered = []
+            for finding in findings:
+                for sev_filter in severity_filters:
+                    if sev_filter in severity_map:
+                        filter_sev = severity_map[sev_filter]
+                        if (
+                            severity_order[finding.severity]
+                            <= severity_order[filter_sev]
+                        ):
+                            filtered.append(finding)
+                            break
+
+            findings_for_tasks = filtered
+
+            if not findings_for_tasks:
+                console.print(
+                    f"[yellow]No findings match severity filter: {task_severity}[/yellow]"
+                )
+
+        if findings_for_tasks:
+            # Create task objects
+            tasks = create_tasks_from_findings(
+                findings_for_tasks,
+                group_by_cwe=group_by_cwe,
+            )
+
+            # Create tasks via CLI
+            created, failed = create_backlog_tasks_via_cli(tasks, dry_run=dry_run)
+
+            if dry_run:
+                console.print(
+                    f"\n[green]✓ [DRY RUN] Would create {created} backlog tasks[/green]"
+                )
+            else:
+                console.print(f"\n[green]✓ Created {created} backlog tasks[/green]")
+                if failed > 0:
+                    console.print(f"[yellow]⚠ Failed to create {failed} tasks[/yellow]")
 
     # Determine exit code based on fail_on threshold
     severity_order = {

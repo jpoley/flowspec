@@ -355,3 +355,78 @@ def create_tasks_from_findings(
         max_tasks=max_tasks,
     )
     return integration.create_tasks(findings, triage_results)
+
+
+def create_backlog_tasks_via_cli(
+    tasks: list[FindingTask],
+    dry_run: bool = False,
+) -> tuple[int, int]:
+    """Create backlog tasks via CLI for security findings.
+
+    This function invokes the backlog CLI to create tasks for security findings.
+
+    Args:
+        tasks: List of FindingTask objects to create.
+        dry_run: If True, print what would be created without creating tasks.
+
+    Returns:
+        Tuple of (created_count, failed_count).
+
+    Example:
+        >>> tasks = create_tasks_from_findings(findings)
+        >>> created, failed = create_backlog_tasks_via_cli(tasks)
+        >>> print(f"Created {created} tasks, {failed} failed")
+    """
+    import subprocess
+
+    created = 0
+    failed = 0
+
+    for task in tasks:
+        # Build backlog CLI command
+        cmd = [
+            "backlog",
+            "task",
+            "create",
+            task.title,
+            "--description",
+            task.description,
+            "--priority",
+            task.priority,
+        ]
+
+        # Add labels
+        for label in task.labels:
+            cmd.extend(["--label", label])
+
+        # Add acceptance criteria
+        for ac in task.acceptance_criteria:
+            cmd.extend(["--ac", ac])
+
+        if dry_run:
+            print(f"[DRY RUN] Would create task: {task.title}")
+            print(f"  Command: {' '.join(cmd)}")
+            created += 1
+            continue
+
+        try:
+            subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            created += 1
+            print(f"✓ Created task: {task.title}")
+        except subprocess.CalledProcessError as e:
+            failed += 1
+            print(f"✗ Failed to create task '{task.title}': {e.stderr}")
+        except FileNotFoundError:
+            print("✗ Error: 'backlog' command not found. Is backlog CLI installed?")
+            failed += len(tasks) - created
+            break
+        except Exception as e:
+            failed += 1
+            print(f"✗ Failed to create task '{task.title}': {e}")
+
+    return created, failed

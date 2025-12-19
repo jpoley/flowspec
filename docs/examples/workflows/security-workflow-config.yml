@@ -1,0 +1,202 @@
+# Example Flowspec Workflow Configuration with Security Integration
+# =====================================================================
+# This example shows how to add security scanning to your workflow.
+# Choose one of the two patterns below based on your team's needs.
+
+version: "2.0"
+
+# ==============================================================================
+# PATTERN 1: DEDICATED SECURITY STATE
+# ==============================================================================
+# Use this pattern if:
+# - Security is a critical gate in your workflow
+# - You have a dedicated security team
+# - You need explicit security approval before QA
+# - You want a clear audit trail for compliance
+
+states:
+  - "To Do"
+  - "Assessed"
+  - "Specified"
+  - "Researched"
+  - "Planned"
+  - "In Implementation"
+  - "Security Review"      # NEW: Dedicated security state
+  - "Validated"
+  - "Deployed"
+  - "Done"
+
+workflows:
+  # ... other workflows ...
+
+  security:
+    command: "/flow:security"
+    description: "Execute security scans and create remediation tasks"
+    agents:
+      - name: "secure-by-design-engineer"
+        identity: "@secure-by-design-engineer"
+        description: "Security specialist for vulnerability assessment"
+        responsibilities:
+          - "Security scanning (SAST, SCA, secrets)"
+          - "Vulnerability triage and prioritization"
+          - "Security task creation in backlog"
+          - "SARIF generation for GitHub Security"
+    input_states: ["In Implementation"]
+    output_state: "Security Review"
+    optional: false
+    creates_backlog_tasks: true
+
+  # Continue with validate workflow after security review
+  validate:
+    command: "/flow:validate"
+    description: "Execute validation using QA and documentation agents"
+    agents:
+      - name: "quality-guardian"
+        identity: "@quality-guardian"
+        description: "Quality Guardian"
+        responsibilities:
+          - "Functional and integration testing"
+          - "Performance testing"
+      - name: "tech-writer"
+        identity: "@tech-writer"
+        description: "Senior Technical Writer"
+        responsibilities:
+          - "API documentation and user guides"
+    input_states: ["Security Review"]  # Changed from "In Implementation"
+    output_state: "Validated"
+    optional: false
+
+transitions:
+  # ... other transitions ...
+
+  # NEW: Security review transition
+  - name: "security_review"
+    from: "In Implementation"
+    to: "Security Review"
+    via: "security"
+    description: "Security scan completed, findings triaged"
+    output_artifacts:
+      - type: "security_scan_results"
+        path: "./docs/security/scan-results.json"
+        required: true
+      - type: "security_triage"
+        path: "./docs/security/triage-results.json"
+        required: true
+      - type: "security_report"
+        path: "./docs/security/audit-report.md"
+        required: true
+      - type: "backlog_tasks"
+        path: "./backlog/tasks/*.md"
+        multiple: true
+    validation: "NONE"
+
+  # Updated: Validate transition now comes after security review
+  - name: "validate_after_security"
+    from: "Security Review"
+    to: "Validated"
+    via: "validate"
+    description: "QA validation after security review"
+    input_artifacts:
+      - type: "security_report"
+        path: "./docs/security/audit-report.md"
+        required: true
+    output_artifacts:
+      - type: "qa_report"
+        path: "./docs/qa/{feature}-qa-report.md"
+    validation: "NONE"
+
+# ==============================================================================
+# PATTERN 2: EXTEND VALIDATE WORKFLOW (INTEGRATED APPROACH)
+# ==============================================================================
+# Use this pattern if:
+# - You want an integrated security approach
+# - You're a fast-moving team
+# - Security is part of definition of done
+# - You prefer fewer formal gates
+#
+# In this pattern, security is part of the validate workflow:
+
+# workflows:
+#   validate:
+#     command: "/flow:validate"
+#     description: "Execute validation using QA, security, and documentation agents"
+#     agents:
+#       - name: "quality-guardian"
+#         identity: "@quality-guardian"
+#         description: "Quality Guardian"
+#         responsibilities:
+#           - "Functional and integration testing"
+#           - "Performance testing"
+#       - name: "secure-by-design-engineer"
+#         identity: "@secure-by-design-engineer"
+#         description: "Secure-by-Design Engineer"
+#         responsibilities:
+#           - "Security scanning (SAST, SCA, secrets)"
+#           - "Vulnerability triage and assessment"
+#           - "Security task creation with --create-tasks"
+#           - "SARIF output generation"
+#       - name: "tech-writer"
+#         identity: "@tech-writer"
+#         description: "Senior Technical Writer"
+#         responsibilities:
+#           - "API documentation and user guides"
+#     input_states: ["In Implementation"]
+#     output_state: "Validated"
+#     optional: false
+#     creates_backlog_tasks: true  # Security can create tasks
+#
+# transitions:
+#   - name: "validate"
+#     from: "In Implementation"
+#     to: "Validated"
+#     via: "validate"
+#     description: "QA, security, and documentation validated"
+#     output_artifacts:
+#       - type: "qa_report"
+#         path: "./docs/qa/{feature}-qa-report.md"
+#       - type: "security_report"
+#         path: "./docs/security/{feature}-security.md"
+#         required: true
+#       - type: "security_scan_sarif"
+#         path: "./docs/security/{feature}-sarif.json"
+#       - type: "backlog_tasks"
+#         path: "./backlog/tasks/*.md"
+#         multiple: true
+#     validation: "NONE"
+
+# ==============================================================================
+# USAGE EXAMPLES
+# ==============================================================================
+#
+# With Pattern 1 (Dedicated State):
+# ----------------------------------
+# 1. Complete implementation
+# 2. Run: /flow:security scan --create-tasks --task-severity critical,high
+# 3. Task transitions to "Security Review"
+# 4. Review findings in docs/security/
+# 5. Fix issues or mark as false positives
+# 6. Continue to /flow:validate
+#
+# With Pattern 2 (Integrated):
+# ----------------------------
+# 1. Complete implementation
+# 2. Run: /flow:validate
+#    - QA tests run
+#    - Security scans run automatically
+#    - Tasks created for security findings
+#    - Documentation validated
+# 3. Task transitions directly to "Validated"
+#
+# Command Examples:
+# -----------------
+# # Scan with task creation
+# flowspec security scan --create-tasks --task-severity critical,high
+#
+# # Scan with SARIF output (for GitHub Security)
+# flowspec security scan --format sarif --output docs/security/scan-results.sarif
+#
+# # Group findings by CWE (fewer tasks)
+# flowspec security scan --create-tasks --group-by-cwe
+#
+# # Dry run to preview tasks
+# flowspec security scan --create-tasks --dry-run
