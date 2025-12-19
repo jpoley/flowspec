@@ -728,6 +728,202 @@ backlog task edit <task-id> -l "workflow:In Implementation"
 
 ---
 
+### Rule: EXEC-007 - Backlog Accuracy Required
+**Severity**: BLOCKING
+**Enforcement**: strict
+
+Backlog.md is the **human-readable source of truth** for task status. Every PR MUST update backlog task status to reflect reality. Tasks MUST have both `workflow:Current` and `workflow-next:Next` labels.
+
+**What MUST be accurate**:
+- Task status (To Do, In Progress, Done)
+- Current workflow state (`workflow:In Implementation`)
+- Next workflow state (`workflow-next:Validated`)
+- Acceptance criteria completion status
+
+**Validation**:
+```bash
+TASK_ID=$(git branch --show-current 2>/dev/null | grep -Eo 'task-[0-9]+' || echo "")
+if [ -n "$TASK_ID" ]; then
+  TASK_OUTPUT=$(backlog task "$TASK_ID" --plain 2>/dev/null)
+
+  # Check workflow state exists
+  HAS_CURRENT=$(echo "$TASK_OUTPUT" | grep -q "workflow:" && echo "yes" || echo "no")
+  HAS_NEXT=$(echo "$TASK_OUTPUT" | grep -q "workflow-next:" && echo "yes" || echo "no")
+
+  if [ "$HAS_CURRENT" = "no" ]; then
+    echo "[X] EXEC-007 VIOLATION: Missing current workflow state for $TASK_ID"
+  fi
+  if [ "$HAS_NEXT" = "no" ]; then
+    echo "[X] EXEC-007 VIOLATION: Missing next workflow state for $TASK_ID"
+  fi
+fi
+```
+
+**Remediation**:
+```bash
+# Update task with current and next workflow states
+backlog task edit <task-id> \
+  -l "workflow:In Implementation" \
+  -l "workflow-next:Validated" \
+  -s "In Progress"
+
+# After completing workflow step
+backlog task edit <task-id> \
+  -l "workflow:Validated" \
+  -l "workflow-next:Deployed"
+```
+
+**Workflow State Progression**:
+```
+Assessed → Specified → Planned → In Implementation → Validated → Deployed
+```
+
+**Rationale**: Humans need accurate status at a glance. The backlog is the coordination point between humans and agents.
+
+---
+
+### Rule: EXEC-008 - Beads Agent Sync
+**Severity**: BLOCKING
+**Enforcement**: strict
+
+Beads (`.beads/issues.jsonl`) is the **agent task tracking system**. It MUST be kept in sync with backlog.md for agent micro-tasks and context preservation.
+
+**When to use Beads vs Backlog**:
+- **Backlog.md**: Human-facing tasks, workflow state, acceptance criteria
+- **Beads**: Agent micro-tasks, blockers, dependencies, session continuity
+
+**Validation**:
+```bash
+# Check beads is initialized
+if [ ! -d ".beads" ]; then
+  echo "[X] EXEC-008 VIOLATION: Beads not initialized"
+  echo "Remediation: bd init"
+fi
+
+# Check for stale beads (open issues with no recent activity)
+if [ -f ".beads/issues.jsonl" ]; then
+  OPEN_COUNT=$(bd list --status=open 2>/dev/null | wc -l || echo 0)
+  IN_PROGRESS=$(bd list --status=in_progress 2>/dev/null | wc -l || echo 0)
+  echo "INFO: EXEC-008: Beads status - Open: $OPEN_COUNT, In Progress: $IN_PROGRESS"
+fi
+```
+
+**Remediation**:
+```bash
+# Initialize beads if missing
+bd init
+
+# Create agent task linked to backlog
+bd create --title="Implement feature X" --type=task --priority=2
+
+# Update status as work progresses
+bd update <id> --status=in_progress
+bd close <id> --reason="Completed in PR #123"
+
+# Sync with remote at session end
+bd sync
+```
+
+**Rationale**: Agents need persistent task context across sessions. Beads survives context resets and enables agent handoffs.
+
+---
+
+### Rule: EXEC-009 - Daily Active Work Log
+**Severity**: ADVISORY
+**Enforcement**: warn
+
+Active work SHOULD be logged daily to `./logs/active-work-<date>.jsonl`. This enables session continuity and work visibility.
+
+**Log Format**:
+```json
+{"timestamp":"2024-12-19T10:30:00Z","task_id":"task-123","beads_id":"beads-456","action":"started","description":"Implementing rigor rules"}
+{"timestamp":"2024-12-19T14:30:00Z","task_id":"task-123","beads_id":"beads-456","action":"progress","description":"Added 4 new rules","percent_complete":60}
+{"timestamp":"2024-12-19T17:00:00Z","task_id":"task-123","beads_id":"beads-456","action":"completed","description":"PR #978 created"}
+```
+
+**Validation**:
+```bash
+TODAY=$(date +%Y-%m-%d)
+LOG_FILE="./logs/active-work-${TODAY}.jsonl"
+
+if [ ! -f "$LOG_FILE" ]; then
+  echo "WARNING: EXEC-009: No active work log for today: $LOG_FILE"
+  echo "Remediation: Create log entry for current work"
+fi
+```
+
+**Remediation**:
+```bash
+# Create logs directory if needed
+mkdir -p ./logs
+
+# Log work start
+TODAY=$(date +%Y-%m-%d)
+echo '{"timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","task_id":"task-123","action":"started","description":"Starting implementation"}' >> "./logs/active-work-${TODAY}.jsonl"
+
+# Log progress
+echo '{"timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","task_id":"task-123","action":"progress","description":"Completed step 1","percent_complete":25}' >> "./logs/active-work-${TODAY}.jsonl"
+```
+
+**Rationale**: Daily logs provide audit trail, enable handoffs, and help with time tracking and retrospectives.
+
+---
+
+### Rule: EXEC-010 - Daily Decision Log
+**Severity**: BLOCKING
+**Enforcement**: strict
+
+All significant decisions MUST be logged daily to `./logs/decision-log-<date>.jsonl`. This supplements task-specific decision logs with a daily aggregate view.
+
+**When to log**:
+- Technology or library choices
+- Architecture decisions
+- Trade-off resolutions
+- Scope changes
+- Rejected approaches
+
+**Log Format**:
+```json
+{"timestamp":"2024-12-19T10:30:00Z","task_id":"task-123","decision":"Use @import instead of {{INCLUDE}}","rationale":"Claude Code only processes @import in CLAUDE.md","alternatives":["Inline content","Preprocessing hook"],"actor":"@backend-engineer"}
+```
+
+**Validation**:
+```bash
+TODAY=$(date +%Y-%m-%d)
+LOG_FILE="./logs/decision-log-${TODAY}.jsonl"
+
+if [ ! -f "$LOG_FILE" ]; then
+  echo "[X] EXEC-010 VIOLATION: No decision log for today: $LOG_FILE"
+  echo "Remediation: Log at least one decision for today's work"
+else
+  ENTRY_COUNT=$(wc -l < "$LOG_FILE" 2>/dev/null || echo 0)
+  if [ "$ENTRY_COUNT" -eq 0 ]; then
+    echo "[X] EXEC-010 VIOLATION: Decision log exists but is empty"
+  else
+    echo "[Y] EXEC-010: $ENTRY_COUNT decision(s) logged today"
+  fi
+fi
+```
+
+**Remediation**:
+```bash
+# Create logs directory if needed
+mkdir -p ./logs
+
+# Log a decision
+TODAY=$(date +%Y-%m-%d)
+echo '{"timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","task_id":"task-123","decision":"Description of decision","rationale":"Why this choice was made","alternatives":["Option A","Option B"],"actor":"@backend-engineer"}' >> "./logs/decision-log-${TODAY}.jsonl"
+```
+
+**Relationship to EXEC-003**:
+- **EXEC-003**: Task-specific decision log in `memory/decisions/task-XXX.jsonl`
+- **EXEC-010**: Daily aggregate decision log in `./logs/decision-log-<date>.jsonl`
+- Both should be kept in sync for comprehensive audit trail
+
+**Rationale**: Daily decision logs enable quick review of what was decided, cross-task pattern recognition, and onboarding context.
+
+---
+
 ## Phase: FREEZE (Task Suspension)
 
 **Applies to**: `/flow:freeze`
