@@ -9,8 +9,10 @@ Tests cover:
 """
 
 import re
+import sys
 from unittest.mock import MagicMock, patch
 
+import pytest
 from typer.testing import CliRunner
 
 from flowspec_cli import (
@@ -523,12 +525,12 @@ class TestVersionHint:
 class TestVersionTrackingFile:
     """Tests for .flowspec/.version tracking file functions."""
 
-    # Import at class level to avoid mixed import style warnings
-    import flowspec_cli as _fc
-
     def test_write_creates_version_file(self, tmp_path):
         """write_version_tracking_file creates .flowspec/.version file."""
-        self._fc.write_version_tracking_file(
+        # Import here to avoid top-level circular import issues
+        from flowspec_cli import write_version_tracking_file
+
+        write_version_tracking_file(
             tmp_path,
             flowspec_version="1.0.0",
             backlog_version="2.0.0",
@@ -548,9 +550,11 @@ class TestVersionTrackingFile:
 
     def test_read_returns_parsed_data(self, tmp_path):
         """read_version_tracking_file returns parsed TOML data."""
+        from flowspec_cli import read_version_tracking_file, write_version_tracking_file
+
         # Use explicit empty string to exclude beads (None triggers auto-detect)
         with patch("flowspec_cli.check_beads_installed_version", return_value=None):
-            self._fc.write_version_tracking_file(
+            write_version_tracking_file(
                 tmp_path,
                 flowspec_version="1.0.0",
                 backlog_version="2.0.0",
@@ -558,7 +562,7 @@ class TestVersionTrackingFile:
                 is_upgrade=False,
             )
 
-        result = self._fc.read_version_tracking_file(tmp_path)
+        result = read_version_tracking_file(tmp_path)
         assert result is not None
         assert result["versions"]["flowspec"] == "1.0.0"
         assert result["versions"]["backlog"] == "2.0.0"
@@ -569,13 +573,17 @@ class TestVersionTrackingFile:
 
     def test_read_returns_none_for_missing_file(self, tmp_path):
         """read_version_tracking_file returns None when file doesn't exist."""
-        result = self._fc.read_version_tracking_file(tmp_path)
+        from flowspec_cli import read_version_tracking_file
+
+        result = read_version_tracking_file(tmp_path)
         assert result is None
 
     def test_upgrade_preserves_installed_at(self, tmp_path):
         """Upgrade preserves installed_at and adds upgraded_at."""
+        from flowspec_cli import read_version_tracking_file, write_version_tracking_file
+
         # Initial install
-        self._fc.write_version_tracking_file(
+        write_version_tracking_file(
             tmp_path,
             flowspec_version="1.0.0",
             backlog_version=None,
@@ -583,11 +591,11 @@ class TestVersionTrackingFile:
             is_upgrade=False,
         )
 
-        initial = self._fc.read_version_tracking_file(tmp_path)
+        initial = read_version_tracking_file(tmp_path)
         original_installed_at = initial["metadata"]["installed_at"]
 
         # Upgrade
-        self._fc.write_version_tracking_file(
+        write_version_tracking_file(
             tmp_path,
             flowspec_version="2.0.0",
             backlog_version=None,
@@ -595,7 +603,7 @@ class TestVersionTrackingFile:
             is_upgrade=True,
         )
 
-        upgraded = self._fc.read_version_tracking_file(tmp_path)
+        upgraded = read_version_tracking_file(tmp_path)
         assert upgraded["versions"]["flowspec"] == "2.0.0"
         assert upgraded["metadata"]["installed_at"] == original_installed_at
         assert "upgraded_at" in upgraded["metadata"]
@@ -603,6 +611,8 @@ class TestVersionTrackingFile:
 
     def test_upgrade_sets_installed_at_if_missing(self, tmp_path):
         """Upgrade sets installed_at if not present (pre-existing repo)."""
+        from flowspec_cli import read_version_tracking_file, write_version_tracking_file
+
         # Manually create version file without metadata section
         flowspec_dir = tmp_path / ".flowspec"
         flowspec_dir.mkdir(parents=True)
@@ -610,7 +620,7 @@ class TestVersionTrackingFile:
         version_file.write_text('[versions]\nflowspec = "1.0.0"\n\n[metadata]\n')
 
         # Upgrade should set installed_at since it's missing
-        self._fc.write_version_tracking_file(
+        write_version_tracking_file(
             tmp_path,
             flowspec_version="2.0.0",
             backlog_version=None,
@@ -618,13 +628,15 @@ class TestVersionTrackingFile:
             is_upgrade=True,
         )
 
-        result = self._fc.read_version_tracking_file(tmp_path)
+        result = read_version_tracking_file(tmp_path)
         assert "installed_at" in result["metadata"]
         assert "upgraded_at" in result["metadata"]
 
     def test_timestamps_are_utc(self, tmp_path):
         """Timestamps should be UTC timezone-aware."""
-        self._fc.write_version_tracking_file(
+        from flowspec_cli import read_version_tracking_file, write_version_tracking_file
+
+        write_version_tracking_file(
             tmp_path,
             flowspec_version="1.0.0",
             backlog_version=None,
@@ -632,30 +644,38 @@ class TestVersionTrackingFile:
             is_upgrade=False,
         )
 
-        result = self._fc.read_version_tracking_file(tmp_path)
+        result = read_version_tracking_file(tmp_path)
         # UTC ISO format includes +00:00 or Z suffix
         installed_at = result["metadata"]["installed_at"]
         assert "+00:00" in installed_at or installed_at.endswith("Z")
 
     def test_read_handles_invalid_toml(self, tmp_path):
         """read_version_tracking_file returns None for invalid TOML."""
+        from flowspec_cli import read_version_tracking_file
+
         flowspec_dir = tmp_path / ".flowspec"
         flowspec_dir.mkdir(parents=True)
         version_file = flowspec_dir / ".version"
         version_file.write_text("this is not valid TOML { broken")
 
-        result = self._fc.read_version_tracking_file(tmp_path)
+        result = read_version_tracking_file(tmp_path)
         assert result is None
 
+    @pytest.mark.skipif(
+        sys.platform == "win32",
+        reason="Unix file permissions not supported on Windows",
+    )
     def test_write_error_does_not_raise(self, tmp_path):
         """write_version_tracking_file doesn't raise on write errors."""
+        from flowspec_cli import write_version_tracking_file
+
         # Create read-only directory to cause write error
         flowspec_dir = tmp_path / ".flowspec"
         flowspec_dir.mkdir(parents=True, mode=0o444)
 
         # Should not raise, just log warning
         try:
-            self._fc.write_version_tracking_file(
+            write_version_tracking_file(
                 tmp_path,
                 flowspec_version="1.0.0",
                 backlog_version=None,

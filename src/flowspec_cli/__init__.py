@@ -1036,9 +1036,24 @@ def write_version_tracking_file(
             f.write("\n[metadata]\n")
             for key, value in metadata.items():
                 f.write(f'{key} = "{value}"\n')
+    except PermissionError as e:
+        # Don't fail init/upgrade if version tracking fails - just log warning
+        logger.warning(
+            "Could not write version tracking file (permission denied): %s",
+            e,
+        )
+    except FileNotFoundError as e:
+        # Underlying directory structure is missing or inaccessible
+        logger.warning(
+            "Could not write version tracking file (path not found): %s",
+            e,
+        )
     except OSError as e:
         # Don't fail init/upgrade if version tracking fails - just log warning
-        logger.warning(f"Could not write version tracking file: {e}")
+        logger.warning(
+            "Could not write version tracking file (OS error): %s",
+            e,
+        )
 
 
 def read_version_tracking_file(project_path: Path) -> dict | None:
