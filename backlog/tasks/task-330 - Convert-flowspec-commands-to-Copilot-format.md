@@ -1,11 +1,11 @@
 ---
 id: task-330
 title: Convert flowspec commands to Copilot format
-status: To Do
+status: Done
 assignee:
   - '@muckross'
 created_date: '2025-12-08 22:28'
-updated_date: '2025-12-15 02:17'
+updated_date: '2025-12-19 18:41'
 labels:
   - implement
   - copilot
@@ -28,3 +28,9 @@ Convert all 15 flowspec.* commands from .claude/commands/flow/ to .github/agents
 - [ ] #4 Commands appear in VS Code Copilot Chat command picker
 - [ ] #5 Commands appear in VS Code Insiders Copilot Chat command picker
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+flow-*.agent.md files exist
+<!-- SECTION:NOTES:END -->

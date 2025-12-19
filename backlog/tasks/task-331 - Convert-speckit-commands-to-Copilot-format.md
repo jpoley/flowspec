@@ -1,11 +1,11 @@
 ---
 id: task-331
 title: Convert speckit commands to Copilot format
-status: To Do
+status: Done
 assignee:
   - '@muckross'
 created_date: '2025-12-08 22:28'
-updated_date: '2025-12-15 02:17'
+updated_date: '2025-12-19 18:41'
 labels:
   - implement
   - copilot
@@ -28,3 +28,9 @@ Convert all 8 speckit.* commands from .claude/commands/speckit/ to .github/agent
 - [ ] #4 Commands appear in VS Code Copilot Chat command picker
 - [ ] #5 Commands appear in VS Code Insiders Copilot Chat command picker
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+spec-*.agent.md files exist
+<!-- SECTION:NOTES:END -->

@@ -1,11 +1,11 @@
 ---
 id: task-224
 title: Design and Implement Security Scanner MCP Server
-status: To Do
+status: Done
 assignee:
   - '@muckross'
 created_date: '2025-12-03 02:16'
-updated_date: '2025-12-04 16:32'
+updated_date: '2025-12-19 18:41'
 labels:
   - 'workflow:Planned'
 dependencies: []
@@ -20,15 +20,15 @@ Create MCP server exposing security scanning capabilities for tool composition. 
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Design MCP server schema with tools and resources
-- [ ] #2 Implement security_scan tool
-- [ ] #3 Implement security_triage tool
-- [ ] #4 Implement security_fix tool
-- [ ] #5 Expose security://findings resource
-- [ ] #6 Expose security://status resource
-- [ ] #7 Expose security://config resource
-- [ ] #8 Add MCP server to .mcp.json configuration
-- [ ] #9 Write MCP server documentation
+- [x] #1 Design MCP server schema with tools and resources
+- [x] #2 Implement security_scan tool
+- [x] #3 Implement security_triage tool
+- [x] #4 Implement security_fix tool
+- [x] #5 Expose security://findings resource
+- [x] #6 Expose security://status resource
+- [x] #7 Expose security://config resource
+- [x] #8 Add MCP server to .mcp.json configuration
+- [x] #9 Write MCP server documentation
 <!-- AC:END -->
 
 ## Implementation Plan
@@ -82,3 +82,9 @@ MCP server exposes data and invokes skills - NO LLM API calls.
 
 CRITICAL: ZERO API KEYS. ZERO LLM SDK CALLS.
 <!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+MCP server already implemented at src/flowspec_cli/security/mcp_server.py. Exposes tools (scan, triage, fix) and resources (findings, status, config). Checking all ACs.
+<!-- SECTION:NOTES:END -->
