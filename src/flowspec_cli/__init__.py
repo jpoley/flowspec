@@ -3378,6 +3378,11 @@ def init(
         "--no-hooks",
         help="Initialize with all hooks disabled. Hooks can be enabled later in .flowspec/hooks/hooks.yaml",
     ),
+    skip_skills: bool = typer.Option(
+        False,
+        "--skip-skills",
+        help="Skip deployment of skills from templates/skills/ to .claude/skills/",
+    ),
 ):
     """
     Initialize a new Specify project from the latest template.
@@ -3695,6 +3700,7 @@ def init(
             ("cleanup", "Cleanup"),
             ("git", "Initialize git repository"),
             ("hooks", "Scaffold hooks"),
+            ("skills", "Deploy skills"),
             ("constitution", "Set up constitution"),
             ("final", "Finalize"),
         ]:
@@ -3710,6 +3716,7 @@ def init(
             ("cleanup", "Cleanup"),
             ("git", "Initialize git repository"),
             ("hooks", "Scaffold hooks"),
+            ("skills", "Deploy skills"),
             ("constitution", "Set up constitution"),
             ("final", "Finalize"),
         ]:
@@ -3809,6 +3816,27 @@ def init(
             except Exception as hook_error:
                 # Non-fatal error - continue with project initialization
                 tracker.error("hooks", f"scaffolding failed: {hook_error}")
+
+            # Deploy skills from templates/skills/ to .claude/skills/
+            tracker.start("skills")
+            try:
+                from .skills import deploy_skills
+
+                deployed_skills = deploy_skills(
+                    project_path, force=force, skip_skills=skip_skills
+                )
+                if skip_skills:
+                    tracker.skip("skills", "--skip-skills flag")
+                elif deployed_skills:
+                    tracker.complete(
+                        "skills",
+                        f"deployed {len(deployed_skills)} skills to .claude/skills/",
+                    )
+                else:
+                    tracker.complete("skills", "skills already deployed")
+            except Exception as skills_error:
+                # Non-fatal error - continue with project initialization
+                tracker.error("skills", f"deployment failed: {skills_error}")
 
             # Set up constitution template
             tracker.start("constitution")
