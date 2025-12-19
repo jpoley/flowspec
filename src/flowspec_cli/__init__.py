@@ -54,6 +54,10 @@ from rich.text import Text
 from rich.tree import Tree
 from typer.core import TyperGroup
 
+from flowspec_cli.placeholders import (
+    detect_project_metadata,
+    replace_placeholders,
+)
 from flowspec_cli.telemetry.cli import telemetry_app
 
 # Module-level logger
@@ -3164,6 +3168,11 @@ def init(
         "--no-hooks",
         help="Initialize with all hooks disabled. Hooks can be enabled later in .flowspec/hooks/hooks.yaml",
     ),
+    interactive_placeholders: bool = typer.Option(
+        False,
+        "--interactive",
+        help="Prompt for all placeholder values instead of auto-detecting",
+    ),
 ):
     """
     Initialize a new Specify project from the latest template.
@@ -3604,9 +3613,17 @@ def init(
                     memory_dir = project_path / "memory"
                     constitution_dest = memory_dir / "constitution.md"
                     memory_dir.mkdir(parents=True, exist_ok=True)
-                    constitution_dest.write_text(
-                        CONSTITUTION_TEMPLATES[selected_constitution]
+
+                    # Detect project metadata for placeholder replacement
+                    metadata = detect_project_metadata(
+                        project_path, project_name_override=project_name
                     )
+
+                    # Replace placeholders in template
+                    template_content = CONSTITUTION_TEMPLATES[selected_constitution]
+                    processed_content = replace_placeholders(template_content, metadata)
+
+                    constitution_dest.write_text(processed_content)
                     constitution_was_created = True
                     tracker.complete(
                         "constitution",
@@ -4106,7 +4123,14 @@ def upgrade_repo(
                 template = CONSTITUTION_TEMPLATES.get(
                     selected_tier, CONSTITUTION_TEMPLATES["medium"]
                 )
-                constitution_path.write_text(template)
+
+                # Detect project metadata and replace placeholders
+                metadata = detect_project_metadata(
+                    project_path, project_name_override=project_path.name
+                )
+                processed_content = replace_placeholders(template, metadata)
+
+                constitution_path.write_text(processed_content)
 
                 console.print()
                 constitution_panel = Panel(
