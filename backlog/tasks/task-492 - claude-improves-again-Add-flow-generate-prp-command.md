@@ -1,11 +1,11 @@
 ---
 id: task-492
 title: 'claude-improves-again: Add /flow:generate-prp command'
-status: To Do
+status: Done
 assignee:
   - '@muckross'
 created_date: '2025-12-14 03:06'
-updated_date: '2025-12-15 01:50'
+updated_date: '2025-12-19 18:56'
 labels:
   - context-engineering
   - commands
@@ -24,9 +24,15 @@ Source: docs/research/archon-inspired.md Task 5
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Command file created at .claude/commands/flow/generate-prp.md
-- [ ] #2 Collects PRD from /flow:specify for the active task
-- [ ] #3 Gathers docs/specs, examples, and learnings relevant to the task
-- [ ] #4 Generates bounded directory tree of relevant code paths
-- [ ] #5 Writes filled PRP to docs/prp/<task-id>.md
+- [x] #1 Command file created at .claude/commands/flow/generate-prp.md
+- [x] #2 Collects PRD from /flow:specify for the active task
+- [x] #3 Gathers docs/specs, examples, and learnings relevant to the task
+- [x] #4 Generates bounded directory tree of relevant code paths
+- [x] #5 Writes filled PRP to docs/prp/<task-id>.md
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Already implemented - command exists at .claude/commands/flow/generate-prp.md with full context gathering and PRP generation.
+<!-- SECTION:NOTES:END -->
