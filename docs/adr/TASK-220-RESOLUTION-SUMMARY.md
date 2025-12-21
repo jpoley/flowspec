@@ -28,7 +28,7 @@
 - Has NOTHING to do with vulnerability scanning
 
 **Evidence**:
-- File: `backlog/archive/tasks/task-198 - Define-Event-Model-Schema-for-jp-spec-kit-Hooks.md`
+- File: `backlog/archive/tasks/task-198 - Define-Event-Model-Schema-for-flowspec-Hooks.md`
 - Status: Done
 - Labels: design, schema, hooks (NOT security)
 
