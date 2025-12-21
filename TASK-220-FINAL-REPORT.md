@@ -233,7 +233,7 @@ Next Steps:
 
 ### Tasks
 - task-220: `backlog/tasks/task-220 - Resolve-Relationship-with-task-198-Unified-Vulnerability-Scanner.md`
-- task-198: `backlog/archive/tasks/task-198 - Define-Event-Model-Schema-for-jp-spec-kit-Hooks.md` (archived, hooks)
+- task-198: `backlog/archive/tasks/task-198 - Define-Event-Model-Schema-for-flowspec-Hooks.md` (archived, hooks)
 - task-225: `backlog/tasks/task-225 - Integrate-CodeQL-for-Deep-Dataflow-Analysis.md` (next scanner)
 
 ### ADRs
