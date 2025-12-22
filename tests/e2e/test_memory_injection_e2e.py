@@ -578,9 +578,10 @@ class TestTokenAwareTruncation:
         truncated_size = len(truncated_path.read_text())
         assert truncated_size < original_size
 
-        # Verify truncation notice present
+        # Verify truncation notice present and content within token limit
         truncated_content = truncated_path.read_text()
-        assert "Content truncated" in truncated_content or truncated_size <= 100 * 4
+        assert "Content truncated" in truncated_content
+        assert truncated_size <= 100 * 4
 
     def test_truncation_preserves_recent_context(self, injection_project):
         """Test that truncation preserves Context section (most recent)."""
@@ -691,8 +692,9 @@ class TestTokenAwareTruncation:
         claude_md = (injection_project / "backlog" / "CLAUDE.md").read_text()
         assert "@import" not in claude_md
 
-        # Note: Truncated file cleanup is intentionally NOT done on clear
-        # to preserve it for archival. Cleanup happens on archive/delete.
+        # Verify truncated file still exists (preserved for archival)
+        # Note: Cleanup happens on archive/delete, not on clear
+        assert truncated_path.exists()
 
     def test_truncation_max_tokens_configurable(self, injection_project):
         """Test that max_tokens is configurable."""

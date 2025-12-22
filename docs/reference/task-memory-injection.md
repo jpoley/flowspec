@@ -173,7 +173,7 @@ Current sprint focuses on OAuth2 implementation.
 
 ## Key Decisions
 - Use Authorization Code flow
-- Store tokens in httpOnly cookies
+- Store tokens in HttpOnly cookies
 - Implement PKCE for public clients
 
 ## Notes
@@ -193,7 +193,7 @@ Current sprint focuses on OAuth2 implementation.
 
 ## Key Decisions
 - Use Authorization Code flow
-- Store tokens in httpOnly cookies
+- Store tokens in HttpOnly cookies
 - Implement PKCE for public clients
 
 ## Notes
