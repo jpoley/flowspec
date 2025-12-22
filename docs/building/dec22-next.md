@@ -132,7 +132,7 @@ agents:
     type: backend-engineer
     tasks: [task-368, task-377, task-386]
     priority: high
-    sequence: true  # Depends on each other
+    sequence: true  # task-386 after task-377; task-368 can run independently
 ```
 
 ### Parallel Execution Command
