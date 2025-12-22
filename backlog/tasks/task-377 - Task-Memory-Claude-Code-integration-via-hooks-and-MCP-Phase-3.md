@@ -5,12 +5,13 @@ status: In Progress
 assignee:
   - '@adare'
 created_date: '2025-12-09 15:56'
-updated_date: '2025-12-15 02:17'
+updated_date: '2025-12-22 22:54'
 labels:
   - infrastructure
   - claude-code
   - mcp
   - phase-3
+  - 'workflow:Planned'
 dependencies: []
 priority: high
 ---
@@ -30,6 +31,12 @@ Inject Task Memory into Claude Code sessions automatically via session-start hoo
 - [x] #5 Hybrid approach: hooks for auto-inject, MCP for on-demand
 - [ ] #6 E2E tests for Claude Code integration
 <!-- AC:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+1. Wire token-aware truncation in LifecycleManager (1 line change)\n2. Update session-start.sh to use update_active_task_with_truncation()\n3. Create E2E test: test_memory_injection_e2e.py\n4. Test scenarios: active task, truncation, multiple tasks, no tasks, missing files\n5. Manual Claude Code integration test\n6. Update implementation notes with completion status
+<!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
 

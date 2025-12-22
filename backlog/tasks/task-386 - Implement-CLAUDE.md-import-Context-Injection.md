@@ -5,12 +5,13 @@ status: In Progress
 assignee:
   - '@myself'
 created_date: '2025-12-09 15:57'
-updated_date: '2025-12-22 21:55'
+updated_date: '2025-12-22 22:54'
 labels:
   - backend
   - task-memory
   - claude-code
   - integration
+  - 'workflow:Planned'
 dependencies:
   - task-377
 priority: high
@@ -32,6 +33,12 @@ Update backlog/CLAUDE.md to dynamically include active task memory via @import d
 - [x] #6 Test with multiple rapid state transitions
 - [ ] #7 Document @import mechanism in docs/reference/
 <!-- AC:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+1. Verify ContextInjector integration with LifecycleManager (already wired)\n2. Conduct manual Claude Code test: start session, verify @import loads memory\n3. Document test results in implementation notes\n4. Create docs/guides/task-memory-injection.md\n5. Update backlog/CLAUDE.md template documentation\n6. Update backlog-user-guide.md with Task Memory section\n7. Mark AC#2, AC#3, AC#7 complete after verification
+<!-- SECTION:PLAN:END -->
 
 ## Implementation Notes
 
