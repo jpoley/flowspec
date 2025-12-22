@@ -15,152 +15,10 @@ from flowspec_cli import app
 runner = CliRunner()
 
 
-class TestDeploySkillsFunction:
-    """Unit tests for the deploy_skills() helper function."""
-
-    def test_deploy_skills_creates_target_directory(self, tmp_path: Path) -> None:
-        """Test that deploy_skills creates .claude/skills/ if it doesn't exist."""
-        project_dir = tmp_path / "test-project"
-        project_dir.mkdir()
-
-        # Create mock templates directory with one skill
-        templates_dir = tmp_path / "templates" / "skills"
-        templates_dir.mkdir(parents=True)
-        skill_dir = templates_dir / "test-skill"
-        skill_dir.mkdir()
-        (skill_dir / "SKILL.md").write_text("# Test Skill")
-
-        # Mock the templates path in deploy_skills
-        # Note: In actual usage, deploy_skills finds templates via __file__
-        # For testing, we'll call it directly and check behavior
-
-        target_dir = project_dir / ".claude" / "skills"
-        assert not target_dir.exists()
-
-        # After deployment, directory should exist
-        # (This test validates the mkdir(parents=True, exist_ok=True) call)
-
-    def test_deploy_skills_copies_skill_directories(self, tmp_path: Path) -> None:
-        """Test that deploy_skills copies all skill directories."""
-        project_dir = tmp_path / "test-project"
-        project_dir.mkdir()
-
-        # Create templates/skills/ with multiple skills
-        templates_dir = tmp_path / "templates" / "skills"
-        templates_dir.mkdir(parents=True)
-
-        # Create three test skills
-        for skill_name in ["skill-a", "skill-b", "skill-c"]:
-            skill_dir = templates_dir / skill_name
-            skill_dir.mkdir()
-            (skill_dir / "SKILL.md").write_text(f"# {skill_name}")
-
-        # Note: In real usage, deploy_skills finds templates via __file__
-        # This test validates the copytree logic
-
-    def test_deploy_skills_skips_symlinks(self, tmp_path: Path) -> None:
-        """Test that deploy_skills skips symlink directories."""
-        project_dir = tmp_path / "test-project"
-        project_dir.mkdir()
-
-        templates_dir = tmp_path / "templates" / "skills"
-        templates_dir.mkdir(parents=True)
-
-        # Create a real skill
-        real_skill = templates_dir / "real-skill"
-        real_skill.mkdir()
-        (real_skill / "SKILL.md").write_text("# Real Skill")
-
-        # Create a symlink (like context-extractor)
-        symlink_target = tmp_path / "external-skill"
-        symlink_target.mkdir()
-        (symlink_target / "SKILL.md").write_text("# External")
-
-        symlink_skill = templates_dir / "symlink-skill"
-        symlink_skill.symlink_to(symlink_target)
-
-        # Symlink should be skipped during deployment
-
-    def test_deploy_skills_skips_existing_without_force(self, tmp_path: Path) -> None:
-        """Test that deploy_skills skips existing skills when force=False."""
-        project_dir = tmp_path / "test-project"
-        project_dir.mkdir()
-
-        # Create existing skill in target
-        target_skills = project_dir / ".claude" / "skills"
-        target_skills.mkdir(parents=True)
-        existing_skill = target_skills / "existing-skill"
-        existing_skill.mkdir()
-        existing_file = existing_skill / "SKILL.md"
-        existing_file.write_text("# Original Content")
-
-        # Create templates with same skill name
-        templates_dir = tmp_path / "templates" / "skills"
-        templates_dir.mkdir(parents=True)
-        template_skill = templates_dir / "existing-skill"
-        template_skill.mkdir()
-        (template_skill / "SKILL.md").write_text("# New Content")
-
-        # Without force, existing skill should be skipped
-        # Content should remain "# Original Content"
-
-    def test_deploy_skills_overwrites_with_force(self, tmp_path: Path) -> None:
-        """Test that deploy_skills overwrites existing skills when force=True."""
-        project_dir = tmp_path / "test-project"
-        project_dir.mkdir()
-
-        # Create existing skill in target
-        target_skills = project_dir / ".claude" / "skills"
-        target_skills.mkdir(parents=True)
-        existing_skill = target_skills / "existing-skill"
-        existing_skill.mkdir()
-        (existing_skill / "SKILL.md").write_text("# Original Content")
-
-        # Create templates with same skill name
-        templates_dir = tmp_path / "templates" / "skills"
-        templates_dir.mkdir(parents=True)
-        template_skill = templates_dir / "existing-skill"
-        template_skill.mkdir()
-        (template_skill / "SKILL.md").write_text("# New Content")
-
-        # With force=True, existing skill should be overwritten
-        # Content should become "# New Content"
-
-    def test_deploy_skills_returns_counts(self, tmp_path: Path) -> None:
-        """Test that deploy_skills returns (deployed, skipped) counts."""
-        project_dir = tmp_path / "test-project"
-        project_dir.mkdir()
-
-        # Create templates with 3 skills
-        templates_dir = tmp_path / "templates" / "skills"
-        templates_dir.mkdir(parents=True)
-        for i in range(3):
-            skill_dir = templates_dir / f"skill-{i}"
-            skill_dir.mkdir()
-            (skill_dir / "SKILL.md").write_text(f"# Skill {i}")
-
-        # Pre-create one skill in target
-        target_skills = project_dir / ".claude" / "skills"
-        target_skills.mkdir(parents=True)
-        existing = target_skills / "skill-1"
-        existing.mkdir()
-        (existing / "SKILL.md").write_text("# Existing")
-
-        # Deploy without force should return (2 deployed, 1 skipped)
-
-    def test_deploy_skills_preserves_directory_structure(self, tmp_path: Path) -> None:
-        """Test that deploy_skills preserves SKILL.md structure."""
-        project_dir = tmp_path / "test-project"
-        project_dir.mkdir()
-
-        templates_dir = tmp_path / "templates" / "skills"
-        templates_dir.mkdir(parents=True)
-        skill_dir = templates_dir / "test-skill"
-        skill_dir.mkdir()
-        (skill_dir / "SKILL.md").write_text("# Test Skill Content")
-
-        # After deployment, SKILL.md should exist at:
-        # .claude/skills/test-skill/SKILL.md
+# NOTE: Unit tests for deploy_skills() are omitted because the function uses
+# __file__ to locate templates, making it difficult to test in isolation without
+# extensive mocking. The integration tests below provide comprehensive coverage
+# of the skills deployment functionality through the CLI.
 
 
 class TestInitSkillsIntegration:
@@ -329,14 +187,14 @@ class TestSkillsDirectoryStructure:
         assert result.exit_code == 0
 
         skills_dir = project_dir / ".claude" / "skills"
-        if skills_dir.exists():
-            # Each skill subdirectory should have a SKILL.md
-            for skill_path in skills_dir.iterdir():
-                if skill_path.is_dir():
-                    # Note: In mock mode, this may not be populated
-                    # In real usage, SKILL.md should exist at:
-                    # skill_path / "SKILL.md"
-                    pass
+        # Skills directory should be created (even if empty in mock mode)
+        assert skills_dir.exists(), "Skills directory should exist"
+
+        # Check that each skill subdirectory has a SKILL.md file
+        skill_dirs = [p for p in skills_dir.iterdir() if p.is_dir()]
+        for skill_path in skill_dirs:
+            skill_md = skill_path / "SKILL.md"
+            assert skill_md.exists(), f"SKILL.md should exist in {skill_path.name}"
 
     def test_symlinks_not_deployed(self, mock_github_releases, tmp_path: Path) -> None:
         """Test that symlink skills are not deployed."""
@@ -357,12 +215,15 @@ class TestSkillsDirectoryStructure:
         assert result.exit_code == 0
 
         skills_dir = project_dir / ".claude" / "skills"
-        if skills_dir.exists():
-            # context-extractor is a symlink in templates/skills/
-            # It should NOT be deployed
-            # In real deployment, context-extractor should not exist
-            # (unless it's been copied as a regular directory)
-            pass
+        assert skills_dir.exists(), "Skills directory should exist"
+
+        # Verify that symlinked skills (like context-extractor) are not deployed
+        # Check that deployed skills are regular directories, not symlinks
+        for skill_path in skills_dir.iterdir():
+            if skill_path.is_dir():
+                assert not skill_path.is_symlink(), (
+                    f"{skill_path.name} should not be a symlink"
+                )
 
 
 class TestInitCompleteFlag:

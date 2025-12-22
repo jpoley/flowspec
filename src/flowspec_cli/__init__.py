@@ -3086,13 +3086,12 @@ def deploy_skills(
             deployed += 1
         except Exception as e:
             # Log error but continue with other skills
+            error_msg = f"Failed to deploy skill '{skill_name}': {e}"
             if tracker:
-                # Note: we don't fail the entire operation for one skill
-                pass
+                # Track error in tracker context
+                console.print(f"[yellow]Warning:[/yellow] {error_msg}")
             else:
-                console.print(
-                    f"[yellow]Warning:[/yellow] Failed to deploy skill '{skill_name}': {e}"
-                )
+                console.print(f"[yellow]Warning:[/yellow] {error_msg}")
 
     return (deployed, skipped)
 
@@ -3134,10 +3133,8 @@ def deploy_cicd_templates(
             shutil.copy2(template_file, target_file)
             deployed += 1
         except Exception as e:
-            if not tracker:
-                console.print(
-                    f"[yellow]Warning:[/yellow] Failed to deploy workflow '{template_file.name}': {e}"
-                )
+            error_msg = f"Failed to deploy workflow '{template_file.name}': {e}"
+            console.print(f"[yellow]Warning:[/yellow] {error_msg}")
 
     return deployed
 
@@ -3694,7 +3691,7 @@ def init(
 
     # Different tracking keys based on layered mode
     if layered:
-        for key, label in [
+        steps = [
             ("fetch-base", "Fetch base spec-kit"),
             ("fetch-extension", "Fetch flowspec extension"),
             ("extract-base", "Extract base template"),
@@ -3705,12 +3702,9 @@ def init(
             ("cleanup", "Cleanup"),
             ("git", "Initialize git repository"),
             ("hooks", "Scaffold hooks"),
-            ("constitution", "Set up constitution"),
-            ("final", "Finalize"),
-        ]:
-            tracker.add(key, label)
+        ]
     else:
-        for key, label in [
+        steps = [
             ("fetch", "Fetch latest release"),
             ("download", "Download template"),
             ("extract", "Extract template"),
@@ -3721,10 +3715,29 @@ def init(
             ("cleanup", "Cleanup"),
             ("git", "Initialize git repository"),
             ("hooks", "Scaffold hooks"),
+        ]
+
+    # Add complete mode steps if --complete flag is set
+    if complete:
+        steps.extend(
+            [
+                ("cicd", "Deploy CI/CD templates"),
+                ("vscode-ext", "Deploy VSCode extensions"),
+                ("mcp", "Deploy MCP config"),
+            ]
+        )
+
+    # Add final steps common to all modes
+    steps.extend(
+        [
             ("constitution", "Set up constitution"),
             ("final", "Finalize"),
-        ]:
-            tracker.add(key, label)
+        ]
+    )
+
+    # Register all steps with tracker
+    for key, label in steps:
+        tracker.add(key, label)
 
     # Track git error message outside Live context so it persists
     git_error_message = None
