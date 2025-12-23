@@ -2572,7 +2572,7 @@ def download_and_extract_two_stage(
         project_path.mkdir(parents=True, exist_ok=True)
 
     # Process each AI assistant: download and extract both base and extension
-    for agent_idx, agent in enumerate(ai_assistants):
+    for agent in ai_assistants:
         base_zip = None
         ext_zip = None
 
@@ -2673,16 +2673,25 @@ def download_and_extract_two_stage(
                             else:
                                 shutil.copy2(item, dest_path)
                 else:
-                    zip_ref.extractall(project_path)
-                    extracted_items = list(project_path.iterdir())
-                    if len(extracted_items) == 1 and extracted_items[0].is_dir():
-                        nested_dir = extracted_items[0]
-                        temp_move_dir = (
-                            project_path.parent / f"{project_path.name}_temp"
-                        )
-                        shutil.move(str(nested_dir), str(temp_move_dir))
-                        project_path.rmdir()
-                        shutil.move(str(temp_move_dir), str(project_path))
+                    # Extract to temp dir first to check for nested structure
+                    with tempfile.TemporaryDirectory() as temp_dir:
+                        temp_path = Path(temp_dir)
+                        zip_ref.extractall(temp_path)
+                        extracted_items = list(temp_path.iterdir())
+
+                        # Check if ZIP has nested directory structure
+                        if len(extracted_items) == 1 and extracted_items[0].is_dir():
+                            source_dir = extracted_items[0]
+                        else:
+                            source_dir = temp_path
+
+                        # Copy from source to project directory
+                        for item in source_dir.iterdir():
+                            dest_path = project_path / item.name
+                            if item.is_dir():
+                                shutil.copytree(item, dest_path, dirs_exist_ok=True)
+                            else:
+                                shutil.copy2(item, dest_path)
 
             if tracker:
                 tracker.complete(step_name, f"{agent} base extracted")
