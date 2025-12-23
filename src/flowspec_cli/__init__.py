@@ -34,7 +34,6 @@ import ssl
 import subprocess
 import sys
 import tempfile
-import time
 import tomllib
 import zipfile
 from datetime import datetime, timezone
