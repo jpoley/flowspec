@@ -2558,8 +2558,16 @@ def _extract_zip_to_project(
             zip_ref.extractall(temp_path)
             extracted_items = list(temp_path.iterdir())
 
-            # Check if ZIP has nested directory structure
-            if len(extracted_items) == 1 and extracted_items[0].is_dir():
+            # Check if ZIP has nested directory structure (like spec-kit-v0.0.90/)
+            # Only unwrap if it's a spec-kit/flowspec release directory, not agent directories like .claude/
+            if (
+                len(extracted_items) == 1
+                and extracted_items[0].is_dir()
+                and (
+                    extracted_items[0].name.startswith("spec-kit-")
+                    or extracted_items[0].name.startswith("flowspec-")
+                )
+            ):
                 source_dir = extracted_items[0]
             else:
                 source_dir = temp_path
