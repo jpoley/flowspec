@@ -1,11 +1,11 @@
 ---
 id: task-488
 title: 'claude-improves-again: Add INITIAL feature intake template'
-status: To Do
+status: Done
 assignee:
   - '@muckross'
 created_date: '2025-12-14 03:06'
-updated_date: '2025-12-15 01:50'
+updated_date: '2025-12-19 18:56'
 labels:
   - context-engineering
   - templates
@@ -24,9 +24,15 @@ Source: docs/research/archon-inspired.md Task 1
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Template created at templates/docs/initial/initial-feature-template.md
-- [ ] #2 Template includes FEATURE section (problem, outcome, constraints)
-- [ ] #3 Template includes EXAMPLES section (relevant files and illustrations)
-- [ ] #4 Template includes DOCUMENTATION section (PRDs, ADRs, README links)
-- [ ] #5 Template includes OTHER CONSIDERATIONS section (gotchas, dependencies, security)
+- [x] #1 Template created at templates/docs/initial/initial-feature-template.md
+- [x] #2 Template includes FEATURE section (problem, outcome, constraints)
+- [x] #3 Template includes EXAMPLES section (relevant files and illustrations)
+- [x] #4 Template includes DOCUMENTATION section (PRDs, ADRs, README links)
+- [x] #5 Template includes OTHER CONSIDERATIONS section (gotchas, dependencies, security)
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Already implemented - template exists at templates/docs/initial/initial-feature-template.md with all required sections.
+<!-- SECTION:NOTES:END -->
