@@ -2539,7 +2539,6 @@ def _cleanup_legacy_speckit_files(project_path: Path, ai_assistants: list[str]) 
 def _extract_zip_to_project(
     zip_path: Path,
     project_path: Path,
-    is_current_dir: bool,
     merge_with_existing: bool = False,
 ) -> None:
     """Extract ZIP contents to project directory, handling nested structures.
@@ -2547,7 +2546,6 @@ def _extract_zip_to_project(
     Args:
         zip_path: Path to the ZIP file to extract
         project_path: Target project directory
-        is_current_dir: Whether extracting to current directory
         merge_with_existing: If True, recursively merge directories; if False, use dirs_exist_ok
     """
     with zipfile.ZipFile(zip_path, "r") as zip_ref:
@@ -2567,8 +2565,9 @@ def _extract_zip_to_project(
             for item in source_dir.iterdir():
                 dest_path = project_path / item.name
                 if item.is_dir():
-                    if merge_with_existing and dest_path.exists():
-                        # Recursively merge directories (extension overrides base)
+                    if dest_path.exists():
+                        # Directory exists - always use recursive merge to avoid FileExistsError
+                        # (dirs_exist_ok=True only allows dir itself, not existing files within)
                         for sub_item in item.rglob("*"):
                             if sub_item.is_file():
                                 rel_path = sub_item.relative_to(item)
@@ -2576,9 +2575,10 @@ def _extract_zip_to_project(
                                 dest_file.parent.mkdir(parents=True, exist_ok=True)
                                 shutil.copy2(sub_item, dest_file)
                     else:
+                        # Directory doesn't exist - safe to use copytree
                         shutil.copytree(item, dest_path, dirs_exist_ok=True)
                 else:
-                    # File overwrites (extension wins if merge_with_existing)
+                    # File overwrites (new file or existing file)
                     shutil.copy2(item, dest_path)
 
 
@@ -2621,7 +2621,10 @@ def download_and_extract_two_stage(
     # NOTE: Each agent requires separate base + extension downloads because:
     # 1. Each agent has different file structures (.claude/, .github/, .gemini/, etc.)
     # 2. Base spec-kit provides agent-specific formatting (md vs toml vs json)
-    # 3. ZIP files are agent-specific and cannot be shared
+    # 3. The ZIPs are built per agent (they include agent-specific directories) and
+    #    therefore cannot be blindly re-used between agents, even though they may
+    #    also contain shared directories (e.g., .flowspec/) whose contents are meant
+    #    to be merged safely across agents
     #
     # NOTE: If an error occurs during agent N (where N > 1), agents 1 through N-1
     # will remain installed. This is intentional - partial installations are still
@@ -2709,9 +2712,7 @@ def download_and_extract_two_stage(
             tracker.start(step_name, f"extracting {agent} base")
 
         try:
-            _extract_zip_to_project(
-                base_zip, project_path, is_current_dir, merge_with_existing=False
-            )
+            _extract_zip_to_project(base_zip, project_path, merge_with_existing=False)
             if tracker:
                 tracker.complete(step_name, f"{agent} base extracted")
         except Exception as e:
@@ -2736,9 +2737,7 @@ def download_and_extract_two_stage(
             tracker.start(step_name, f"extracting {agent} extension")
 
         try:
-            _extract_zip_to_project(
-                ext_zip, project_path, is_current_dir, merge_with_existing=True
-            )
+            _extract_zip_to_project(ext_zip, project_path, merge_with_existing=True)
             if tracker:
                 tracker.complete(step_name, f"{agent} extension extracted")
         except Exception as e:
