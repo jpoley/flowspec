@@ -590,6 +590,220 @@ def has_constitution(path: Path) -> bool:
     return constitution_path.exists()
 
 
+def _detect_tier_from_content(content: str) -> str:
+    """Detect tier from constitution content string.
+
+    Args:
+        content: Constitution file content
+
+    Returns:
+        Tier level: "Light", "Medium", or "Heavy" (defaults to "Medium")
+    """
+    import re
+
+    match = re.search(r"<!-- TIER: (Light|Medium|Heavy) -->", content)
+    return match.group(1) if match else "Medium"
+
+
+def _count_markers_from_content(content: str) -> int:
+    """Count NEEDS_VALIDATION markers in content.
+
+    Uses regex to match actual comment markers, avoiding false positives
+    from the text appearing in documentation or examples.
+
+    Args:
+        content: Constitution file content
+
+    Returns:
+        Number of NEEDS_VALIDATION markers found
+    """
+    import re
+
+    # Match actual HTML comment markers, not plain text
+    return len(re.findall(r"<!-- NEEDS_VALIDATION:", content))
+
+
+def _extract_sections_from_content(content: str) -> list[str]:
+    """Extract section names from NEEDS_VALIDATION markers.
+
+    Args:
+        content: Constitution file content
+
+    Returns:
+        List of section descriptions needing validation
+    """
+    import re
+
+    pattern = r"<!-- NEEDS_VALIDATION: (.+?) -->"
+    return re.findall(pattern, content)
+
+
+def detect_constitution_tier(constitution_path: Path) -> str:
+    """Detect the tier from a constitution file.
+
+    Args:
+        constitution_path: Path to constitution.md file
+
+    Returns:
+        Tier level: "Light", "Medium", or "Heavy" (defaults to "Medium")
+    """
+    if not constitution_path.exists():
+        return "Medium"
+
+    content = constitution_path.read_text()
+    return _detect_tier_from_content(content)
+
+
+def count_validation_markers(constitution_path: Path) -> int:
+    """Count NEEDS_VALIDATION markers in constitution.
+
+    Args:
+        constitution_path: Path to constitution.md file
+
+    Returns:
+        Number of NEEDS_VALIDATION markers found
+    """
+    if not constitution_path.exists():
+        return 0
+
+    content = constitution_path.read_text()
+    return _count_markers_from_content(content)
+
+
+def extract_validation_sections(constitution_path: Path) -> list[str]:
+    """Extract section names from NEEDS_VALIDATION markers.
+
+    Args:
+        constitution_path: Path to constitution.md file
+
+    Returns:
+        List of section descriptions needing validation
+    """
+    if not constitution_path.exists():
+        return []
+
+    content = constitution_path.read_text()
+    return _extract_sections_from_content(content)
+
+
+class ConstitutionEnforcementResult:
+    """Result of constitution enforcement check."""
+
+    def __init__(
+        self,
+        tier: str,
+        marker_count: int,
+        section_names: list[str],
+        can_proceed: bool,
+        requires_confirmation: bool = False,
+        warning: str | None = None,
+        blocking_reason: str | None = None,
+    ):
+        self.tier = tier
+        self.marker_count = marker_count
+        self.section_names = section_names
+        self.can_proceed = can_proceed
+        self.requires_confirmation = requires_confirmation
+        self.warning = warning
+        self.blocking_reason = blocking_reason
+
+
+def check_constitution_tier(
+    constitution_path: Path, skip_validation: bool = False
+) -> ConstitutionEnforcementResult:
+    """Check constitution tier and enforce validation rules.
+
+    Args:
+        constitution_path: Path to constitution.md file
+        skip_validation: If True, bypass all enforcement checks
+
+    Returns:
+        ConstitutionEnforcementResult with enforcement decision
+    """
+    if skip_validation:
+        return ConstitutionEnforcementResult(
+            tier="Skipped",
+            marker_count=0,
+            section_names=[],
+            can_proceed=True,
+            warning="Skipping constitution validation (--skip-validation)",
+        )
+
+    if not constitution_path.exists():
+        return ConstitutionEnforcementResult(
+            tier="Unknown",
+            marker_count=0,
+            section_names=[],
+            can_proceed=True,
+            warning="Constitution not found - consider running 'flowspec init --here'",
+        )
+
+    # Read file once and extract all data (efficiency fix per Copilot review)
+    content = constitution_path.read_text()
+    tier = _detect_tier_from_content(content)
+    marker_count = _count_markers_from_content(content)
+    section_names = _extract_sections_from_content(content)
+
+    # Fully validated - always proceed
+    if marker_count == 0:
+        return ConstitutionEnforcementResult(
+            tier=tier,
+            marker_count=0,
+            section_names=[],
+            can_proceed=True,
+        )
+
+    # Light tier: warn but proceed
+    if tier == "Light":
+        sections_list = "\n".join(f"  - {name}" for name in section_names)
+        warning = (
+            f"Constitution has {marker_count} unvalidated sections:\n{sections_list}\n\n"
+            "Consider running /spec:constitution to customize your constitution."
+        )
+        return ConstitutionEnforcementResult(
+            tier=tier,
+            marker_count=marker_count,
+            section_names=section_names,
+            can_proceed=True,
+            warning=warning,
+        )
+
+    # Medium tier: warn and require confirmation
+    if tier == "Medium":
+        sections_list = "\n".join(f"  - {name}" for name in section_names)
+        warning = (
+            f"Constitution has {marker_count} unvalidated sections:\n{sections_list}\n\n"
+            "Medium tier projects should validate their constitution before workflow commands."
+        )
+        return ConstitutionEnforcementResult(
+            tier=tier,
+            marker_count=marker_count,
+            section_names=section_names,
+            can_proceed=False,
+            requires_confirmation=True,
+            warning=warning,
+        )
+
+    # Heavy tier: block until validated
+    sections_list = "\n".join(f"  - {name}" for name in section_names)
+    blocking_reason = (
+        f"Constitution has {marker_count} unvalidated sections:\n{sections_list}\n\n"
+        "Heavy tier constitutions require full validation before workflow commands.\n\n"
+        "To resolve:\n"
+        "  1. Run /spec:constitution to customize your constitution\n"
+        "  2. Run flowspec constitution validate to verify\n"
+        "  3. Remove all NEEDS_VALIDATION markers\n\n"
+        "Or use --skip-validation to bypass (not recommended)."
+    )
+    return ConstitutionEnforcementResult(
+        tier=tier,
+        marker_count=marker_count,
+        section_names=section_names,
+        can_proceed=False,
+        blocking_reason=blocking_reason,
+    )
+
+
 CLAUDE_LOCAL_PATH = Path.home() / ".claude" / "local" / "claude"
 
 BANNER = """
