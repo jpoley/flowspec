@@ -2566,203 +2566,225 @@ def download_and_extract_two_stage(
         raise ValueError("At least one AI assistant must be specified")
 
     current_dir = Path.cwd()
-    base_zip = None
-    ext_zip = None
 
-    # Use first agent for template download (templates contain all agent directories)
-    primary_agent = ai_assistants[0]
+    # Create project directory if needed (do this once, not per-agent)
+    if not is_current_dir:
+        project_path.mkdir(parents=True, exist_ok=True)
 
-    # Stage 1: Download base spec-kit
-    if tracker:
-        tracker.start(
-            "fetch-base", f"downloading from {BASE_REPO_OWNER}/{BASE_REPO_NAME}"
-        )
+    # Process each AI assistant: download and extract both base and extension
+    for agent_idx, agent in enumerate(ai_assistants):
+        base_zip = None
+        ext_zip = None
 
-    try:
-        base_zip, base_meta = download_template_from_github(
-            primary_agent,  # Use primary agent for download
-            current_dir,
-            script_type=script_type,
-            verbose=verbose and tracker is None,
-            show_progress=(tracker is None),
-            client=client,
-            debug=debug,
-            github_token=github_token,
-            repo_owner=BASE_REPO_OWNER,
-            repo_name=BASE_REPO_NAME,
-            version=base_version or BASE_REPO_DEFAULT_VERSION,
-        )
+        # Stage 1: Download base spec-kit for this agent
+        step_name = f"fetch-base-{agent}" if len(ai_assistants) > 1 else "fetch-base"
         if tracker:
-            tracker.complete(
-                "fetch-base",
-                f"base {base_meta['release']} ({base_meta['size']:,} bytes)",
+            tracker.start(
+                step_name,
+                f"downloading {agent} base from {BASE_REPO_OWNER}/{BASE_REPO_NAME}",
             )
-    except Exception as e:
-        if tracker:
-            tracker.error("fetch-base", str(e))
-        # download_template_from_github already cleans up its zip on error
-        raise
 
-    # Stage 2: Download flowspec extension
-    if tracker:
-        tracker.start(
-            "fetch-extension",
-            f"downloading from {EXTENSION_REPO_OWNER}/{EXTENSION_REPO_NAME}",
-        )
-
-    try:
-        ext_zip, ext_meta = download_template_from_github(
-            primary_agent,  # Use primary agent for download
-            current_dir,
-            script_type=script_type,
-            verbose=verbose and tracker is None,
-            show_progress=(tracker is None),
-            client=client,
-            debug=debug,
-            github_token=github_token,
-            repo_owner=EXTENSION_REPO_OWNER,
-            repo_name=EXTENSION_REPO_NAME,
-            version=extension_version or EXTENSION_REPO_DEFAULT_VERSION,
-        )
-        if tracker:
-            tracker.complete(
-                "fetch-extension",
-                f"extension {ext_meta['release']} ({ext_meta['size']:,} bytes)",
+        try:
+            base_zip, base_meta = download_template_from_github(
+                agent,
+                current_dir,
+                script_type=script_type,
+                verbose=verbose and tracker is None,
+                show_progress=(tracker is None),
+                client=client,
+                debug=debug,
+                github_token=github_token,
+                repo_owner=BASE_REPO_OWNER,
+                repo_name=BASE_REPO_NAME,
+                version=base_version or BASE_REPO_DEFAULT_VERSION,
             )
-    except Exception as e:
+            if tracker:
+                tracker.complete(
+                    step_name,
+                    f"{agent} base {base_meta['release']} ({base_meta['size']:,} bytes)",
+                )
+        except Exception as e:
+            if tracker:
+                tracker.error(step_name, str(e))
+            # download_template_from_github already cleans up its zip on error
+            raise
+
+        # Stage 2: Download flowspec extension for this agent
+        step_name = (
+            f"fetch-extension-{agent}" if len(ai_assistants) > 1 else "fetch-extension"
+        )
         if tracker:
-            tracker.error("fetch-extension", str(e))
-        # download_template_from_github already cleans up its zip on error
-        # But we need to clean up the base_zip since we won't reach extraction
-        if base_zip and base_zip.exists():
-            base_zip.unlink()
-        raise
+            tracker.start(
+                step_name,
+                f"downloading {agent} extension from {EXTENSION_REPO_OWNER}/{EXTENSION_REPO_NAME}",
+            )
 
-    # Extract base first
-    if tracker:
-        tracker.start("extract-base")
+        try:
+            ext_zip, ext_meta = download_template_from_github(
+                agent,
+                current_dir,
+                script_type=script_type,
+                verbose=verbose and tracker is None,
+                show_progress=(tracker is None),
+                client=client,
+                debug=debug,
+                github_token=github_token,
+                repo_owner=EXTENSION_REPO_OWNER,
+                repo_name=EXTENSION_REPO_NAME,
+                version=extension_version or EXTENSION_REPO_DEFAULT_VERSION,
+            )
+            if tracker:
+                tracker.complete(
+                    step_name,
+                    f"{agent} extension {ext_meta['release']} ({ext_meta['size']:,} bytes)",
+                )
+        except Exception as e:
+            if tracker:
+                tracker.error(step_name, str(e))
+            # download_template_from_github already cleans up its zip on error
+            # But we need to clean up the base_zip since we won't reach extraction
+            if base_zip and base_zip.exists():
+                base_zip.unlink()
+            raise
 
-    try:
-        if not is_current_dir:
-            project_path.mkdir(parents=True, exist_ok=True)
-
-        with zipfile.ZipFile(base_zip, "r") as zip_ref:
-            if is_current_dir:
-                with tempfile.TemporaryDirectory() as temp_dir:
-                    temp_path = Path(temp_dir)
-                    zip_ref.extractall(temp_path)
-
-                    extracted_items = list(temp_path.iterdir())
-                    source_dir = temp_path
-                    if len(extracted_items) == 1 and extracted_items[0].is_dir():
-                        source_dir = extracted_items[0]
-
-                    for item in source_dir.iterdir():
-                        dest_path = project_path / item.name
-                        if item.is_dir():
-                            shutil.copytree(item, dest_path, dirs_exist_ok=True)
-                        else:
-                            shutil.copy2(item, dest_path)
-            else:
-                zip_ref.extractall(project_path)
-                extracted_items = list(project_path.iterdir())
-                if len(extracted_items) == 1 and extracted_items[0].is_dir():
-                    nested_dir = extracted_items[0]
-                    temp_move_dir = project_path.parent / f"{project_path.name}_temp"
-                    shutil.move(str(nested_dir), str(temp_move_dir))
-                    project_path.rmdir()
-                    shutil.move(str(temp_move_dir), str(project_path))
-
+        # Extract base for this agent
+        step_name = (
+            f"extract-base-{agent}" if len(ai_assistants) > 1 else "extract-base"
+        )
         if tracker:
-            tracker.complete("extract-base", "base templates extracted")
-    except Exception as e:
-        if tracker:
-            tracker.error("extract-base", str(e))
-        # Clean up extension zip on base extraction failure (base_zip cleaned in finally)
-        if ext_zip and ext_zip.exists():
-            ext_zip.unlink()
-        raise
-    finally:
-        # Always clean up base zip after extraction attempt
-        if base_zip and base_zip.exists():
-            base_zip.unlink()
+            tracker.start(step_name, f"extracting {agent} base")
 
-    # Extract extension (overlay on top of base)
-    if tracker:
-        tracker.start("extract-extension")
+        try:
+            with zipfile.ZipFile(base_zip, "r") as zip_ref:
+                if is_current_dir:
+                    with tempfile.TemporaryDirectory() as temp_dir:
+                        temp_path = Path(temp_dir)
+                        zip_ref.extractall(temp_path)
 
-    try:
-        with zipfile.ZipFile(ext_zip, "r") as zip_ref:
-            if is_current_dir:
-                with tempfile.TemporaryDirectory() as temp_dir:
-                    temp_path = Path(temp_dir)
-                    zip_ref.extractall(temp_path)
+                        extracted_items = list(temp_path.iterdir())
+                        source_dir = temp_path
+                        if len(extracted_items) == 1 and extracted_items[0].is_dir():
+                            source_dir = extracted_items[0]
 
-                    extracted_items = list(temp_path.iterdir())
-                    source_dir = temp_path
-                    if len(extracted_items) == 1 and extracted_items[0].is_dir():
-                        source_dir = extracted_items[0]
-
-                    for item in source_dir.iterdir():
-                        dest_path = project_path / item.name
-                        if item.is_dir():
-                            # Recursively merge directories (extension overrides base)
-                            if dest_path.exists():
-                                for sub_item in item.rglob("*"):
-                                    if sub_item.is_file():
-                                        rel_path = sub_item.relative_to(item)
-                                        dest_file = dest_path / rel_path
-                                        dest_file.parent.mkdir(
-                                            parents=True, exist_ok=True
-                                        )
-                                        shutil.copy2(sub_item, dest_file)
-                            else:
+                        for item in source_dir.iterdir():
+                            dest_path = project_path / item.name
+                            if item.is_dir():
                                 shutil.copytree(item, dest_path, dirs_exist_ok=True)
-                        else:
-                            # File overwrites (extension wins)
-                            shutil.copy2(item, dest_path)
-            else:
-                # Extract to temp, then merge
-                with tempfile.TemporaryDirectory() as temp_dir:
-                    temp_path = Path(temp_dir)
-                    zip_ref.extractall(temp_path)
-
-                    extracted_items = list(temp_path.iterdir())
-                    source_dir = temp_path
-                    if len(extracted_items) == 1 and extracted_items[0].is_dir():
-                        source_dir = extracted_items[0]
-
-                    for item in source_dir.iterdir():
-                        dest_path = project_path / item.name
-                        if item.is_dir():
-                            if dest_path.exists():
-                                # Merge directory contents
-                                for sub_item in item.rglob("*"):
-                                    if sub_item.is_file():
-                                        rel_path = sub_item.relative_to(item)
-                                        dest_file = dest_path / rel_path
-                                        dest_file.parent.mkdir(
-                                            parents=True, exist_ok=True
-                                        )
-                                        shutil.copy2(sub_item, dest_file)
                             else:
-                                shutil.copytree(item, dest_path, dirs_exist_ok=True)
-                        else:
-                            shutil.copy2(item, dest_path)
+                                shutil.copy2(item, dest_path)
+                else:
+                    zip_ref.extractall(project_path)
+                    extracted_items = list(project_path.iterdir())
+                    if len(extracted_items) == 1 and extracted_items[0].is_dir():
+                        nested_dir = extracted_items[0]
+                        temp_move_dir = (
+                            project_path.parent / f"{project_path.name}_temp"
+                        )
+                        shutil.move(str(nested_dir), str(temp_move_dir))
+                        project_path.rmdir()
+                        shutil.move(str(temp_move_dir), str(project_path))
 
+            if tracker:
+                tracker.complete(step_name, f"{agent} base extracted")
+        except Exception as e:
+            if tracker:
+                tracker.error(step_name, str(e))
+            # Clean up extension zip on base extraction failure (base_zip cleaned in finally)
+            if ext_zip and ext_zip.exists():
+                ext_zip.unlink()
+            raise
+        finally:
+            # Always clean up base zip after extraction attempt
+            if base_zip and base_zip.exists():
+                base_zip.unlink()
+
+        # Extract extension for this agent (overlay on top of base)
+        step_name = (
+            f"extract-extension-{agent}"
+            if len(ai_assistants) > 1
+            else "extract-extension"
+        )
         if tracker:
-            tracker.complete("extract-extension", "extension overlay applied")
+            tracker.start(step_name, f"extracting {agent} extension")
+
+        try:
+            with zipfile.ZipFile(ext_zip, "r") as zip_ref:
+                if is_current_dir:
+                    with tempfile.TemporaryDirectory() as temp_dir:
+                        temp_path = Path(temp_dir)
+                        zip_ref.extractall(temp_path)
+
+                        extracted_items = list(temp_path.iterdir())
+                        source_dir = temp_path
+                        if len(extracted_items) == 1 and extracted_items[0].is_dir():
+                            source_dir = extracted_items[0]
+
+                        for item in source_dir.iterdir():
+                            dest_path = project_path / item.name
+                            if item.is_dir():
+                                # Recursively merge directories (extension overrides base)
+                                if dest_path.exists():
+                                    for sub_item in item.rglob("*"):
+                                        if sub_item.is_file():
+                                            rel_path = sub_item.relative_to(item)
+                                            dest_file = dest_path / rel_path
+                                            dest_file.parent.mkdir(
+                                                parents=True, exist_ok=True
+                                            )
+                                            shutil.copy2(sub_item, dest_file)
+                                else:
+                                    shutil.copytree(item, dest_path, dirs_exist_ok=True)
+                            else:
+                                # File overwrites (extension wins)
+                                shutil.copy2(item, dest_path)
+                else:
+                    # Extract to temp, then merge
+                    with tempfile.TemporaryDirectory() as temp_dir:
+                        temp_path = Path(temp_dir)
+                        zip_ref.extractall(temp_path)
+
+                        extracted_items = list(temp_path.iterdir())
+                        source_dir = temp_path
+                        if len(extracted_items) == 1 and extracted_items[0].is_dir():
+                            source_dir = extracted_items[0]
+
+                        for item in source_dir.iterdir():
+                            dest_path = project_path / item.name
+                            if item.is_dir():
+                                if dest_path.exists():
+                                    # Merge directory contents
+                                    for sub_item in item.rglob("*"):
+                                        if sub_item.is_file():
+                                            rel_path = sub_item.relative_to(item)
+                                            dest_file = dest_path / rel_path
+                                            dest_file.parent.mkdir(
+                                                parents=True, exist_ok=True
+                                            )
+                                            shutil.copy2(sub_item, dest_file)
+                                else:
+                                    shutil.copytree(item, dest_path, dirs_exist_ok=True)
+                            else:
+                                shutil.copy2(item, dest_path)
+
+            if tracker:
+                tracker.complete(step_name, f"{agent} extension extracted")
+        except Exception as e:
+            if tracker:
+                tracker.error(step_name, str(e))
+            # ext_zip cleanup happens in finally block
+            raise
+        finally:
+            # Always clean up extension zip after extraction attempt
+            if ext_zip and ext_zip.exists():
+                ext_zip.unlink()
+
+    # Add merge completion message (only once at the end, not per-agent)
+    if tracker:
+        if len(ai_assistants) > 1:
+            tracker.add("merge", f"Merge templates for {len(ai_assistants)} agents")
+        else:
             tracker.add("merge", "Merge templates (extension overrides base)")
-            tracker.complete("merge", "precedence rules applied")
-    except Exception as e:
-        if tracker:
-            tracker.error("extract-extension", str(e))
-        # ext_zip cleanup happens in finally block
-        raise
-    finally:
-        # Always clean up extension zip after extraction attempt
-        if ext_zip and ext_zip.exists():
-            ext_zip.unlink()
+        tracker.complete("merge", "precedence rules applied")
 
     # Clean up legacy speckit.* files from base spec-kit that are now in spec/ directory
     # The flowspec extension uses spec/ subdirectory (e.g., .claude/commands/spec/specify.md)
