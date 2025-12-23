@@ -307,7 +307,9 @@ Completes: $TASK_ID
 PRBODY
 )
 
-  # Replace $TASK_ID in body
+  # Replace $TASK_ID in body.
+  # Note: The PR_BODY heredoc is single-quoted to prevent inline variable expansion,
+  # so we intentionally substitute $TASK_ID here via sed instead.
   PR_BODY=$(echo "$PR_BODY" | sed "s/\$TASK_ID/${TASK_ID:-'N/A'}/")
 
   # Create the PR
