@@ -1014,9 +1014,19 @@ After applying fixes, decide whether to:
 - **Create new PR**: If significant changes warrant a fresh review
 
 ```bash
-# Count commits since PR creation
-COMMITS_SINCE_PR=$(git rev-list --count "${PR_NUMBER}..HEAD" 2>/dev/null || echo "0")
+# Count commits since PR creation (approximate: commits since branch point from main)
+BASE_BRANCH="${BASE_BRANCH:-origin/main}"
+# Fallback to local main if origin/main is not available
+if ! git rev-parse --verify "$BASE_BRANCH" >/dev/null 2>&1; then
+  BASE_BRANCH="main"
+fi
 
+MERGE_BASE=$(git merge-base HEAD "$BASE_BRANCH" 2>/dev/null || echo "")
+if [ -n "$MERGE_BASE" ]; then
+  COMMITS_SINCE_PR=$(git rev-list --count "${MERGE_BASE}..HEAD" 2>/dev/null || echo "0")
+else
+  COMMITS_SINCE_PR="0"
+fi
 # If many fix commits, consider squashing and new PR
 if [ "$COMMITS_SINCE_PR" -gt 3 ]; then
   echo "⚠️  Multiple fix commits detected ($COMMITS_SINCE_PR commits)"
