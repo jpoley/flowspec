@@ -690,8 +690,20 @@ After applying fixes, decide whether to:
 
 ```bash
 # Count commits since PR creation
-COMMITS_SINCE_PR=$(git rev-list --count "${PR_NUMBER}..HEAD" 2>/dev/null || echo "0")
+# Use the merge base with the PR's base branch (e.g., main) instead of the PR number itself.
+COMMITS_SINCE_PR=0
 
+if [ -n "${PR_NUMBER:-}" ]; then
+  # Try to determine the base branch of the PR (requires GitHub CLI `gh`)
+  BASE_BRANCH=$(gh pr view "$PR_NUMBER" --json baseRefName -q .baseRefName 2>/dev/null || echo "")
+
+  if [ -n "${BASE_BRANCH:-}" ] && git rev-parse --verify "origin/$BASE_BRANCH" >/dev/null 2>&1; then
+    MERGE_BASE=$(git merge-base HEAD "origin/$BASE_BRANCH" 2>/dev/null || echo "")
+    if [ -n "${MERGE_BASE:-}" ]; then
+      COMMITS_SINCE_PR=$(git rev-list --count "${MERGE_BASE}..HEAD" 2>/dev/null || echo "0")
+    fi
+  fi
+fi
 # If many fix commits, consider squashing and new PR
 if [ "$COMMITS_SINCE_PR" -gt 3 ]; then
   echo "⚠️  Multiple fix commits detected ($COMMITS_SINCE_PR commits)"
