@@ -385,9 +385,21 @@ Working directory: [CWD]
 # Determine mode of operation
 INPUT="$ARGUMENTS"
 
+SKIP_COPILOT=false
+
 if [ -z "$INPUT" ]; then
   MODE="new"
   echo "📋 Mode: Create new PR from current branch"
+elif echo "$INPUT" | grep -Eq '^--skip-copilot'; then
+  SKIP_COPILOT=true
+  INPUT=$(echo "$INPUT" | sed 's/--skip-copilot[[:space:]]*//')
+  if [ -z "$INPUT" ]; then
+    MODE="new"
+  else
+    MODE="monitor"
+    PR_REF="$INPUT"
+  fi
+  echo "📋 Mode: ${MODE} (skipping Copilot review)"
 elif echo "$INPUT" | grep -Eq '^--closed'; then
   MODE="resume_closed"
   PR_REF=$(echo "$INPUT" | sed 's/^--closed[[:space:]]*//')
@@ -399,9 +411,10 @@ elif echo "$INPUT" | grep -Eq '^#?[0-9]+$|github\.com.*pull/[0-9]+'; then
 else
   echo "❌ Invalid input: $INPUT"
   echo "Usage:"
-  echo "  /flow:submit-n-watch-pr              # Create new PR"
-  echo "  /flow:submit-n-watch-pr #123         # Monitor existing PR"
-  echo "  /flow:submit-n-watch-pr --closed #99 # Resume from closed PR"
+  echo "  /flow:submit-n-watch-pr                    # Create new PR"
+  echo "  /flow:submit-n-watch-pr #123               # Monitor existing PR"
+  echo "  /flow:submit-n-watch-pr --closed #99       # Resume from closed PR"
+  echo "  /flow:submit-n-watch-pr --skip-copilot     # Skip Copilot review phase"
   exit 1
 fi
 ```
@@ -421,9 +434,53 @@ else
 fi
 ```
 
+### Step 0.3: Mode-Specific Behavior
+
+```bash
+# Handle monitor and resume_closed modes - skip to Phase 3
+if [ "$MODE" = "monitor" ] || [ "$MODE" = "resume_closed" ]; then
+  # Extract PR number from PR_REF
+  PR_NUMBER=$(echo "$PR_REF" | grep -Eo '[0-9]+' | tail -1)
+
+  if [ -z "$PR_NUMBER" ]; then
+    echo "❌ Could not extract PR number from: $PR_REF"
+    exit 1
+  fi
+
+  echo ""
+  echo "📋 Monitoring existing PR #${PR_NUMBER}"
+
+  # Get PR details
+  PR_URL=$(gh pr view "$PR_NUMBER" --json url -q '.url' 2>/dev/null)
+  BRANCH=$(gh pr view "$PR_NUMBER" --json headRefName -q '.headRefName' 2>/dev/null)
+
+  if [ -z "$PR_URL" ]; then
+    echo "❌ PR #${PR_NUMBER} not found or not accessible"
+    exit 1
+  fi
+
+  # If resume_closed, reopen the PR first
+  if [ "$MODE" = "resume_closed" ]; then
+    echo "🔄 Reopening closed PR #${PR_NUMBER}..."
+    gh pr reopen "$PR_NUMBER" 2>/dev/null || echo "⚠️  PR may already be open"
+  fi
+
+  echo "   URL: $PR_URL"
+  echo "   Branch: $BRANCH"
+  echo ""
+  echo "⏭️  Skipping Phase 1-2 (branch validation and PR creation)"
+  echo "   Jumping directly to Phase 3 (CI monitoring)..."
+  echo ""
+  # Skip to Phase 3 by jumping past the Phase 1-2 sections
+  # (The agent will continue from Phase 3 below)
+fi
+```
+
 ---
 
 ## Phase 1: Branch Validation and Normalization
+
+> **Note**: This phase is skipped when using `--monitor` or `--closed` modes.
 
 **Report progress**: Print "Phase 1: Validating branch naming convention..."
 
@@ -637,7 +694,12 @@ PRBODY
   # Replace $TASK_ID in body.
   # Note: The PR_BODY heredoc is single-quoted to prevent inline variable expansion,
   # so we intentionally substitute $TASK_ID here via sed instead.
-  PR_BODY=$(echo "$PR_BODY" | sed "s/\$TASK_ID/${TASK_ID:-'N/A'}/")
+  # Escape special sed characters in TASK_ID to prevent injection issues.
+  SAFE_TASK_ID="${TASK_ID:-N/A}"
+  SAFE_TASK_ID="${SAFE_TASK_ID//\\/\\\\}"  # Escape backslashes
+  SAFE_TASK_ID="${SAFE_TASK_ID//\//\\/}"   # Escape forward slashes
+  SAFE_TASK_ID="${SAFE_TASK_ID//&/\\&}"    # Escape ampersands
+  PR_BODY=$(echo "$PR_BODY" | sed "s/\$TASK_ID/$SAFE_TASK_ID/")
 
   # Create the PR
   gh pr create --title "$PR_TITLE" --body "$PR_BODY" --head "$BRANCH"
@@ -804,9 +866,24 @@ fi
 
 **Report progress**: Print "Phase 4: Monitoring for Copilot code review..."
 
+> **Note**: This phase is skipped when using `--skip-copilot` flag.
+
+### Step 4.0: Check Skip Flag
+
+```bash
+if [ "$SKIP_COPILOT" = "true" ]; then
+  echo ""
+  echo "⏭️  Skipping Copilot review monitoring (--skip-copilot flag set)"
+  echo "   Proceeding directly to Phase 5 (Analysis)..."
+  echo ""
+  # Skip to Phase 5 - no Copilot review processing needed
+fi
+```
+
 ### Step 4.1: Wait for Copilot Review
 
 ```bash
+if [ "$SKIP_COPILOT" != "true" ]; then
 MAX_REVIEW_WAIT=20  # Maximum wait iterations (20 * 60s = 20 minutes)
 REVIEW_POLL_INTERVAL=60  # Seconds between checks
 REVIEW_ITERATION=0
@@ -880,6 +957,7 @@ if [ "$COPILOT_REVIEWED" = "true" ]; then
   echo "================================================================================
 "
 fi
+fi  # End of SKIP_COPILOT check from Step 4.1
 ```
 
 ---
@@ -918,7 +996,12 @@ For each Copilot comment:
 
 ### Step 5.2: Apply Fixes
 
+> **Note**: This section is skipped when using `--skip-copilot` flag.
+
 ```bash
+if [ "$SKIP_COPILOT" = "true" ]; then
+  echo "⏭️  Skipping fix application (--skip-copilot flag set)"
+else
 # For each valid comment that requires a fix:
 # 1. Make the code change
 # 2. Add tests if needed
@@ -943,6 +1026,7 @@ Deferred/disputed:
 - [Any comments not addressed with rationale]"
 
 git push origin "$BRANCH"
+fi  # End of SKIP_COPILOT check
 ```
 
 ### Step 5.3: Capture Learnings
@@ -1060,8 +1144,8 @@ if [ "$SHOULD_RESUBMIT" = "true" ]; then
   if ! echo "$BRANCH" | grep -Eq '\-v[0-9]+$'; then
     NEW_BRANCH="${BRANCH}-v${NEXT_VERSION}"
   else
-    BASE_BRANCH=$(echo "$BRANCH" | sed 's/-v[0-9]*$//')
-    NEW_BRANCH="${BASE_BRANCH}-v${NEXT_VERSION}"
+    BRANCH_PREFIX=$(echo "$BRANCH" | sed 's/-v[0-9]*$//')
+    NEW_BRANCH="${BRANCH_PREFIX}-v${NEXT_VERSION}"
   fi
 
   git checkout -b "$NEW_BRANCH"
@@ -1118,9 +1202,16 @@ UNRESOLVED=$(gh api "repos/{owner}/{repo}/pulls/${PR_NUMBER}/comments" 2>/dev/nu
 
 if [ "$UNRESOLVED" -gt 0 ]; then
   echo ""
-  echo "🔄 $UNRESOLVED unresolved comments remain. Starting iteration $((ITERATION + 1))..."
-  ITERATION=$((ITERATION + 1))
-  # Loop back to Phase 3 (CI monitoring)
+  echo "🔄 $UNRESOLVED unresolved comments remain."
+  echo ""
+  echo "To continue iteration $((ITERATION + 1)):"
+  echo "  1. Address the remaining Copilot feedback in your code"
+  echo "  2. Commit and push your fixes"
+  echo "  3. Re-run: /flow:submit-n-watch-pr #${PR_NUMBER}"
+  echo ""
+  echo "This will resume monitoring from Phase 3 (CI checks)."
+  # Exit here - the next iteration requires re-running the command
+  exit 0
 else
   echo ""
   echo "✅ All Copilot comments resolved!"
