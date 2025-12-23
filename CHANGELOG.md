@@ -1,5 +1,15 @@
 ## [Unreleased]
 
+### Fixed
+
+- **CRITICAL: Multi-agent installation completely broken** (#no-flow-analysis)
+  - Root cause: `download_and_extract_two_stage()` only downloaded first agent's ZIP
+  - When running `flowspec init --ai claude,copilot`, only `.claude/commands/` was installed
+  - GitHub Copilot prompts (`.github/prompts/`) were never created
+  - Fix: Loop through all agents and download+extract both base and extension for each
+  - Now correctly installs all agent-specific directories when multiple agents specified
+  - Affects all v0.3.x releases - this is a critical bug fix
+
 ### Changed
 
 - **File-friendly timestamp in specify-backup path**: Backup directories now include timestamp (`YYYYMMDD-HHMMSS`) format
