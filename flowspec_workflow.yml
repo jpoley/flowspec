@@ -296,8 +296,6 @@ workflows:
     input_states: ["Validated", "In Implementation"]
     output_state: "Validated"  # Stays in Validated until merged
     optional: true
-    requires_ci_pass: true
-    max_iterations: 5
 
 # ==============================================================================
 # STATE TRANSITIONS
