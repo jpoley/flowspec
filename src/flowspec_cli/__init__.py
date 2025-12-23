@@ -2539,14 +2539,16 @@ def _cleanup_legacy_speckit_files(project_path: Path, ai_assistants: list[str]) 
 def _extract_zip_to_project(
     zip_path: Path,
     project_path: Path,
-    merge_with_existing: bool = False,
 ) -> None:
     """Extract ZIP contents to project directory, handling nested structures.
+
+    Automatically merges directories recursively when destination exists to avoid
+    FileExistsError with dirs_exist_ok=True (which only allows the dir itself,
+    not existing files within).
 
     Args:
         zip_path: Path to the ZIP file to extract
         project_path: Target project directory
-        merge_with_existing: If True, recursively merge directories; if False, use dirs_exist_ok
     """
     with zipfile.ZipFile(zip_path, "r") as zip_ref:
         # Always extract to temp dir first to check for nested structure
@@ -2712,7 +2714,7 @@ def download_and_extract_two_stage(
             tracker.start(step_name, f"extracting {agent} base")
 
         try:
-            _extract_zip_to_project(base_zip, project_path, merge_with_existing=False)
+            _extract_zip_to_project(base_zip, project_path)
             if tracker:
                 tracker.complete(step_name, f"{agent} base extracted")
         except Exception as e:
@@ -2737,7 +2739,7 @@ def download_and_extract_two_stage(
             tracker.start(step_name, f"extracting {agent} extension")
 
         try:
-            _extract_zip_to_project(ext_zip, project_path, merge_with_existing=True)
+            _extract_zip_to_project(ext_zip, project_path)
             if tracker:
                 tracker.complete(step_name, f"{agent} extension extracted")
         except Exception as e:

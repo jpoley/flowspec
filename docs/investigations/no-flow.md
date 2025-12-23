@@ -477,10 +477,36 @@ for agent in ai_assistants:
 
 ---
 
-**Status**: PARTIALLY RESOLVED
+**Status**: RESOLVED
 - Single agent install: WORKING
-- Multi-agent install: **BROKEN - REQUIRES CODE FIX**
+- Multi-agent install: FIXED (see Resolution below)
 
 **Created**: 2024-12-22
-**Updated**: 2024-12-22 19:25 PST
+**Updated**: 2024-12-22 22:30 PST
 **Analyst**: Claude Code
+
+## Resolution
+
+### Fix Implemented
+
+The multi-agent installation bug has been fixed in this PR. The root cause was that `download_and_extract_two_stage()` only downloaded and extracted files for the first agent in the list.
+
+**Changes made**:
+1. Refactored ZIP extraction logic into reusable `_extract_zip_to_project()` helper function
+2. Modified main loop to iterate through ALL agents, downloading base + extension for each
+3. Fixed nested directory extraction bug that evaluated entire project path instead of just ZIP contents
+4. Implemented automatic recursive merge when directories exist to handle shared directories (`.flowspec/`)
+
+**Verification**:
+- Single agent install: ✅ Working
+- Multi-agent install (e.g., `flowspec init --ai claude,copilot`): ✅ Fixed
+- Both `.claude/commands/` and `.github/prompts/` are now correctly installed
+
+### Testing Recommendation
+
+Integration tests should be added to verify:
+- Multiple agents are downloaded and extracted correctly
+- Agent-specific directories are created for each agent
+- Shared directories (`.flowspec/`) are properly merged without conflicts
+
+See Copilot review comment #3 for details.

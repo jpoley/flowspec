@@ -237,3 +237,196 @@ class TestToolChecks:
             assert isinstance(config["requires_cli"], bool), (
                 f"Agent {agent} requires_cli should be boolean"
             )
+
+
+class TestMultiAgentDownloadAndExtract:
+    """Integration tests for multi-agent download and extraction."""
+
+    def test_extract_zip_to_project_single_agent(self, tmp_path):
+        """Test ZIP extraction for single agent."""
+        import zipfile
+        from flowspec_cli import _extract_zip_to_project
+
+        # Create a mock ZIP with agent-specific directory
+        zip_path = tmp_path / "claude.zip"
+        with zipfile.ZipFile(zip_path, "w") as zf:
+            zf.writestr(".claude/commands/flow/assess.md", "# Assess")
+            zf.writestr(".claude/skills/architect.md", "# Architect")
+
+        # Extract to project
+        project_path = tmp_path / "project"
+        project_path.mkdir()
+        _extract_zip_to_project(zip_path, project_path)
+
+        # Verify extraction
+        assert (project_path / ".claude" / "commands" / "flow" / "assess.md").exists()
+        assert (project_path / ".claude" / "skills" / "architect.md").exists()
+
+    def test_extract_zip_to_project_with_shared_directories(self, tmp_path):
+        """Test ZIP extraction handles shared directories correctly."""
+        import zipfile
+        from flowspec_cli import _extract_zip_to_project
+
+        # Create first agent's ZIP with shared .flowspec/
+        zip1 = tmp_path / "claude.zip"
+        with zipfile.ZipFile(zip1, "w") as zf:
+            zf.writestr(".claude/commands/flow/assess.md", "# Assess")
+            zf.writestr(".flowspec/config.yml", "agent: claude")
+
+        # Create second agent's ZIP with shared .flowspec/
+        zip2 = tmp_path / "copilot.zip"
+        with zipfile.ZipFile(zip2, "w") as zf:
+            zf.writestr(".github/prompts/assess.md", "# Assess")
+            zf.writestr(".flowspec/workflow.yml", "version: 1.0")
+
+        # Extract both
+        project_path = tmp_path / "project"
+        project_path.mkdir()
+        _extract_zip_to_project(zip1, project_path)
+        _extract_zip_to_project(zip2, project_path)
+
+        # Verify both agents' files exist
+        assert (project_path / ".claude" / "commands" / "flow" / "assess.md").exists()
+        assert (project_path / ".github" / "prompts" / "assess.md").exists()
+
+        # Verify shared directory has both files (merged)
+        assert (project_path / ".flowspec" / "config.yml").exists()
+        assert (project_path / ".flowspec" / "workflow.yml").exists()
+
+    def test_extract_zip_with_nested_directory(self, tmp_path):
+        """Test ZIP extraction handles nested directory structure."""
+        import zipfile
+        from flowspec_cli import _extract_zip_to_project
+
+        # Create ZIP with nested directory (github/spec-kit style)
+        zip_path = tmp_path / "spec-kit.zip"
+        with zipfile.ZipFile(zip_path, "w") as zf:
+            # Nested: spec-kit-v0.0.90/.claude/...
+            zf.writestr("spec-kit-v0.0.90/.claude/commands/spec/specify.md", "# Specify")
+            zf.writestr("spec-kit-v0.0.90/.flowspec/base.yml", "base: true")
+
+        # Extract
+        project_path = tmp_path / "project"
+        project_path.mkdir()
+        _extract_zip_to_project(zip_path, project_path)
+
+        # Verify nested structure is flattened correctly
+        assert (project_path / ".claude" / "commands" / "spec" / "specify.md").exists()
+        assert (project_path / ".flowspec" / "base.yml").exists()
+
+    def test_multi_agent_installation_creates_all_directories(self, tmp_path, monkeypatch):
+        """Test that multi-agent installation creates directories for all agents."""
+        import zipfile
+        from flowspec_cli import download_and_extract_two_stage
+        from unittest.mock import Mock
+
+        # Create mock ZIPs for base and extension (2 agents)
+        def create_mock_zip(agent):
+            """Helper to create mock ZIPs."""
+            base_zip = tmp_path / f"{agent}_base.zip"
+            ext_zip = tmp_path / f"{agent}_ext.zip"
+
+            folder = ".claude/" if agent == "claude" else ".github/"
+
+            with zipfile.ZipFile(base_zip, "w") as zf:
+                zf.writestr(f"{folder}commands/spec/specify.md", f"# {agent} Specify")
+
+            with zipfile.ZipFile(ext_zip, "w") as zf:
+                zf.writestr(f"{folder}commands/flow/assess.md", f"# {agent} Assess")
+                zf.writestr(".flowspec/workflow.yml", f"agent: {agent}")
+
+            return base_zip, ext_zip
+
+        # Mock download_template_from_github to return our mock ZIPs
+        call_count = {"base": 0, "ext": 0}
+        agents_processed = []
+
+        def mock_download(repo_owner, repo_name, version, **kwargs):
+            # Determine which agent we're processing
+            agent_idx = len(agents_processed) // 2
+            agent = ["claude", "copilot"][agent_idx]
+
+            if "spec-kit" in repo_name:
+                call_count["base"] += 1
+                base_zip, _ = create_mock_zip(agent)
+                return base_zip
+            else:
+                call_count["ext"] += 1
+                _, ext_zip = create_mock_zip(agent)
+                agents_processed.append(agent)
+                return ext_zip
+
+        monkeypatch.setattr("flowspec_cli.download_template_from_github", mock_download)
+
+        # Run multi-agent installation
+        project_path = tmp_path / "project"
+        project_path.mkdir()
+
+        download_and_extract_two_stage(
+            project_path=project_path,
+            ai_assistants=["claude", "copilot"],
+            script_type="bash",
+            verbose=False,
+            tracker=None,
+        )
+
+        # Verify both agents called download twice (base + extension)
+        assert call_count["base"] == 2  # Once per agent
+        assert call_count["ext"] == 2  # Once per agent
+
+        # Verify both agent directories exist
+        assert (project_path / ".claude" / "commands" / "flow" / "assess.md").exists()
+        assert (project_path / ".github" / "commands" / "flow" / "assess.md").exists()
+
+        # Verify shared directory merged correctly (last agent wins)
+        assert (project_path / ".flowspec" / "workflow.yml").exists()
+        content = (project_path / ".flowspec" / "workflow.yml").read_text()
+        assert "copilot" in content  # Last agent's version
+
+    def test_multi_agent_installation_handles_failure_gracefully(self, tmp_path, monkeypatch):
+        """Test that failure during second agent installation leaves first agent intact."""
+        import zipfile
+        from flowspec_cli import download_and_extract_two_stage
+
+        # Create mock ZIP for first agent
+        claude_base = tmp_path / "claude_base.zip"
+        claude_ext = tmp_path / "claude_ext.zip"
+
+        with zipfile.ZipFile(claude_base, "w") as zf:
+            zf.writestr(".claude/commands/spec/specify.md", "# Claude Specify")
+
+        with zipfile.ZipFile(claude_ext, "w") as zf:
+            zf.writestr(".claude/commands/flow/assess.md", "# Claude Assess")
+
+        # Mock download that succeeds for first agent, fails for second
+        call_count = [0]
+
+        def mock_download(repo_owner, repo_name, version, **kwargs):
+            call_count[0] += 1
+            if call_count[0] <= 2:  # First agent (base + ext)
+                return claude_base if "spec-kit" in repo_name else claude_ext
+            else:  # Second agent fails
+                raise Exception("Download failed for second agent")
+
+        monkeypatch.setattr("flowspec_cli.download_template_from_github", mock_download)
+
+        # Run multi-agent installation (should fail on second agent)
+        project_path = tmp_path / "project"
+        project_path.mkdir()
+
+        try:
+            download_and_extract_two_stage(
+                project_path=project_path,
+                ai_assistants=["claude", "copilot"],
+                script_type="bash",
+                verbose=False,
+                tracker=None,
+            )
+            assert False, "Should have raised exception"
+        except Exception as e:
+            assert "Download failed" in str(e)
+
+        # Verify first agent still installed correctly
+        assert (project_path / ".claude" / "commands" / "flow" / "assess.md").exists()
+        # Second agent should not exist
+        assert not (project_path / ".github").exists()
