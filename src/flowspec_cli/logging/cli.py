@@ -172,7 +172,10 @@ def main() -> int:
         help="Impact level",
     )
     sp.add_argument(
-        "--reversible", action="store_true", default=True, help="Is reversible"
+        "--reversible",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Is reversible",
     )
     sp.add_argument("--related-tasks", nargs="*", default=[], help="Related task IDs")
     sp.add_argument(
