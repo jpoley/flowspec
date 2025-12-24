@@ -14,40 +14,17 @@ from pathlib import Path
 def _find_templates_skills_dir() -> Path | None:
     """Locate the templates/skills directory.
 
-    Tries multiple locations:
-    1. Package resources (for installed flowspec-cli)
-    2. Source repo structure (for development mode)
+    Currently, templates are expected to live in the source repository
+    at the top-level templates/skills/ path (for development mode and
+    local usage).
 
     Returns:
         Path to templates/skills directory, or None if not found.
     """
-    # Try package resources first (for installed flowspec-cli)
-    # Note: We require Python 3.11+ (see pyproject.toml), so importlib.resources.files()
-    # is available and preferred over the deprecated importlib_resources backport.
-    # Security scanner warnings about Python 3.7 compatibility are false positives.
-    try:
-        import importlib.resources  # nosemgrep: python.lang.compatibility.python37.python37-compatibility-importlib2
-
-        templates_ref = importlib.resources.files("flowspec_cli").joinpath(
-            "templates/skills"
-        )
-        if templates_ref.is_dir():
-            # For standard filesystem-based installations (pip install, editable installs),
-            # the Traversable can be converted directly to a Path.
-            # Note: This won't work for zip-packaged distributions, but flowspec
-            # doesn't support that installation method currently.
-            templates_path = Path(str(templates_ref))
-            if templates_path.exists():
-                return templates_path
-    except (ImportError, AttributeError, TypeError, OSError):
-        # importlib.resources may fail in various edge cases:
-        # - Package not installed or malformed
-        # - Running from unusual environment
-        # - Path conversion failed for non-filesystem resources
-        pass
-
-    # Fallback: look for templates in source repo structure
-    # This handles development mode where templates are at repo root
+    # Look for templates in source repo structure
+    # This handles development mode where templates are at repo root.
+    # Note: templates/ is not packaged with flowspec_cli, so we do not
+    # use importlib.resources here.
     src_dir = Path(__file__).parent.parent.parent.parent  # Go up to repo root
     potential_templates = src_dir / "templates" / "skills"
     if potential_templates.exists():
