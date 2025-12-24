@@ -26,8 +26,7 @@ def _find_templates_skills_dir() -> Path | None:
     # is available and preferred over the deprecated importlib_resources backport.
     # Security scanner warnings about Python 3.7 compatibility are false positives.
     try:
-        # nosemgrep: python.lang.compatibility.python37.importlib-resources
-        import importlib.resources
+        import importlib.resources  # nosemgrep: python.lang.compatibility.python37.python37-compatibility-importlib2
 
         templates_ref = importlib.resources.files("flowspec_cli").joinpath(
             "templates/skills"
