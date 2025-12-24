@@ -123,33 +123,6 @@ class TestInitSkillsIntegration:
         existing_skill = skills_dir / "existing-skill"
         assert existing_skill.exists(), "Existing skill directory should still exist"
 
-        # (skills_dir existence already verified above)
-
-    def test_init_creates_skills_directory(
-        self, mock_github_releases, tmp_path: Path
-    ) -> None:
-        """Test that flowspec init creates .claude/skills/ directory."""
-        project_dir = tmp_path / "test-project"
-        result = runner.invoke(
-            app,
-            [
-                "init",
-                str(project_dir),
-                "--ai",
-                "claude",
-                "--no-git",
-                "--ignore-agent-tools",
-            ],
-            input="n\n",  # Decline backlog-md install
-        )
-
-        assert result.exit_code == 0, f"Command failed: {result.output}"
-
-        # Verify skills deployment happened by checking filesystem state
-        # (more robust than checking output text which can change)
-        skills_dir = project_dir / ".claude" / "skills"
-        assert skills_dir.exists(), "Skills directory should exist after deployment"
-
     def test_init_here_deploys_skills(
         self, mock_github_releases, tmp_path: Path, monkeypatch
     ) -> None:
@@ -399,7 +372,9 @@ class TestInitCompleteFlag:
         assert skills_dir.exists(), "Skills directory should exist in --complete mode"
 
         extensions_file = project_dir / ".vscode" / "extensions.json"
-        assert extensions_file.exists(), "VSCode extensions should exist in --complete mode"
+        assert extensions_file.exists(), (
+            "VSCode extensions should exist in --complete mode"
+        )
 
     def test_complete_mode_vscode_extensions_content(
         self, mock_github_releases, tmp_path: Path
