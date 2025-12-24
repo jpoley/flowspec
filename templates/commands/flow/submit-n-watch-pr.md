@@ -959,8 +959,8 @@ echo "🔍 Final verification before completion..."
 
 # Check all CI statuses
 FINAL_STATUS=$(gh pr checks "$PR_NUMBER" 2>&1)
-FAILED_CHECKS=$(echo "$FINAL_STATUS" | grep -c "fail" || echo "0")
-PENDING_CHECKS=$(echo "$FINAL_STATUS" | grep -c "pending\|running" || echo "0")
+FAILED_CHECKS=$(echo "$FINAL_STATUS" | grep -c "fail")
+PENDING_CHECKS=$(echo "$FINAL_STATUS" | grep -E -c "pending|running")
 
 if [ "$FAILED_CHECKS" -gt 0 ]; then
   echo ""
