@@ -1527,8 +1527,8 @@ def detect_repo_characteristics(project_path: Path) -> dict[str, Any]:
             data = tomllib.loads((project_path / "pyproject.toml").read_text())
             if "tool" in data and "uv" in data["tool"]:
                 package_managers.append("uv")
-        except (tomllib.TOMLDecodeError, OSError):
-            pass
+        except (tomllib.TOMLDecodeError, OSError) as e:
+            logger.debug("Failed to parse pyproject.toml for uv detection: %s", e)
     if (project_path / "Pipfile").exists():
         package_managers.append("pipenv")
 
