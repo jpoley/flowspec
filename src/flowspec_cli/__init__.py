@@ -1570,19 +1570,24 @@ def detect_tech_stack(project_path: Path) -> dict:
                         deps.extend(data["tool"]["poetry"]["dependencies"].keys())
 
                     deps_str = " ".join(str(d).lower() for d in deps)
+                    # Use `if` not `elif` to detect multiple frameworks
                     if "fastapi" in deps_str:
                         tech_stack["frameworks"].append("FastAPI")
-                    elif "flask" in deps_str:
+                    if "flask" in deps_str:
                         tech_stack["frameworks"].append("Flask")
-                    elif "django" in deps_str:
+                    if "django" in deps_str:
                         tech_stack["frameworks"].append("Django")
             except Exception:
                 pass  # Skip if toml parsing fails
 
+        # Set Python package manager
         if pipfile.exists():
             tech_stack["package_manager"] = "pipenv"
         elif pyproject_toml.exists():
             tech_stack["package_manager"] = "uv"
+        else:
+            # Default to pip when Python is detected but no specific package manager
+            tech_stack["package_manager"] = "pip"
 
     # JavaScript/TypeScript detection
     package_json = project_path / "package.json"
@@ -1608,44 +1613,54 @@ def detect_tech_stack(project_path: Path) -> dict:
                 if "express" in deps:
                     tech_stack["frameworks"].append("Express")
 
-                if "vitest" in deps:
-                    tech_stack["test_framework"] = "vitest"
-                elif "jest" in deps:
-                    tech_stack["test_framework"] = "jest"
-                elif "mocha" in deps:
-                    tech_stack["test_framework"] = "mocha"
+                # Only set test framework if not already set (polyglot support)
+                if tech_stack["test_framework"] is None:
+                    if "vitest" in deps:
+                        tech_stack["test_framework"] = "vitest"
+                    elif "jest" in deps:
+                        tech_stack["test_framework"] = "jest"
+                    elif "mocha" in deps:
+                        tech_stack["test_framework"] = "mocha"
         except Exception:
             pass  # Skip if JSON parsing fails
 
-        if (project_path / "pnpm-lock.yaml").exists():
-            tech_stack["package_manager"] = "pnpm"
-        elif (project_path / "yarn.lock").exists():
-            tech_stack["package_manager"] = "yarn"
-        else:
-            tech_stack["package_manager"] = "npm"
+        # Only set package manager if not already set (polyglot support)
+        if tech_stack["package_manager"] is None:
+            if (project_path / "pnpm-lock.yaml").exists():
+                tech_stack["package_manager"] = "pnpm"
+            elif (project_path / "yarn.lock").exists():
+                tech_stack["package_manager"] = "yarn"
+            else:
+                tech_stack["package_manager"] = "npm"
 
     # Go detection
     if (project_path / "go.mod").exists():
         tech_stack["languages"].append("Go")
-        tech_stack["test_framework"] = "go test"
+        if tech_stack["test_framework"] is None:
+            tech_stack["test_framework"] = "go test"
 
     # Rust detection
     cargo_toml = project_path / "Cargo.toml"
     if cargo_toml.exists():
         tech_stack["languages"].append("Rust")
-        tech_stack["test_framework"] = "cargo test"
+        if tech_stack["test_framework"] is None:
+            tech_stack["test_framework"] = "cargo test"
 
     # Java detection
     if (project_path / "pom.xml").exists():
         tech_stack["languages"].append("Java")
-        tech_stack["package_manager"] = "maven"
-        tech_stack["test_framework"] = "junit"
+        if tech_stack["package_manager"] is None:
+            tech_stack["package_manager"] = "maven"
+        if tech_stack["test_framework"] is None:
+            tech_stack["test_framework"] = "junit"
     elif (project_path / "build.gradle").exists() or (
         project_path / "build.gradle.kts"
     ).exists():
         tech_stack["languages"].append("Java")
-        tech_stack["package_manager"] = "gradle"
-        tech_stack["test_framework"] = "junit"
+        if tech_stack["package_manager"] is None:
+            tech_stack["package_manager"] = "gradle"
+        if tech_stack["test_framework"] is None:
+            tech_stack["test_framework"] = "junit"
 
     return tech_stack
 
@@ -1686,12 +1701,16 @@ def generate_claude_md(project_path: Path, project_name: str) -> None:
 
     # Build commands section based on detected tooling
     commands = []
+    has_development_header = False
 
     # Python commands
     if "Python" in tech_stack["languages"]:
+        # Use language-specific header in polyglot projects
+        header = "# Python" if len(tech_stack["languages"]) > 1 else "# Development"
+        has_development_header = True
         commands.extend(
             [
-                "# Development",
+                header,
                 "pytest tests/                    # Run tests",
                 "ruff check . --fix               # Lint and auto-fix",
                 "ruff format .                    # Format code",
@@ -1707,24 +1726,34 @@ def generate_claude_md(project_path: Path, project_name: str) -> None:
 
     # JavaScript/TypeScript commands
     if "JavaScript/TypeScript" in tech_stack["languages"]:
-        pm = tech_stack["package_manager"] or "npm"
+        # Determine JS package manager locally (don't use global which may be Python's)
+        if (project_path / "pnpm-lock.yaml").exists():
+            js_pm = "pnpm"
+        elif (project_path / "yarn.lock").exists():
+            js_pm = "yarn"
+        else:
+            js_pm = "npm"
         test_cmd = tech_stack["test_framework"] or "test"
+        header = "# JavaScript/TypeScript" if len(tech_stack["languages"]) > 1 else "# Development"
+        has_development_header = True
         commands.extend(
             [
-                "# Development",
-                f"{pm} install                       # Install dependencies",
-                f"{pm} run {test_cmd}                # Run tests",
-                f"{pm} run build                     # Build project",
-                f"{pm} run dev                       # Start dev server",
+                header,
+                f"{js_pm} install                       # Install dependencies",
+                f"{js_pm} run {test_cmd}                # Run tests",
+                f"{js_pm} run build                     # Build project",
+                f"{js_pm} run dev                       # Start dev server",
                 "",
             ]
         )
 
     # Go commands
     if "Go" in tech_stack["languages"]:
+        header = "# Go" if len(tech_stack["languages"]) > 1 else "# Development"
+        has_development_header = True
         commands.extend(
             [
-                "# Development",
+                header,
                 "go mod download                  # Download dependencies",
                 "go test ./...                    # Run tests",
                 "go build                         # Build project",
@@ -1734,9 +1763,11 @@ def generate_claude_md(project_path: Path, project_name: str) -> None:
 
     # Rust commands
     if "Rust" in tech_stack["languages"]:
+        header = "# Rust" if len(tech_stack["languages"]) > 1 else "# Development"
+        has_development_header = True
         commands.extend(
             [
-                "# Development",
+                header,
                 "cargo build                      # Build project",
                 "cargo test                       # Run tests",
                 "cargo clippy                     # Lint code",
@@ -1747,10 +1778,12 @@ def generate_claude_md(project_path: Path, project_name: str) -> None:
 
     # Java commands
     if "Java" in tech_stack["languages"]:
+        header = "# Java" if len(tech_stack["languages"]) > 1 else "# Development"
+        has_development_header = True
         if tech_stack["package_manager"] == "maven":
             commands.extend(
                 [
-                    "# Development",
+                    header,
                     "mvn clean install                # Build and install",
                     "mvn test                         # Run tests",
                     "",
@@ -1759,15 +1792,15 @@ def generate_claude_md(project_path: Path, project_name: str) -> None:
         elif tech_stack["package_manager"] == "gradle":
             commands.extend(
                 [
-                    "# Development",
+                    header,
                     "./gradlew build                  # Build project",
                     "./gradlew test                   # Run tests",
                     "",
                 ]
             )
 
-    # Add backlog commands if no other commands were added
-    if not commands:
+    # Add generic development section if no language-specific commands were added
+    if not has_development_header:
         commands.extend(
             [
                 "# Development",
@@ -1834,9 +1867,15 @@ See the `memory/` directory for all available context files."""
         troubleshooting.append("\n# Check Python version\npython --version")
 
     if "JavaScript/TypeScript" in tech_stack["languages"]:
-        pm = tech_stack["package_manager"] or "npm"
+        # Determine JS package manager locally (don't use global which may be Python's)
+        if (project_path / "pnpm-lock.yaml").exists():
+            js_pm = "pnpm"
+        elif (project_path / "yarn.lock").exists():
+            js_pm = "yarn"
+        else:
+            js_pm = "npm"
         troubleshooting.append(
-            f"# Dependencies issues\nrm -rf node_modules\n{pm} install"
+            f"# Dependencies issues\nrm -rf node_modules\n{js_pm} install"
         )
 
     if not troubleshooting:
@@ -1852,28 +1891,43 @@ See the `memory/` directory for all available context files."""
         "├── .claude/                # Claude Code configuration",
     ]
 
-    if "Python" in tech_stack["languages"]:
+    # Add common source and test directories once if any supported language is present
+    has_code_dirs = any(
+        lang in tech_stack["languages"]
+        for lang in ("Python", "JavaScript/TypeScript", "Go", "Rust", "Java")
+    )
+    if has_code_dirs:
         project_structure.extend(
             [
                 "├── src/                    # Source code",
                 "├── tests/                  # Test suite",
-                "├── pyproject.toml          # Python project config",
             ]
         )
 
+    # Add language-specific config files
+    if "Python" in tech_stack["languages"]:
+        project_structure.append("├── pyproject.toml          # Python project config")
+
     if "JavaScript/TypeScript" in tech_stack["languages"]:
-        project_structure.extend(
-            [
-                "├── src/                    # Source code",
-                "├── tests/                  # Test suite",
-                "├── package.json            # Node.js project config",
-            ]
-        )
+        project_structure.append("├── package.json            # Node.js project config")
+
+    if "Go" in tech_stack["languages"]:
+        project_structure.append("├── go.mod                  # Go module config")
+
+    if "Rust" in tech_stack["languages"]:
+        project_structure.append("├── Cargo.toml              # Rust project config")
+
+    if "Java" in tech_stack["languages"]:
+        if tech_stack["package_manager"] == "maven":
+            project_structure.append("├── pom.xml                 # Maven project config")
+        elif tech_stack["package_manager"] == "gradle":
+            project_structure.append("├── build.gradle            # Gradle project config")
 
     project_structure_section = "\n".join(project_structure)
 
     # Read template and substitute placeholders
-    template_path = Path(__file__).parent.parent / "templates" / "claude-md-template.md"
+    # Go up 3 levels: __init__.py -> flowspec_cli -> src -> flowspec (project root)
+    template_path = Path(__file__).parent.parent.parent / "templates" / "claude-md-template.md"
 
     if template_path.exists():
         template_content = template_path.read_text()
