@@ -1732,7 +1732,11 @@ def generate_claude_md(project_path: Path, project_name: str) -> None:
         else:
             js_pm = "npm"
         test_cmd = tech_stack["test_framework"] or "test"
-        header = "# JavaScript/TypeScript" if len(tech_stack["languages"]) > 1 else "# Development"
+        header = (
+            "# JavaScript/TypeScript"
+            if len(tech_stack["languages"]) > 1
+            else "# Development"
+        )
         has_development_header = True
         commands.extend(
             [
@@ -1917,15 +1921,21 @@ See the `memory/` directory for all available context files."""
 
     if "Java" in tech_stack["languages"]:
         if tech_stack["package_manager"] == "maven":
-            project_structure.append("├── pom.xml                 # Maven project config")
+            project_structure.append(
+                "├── pom.xml                 # Maven project config"
+            )
         elif tech_stack["package_manager"] == "gradle":
-            project_structure.append("├── build.gradle            # Gradle project config")
+            project_structure.append(
+                "├── build.gradle            # Gradle project config"
+            )
 
     project_structure_section = "\n".join(project_structure)
 
     # Read template and substitute placeholders
     # Go up 3 levels: __init__.py -> flowspec_cli -> src -> flowspec (project root)
-    template_path = Path(__file__).parent.parent.parent / "templates" / "claude-md-template.md"
+    template_path = (
+        Path(__file__).parent.parent.parent / "templates" / "claude-md-template.md"
+    )
 
     if template_path.exists():
         template_content = template_path.read_text()
