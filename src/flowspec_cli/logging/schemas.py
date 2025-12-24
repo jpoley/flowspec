@@ -158,5 +158,5 @@ class LogEvent(BaseLogEntry):
         """Initialize base fields."""
         super().__post_init__()
         # Set source from override or default to SYSTEM for events
-        if self._source_override:
-            object.__setattr__(self, "source", self._source_override)
+        source = self._source_override if self._source_override else LogSource.SYSTEM
+        object.__setattr__(self, "source", source)
