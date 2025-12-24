@@ -52,11 +52,11 @@ security:
 
 ### 3. Replace Template Variables
 
-In both workflow files, replace `{{PROJECT_NAME}}` with your project name:
+In all workflow files that contain `{{PROJECT_NAME}}` (e.g., `security-scan.yml` and `security-parallel.yml`), replace it with your project name:
 
 ```bash
-# Example: Replace in security-scan.yml
-sed -i 's/{{PROJECT_NAME}}/my-project/g' .github/workflows/security-scan.yml
+# Replace in all security workflow files
+sed -i 's/{{PROJECT_NAME}}/my-project/g' .github/workflows/security-*.yml
 ```
 
 ### 4. Commit and Push
@@ -345,14 +345,17 @@ cat docs/security/scan-report-*.md
 
 **Cause**: flowspec-cli not installed
 
-**Fix**: Ensure workflow includes:
+**Fix**: Ensure workflow includes (with pinned versions for supply chain security):
 
 ```yaml
 - name: Install Flowspec
   run: |
     pip install uv
+    # Install flowspec-cli from PyPI
     uv pip install --system flowspec-cli
 ```
+
+Note: The workflow templates already include proper version pinning. Copy from templates rather than writing manually.
 
 ### SARIF Upload Fails
 

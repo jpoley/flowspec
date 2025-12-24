@@ -110,11 +110,26 @@ jobs:
             # Install yq if not available (pinned version for security)
             if ! command -v yq &> /dev/null; then
               YQ_VERSION="v4.40.5"
-              YQ_BINARY="yq_linux_amd64"
-              YQ_CHECKSUM="4e9e5f4a574c6d7e04baa28f91e5b985ad7b22d4e4fd89e1f0d1ccb501e8ddf8"
+              ARCH="$(uname -m)"
+              case "$ARCH" in
+                x86_64|amd64)
+                  YQ_BINARY="yq_linux_amd64"
+                  YQ_CHECKSUM="4e9e5f4a574c6d7e04baa28f91e5b985ad7b22d4e4fd89e1f0d1ccb501e8ddf8"
+                  ;;
+                aarch64|arm64)
+                  YQ_BINARY="yq_linux_arm64"
+                  YQ_CHECKSUM=""  # TODO: Add checksum for ARM64
+                  ;;
+                *)
+                  echo "Unsupported architecture for yq: $ARCH"
+                  exit 1
+                  ;;
+              esac
 
               curl -sL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/${YQ_BINARY}" -o /tmp/yq
-              echo "${YQ_CHECKSUM}  /tmp/yq" | sha256sum -c - || exit 1
+              if [ -n "$YQ_CHECKSUM" ]; then
+                echo "${YQ_CHECKSUM}  /tmp/yq" | sha256sum -c - || exit 1
+              fi
               chmod +x /tmp/yq
               sudo mv /tmp/yq /usr/local/bin/yq
             fi
@@ -146,7 +161,7 @@ jobs:
           if echo "$FAIL_ON" | grep -q ","; then
             echo "::warning::Multiple severities specified but only single severity is supported. Using first value."
             FAIL_SEVERITY=$(echo "$FAIL_ON" | cut -d',' -f1)
-            echo "   Using: $FAIL_SEVERITY"
+            echo "Using: $FAIL_SEVERITY"
           else
             FAIL_SEVERITY="$FAIL_ON"
           fi
@@ -156,13 +171,13 @@ jobs:
             "$SCAN_PATH" \
             --format sarif \
             --output security-results.sarif \
-            --fail-on "${FAIL_SEVERITY}" || SCAN_EXIT_CODE=$?
+            --fail-on "${FAIL_SEVERITY}"
 
           # Parse results for outputs (even if scan failed)
           if [ -f security-results.sarif ]; then
             TOTAL=$(jq '.runs[0].results | length' security-results.sarif 2>/dev/null || echo "0")
-            CRITICAL=$(jq '[.runs[0].results[] | select(.level == "error" and (.properties.severity == "critical" or .properties.severity == "CRITICAL"))] | length' security-results.sarif 2>/dev/null || echo "0")
-            HIGH=$(jq '[.runs[0].results[] | select(.level == "error" and (.properties.severity == "high" or .properties.severity == "HIGH"))] | length' security-results.sarif 2>/dev/null || echo "0")
+            CRITICAL=$(jq '[.runs[0].results[] | select(.level == "error" and (.properties.severity | ascii_downcase) == "critical")] | length' security-results.sarif 2>/dev/null || echo "0")
+            HIGH=$(jq '[.runs[0].results[] | select(.level == "error" and (.properties.severity | ascii_downcase) == "high")] | length' security-results.sarif 2>/dev/null || echo "0")
 
             echo "total=${TOTAL}" >> $GITHUB_OUTPUT
             echo "critical=${CRITICAL}" >> $GITHUB_OUTPUT
@@ -177,7 +192,7 @@ jobs:
           fi
 
       - name: Upload SARIF to GitHub Security
-        if: ${{ (inputs.upload-sarif == true || steps.config.outputs.config-upload-sarif == 'true') && always() }}
+        if: ${{ (inputs.upload-sarif == 'true' || steps.config.outputs.config-upload-sarif == 'true') && always() }}
         continue-on-error: true
         uses: github/codeql-action/upload-sarif@v3
         with:

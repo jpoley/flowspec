@@ -125,7 +125,12 @@ gh api repos/:owner/:repo/code-scanning/analyses
 
 ```bash
 # Download artifacts from latest run
-gh run download $(gh run list --workflow=security.yml --limit=1 --json databaseId -q '.[0].databaseId')
+run_id="$(gh run list --workflow=security.yml --limit=1 --json databaseId -q '.[0].databaseId')"
+if [ -z "$run_id" ] || [ "$run_id" = "null" ]; then
+  echo "No completed security.yml runs found to download artifacts from."
+  exit 1
+fi
+gh run download "$run_id"
 
 # Check SARIF file exists
 ls -la security-scan-results-*/security-results.sarif
