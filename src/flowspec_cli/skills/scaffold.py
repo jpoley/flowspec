@@ -22,7 +22,9 @@ def _find_templates_skills_dir() -> Path | None:
         Path to templates/skills directory, or None if not found.
     """
     # Try package resources first (for installed flowspec-cli)
-    # Note: We require Python 3.11+, so importlib.resources.files() is available
+    # Note: We require Python 3.11+ (see pyproject.toml), so importlib.resources.files()
+    # is available and preferred over the deprecated importlib_resources backport.
+    # Security scanner warnings about Python 3.7 compatibility are false positives.
     try:
         import importlib.resources
 

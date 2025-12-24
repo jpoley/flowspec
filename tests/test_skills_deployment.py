@@ -228,8 +228,14 @@ class TestSkillsInInit:
             f"Expected exit code 0, got {result.exit_code}. Output: {result.stdout}"
         )
 
-        # The key assertion is that the command succeeded with the --skip-skills flag
-        # Skills may or may not be deployed depending on other init logic, but the flag was accepted
+        # Verify skills are NOT deployed when --skip-skills is used
+        skills_dir = tmp_path / "test-project" / ".claude" / "skills"
+        if skills_dir.exists():
+            # Directory may exist but should be empty
+            skill_dirs = [d for d in skills_dir.iterdir() if d.is_dir()]
+            assert len(skill_dirs) == 0, (
+                f"No skills should be deployed with --skip-skills, but found: {[d.name for d in skill_dirs]}"
+            )
 
     def test_init_force_flag_overwrites_skills(self, tmp_path):
         """Test that --force flag overwrites existing skills."""
@@ -266,15 +272,18 @@ class TestSkillsInInit:
         finally:
             os.chdir(original_cwd)
 
-        # The init should succeed (or handle existing directory appropriately)
-        if result.exit_code == 0:
-            # Skill should be overwritten - verify content changed
-            new_content = old_skill.read_text()
-            assert new_content != old_content, (
-                "Skill content should have changed with --force"
-            )
-            # The new content should not contain our old marker
-            assert "Old content that should be replaced" not in new_content
+        # Init with --force should succeed
+        assert result.exit_code == 0, (
+            f"Expected exit code 0, got {result.exit_code}. Output: {result.stdout}"
+        )
+
+        # Skill should be overwritten - verify content changed
+        new_content = old_skill.read_text()
+        assert new_content != old_content, (
+            "Skill content should have changed with --force"
+        )
+        # The new content should not contain our old marker
+        assert "Old content that should be replaced" not in new_content
 
 
 class TestSkillsHelpText:
