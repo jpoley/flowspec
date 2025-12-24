@@ -302,24 +302,7 @@ dependencies = ["fastapi"]
 """
         )
 
-        result = runner.invoke(
-            app,
-            [
-                "init",
-                "--here",
-                "--ai",
-                "claude",
-                "--ignore-agent-tools",
-                "--constitution",
-                "light",
-                "--force",
-            ],
-            input="n\n",  # Answer 'no' to backlog-md install prompt
-            env={"PWD": str(project_path)},
-        )
-
-        # Note: --here requires running in that directory, so we test with absolute path instead
-        # Re-run with proper approach
+        # Note: --here requires running in that directory, so we change into it first
         import os
 
         original_cwd = os.getcwd()
@@ -337,7 +320,7 @@ dependencies = ["fastapi"]
                     "light",
                     "--force",
                 ],
-                input="n\n",
+                input="n\n",  # Answer 'no' to backlog-md install prompt
             )
         finally:
             os.chdir(original_cwd)
