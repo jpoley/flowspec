@@ -54,6 +54,10 @@ from rich.text import Text
 from rich.tree import Tree
 from typer.core import TyperGroup
 
+from flowspec_cli.placeholders import (
+    detect_project_metadata,
+    replace_placeholders,
+)
 from flowspec_cli.telemetry.cli import telemetry_app
 
 # Module-level logger
@@ -3856,6 +3860,11 @@ def init(
         "--skip-claude-md",
         help="Skip CLAUDE.md file generation",
     ),
+    skip_skills: bool = typer.Option(
+        False,
+        "--skip-skills",
+        help="Skip deployment of skills from templates/skills/ to .claude/skills/",
+    ),
 ):
     """
     Initialize a new Specify project from the latest template.
@@ -4173,6 +4182,7 @@ def init(
             ("cleanup", "Cleanup"),
             ("git", "Initialize git repository"),
             ("hooks", "Scaffold hooks"),
+            ("skills", "Deploy skills"),
             ("constitution", "Set up constitution"),
             ("final", "Finalize"),
         ]:
@@ -4188,6 +4198,7 @@ def init(
             ("cleanup", "Cleanup"),
             ("git", "Initialize git repository"),
             ("hooks", "Scaffold hooks"),
+            ("skills", "Deploy skills"),
             ("constitution", "Set up constitution"),
             ("final", "Finalize"),
         ]:
@@ -4288,6 +4299,27 @@ def init(
                 # Non-fatal error - continue with project initialization
                 tracker.error("hooks", f"scaffolding failed: {hook_error}")
 
+            # Deploy skills from templates/skills/ to .claude/skills/
+            tracker.start("skills")
+            try:
+                from .skills import deploy_skills
+
+                deployed_skills = deploy_skills(
+                    project_path, force=force, skip_skills=skip_skills
+                )
+                if skip_skills:
+                    tracker.skip("skills", "--skip-skills flag")
+                elif deployed_skills:
+                    tracker.complete(
+                        "skills",
+                        f"deployed {len(deployed_skills)} skills to .claude/skills/",
+                    )
+                else:
+                    tracker.complete("skills", "skills already deployed")
+            except Exception as skills_error:
+                # Non-fatal error - continue with project initialization
+                tracker.error("skills", f"deployment failed: {skills_error}")
+
             # Set up constitution template
             tracker.start("constitution")
             try:
@@ -4296,9 +4328,17 @@ def init(
                     memory_dir = project_path / "memory"
                     constitution_dest = memory_dir / "constitution.md"
                     memory_dir.mkdir(parents=True, exist_ok=True)
-                    constitution_dest.write_text(
-                        CONSTITUTION_TEMPLATES[selected_constitution]
+
+                    # Detect project metadata for placeholder replacement
+                    metadata = detect_project_metadata(
+                        project_path, project_name_override=project_name
                     )
+
+                    # Replace placeholders in template
+                    template_content = CONSTITUTION_TEMPLATES[selected_constitution]
+                    processed_content = replace_placeholders(template_content, metadata)
+
+                    constitution_dest.write_text(processed_content)
                     constitution_was_created = True
                     tracker.complete(
                         "constitution",
@@ -4811,7 +4851,14 @@ def upgrade_repo(
                 template = CONSTITUTION_TEMPLATES.get(
                     selected_tier, CONSTITUTION_TEMPLATES["medium"]
                 )
-                constitution_path.write_text(template)
+
+                # Detect project metadata and replace placeholders
+                metadata = detect_project_metadata(
+                    project_path, project_name_override=project_path.name
+                )
+                processed_content = replace_placeholders(template, metadata)
+
+                constitution_path.write_text(processed_content)
 
                 console.print()
                 constitution_panel = Panel(
