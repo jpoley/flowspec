@@ -9,6 +9,8 @@ from flowspec_cli.placeholders import (
     detect_linting_tools,
     detect_project_metadata,
     detect_project_name,
+    get_placeholder_prompts,
+    prompt_for_placeholders,
     replace_placeholders,
 )
 
@@ -466,3 +468,171 @@ Created: [DATE]
         assert "Next.js" in result
         assert "eslint" in result
         assert "tsc" in result
+
+
+class TestEmptyMetadataValues:
+    """Tests for handling empty string metadata values."""
+
+    def test_empty_string_not_replaced(self):
+        """Empty string values should not replace placeholders.
+
+        When a metadata value is empty string, the placeholder should remain
+        so it gets TODO marked, rather than being replaced with empty string.
+        """
+        content = "Languages: [LANGUAGES_AND_FRAMEWORKS]\nTools: [LINTING_TOOLS]"
+        metadata = {
+            "LANGUAGES_AND_FRAMEWORKS": "",  # Empty - should not replace
+            "LINTING_TOOLS": "ruff",  # Non-empty - should replace
+        }
+
+        result = replace_placeholders(content, metadata)
+
+        # Empty value should leave placeholder and add TODO
+        assert "<!-- TODO: Replace [LANGUAGES_AND_FRAMEWORKS] -->" in result
+        assert "[LANGUAGES_AND_FRAMEWORKS]" in result
+        # Non-empty value should be replaced
+        assert "Tools: ruff" in result
+        assert "[LINTING_TOOLS]" not in result
+
+    def test_multiple_empty_values_far_apart(self):
+        """Empty string values far apart should all get TODO marked.
+
+        Note: Placeholders within 100 chars of each other may share a TODO marker
+        to avoid excessive TODO clutter.
+        """
+        # Use content with placeholders more than 100 chars apart
+        padding = "x" * 110
+        content = f"A: [FIELD_A]\n{padding}\nB: [FIELD_B]\nC: [FIELD_C]"
+        metadata = {
+            "FIELD_A": "",
+            "FIELD_B": "",
+            "FIELD_C": "value",
+        }
+
+        result = replace_placeholders(content, metadata)
+
+        # Both should get TODO markers since they're far apart
+        assert "<!-- TODO: Replace [FIELD_A] -->" in result
+        assert "<!-- TODO: Replace [FIELD_B] -->" in result
+        assert "C: value" in result
+
+
+class TestGetPlaceholderPrompts:
+    """Tests for get_placeholder_prompts function."""
+
+    def test_returns_dict(self):
+        """Should return a dictionary of prompts."""
+        prompts = get_placeholder_prompts()
+
+        assert isinstance(prompts, dict)
+        assert len(prompts) > 0
+
+    def test_contains_principle_prompts(self):
+        """Should contain prompts for principle placeholders."""
+        prompts = get_placeholder_prompts()
+
+        assert "PRINCIPLE_1_NAME" in prompts
+        assert "PRINCIPLE_1_DESCRIPTION" in prompts
+
+    def test_contains_section_prompts(self):
+        """Should contain prompts for section placeholders."""
+        prompts = get_placeholder_prompts()
+
+        assert "SECTION_2_NAME" in prompts
+        assert "SECTION_2_CONTENT" in prompts
+
+    def test_contains_governance_prompts(self):
+        """Should contain prompts for governance placeholders."""
+        prompts = get_placeholder_prompts()
+
+        assert "GOVERNANCE_RULES" in prompts
+        assert "CONSTITUTION_VERSION" in prompts
+
+    def test_prompt_values_are_strings(self):
+        """All prompt values should be non-empty strings."""
+        prompts = get_placeholder_prompts()
+
+        for key, value in prompts.items():
+            assert isinstance(value, str), f"Prompt for {key} should be a string"
+            assert len(value) > 0, f"Prompt for {key} should not be empty"
+
+
+class TestPromptForPlaceholders:
+    """Tests for prompt_for_placeholders function."""
+
+    def test_returns_metadata_when_not_interactive(self):
+        """Should return metadata unchanged when interactive=False."""
+        content = "[PROJECT_NAME] [CUSTOM_FIELD]"
+        metadata = {"PROJECT_NAME": "Test"}
+
+        result = prompt_for_placeholders(content, metadata, interactive=False)
+
+        assert result == metadata
+
+    def test_returns_metadata_when_interactive_but_all_filled(self):
+        """Should return metadata unchanged when all placeholders are filled."""
+        content = "[PROJECT_NAME]"
+        metadata = {"PROJECT_NAME": "Test"}
+
+        result = prompt_for_placeholders(content, metadata, interactive=True)
+
+        assert result == metadata
+
+    def test_returns_metadata_unchanged_for_remaining_placeholders(self):
+        """Should return metadata unchanged (prompting is placeholder for future)."""
+        content = "[PROJECT_NAME] [CUSTOM_FIELD]"
+        metadata = {"PROJECT_NAME": "Test"}
+
+        result = prompt_for_placeholders(content, metadata, interactive=True)
+
+        # Currently just returns metadata unchanged (prompting not implemented)
+        assert result == metadata
+
+
+class TestRequirementsTxtFrameworkDetection:
+    """Tests for framework detection from requirements.txt."""
+
+    def test_fastapi_from_requirements_txt(self, tmp_path):
+        """Should detect FastAPI from requirements.txt when pyproject.toml missing."""
+        (tmp_path / "requirements.txt").write_text("fastapi==0.104.0\nuvicorn\n")
+
+        result = detect_languages_and_frameworks(tmp_path)
+
+        assert "Python 3.11+" in result
+        assert "FastAPI" in result
+
+    def test_flask_from_requirements_txt(self, tmp_path):
+        """Should detect Flask from requirements.txt when pyproject.toml missing."""
+        (tmp_path / "requirements.txt").write_text("flask==3.0.0\ngunicorn\n")
+
+        result = detect_languages_and_frameworks(tmp_path)
+
+        assert "Python 3.11+" in result
+        assert "Flask" in result
+
+    def test_pyproject_takes_precedence_over_requirements(self, tmp_path):
+        """Pyproject.toml framework detection should take precedence."""
+        (tmp_path / "pyproject.toml").write_text(
+            """
+[project]
+name = "test"
+dependencies = ["fastapi"]
+"""
+        )
+        (tmp_path / "requirements.txt").write_text("flask==3.0.0\n")
+
+        result = detect_languages_and_frameworks(tmp_path)
+
+        # FastAPI from pyproject.toml should be detected, not Flask
+        assert "FastAPI" in result
+        assert "Flask" not in result
+
+    def test_no_framework_when_neither_present(self, tmp_path):
+        """Should not detect framework when neither FastAPI nor Flask present."""
+        (tmp_path / "requirements.txt").write_text("requests\npandas\n")
+
+        result = detect_languages_and_frameworks(tmp_path)
+
+        assert "Python 3.11+" in result
+        assert "FastAPI" not in result
+        assert "Flask" not in result

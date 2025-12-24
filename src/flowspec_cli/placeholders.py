@@ -47,10 +47,13 @@ def detect_project_name(project_path: Path) -> str:
 
         # If tomllib didn't find the name, try regex fallback
         if not name:
-            content = pyproject_path.read_text()
-            match = re.search(r'^name\s*=\s*["\']([^"\']+)["\']', content, re.MULTILINE)
-            if match:
-                name = match.group(1)
+            try:
+                content = pyproject_path.read_text()
+                match = re.search(r'^name\s*=\s*["\']([^"\']+)["\']', content, re.MULTILINE)
+                if match:
+                    name = match.group(1)
+            except Exception as e:
+                logger.debug("Failed to read pyproject.toml for name: %s", e)
 
         if name:
             return name
@@ -113,14 +116,33 @@ def detect_languages_and_frameworks(project_path: Path) -> str:
     ).exists():
         detected.append("Python 3.11+")
 
-        # Check for FastAPI
+        # Check for FastAPI/Flask in pyproject.toml or requirements.txt
+        framework_detected = False
         pyproject = project_path / "pyproject.toml"
         if pyproject.exists():
-            content = pyproject.read_text()
-            if "fastapi" in content.lower():
-                detected.append("FastAPI")
-            elif "flask" in content.lower():
-                detected.append("Flask")
+            try:
+                content = pyproject.read_text()
+                if "fastapi" in content.lower():
+                    detected.append("FastAPI")
+                    framework_detected = True
+                elif "flask" in content.lower():
+                    detected.append("Flask")
+                    framework_detected = True
+            except Exception as e:
+                logger.debug("Failed to read pyproject.toml for frameworks: %s", e)
+
+        # Also check requirements.txt if framework not yet detected
+        if not framework_detected:
+            requirements = project_path / "requirements.txt"
+            if requirements.exists():
+                try:
+                    content = requirements.read_text()
+                    if "fastapi" in content.lower():
+                        detected.append("FastAPI")
+                    elif "flask" in content.lower():
+                        detected.append("Flask")
+                except Exception as e:
+                    logger.debug("Failed to read requirements.txt for frameworks: %s", e)
 
     # JavaScript/TypeScript
     package_json = project_path / "package.json"
@@ -265,10 +287,13 @@ def replace_placeholders(content: str, metadata: Dict[str, Any]) -> str:
     """
     result = content
 
-    # Replace detected placeholders
+    # Replace detected placeholders (skip empty values so they get TODO marked)
     for key, value in metadata.items():
-        placeholder = f"[{key}]"
-        result = result.replace(placeholder, str(value))
+        # Only replace if value is non-empty; empty values should remain as placeholders
+        # and get TODO markers added below
+        if value:
+            placeholder = f"[{key}]"
+            result = result.replace(placeholder, str(value))
 
     # Mark remaining placeholders with TODO comments
     # Find all remaining [PLACEHOLDER] patterns (deduplicated for efficiency)
@@ -351,15 +376,15 @@ def prompt_for_placeholders(
     if not remaining:
         return metadata
 
-    prompts = get_placeholder_prompts()
-
     # Simple prompting - in real implementation, would use typer.prompt or similar
-    for placeholder in remaining:
-        _ = prompts.get(
-            placeholder, f"Enter value for {placeholder} (or leave empty for TODO):"
-        )
-        # For now, just mark as TODO - actual prompting would happen in CLI
-        # This function is prepared for future interactive mode
-        # metadata[placeholder] = typer.prompt(prompt_text, default="")
+    # For now, just return metadata unchanged - actual prompting would happen in CLI
+    # This function is prepared for future interactive mode
+    # Example implementation:
+    # prompts = get_placeholder_prompts()
+    # for placeholder in remaining:
+    #     prompt_text = prompts.get(
+    #         placeholder, f"Enter value for {placeholder} (or leave empty for TODO):"
+    #     )
+    #     metadata[placeholder] = typer.prompt(prompt_text, default="")
 
     return metadata
