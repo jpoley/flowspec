@@ -1498,7 +1498,9 @@ def detect_repo_characteristics(project_path: Path) -> dict[str, Any]:
                 if has_pytest_config or has_pytest_dep:
                     test_frameworks.append("pytest")
             except (tomllib.TOMLDecodeError, OSError) as e:
-                logger.debug("Failed to parse pyproject.toml for test frameworks: %s", e)
+                logger.debug(
+                    "Failed to parse pyproject.toml for test frameworks: %s", e
+                )
 
     if "JavaScript/TypeScript" in languages:
         package_json_path = project_path / "package.json"
