@@ -39,6 +39,7 @@ dependencies = ["fastapi"]
         tech_stack = detect_tech_stack(tmp_path)
         assert "Python" in tech_stack["languages"]
         assert tech_stack["test_framework"] == "pytest"
+        assert tech_stack["package_manager"] == "pip"
 
     def test_detect_javascript_from_package_json(self, tmp_path):
         """Detect JavaScript/TypeScript from package.json."""

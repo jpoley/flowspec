@@ -1555,8 +1555,6 @@ def detect_tech_stack(project_path: Path) -> dict:
         # Check for frameworks in pyproject.toml
         if pyproject_toml.exists():
             try:
-                import tomllib
-
                 with open(pyproject_toml, "rb") as f:
                     data = tomllib.load(f)
                     deps = []
