@@ -83,8 +83,9 @@ def _is_flowspec_repo(path: Path) -> bool:
                 # Check for flowspec package identifier
                 if 'name = "flowspec-cli"' in content or "[tool.flowspec]" in content:
                     return True
-            except OSError:
-                pass
+            except OSError as exc:
+                # Treat read failures as "not a flowspec repo", but log for debugging.
+                logger.debug("Failed to read pyproject.toml at %s: %s", pyproject, exc)
 
     return False
 
