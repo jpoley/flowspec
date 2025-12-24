@@ -117,8 +117,9 @@ jobs:
                   YQ_CHECKSUM="4e9e5f4a574c6d7e04baa28f91e5b985ad7b22d4e4fd89e1f0d1ccb501e8ddf8"
                   ;;
                 aarch64|arm64)
-                  YQ_BINARY="yq_linux_arm64"
-                  YQ_CHECKSUM=""  # TODO: Add checksum for ARM64
+                  echo "ARM64 architecture detected but yq checksum is not configured."
+                  echo "Refusing to download and install an unverified yq binary on ARM64."
+                  exit 1
                   ;;
                 *)
                   echo "Unsupported architecture for yq: $ARCH"
@@ -127,9 +128,7 @@ jobs:
               esac
 
               curl -sL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/${YQ_BINARY}" -o /tmp/yq
-              if [ -n "$YQ_CHECKSUM" ]; then
-                echo "${YQ_CHECKSUM}  /tmp/yq" | sha256sum -c - || exit 1
-              fi
+              echo "${YQ_CHECKSUM}  /tmp/yq" | sha256sum -c - || { echo "Checksum validation failed"; exit 1; }
               chmod +x /tmp/yq
               sudo mv /tmp/yq /usr/local/bin/yq
             fi
@@ -192,7 +191,7 @@ jobs:
           fi
 
       - name: Upload SARIF to GitHub Security
-        if: ${{ (inputs.upload-sarif == 'true' || steps.config.outputs.config-upload-sarif == 'true') && always() }}
+        if: ${{ (inputs.upload-sarif == true || inputs.upload-sarif == 'true' || steps.config.outputs.config-upload-sarif == 'true') && always() }}
         continue-on-error: true
         uses: github/codeql-action/upload-sarif@v3
         with:

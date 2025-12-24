@@ -345,17 +345,22 @@ cat docs/security/scan-report-*.md
 
 **Cause**: flowspec-cli not installed
 
-**Fix**: Ensure workflow includes (with pinned versions for supply chain security):
+**Fix**: Ensure workflow includes pinned versions for supply chain security:
 
 ```yaml
 - name: Install Flowspec
   run: |
-    pip install uv
-    # Install flowspec-cli from PyPI
-    uv pip install --system flowspec-cli
+    # Pin uv version for reproducibility
+    pip install uv==0.5.11
+    # Install flowspec-cli from PyPI with pinned version
+    uv pip install --system flowspec-cli==0.1.0
 ```
 
-Note: The workflow templates already include proper version pinning. Copy from templates rather than writing manually.
+⚠️ **Supply Chain Security Note**: Always pin package versions in CI/CD workflows.
+Unpinned packages (`pip install uv` or `uv pip install flowspec-cli` without versions)
+create a supply chain attack surface where a compromised package update could inject
+malicious code into your pipeline. The workflow templates in `templates/github-actions/`
+include proper version pinning - copy from templates rather than writing manually.
 
 ### SARIF Upload Fails
 

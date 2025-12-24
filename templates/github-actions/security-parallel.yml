@@ -112,8 +112,9 @@ jobs:
                   YQ_CHECKSUM="4e9e5f4a574c6d7e04baa28f91e5b985ad7b22d4e4fd89e1f0d1ccb501e8ddf8"
                   ;;
                 aarch64|arm64)
-                  YQ_BINARY="yq_linux_arm64"
-                  YQ_CHECKSUM=""  # TODO: Add checksum for ARM64
+                  echo "ARM64 architecture detected but yq checksum is not configured."
+                  echo "Refusing to download and install an unverified yq binary on ARM64."
+                  exit 1
                   ;;
                 *)
                   echo "Unsupported architecture for yq: $ARCH"
@@ -122,9 +123,7 @@ jobs:
               esac
 
               curl -sL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/${YQ_BINARY}" -o /tmp/yq
-              if [ -n "$YQ_CHECKSUM" ]; then
-                echo "${YQ_CHECKSUM}  /tmp/yq" | sha256sum -c - || exit 1
-              fi
+              echo "${YQ_CHECKSUM}  /tmp/yq" | sha256sum -c - || { echo "Checksum validation failed"; exit 1; }
               chmod +x /tmp/yq
               sudo mv /tmp/yq /usr/local/bin/yq
             fi
@@ -148,7 +147,7 @@ jobs:
 
           # Check if multiple severities were specified (comma-separated)
           if echo "$FAIL_ON" | grep -q ","; then
-            echo "::warning::Multiple severities specified but only single severity is supported."
+            echo "::warning::Multiple severities specified but only single severity is supported. Using first value."
             FAIL_SEVERITY=$(echo "$FAIL_ON" | cut -d',' -f1)
             echo "Using: $FAIL_SEVERITY"
           else
@@ -224,7 +223,7 @@ jobs:
           TOTAL_FINDINGS=0
           TOTAL_CRITICAL=0
 
-          for sarif in $(find scan-results -name "*.sarif"); do
+          find scan-results -name "*.sarif" -print0 | while IFS= read -r -d '' sarif; do
             if [ -f "$sarif" ]; then
               FINDINGS=$(jq '.runs[0].results | length' "$sarif" 2>/dev/null || echo "0")
               CRITICAL=$(jq '[.runs[0].results[] | select(.level == "error" and (.properties.severity | ascii_downcase) == "critical")] | length' "$sarif" 2>/dev/null || echo "0")
