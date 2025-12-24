@@ -36,8 +36,8 @@
       "Bash(rm -rf ~)",
       "Bash(rm -rf ~/*)",
       "Bash(chmod:777:*)",
-      "Bash(curl:*|:bash)",
-      "Bash(wget:*|:bash)"
+      "Bash(curl:*)",
+      "Bash(wget:*)"
     ]
   },
   "allowedTools": [
