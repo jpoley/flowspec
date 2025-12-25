@@ -27,7 +27,7 @@ def setup_hook_logging(hook_name: str):
         filename=log_dir / "hooks.log",
         level=logging.INFO,
         format="[%(asctime)s] %(name)s: %(message)s",
-        datefmt="%Y-%m-%dT%H:%M:%S"
+        datefmt="%Y-%m-%dT%H:%M:%S",
     )
 
     logger = logging.getLogger(hook_name)

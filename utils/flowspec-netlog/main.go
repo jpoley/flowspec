@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/jpoley/flowspec/utils/flowspec-netlog/proxy"
 )
@@ -69,4 +71,13 @@ func main() {
 	// Wait for shutdown signal
 	<-sigChan
 	fmt.Println("\nShutting down flowspec-netlog...")
+
+	// Create shutdown context with timeout
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer shutdownCancel()
+
+	// Gracefully shutdown server
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		log.Printf("Server shutdown error: %v", err)
+	}
 }

@@ -88,7 +88,9 @@ def main():
         input_data = json.load(sys.stdin)
 
         if logger:
-            logger.info(f"Checking git safety for tool: {input_data.get('tool_name', 'unknown')}")
+            logger.info(
+                f"Checking git safety for tool: {input_data.get('tool_name', 'unknown')}"
+            )
 
         tool_name = input_data.get("tool_name", "")
         tool_input = input_data.get("tool_input", {})

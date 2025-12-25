@@ -85,10 +85,15 @@ func (p *Proxy) setupHandlers() {
 			return resp
 		}
 
-		data := ctx.UserData.(*struct {
+		// Safe type assertion to prevent panic if UserData is unexpected type
+		data, ok := ctx.UserData.(*struct {
 			log       *RequestLog
 			startTime time.Time
 		})
+		if !ok {
+			// UserData is not the expected type, skip logging
+			return resp
+		}
 
 		// Log response
 		if resp != nil {

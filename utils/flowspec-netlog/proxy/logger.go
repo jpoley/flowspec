@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -84,6 +85,15 @@ func parseNoProxy() map[string]bool {
 
 // ShouldBypass checks if a host should bypass the proxy
 func (l *Logger) ShouldBypass(host string) bool {
+	// Strip port from host if present (e.g., "localhost:9999" -> "localhost")
+	if idx := strings.LastIndex(host, ":"); idx != -1 {
+		// Only strip if it looks like a port (digits after colon)
+		portPart := host[idx+1:]
+		if _, err := strconv.Atoi(portPart); err == nil {
+			host = host[:idx]
+		}
+	}
+
 	// Check exact match
 	if l.noProxy[host] {
 		return true
@@ -120,7 +130,12 @@ func (l *Logger) LogRequest(req *http.Request, startTime time.Time) *RequestLog 
 
 	for _, h := range importantHeaders {
 		if v := req.Header.Get(h); v != "" {
-			log.Headers[h] = v
+			// Redact sensitive authorization credentials to prevent exposure in logs
+			if h == "Authorization" {
+				log.Headers[h] = "[REDACTED]"
+			} else {
+				log.Headers[h] = v
+			}
 		}
 	}
 
