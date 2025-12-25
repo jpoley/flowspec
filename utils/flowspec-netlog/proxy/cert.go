@@ -123,7 +123,12 @@ func (cm *CertManager) save(derBytes []byte) (err error) {
 	if err != nil {
 		return fmt.Errorf("failed to create cert file: %w", err)
 	}
-	defer certOut.Close()
+	defer func() {
+		// Check for errors when closing the cert file to prevent data loss
+		if closeErr := certOut.Close(); closeErr != nil {
+			err = fmt.Errorf("failed to close cert file (may have lost data): %w", closeErr)
+		}
+	}()
 
 	if err := pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes}); err != nil {
 		return fmt.Errorf("failed to write cert: %w", err)
