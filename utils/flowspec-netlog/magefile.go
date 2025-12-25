@@ -3,6 +3,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"runtime"
@@ -31,7 +32,11 @@ func Install() error {
 // Clean removes built artifacts
 func Clean() error {
 	fmt.Println("Cleaning...")
-	os.Remove(binary)
+	// Check error from os.Remove to catch permission errors or file system issues
+	// Ignore "file not found" errors since cleanup succeeding when file is already gone is acceptable
+	if err := os.Remove(binary); err != nil && !errors.Is(err, os.ErrNotExist) {
+		return fmt.Errorf("failed to remove %s: %w", binary, err)
+	}
 	return nil
 }
 

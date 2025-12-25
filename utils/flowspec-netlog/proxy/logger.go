@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -85,14 +85,14 @@ func parseNoProxy() map[string]bool {
 
 // ShouldBypass checks if a host should bypass the proxy
 func (l *Logger) ShouldBypass(host string) bool {
-	// Strip port from host if present (e.g., "localhost:9999" -> "localhost")
-	if idx := strings.LastIndex(host, ":"); idx != -1 {
-		// Only strip if it looks like a port (digits after colon)
-		portPart := host[idx+1:]
-		if _, err := strconv.Atoi(portPart); err == nil {
-			host = host[:idx]
-		}
+	// Use net.SplitHostPort to properly handle both IPv4 and IPv6 addresses
+	// IPv6 addresses contain colons (e.g., "[::1]:8080") and need special handling
+	hostname, _, err := net.SplitHostPort(host)
+	if err == nil {
+		// SplitHostPort succeeded, use the hostname part
+		host = hostname
 	}
+	// If SplitHostPort fails, the host has no port, use as-is
 
 	// Check exact match
 	if l.noProxy[host] {
@@ -100,8 +100,9 @@ func (l *Logger) ShouldBypass(host string) bool {
 	}
 
 	// Check if host ends with any NO_PROXY entry (for wildcard domains)
+	// Note: Use exact match for the second condition to avoid matching "notexample.com" when NO_PROXY contains "example.com"
 	for noProxyHost := range l.noProxy {
-		if strings.HasSuffix(host, "."+noProxyHost) || strings.HasSuffix(host, noProxyHost) {
+		if strings.HasSuffix(host, "."+noProxyHost) || host == noProxyHost {
 			return true
 		}
 	}
@@ -126,12 +127,21 @@ func (l *Logger) LogRequest(req *http.Request, startTime time.Time) *RequestLog 
 		"User-Agent",
 		"Authorization",
 		"X-Request-ID",
+		"X-API-Key",
+		"Cookie",
+	}
+
+	// Headers that contain sensitive credentials and should be redacted
+	sensitiveHeaders := map[string]bool{
+		"Authorization": true,
+		"X-API-Key":     true,
+		"Cookie":        true,
 	}
 
 	for _, h := range importantHeaders {
 		if v := req.Header.Get(h); v != "" {
-			// Redact sensitive authorization credentials to prevent exposure in logs
-			if h == "Authorization" {
+			// Redact sensitive credentials to prevent exposure in logs
+			if sensitiveHeaders[h] {
 				log.Headers[h] = "[REDACTED]"
 			} else {
 				log.Headers[h] = v
@@ -140,7 +150,8 @@ func (l *Logger) LogRequest(req *http.Request, startTime time.Time) *RequestLog 
 	}
 
 	// Capture request body if present and small enough
-	if req.Body != nil && req.ContentLength > 0 && req.ContentLength < int64(l.maxBody) {
+	// Use <= to capture bodies up to and including the maxBody limit (1MB)
+	if req.Body != nil && req.ContentLength > 0 && req.ContentLength <= int64(l.maxBody) {
 		body, err := io.ReadAll(io.LimitReader(req.Body, int64(l.maxBody)))
 		if err == nil {
 			log.RequestBody = string(body)
@@ -158,7 +169,8 @@ func (l *Logger) LogResponse(log *RequestLog, resp *http.Response, startTime tim
 	log.Duration = time.Since(startTime).Milliseconds()
 
 	// Capture response body if present and small enough
-	if resp.Body != nil && resp.ContentLength > 0 && resp.ContentLength < int64(l.maxBody) {
+	// Use <= to capture bodies up to and including the maxBody limit (1MB)
+	if resp.Body != nil && resp.ContentLength > 0 && resp.ContentLength <= int64(l.maxBody) {
 		body, err := io.ReadAll(io.LimitReader(resp.Body, int64(l.maxBody)))
 		if err == nil {
 			// Only log text-based responses
@@ -221,7 +233,7 @@ func (l *Logger) Summary() error {
 	}
 	defer file.Close()
 
-	var total, errors, bypassed int
+	var total, errors, bypassed, parseErrors int
 	methods := make(map[string]int)
 	hosts := make(map[string]int)
 
@@ -229,6 +241,8 @@ func (l *Logger) Summary() error {
 	for scanner.Scan() {
 		var log RequestLog
 		if err := json.Unmarshal(scanner.Bytes(), &log); err != nil {
+			// Log parse errors to alert users about malformed log entries
+			parseErrors++
 			continue
 		}
 
@@ -247,6 +261,9 @@ func (l *Logger) Summary() error {
 	fmt.Printf("Total requests: %d\n", total)
 	fmt.Printf("Errors: %d\n", errors)
 	fmt.Printf("Bypassed: %d\n", bypassed)
+	if parseErrors > 0 {
+		fmt.Printf("Parse errors: %d (malformed log entries)\n", parseErrors)
+	}
 	fmt.Println("\nRequests by method:")
 	for method, count := range methods {
 		fmt.Printf("  %s: %d\n", method, count)

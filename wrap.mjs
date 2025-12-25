@@ -39,8 +39,9 @@ if (process.stdin.isTTY && typeof process.stdin.setRawMode === "function") {
   // stdin is not a TTY (e.g., running under asciinema, redirected input, or CI)
   // This is normal and expected in some scenarios. Logging will work but input
   // may be buffered or line-based instead of character-by-character.
-  console.warn("Warning: stdin is not a TTY. Running in non-interactive mode.");
-  console.warn("This is normal when running under asciinema or in CI environments.");
+  // Send warnings to stderr to separate informational messages from normal output
+  process.stderr.write("Warning: stdin is not a TTY. Running in non-interactive mode.\n");
+  process.stderr.write("This is normal when running under asciinema or in CI environments.\n");
 }
 process.stdin.resume();
 process.stdin.on("data", (buf) => {

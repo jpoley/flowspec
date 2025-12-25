@@ -107,7 +107,13 @@ echo "2.5. Setting up Claude logging wrapper..."
 # Install node-pty for wrap.mjs (pinned version from package.json)
 echo "   Installing node-pty dependency..."
 # SECURITY: Use --frozen-lockfile to ensure only audited pinned versions are installed
-cd /workspaces/flowspec && pnpm install --frozen-lockfile || echo "   Warning: node-pty install failed"
+# Check if pnpm-lock.yaml exists before using --frozen-lockfile to avoid failures in fresh installs
+cd /workspaces/flowspec
+if [ -f "pnpm-lock.yaml" ]; then
+  pnpm install --frozen-lockfile || echo "   Warning: node-pty install failed"
+else
+  pnpm install || echo "   Warning: node-pty install failed"
+fi
 
 # Create claude wrapper script
 echo "   Creating claude wrapper..."

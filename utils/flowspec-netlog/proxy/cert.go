@@ -117,7 +117,7 @@ func (cm *CertManager) generate() (*CertManager, error) {
 }
 
 // save writes the certificate and key to disk
-func (cm *CertManager) save(derBytes []byte) error {
+func (cm *CertManager) save(derBytes []byte) (err error) {
 	// Save certificate
 	certOut, err := os.Create(cm.certPath)
 	if err != nil {
@@ -144,11 +144,6 @@ func (cm *CertManager) save(derBytes []byte) error {
 	keyBytes := x509.MarshalPKCS1PrivateKey(cm.caKey)
 	if err := pem.Encode(keyOut, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: keyBytes}); err != nil {
 		return fmt.Errorf("failed to write key: %w", err)
-	}
-
-	// Check if any deferred close errors occurred
-	if err != nil {
-		return err
 	}
 
 	// Create system-compatible cert (for installation)

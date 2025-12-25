@@ -81,7 +81,7 @@
     "NO_PROXY": "localhost,127.0.0.1"
   },
 
-  "postCreateCommand": "bash .devcontainer/post-create.sh && (bash scripts/bash/build-netlog.sh || true)",
+  "postCreateCommand": "bash .devcontainer/post-create.sh && (bash scripts/bash/build-netlog.sh || echo 'WARNING: flowspec-netlog build failed; network logging is disabled. To fix, inspect scripts/bash/build-netlog.sh, resolve the issue, and rerun it inside the container.' >&2)",
   "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}",
   "postAttachCommand": "echo '--- Flowspec Dev Environment Ready ---' && uv --version && python --version",
 

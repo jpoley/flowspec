@@ -58,8 +58,10 @@ fi
 # Test NO_PROXY bypass
 echo "Testing NO_PROXY bypass..."
 export NO_PROXY="localhost,127.0.0.1"
-# Use a request that will be logged even if it fails
-curl -s --max-time 1 http://localhost:9999 > /dev/null 2>&1 || true
+# Use a request that will be logged even if it fails; failure is expected and should not abort the script
+set +e
+curl -s --max-time 1 http://localhost:9999 > /dev/null 2>&1
+set -e
 unset NO_PROXY
 
 # Verify bypass was logged
