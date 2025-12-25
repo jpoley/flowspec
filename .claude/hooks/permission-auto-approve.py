@@ -21,6 +21,10 @@ Security: Includes path traversal protection via os.path.normpath() validation.
 import json
 import re
 import sys
+from pathlib import Path
+
+# Add hooks directory to Python path for logging_helper import
+sys.path.insert(0, str(Path(__file__).parent))
 
 from logging_helper import setup_hook_logging
 

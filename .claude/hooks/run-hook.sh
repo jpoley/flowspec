@@ -14,9 +14,11 @@
 set -euo pipefail
 
 # Find project root by looking for .claude directory
+# Note: Searches up to 10 parent directories. Projects nested deeper than 10 levels
+# from the execution directory will fail. Increase max_depth if needed for deeper nesting.
 find_project_root() {
     local current_dir="$PWD"
-    local max_depth=10
+    local max_depth=10  # Maximum directory traversal depth
     local depth=0
 
     while [[ "$depth" -lt "$max_depth" ]]; do

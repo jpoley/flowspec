@@ -32,12 +32,21 @@ term.onData((data) => {
 });
 
 // Read *raw* user keystrokes from the terminal and forward to PTY
-process.stdin.setRawMode?.(true);
+// Check if stdin is a TTY before setting raw mode
+if (process.stdin.isTTY && typeof process.stdin.setRawMode === "function") {
+  process.stdin.setRawMode(true);
+} else {
+  // stdin is not a TTY (e.g., running under asciinema, redirected input, or CI)
+  // This is normal and expected in some scenarios. Logging will work but input
+  // may be buffered or line-based instead of character-by-character.
+  console.warn("Warning: stdin is not a TTY. Running in non-interactive mode.");
+  console.warn("This is normal when running under asciinema or in CI environments.");
+}
 process.stdin.resume();
 process.stdin.on("data", (buf) => {
   // Log exactly what user typed (raw bytes)
   stdinStream.write(buf);
-  // Forward into claude-code’s PTY
+  // Forward into claude-code's PTY
   term.write(buf.toString("utf8"));
 });
 

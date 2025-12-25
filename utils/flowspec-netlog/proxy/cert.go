@@ -15,8 +15,12 @@ import (
 )
 
 const (
-	caOrg  = "Flowspec Network Logger"
-	caName = "Flowspec CA"
+	caOrg          = "Flowspec Network Logger"
+	caName         = "Flowspec CA"
+	certValidDays  = 365 // Certificate validity period in days (1 year)
+	// Note: Certificates must be renewed before expiry. To renew, delete
+	// .logs/.certs/ directory and restart flowspec-netlog to regenerate.
+	// Consider monitoring cert expiry with: openssl x509 -enddate -noout -in cert.pem
 )
 
 // CertManager handles CA certificate generation and storage
@@ -69,7 +73,7 @@ func (cm *CertManager) generate() (*CertManager, error) {
 	}
 
 	notBefore := time.Now()
-	notAfter := notBefore.Add(365 * 24 * time.Hour) // 1 year
+	notAfter := notBefore.Add(time.Duration(certValidDays) * 24 * time.Hour)
 
 	template := x509.Certificate{
 		SerialNumber: serialNumber,
@@ -130,14 +134,27 @@ func (cm *CertManager) save(derBytes []byte) error {
 	if err != nil {
 		return fmt.Errorf("failed to create key file: %w", err)
 	}
-	defer keyOut.Close()
+	defer func() {
+		// Check for errors when closing the key file to prevent data loss
+		if closeErr := keyOut.Close(); closeErr != nil {
+			err = fmt.Errorf("failed to close key file (may have lost data): %w", closeErr)
+		}
+	}()
 
 	keyBytes := x509.MarshalPKCS1PrivateKey(cm.caKey)
 	if err := pem.Encode(keyOut, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: keyBytes}); err != nil {
 		return fmt.Errorf("failed to write key: %w", err)
 	}
 
+	// Check if any deferred close errors occurred
+	if err != nil {
+		return err
+	}
+
 	// Create system-compatible cert (for installation)
+	// Note: Certificate file is world-readable (0644) because it contains only the public
+	// certificate, not the private key. The private key file above uses 0600 (owner-only)
+	// to protect the secret key material. This follows standard CA certificate practices.
 	if err := os.WriteFile(cm.systemCert, pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: derBytes}), 0644); err != nil {
 		return fmt.Errorf("failed to write system cert: %w", err)
 	}

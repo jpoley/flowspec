@@ -104,9 +104,10 @@ echo "   Done."
 echo ""
 echo "2.5. Setting up Claude logging wrapper..."
 
-# Install node-pty for wrap.mjs
+# Install node-pty for wrap.mjs (pinned version from package.json)
 echo "   Installing node-pty dependency..."
-cd /workspaces/flowspec && pnpm install node-pty || echo "   Warning: node-pty install failed"
+# SECURITY: Use --frozen-lockfile to ensure only audited pinned versions are installed
+cd /workspaces/flowspec && pnpm install --frozen-lockfile || echo "   Warning: node-pty install failed"
 
 # Create claude wrapper script
 echo "   Creating claude wrapper..."

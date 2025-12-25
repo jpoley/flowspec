@@ -58,12 +58,18 @@ fi
 # Test NO_PROXY bypass
 echo "Testing NO_PROXY bypass..."
 export NO_PROXY="localhost,127.0.0.1"
-if curl -s http://localhost:80 > /dev/null 2>&1; then
-    echo "✓ NO_PROXY bypass works"
-else
-    echo "ℹ NO_PROXY bypass (expected failure if no local server)"
-fi
+# Use a request that will be logged even if it fails
+curl -s --max-time 1 http://localhost:9999 > /dev/null 2>&1 || true
 unset NO_PROXY
+
+# Verify bypass was logged
+sleep 1
+BYPASS_COUNT=$(grep -c '"bypassed".*true' "$LOG_DIR"/network.*.jsonl 2>/dev/null || echo "0")
+if [ "$BYPASS_COUNT" -gt 0 ]; then
+    echo "✓ NO_PROXY bypass verified ($BYPASS_COUNT bypassed requests in logs)"
+else
+    echo "⚠ NO_PROXY bypass not verified in logs (check manually)"
+fi
 
 # Check logs
 echo ""

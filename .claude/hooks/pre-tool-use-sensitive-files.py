@@ -17,10 +17,8 @@ import json
 import sys
 from pathlib import Path
 
-# Add hooks directory to Python path for logging_helper import
+# Add hooks directory to Python path (reserved for future logging_helper usage)
 sys.path.insert(0, str(Path(__file__).parent))
-
-# Note: logging_helper not used in this hook yet, but available if needed
 
 SENSITIVE_PATTERNS = [
     ".env",
