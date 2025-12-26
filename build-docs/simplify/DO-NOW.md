@@ -2,6 +2,108 @@
 
 > **Note:** Lessons learned from previous failures are documented in [FAILURE-LEARNINGS.md](./FAILURE-LEARNINGS.md)
 
+---
+
+## ⚠️ CRITICAL REQUIREMENTS - READ FIRST ⚠️
+
+### Honesty is MANDATORY
+
+**NEVER:**
+- ❌ Lie about time spent (actual timestamps only)
+- ❌ Claim something works when it doesn't
+- ❌ Create fake/stub code and call it "implemented"
+- ❌ Write success documentation for failed/incomplete work
+- ❌ Quit early and pretend you used the full time
+
+**ALWAYS:**
+- ✅ Report actual timestamps (start/end)
+- ✅ Be brutally honest about what IS working
+- ✅ Be brutally honest about what ISN'T working
+- ✅ Document incomplete work accurately
+- ✅ Use the FULL time budget allocated (60 minutes = 60 minutes)
+
+### What "Implementation" Means
+
+**❌ Stub/Skeleton code is NOT implementation:**
+```python
+# This is FAKE - DO NOT DO THIS
+def execute_workflow():
+    # TODO: Actually execute workflow here
+    logger.info("Would execute workflow")
+    return True  # Pretending it worked
+```
+
+**✅ Real implementation:**
+```python
+def execute_workflow(workflow_name):
+    # Load workflow config
+    config = load_workflow(workflow_name)
+
+    # Actually execute it
+    result = workflow_executor.run(config)
+
+    # Return real result
+    return result
+```
+
+### If You Can't Finish in Time
+
+**If you can't complete everything in 60 minutes:**
+
+1. ✅ Document exactly what IS complete and working
+2. ✅ Document exactly what ISN'T complete
+3. ✅ List specific next steps needed
+4. ✅ Be honest about percentage complete (e.g., "40% complete")
+5. ✅ Don't claim success or "MVP done"
+
+**Example honest documentation:**
+```markdown
+## Status: INCOMPLETE (40% done)
+
+### What IS Working:
+- Schema updated with custom_workflows definition ✅
+- Logging infrastructure created ✅
+
+### What IS NOT Working:
+- ❌ Orchestrator is stub only - does NOT execute workflows
+- ❌ No integration with existing /flow commands
+- ❌ Conditional logic not implemented
+- ❌ Checkpoint handling not implemented
+
+### Next Steps Needed:
+1. Implement actual workflow execution in orchestrator
+2. Integrate with WorkflowConfig and existing commands
+3. Test end-to-end workflow execution
+4. Implement conditional evaluation properly
+
+### Time Used: 12 minutes (20% of budget)
+### Reason for early stop: Mistakenly thought stub was enough
+```
+
+### What Success Looks Like
+
+**At 60 minutes, you should have:**
+1. **Working code** - Actually functional, not stubs
+2. **Honest documentation** - Real status, accurate timestamps
+3. **Complete testing** - Verified it actually works
+4. **Clear handoff** - What's done, what's not, what's next
+
+**NOT:**
+- Extensive documentation claiming everything works
+- Fake timestamps and duration claims
+- Stub code with TODO comments pretending to be "MVP"
+- "Success" claims for non-functional code
+
+### See Failure #3 in FAILURE-LEARNINGS.md
+
+**Read it now to see what happens when you fake it.**
+
+**Summary:** 12 minutes of work, claimed 55 minutes. Created fake orchestrator that does nothing. Lied across all documentation. Complete disaster.
+
+**Don't repeat this.**
+
+---
+
 ## KEY REALIZATION
 
 **From flowspec-loop.md (THE CRITICAL DOCUMENT):**
