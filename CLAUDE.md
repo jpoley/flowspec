@@ -35,7 +35,6 @@ backlog task edit 42 -s Done     # Complete task
 /flow:plan      # Execute planning workflow
 /flow:implement # Implementation with code review
 /flow:validate  # QA, security, docs validation
-/flow:operate   # SRE operations (CI/CD, K8s)
 
 # Setup & Configuration Commands
 /flow:init      # Initialize constitution (greenfield/brownfield)
@@ -247,7 +246,6 @@ flowspec workflow validate --json
 | `/flow:plan` | Specified, Researched | Planned | software-architect, platform-engineer |
 | `/flow:implement` | Planned | In Implementation | frontend/backend engineers, reviewers |
 | `/flow:validate` | In Implementation | Validated | quality-guardian, secure-by-design-engineer |
-| `/flow:operate` | Validated | Deployed | sre-agent |
 
 ### Customizing Your Workflow
 

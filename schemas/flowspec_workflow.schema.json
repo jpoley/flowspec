@@ -93,15 +93,15 @@
         "description": "Workflow names must be lowercase alphanumeric with underscores or hyphens, starting with a letter"
       }
     },
-    "meta_workflows": {
+    "custom_workflows": {
       "type": "object",
-      "description": "Meta-workflow definitions that orchestrate multiple workflows together (e.g., research = assess + specify + research + plan)",
+      "description": "User-defined custom workflow sequences for flexible orchestration. Users can compose workflows in any order with conditional logic and checkpoints.",
       "additionalProperties": {
-        "$ref": "#/$defs/meta_workflow"
+        "$ref": "#/$defs/custom_workflow"
       },
       "propertyNames": {
         "pattern": "^[a-z][a-z0-9_-]*$",
-        "description": "Meta-workflow names must be lowercase alphanumeric with underscores or hyphens, starting with a letter"
+        "description": "Custom workflow names must be lowercase alphanumeric with underscores or hyphens, starting with a letter"
       }
     },
     "transitions": {
@@ -478,91 +478,78 @@
         }
       }
     },
-    "meta_workflow": {
+    "custom_workflow": {
       "type": "object",
-      "description": "A meta-workflow definition that orchestrates multiple sub-workflows",
-      "required": ["command", "sub_workflows", "input_state", "output_state"],
+      "description": "User-defined custom workflow sequence. Allows composing workflows with conditional logic, checkpoints, and enforced rigor rules.",
+      "required": ["name", "mode", "steps", "rigor"],
       "additionalProperties": false,
       "properties": {
-        "command": {
+        "name": {
           "type": "string",
-          "pattern": "^/flow:(meta-)?[a-z][a-z0-9_-]*$",
-          "description": "The /flowspec meta-workflow command (e.g., '/flow:meta-research', '/flow:research', '/flow:build')"
+          "minLength": 1,
+          "description": "Display name for this custom workflow (e.g., 'Quick Build', 'Full Research')"
         },
         "description": {
           "type": "string",
-          "description": "Human-readable description of what this meta-workflow accomplishes"
+          "description": "Human-readable description of what this custom workflow accomplishes"
         },
-        "summary": {
+        "mode": {
           "type": "string",
-          "description": "One-line summary of the meta-workflow (e.g., 'Plan It - All analysis and design')"
+          "enum": ["vibing", "spec-ing"],
+          "description": "Execution mode: 'vibing' (autonomous, no interaction) or 'spec-ing' (stop for guidance at checkpoints)"
         },
-        "primary_artifacts": {
+        "steps": {
           "type": "array",
-          "description": "Primary artifacts produced by this meta-workflow",
-          "items": {
-            "type": "string"
-          }
-        },
-        "sub_workflows": {
-          "type": "array",
-          "description": "List of sub-workflows to execute in sequence",
+          "description": "List of workflow steps to execute in sequence",
           "minItems": 1,
           "items": {
-            "$ref": "#/$defs/sub_workflow"
+            "$ref": "#/$defs/workflow_step"
           }
         },
-        "input_state": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Valid task state from which this meta-workflow can be executed"
-        },
-        "output_state": {
-          "type": "string",
-          "minLength": 1,
-          "description": "The state a task transitions to after this meta-workflow completes successfully"
-        },
-        "quality_gates": {
-          "type": "array",
-          "description": "Quality gates that must pass before completing the meta-workflow",
-          "items": {
-            "$ref": "#/$defs/quality_gate"
-          }
-        },
-        "orchestration": {
+        "rigor": {
           "type": "object",
-          "description": "Orchestration configuration for meta-workflow execution",
+          "description": "Rigor enforcement rules (ALWAYS REQUIRED, no exceptions)",
+          "required": ["log_decisions", "log_events", "follow_constitution"],
           "additionalProperties": false,
           "properties": {
-            "mode": {
-              "type": "string",
-              "enum": ["sequential", "parallel"],
-              "default": "sequential",
-              "description": "Execution mode: sequential (one sub-workflow at a time) or parallel (concurrent)"
-            },
-            "atomic": {
+            "log_decisions": {
               "type": "boolean",
-              "default": false,
-              "description": "If true, all sub-workflows must complete successfully or none complete (all-or-nothing semantics)"
+              "const": true,
+              "description": "REQUIRED: Must log decisions to .logs/decisions/*.jsonl"
             },
-            "stop_on_error": {
+            "log_events": {
               "type": "boolean",
-              "default": true,
-              "description": "If true, stop execution when a sub-workflow fails. If false, continue with remaining sub-workflows."
+              "const": true,
+              "description": "REQUIRED: Must log events to .logs/events/*.jsonl"
             },
-            "emit_events": {
+            "create_adrs": {
               "type": "boolean",
               "default": true,
-              "description": "If true, emit workflow events to .logs/events/"
+              "description": "Create ADRs for architectural decisions"
+            },
+            "follow_constitution": {
+              "type": "boolean",
+              "const": true,
+              "description": "REQUIRED: Must follow constitution from .specify/memory/constitution.md"
+            },
+            "backlog_integration": {
+              "type": "boolean",
+              "default": true,
+              "description": "Integrate with backlog.md for task tracking"
+            },
+            "memory_tracking": {
+              "type": "boolean",
+              "default": true,
+              "description": "Track task state across sessions in memory system"
             }
           }
         }
       }
     },
-    "sub_workflow": {
+    "workflow_step": {
       "type": "object",
-      "description": "A sub-workflow reference within a meta-workflow",
-      "required": ["workflow", "required"],
+      "description": "A workflow step in a custom workflow sequence",
+      "required": ["workflow"],
       "additionalProperties": false,
       "properties": {
         "workflow": {
@@ -570,17 +557,17 @@
           "minLength": 1,
           "description": "Name of the workflow to execute (must match a workflow in the workflows section)"
         },
-        "required": {
-          "type": "boolean",
-          "description": "If true, this sub-workflow must execute. If false, it may be skipped based on condition."
-        },
         "condition": {
           "type": "string",
-          "description": "Optional condition expression for when to run this sub-workflow (e.g., 'complexity_score >= 7 OR light_mode == false')"
+          "description": "Optional condition expression for when to run this step (e.g., 'complexity >= 5', 'needs_research == true')"
+        },
+        "checkpoint": {
+          "type": "string",
+          "description": "For spec-ing mode: Question to ask user before executing this step (e.g., 'Review PRD before continuing?')"
         },
         "description": {
           "type": "string",
-          "description": "Human-readable description of what this sub-workflow does"
+          "description": "Human-readable description of what this step does"
         }
       }
     },

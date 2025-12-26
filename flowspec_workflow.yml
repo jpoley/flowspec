@@ -105,7 +105,7 @@ states:
   - "Planned"         # Architecture and infrastructure planned via /flow:plan
   - "In Implementation"  # Code actively being written via /flow:implement
   - "Validated"       # QA, security, and documentation validated via /flow:validate
-  - "Deployed"        # Released to production via /flow:operate
+
   - "Done"            # Work complete - ready for archive
 
 # ==============================================================================
@@ -262,23 +262,6 @@ workflows:
     optional: false
     requires_human_approval: true
 
-  operate:
-    command: "/flow:operate"
-    description: "Execute operations workflow using SRE agent"
-    agents:
-      - name: "sre-agent"
-        identity: "@sre-agent"
-        description: "Principal Site Reliability Engineer"
-        responsibilities:
-          - "CI/CD pipeline implementation"
-          - "Kubernetes deployment"
-          - "Observability setup"
-          - "Incident management"
-    input_states: ["Validated"]
-    output_state: "Deployed"
-    optional: false
-    creates_backlog_tasks: true
-
   submit-n-watch-pr:
     command: "/flow:submit-n-watch-pr"
     description: "Submit PR and autonomously monitor CI checks and Copilot reviews until approval-ready"
@@ -379,24 +362,6 @@ meta_workflows:
       stop_on_error: true
       emit_events: true
       atomic: true  # Implementation + validation must complete together
-
-  run:
-    command: "/flow:run"
-    description: "Deployment and operations (operate)"
-    summary: "Deploy It - Production deployment and operational readiness"
-    sub_workflows:
-      - workflow: "operate"
-        required: true
-        description: "Deploy to production and create runbooks"
-    input_state: "Validated"
-    output_state: "Deployed"
-    primary_artifacts:
-      - "./docs/runbooks/{feature}-runbook.md"
-      - "./deploy/"
-    orchestration:
-      mode: "sequential"
-      stop_on_error: true
-      emit_events: true
 
 # ==============================================================================
 # STATE TRANSITIONS
@@ -536,23 +501,6 @@ transitions:
         path: "./docs/qa/{feature}-qa-report.md"
       - type: "security_report"
         path: "./docs/security/{feature}-security.md"
-    validation: "NONE"
-
-  - name: "operate"
-    from: "Validated"
-    to: "Deployed"
-    via: "operate"
-    description: "Deployed to production"
-    input_artifacts:
-      - type: "qa_report"
-        path: "./docs/qa/{feature}-qa-report.md"
-        required: true
-      - type: "security_report"
-        path: "./docs/security/{feature}-security.md"
-        required: true
-    output_artifacts:
-      - type: "deployment_manifest"
-        path: "./deploy/"
     validation: "NONE"
 
   - name: "submit_pr"
