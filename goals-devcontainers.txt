@@ -1,0 +1,13 @@
+
+we need to both USE devcontainer to build flowspec
+and we need to distribute flowspec via a similar (but not always exact) devcontainer (as its a foundational feature for USING flowspec)
+
+so lets ultrathink and create a strategy of how we do this in a clear and simple way that prevents brittleness and errors (and gives all features to the right places)
+
+we need the devcontainers to just work seemlessly.
+
+one key feature of flowspec using the devcontainer is using a github app to give only certain credenails in (thats part 2 of this quest)  but for right now we need to think about the mess we have and clean this up.  
+
+devcontainers also need to have traceablitiy (but in a transparent way) with the egress blocking (we added in vite, for falcondev project when we run)  and transparently tracking what we (and agents are doing)
+
+
