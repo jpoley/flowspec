@@ -316,6 +316,32 @@ git pull
 
 This directly addresses the CLAUDE.md repeatability mandate.
 
+## Building the Image Locally (Maintainers)
+
+The devcontainer uses a pre-built image from Docker Hub (`jpoley/flowspec-agents:latest`), which is built in CI using [Docker Hardened Images (DHI)](https://docs.docker.com/dhi/) for 95%+ CVE reduction.
+
+To rebuild the image locally:
+
+1. **Authenticate to DHI** (uses your Docker Hub credentials):
+   ```bash
+   docker login dhi.io
+   # Enter your Docker Hub username and password/token
+   ```
+
+2. **Build the image**:
+   ```bash
+   cd .devcontainer
+   docker build -t jpoley/flowspec-agents:local .
+   ```
+
+3. **Test with local build** (temporary):
+   ```json
+   // In devcontainer.json, change:
+   "image": "jpoley/flowspec-agents:local"
+   ```
+
+**Note**: DHI is free but requires authentication. The CI workflow (`docker-publish.yml`) handles this automatically via GitHub secrets.
+
 ## CI/CD Integration
 
 GitHub Actions can use the same container environment:

@@ -1,8 +1,8 @@
 {
   "name": "Flowspec Dev Environment",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
+  // Pre-built image from Docker Hub (built via CI with DHI base image)
+  // To rebuild locally: run "docker login dhi.io" with Docker Hub creds first
+  "image": "jpoley/flowspec-agents:latest",
 
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {
