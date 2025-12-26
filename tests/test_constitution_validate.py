@@ -1,8 +1,10 @@
 """Tests for constitution validate command."""
 
-import pytest
 from pathlib import Path
+
+import pytest
 from typer.testing import CliRunner
+
 from flowspec_cli import app
 
 runner = CliRunner()

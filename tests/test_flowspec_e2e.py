@@ -34,10 +34,9 @@ import pytest
 import yaml
 
 from flowspec_cli.workflow.state_guard import (
-    WorkflowStateGuard,
     StateCheckResult,
+    WorkflowStateGuard,
 )
-
 
 # =============================================================================
 # Test Fixtures

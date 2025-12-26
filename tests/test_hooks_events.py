@@ -5,7 +5,6 @@ Tests event creation, serialization, factory functions, and event matching.
 
 import json
 
-
 from flowspec_cli.hooks.events import (
     Artifact,
     Event,

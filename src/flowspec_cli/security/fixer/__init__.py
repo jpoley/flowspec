@@ -7,14 +7,6 @@ See ADR-006 for the AI triage engine that identifies vulnerabilities,
 and this module for the fix generation that follows.
 """
 
-from flowspec_cli.security.fixer.models import (
-    FixResult,
-    FixStatus,
-    Patch,
-    FixPattern,
-)
-from flowspec_cli.security.fixer.generator import FixGenerator
-from flowspec_cli.security.fixer.patterns import FixPatternLibrary
 from flowspec_cli.security.fixer.applicator import (
     ApplyResult,
     ApplyStatus,
@@ -22,6 +14,14 @@ from flowspec_cli.security.fixer.applicator import (
     PatchApplicator,
     PatchApplicatorConfig,
 )
+from flowspec_cli.security.fixer.generator import FixGenerator
+from flowspec_cli.security.fixer.models import (
+    FixPattern,
+    FixResult,
+    FixStatus,
+    Patch,
+)
+from flowspec_cli.security.fixer.patterns import FixPatternLibrary
 
 __all__ = [
     # Models

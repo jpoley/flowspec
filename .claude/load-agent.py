@@ -10,9 +10,9 @@ Usage:
     python .claude/load-agent.py software-architect-enhanced platform-engineer-enhanced
 """
 
+import re
 import sys
 from pathlib import Path
-import re
 
 
 def load_agent_context(agent_name: str) -> str:

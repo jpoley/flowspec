@@ -13,12 +13,13 @@ Tests the actual API:
 """
 
 import json
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 
 from flowspec_cli.memory import TaskMemoryStore
 from flowspec_cli.memory.injector import ContextInjector
-from flowspec_cli.memory.mcp import register_memory_resources, MCP_AVAILABLE
+from flowspec_cli.memory.mcp import MCP_AVAILABLE, register_memory_resources
 
 
 @pytest.fixture

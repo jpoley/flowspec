@@ -4,8 +4,9 @@ This test module verifies that the implement command correctly integrates
 with backlog.md CLI for task-driven implementation.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 @pytest.fixture

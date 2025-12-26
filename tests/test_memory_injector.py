@@ -1,7 +1,9 @@
 """Tests for ContextInjector - Task memory injection into CLAUDE.md."""
 
-import pytest
 from pathlib import Path
+
+import pytest
+
 from flowspec_cli.memory.injector import ContextInjector
 
 

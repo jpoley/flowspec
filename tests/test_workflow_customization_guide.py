@@ -3,8 +3,9 @@
 Verifies AC compliance for task-097: Create user customization guide for workflow config.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 @pytest.fixture

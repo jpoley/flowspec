@@ -15,11 +15,11 @@ Components:
     create_memory_mcp_server: Creates MCP server for memory access
 """
 
-from flowspec_cli.memory.store import TaskMemoryStore
-from flowspec_cli.memory.lifecycle import LifecycleManager
 from flowspec_cli.memory.cleanup import CleanupManager
 from flowspec_cli.memory.injector import ContextInjector
-from flowspec_cli.memory.mcp import register_memory_resources, create_memory_mcp_server
+from flowspec_cli.memory.lifecycle import LifecycleManager
+from flowspec_cli.memory.mcp import create_memory_mcp_server, register_memory_resources
+from flowspec_cli.memory.store import TaskMemoryStore
 
 __all__ = [
     "TaskMemoryStore",

@@ -17,7 +17,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-
 # PR creation patterns (case-insensitive)
 PR_PATTERNS = [
     r"create\s+(a\s+)?pr\b",

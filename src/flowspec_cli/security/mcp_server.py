@@ -33,10 +33,10 @@ try:
 except ImportError:
     MCP_AVAILABLE = False
 
+from flowspec_cli.security.adapters.discovery import ToolDiscovery
+from flowspec_cli.security.adapters.semgrep import SemgrepAdapter
 from flowspec_cli.security.models import Finding, Severity
 from flowspec_cli.security.orchestrator import ScannerOrchestrator
-from flowspec_cli.security.adapters.semgrep import SemgrepAdapter
-from flowspec_cli.security.adapters.discovery import ToolDiscovery
 
 # Global project root (can be overridden via PROJECT_ROOT env var for testing)
 PROJECT_ROOT = Path(os.environ.get("PROJECT_ROOT", str(Path.cwd())))

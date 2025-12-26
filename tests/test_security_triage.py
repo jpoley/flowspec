@@ -13,24 +13,23 @@ from unittest.mock import Mock
 
 import pytest
 
-from flowspec_cli.security.triage.engine import TriageEngine, TriageConfig
-from flowspec_cli.security.triage.models import (
-    Classification,
-    ClusterType,
-    Explanation,
+from flowspec_cli.security.models import (
+    Confidence,
+    Finding,
+    Location,
+    Severity,
 )
 from flowspec_cli.security.triage.classifiers.base import (
     ClassificationResult,
     LLMClient,
 )
-from flowspec_cli.security.triage.risk_scorer import RiskScorer
-from flowspec_cli.security.models import (
-    Finding,
-    Location,
-    Severity,
-    Confidence,
+from flowspec_cli.security.triage.engine import TriageConfig, TriageEngine
+from flowspec_cli.security.triage.models import (
+    Classification,
+    ClusterType,
+    Explanation,
 )
-
+from flowspec_cli.security.triage.risk_scorer import RiskScorer
 
 # ============================================================================
 # Fixtures

@@ -7,9 +7,9 @@ Cleanup operations support dry-run mode for safe testing and provide detailed
 logging for audit trails.
 """
 
+import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
-import logging
 
 from .store import TaskMemoryStore
 

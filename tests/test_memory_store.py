@@ -1,7 +1,9 @@
 """Tests for TaskMemoryStore component."""
 
-import pytest
 from pathlib import Path
+
+import pytest
+
 from flowspec_cli.memory import TaskMemoryStore
 
 

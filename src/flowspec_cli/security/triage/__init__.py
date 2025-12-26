@@ -6,12 +6,12 @@ and explanation generation for security findings.
 See ADR-006 for architectural design decisions.
 """
 
+from flowspec_cli.security.triage.engine import TriageEngine
 from flowspec_cli.security.triage.models import (
     Classification,
-    TriageResult,
     ClusterType,
+    TriageResult,
 )
-from flowspec_cli.security.triage.engine import TriageEngine
 from flowspec_cli.security.triage.risk_scorer import RiskScorer
 
 __all__ = [

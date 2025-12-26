@@ -4,8 +4,9 @@ This test module verifies that the specify command correctly integrates
 with backlog.md CLI for task discovery and creation.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 @pytest.fixture

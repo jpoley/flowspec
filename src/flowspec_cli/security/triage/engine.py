@@ -16,6 +16,23 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from flowspec_cli.security.models import Finding
+from flowspec_cli.security.triage.classifiers.base import (
+    ClassificationResult,
+    FindingClassifier,
+    LLMClient,
+)
+from flowspec_cli.security.triage.classifiers.default import DefaultClassifier
+from flowspec_cli.security.triage.classifiers.hardcoded_secrets import (
+    HardcodedSecretsClassifier,
+)
+from flowspec_cli.security.triage.classifiers.path_traversal import (
+    PathTraversalClassifier,
+)
+from flowspec_cli.security.triage.classifiers.sql_injection import (
+    SQLInjectionClassifier,
+)
+from flowspec_cli.security.triage.classifiers.weak_crypto import WeakCryptoClassifier
+from flowspec_cli.security.triage.classifiers.xss import XSSClassifier
 from flowspec_cli.security.triage.models import (
     Classification,
     ClusterType,
@@ -23,23 +40,6 @@ from flowspec_cli.security.triage.models import (
     TriageResult,
 )
 from flowspec_cli.security.triage.risk_scorer import RiskScorer
-from flowspec_cli.security.triage.classifiers.base import (
-    FindingClassifier,
-    ClassificationResult,
-    LLMClient,
-)
-from flowspec_cli.security.triage.classifiers.default import DefaultClassifier
-from flowspec_cli.security.triage.classifiers.sql_injection import (
-    SQLInjectionClassifier,
-)
-from flowspec_cli.security.triage.classifiers.xss import XSSClassifier
-from flowspec_cli.security.triage.classifiers.path_traversal import (
-    PathTraversalClassifier,
-)
-from flowspec_cli.security.triage.classifiers.hardcoded_secrets import (
-    HardcodedSecretsClassifier,
-)
-from flowspec_cli.security.triage.classifiers.weak_crypto import WeakCryptoClassifier
 
 logger = logging.getLogger(__name__)
 

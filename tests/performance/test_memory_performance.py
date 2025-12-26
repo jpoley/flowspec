@@ -7,11 +7,13 @@ This module benchmarks task memory operations at scale:
 - Memory footprint and resource usage
 """
 
-import pytest
-import time
-from flowspec_cli.memory import TaskMemoryStore, LifecycleManager
-from flowspec_cli.memory.injector import ContextInjector
 import statistics
+import time
+
+import pytest
+
+from flowspec_cli.memory import LifecycleManager, TaskMemoryStore
+from flowspec_cli.memory.injector import ContextInjector
 
 
 @pytest.fixture

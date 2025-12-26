@@ -1,7 +1,8 @@
 """Tests for DAST adapter."""
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 from flowspec_cli.security.adapters.dast import DASTAdapter, DASTAdapterAsync
 

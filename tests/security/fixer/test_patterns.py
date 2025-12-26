@@ -3,8 +3,8 @@
 import pytest
 
 from flowspec_cli.security.fixer.patterns import (
-    FixPatternLibrary,
     DEFAULT_PATTERN_LIBRARY,
+    FixPatternLibrary,
 )
 
 

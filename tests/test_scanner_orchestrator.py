@@ -20,7 +20,6 @@ from flowspec_cli.security.adapters.semgrep import SemgrepAdapter
 from flowspec_cli.security.models import Finding, Location, Severity
 from flowspec_cli.security.orchestrator import ScannerOrchestrator
 
-
 # --- Fixtures ---
 
 

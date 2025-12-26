@@ -1,9 +1,10 @@
 """Tests for task schema migration."""
 
-import pytest
 from pathlib import Path
 
-from flowspec_cli.satellite.migration import TaskMigrator, MigrationError
+import pytest
+
+from flowspec_cli.satellite.migration import MigrationError, TaskMigrator
 
 
 @pytest.fixture

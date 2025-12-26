@@ -7,11 +7,12 @@ IMPORTANT: All mock task IDs use MOCK- prefix to distinguish from real tasks.
 All fixtures use tmp_path - files are auto-cleaned after tests.
 """
 
-import pytest
+import json
 import subprocess
 from textwrap import dedent
-from unittest.mock import patch, MagicMock
-import json
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 @pytest.fixture

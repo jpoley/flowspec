@@ -13,8 +13,8 @@ from flowspec_cli.workflow.transition import (
     ValidationMode,
 )
 from flowspec_cli.workflow.validation_engine import (
-    TransitionValidator,
     TransitionValidationResult,
+    TransitionValidator,
 )
 
 

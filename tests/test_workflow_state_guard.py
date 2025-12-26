@@ -14,20 +14,20 @@ Coverage areas:
 - Edge cases and boundary conditions
 """
 
-import pytest
 from pathlib import Path
 from unittest.mock import Mock
+
+import pytest
 import yaml
 
 from flowspec_cli.workflow.state_guard import (
-    WorkflowStateGuard,
-    StateCheckResult,
     StateCheckResponse,
+    StateCheckResult,
+    WorkflowStateGuard,
     check_workflow_state,
     get_next_state,
     get_valid_workflows,
 )
-
 
 # =============================================================================
 # Test Fixtures

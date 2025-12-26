@@ -7,21 +7,21 @@ See ADR-006 for the Strategy Pattern design.
 """
 
 from flowspec_cli.security.triage.classifiers.base import (
-    FindingClassifier,
     ClassificationResult,
+    FindingClassifier,
 )
 from flowspec_cli.security.triage.classifiers.default import DefaultClassifier
-from flowspec_cli.security.triage.classifiers.sql_injection import (
-    SQLInjectionClassifier,
-)
-from flowspec_cli.security.triage.classifiers.xss import XSSClassifier
-from flowspec_cli.security.triage.classifiers.path_traversal import (
-    PathTraversalClassifier,
-)
 from flowspec_cli.security.triage.classifiers.hardcoded_secrets import (
     HardcodedSecretsClassifier,
 )
+from flowspec_cli.security.triage.classifiers.path_traversal import (
+    PathTraversalClassifier,
+)
+from flowspec_cli.security.triage.classifiers.sql_injection import (
+    SQLInjectionClassifier,
+)
 from flowspec_cli.security.triage.classifiers.weak_crypto import WeakCryptoClassifier
+from flowspec_cli.security.triage.classifiers.xss import XSSClassifier
 
 __all__ = [
     "FindingClassifier",

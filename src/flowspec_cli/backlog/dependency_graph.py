@@ -4,8 +4,9 @@ Dependency graph builder for flowspec tasks.
 Builds and visualizes task dependencies to help with planning and execution.
 """
 
-from typing import Optional
 from collections import defaultdict
+from typing import Optional
+
 from .parser import Task
 
 

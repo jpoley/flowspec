@@ -12,12 +12,12 @@ State Transition Logic:
     In Progress → To Do: Delete memory file (task reset)
 """
 
+import logging
 from pathlib import Path
 from typing import Optional
-import logging
 
-from .store import TaskMemoryStore
 from .injector import ContextInjector
+from .store import TaskMemoryStore
 
 logger = logging.getLogger(__name__)
 
@@ -158,8 +158,8 @@ class LifecycleManager:
             task_id: Task identifier
         """
         import os
-        import subprocess
         import re
+        import subprocess
 
         # Skip sync in test environments to avoid subprocess overhead
         if os.environ.get("PYTEST_CURRENT_TEST"):

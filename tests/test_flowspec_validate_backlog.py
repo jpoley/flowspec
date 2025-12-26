@@ -11,9 +11,9 @@ Verifies AC#1-AC#7 for task-113:
 """
 
 import re
+from pathlib import Path
 
 import pytest
-from pathlib import Path
 
 
 @pytest.fixture

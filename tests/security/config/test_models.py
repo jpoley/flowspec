@@ -3,15 +3,15 @@
 from pathlib import Path
 
 from flowspec_cli.security.config.models import (
-    SecurityConfig,
-    ScannerType,
-    FailOnSeverity,
-    SemgrepConfig,
-    CodeQLConfig,
     BanditConfig,
-    TriageConfig,
+    CodeQLConfig,
     ExclusionConfig,
+    FailOnSeverity,
     ReportingConfig,
+    ScannerType,
+    SecurityConfig,
+    SemgrepConfig,
+    TriageConfig,
 )
 
 

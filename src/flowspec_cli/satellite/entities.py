@@ -1,11 +1,11 @@
 """Domain entities for Satellite Mode sync operations."""
 
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional
-import uuid
 
-from .enums import ProviderType, SyncOperation, SyncDirection
+from .enums import ProviderType, SyncDirection, SyncOperation
 
 
 @dataclass

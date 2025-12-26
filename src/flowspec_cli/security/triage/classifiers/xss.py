@@ -5,11 +5,11 @@ and input sanitization patterns.
 """
 
 from flowspec_cli.security.models import Finding
-from flowspec_cli.security.triage.models import Classification
 from flowspec_cli.security.triage.classifiers.base import (
-    FindingClassifier,
     ClassificationResult,
+    FindingClassifier,
 )
+from flowspec_cli.security.triage.models import Classification
 
 
 class XSSClassifier(FindingClassifier):

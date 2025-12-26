@@ -4,11 +4,11 @@ All log entries use JSONL format (one JSON object per line).
 Each entry includes a timestamp and source information.
 """
 
-from dataclasses import dataclass, field, asdict
+import uuid
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Optional
-import uuid
 
 
 class LogSource(str, Enum):

@@ -9,7 +9,6 @@ This module tests feature assessment functionality including:
 
 from __future__ import annotations
 
-
 import pytest
 
 from flowspec_cli.workflow.assessor import (

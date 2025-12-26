@@ -2,12 +2,11 @@
 
 import yaml
 
-
 from flowspec_cli.security.integrations.hooks import (
     PreCommitConfig,
-    generate_precommit_config,
     generate_husky_config,
     generate_lefthook_config,
+    generate_precommit_config,
 )
 
 

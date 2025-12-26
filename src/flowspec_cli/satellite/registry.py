@@ -8,7 +8,6 @@ from .enums import ProviderType
 from .errors import ProviderNotFoundError
 from .provider import RemoteProvider
 
-
 # Provider ID patterns for auto-detection
 PROVIDER_PATTERNS = {
     ProviderType.GITHUB: r"^(?P<owner>[\w.-]+)/(?P<repo>[\w.-]+)#(?P<number>\d+)$",

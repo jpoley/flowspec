@@ -119,8 +119,8 @@ def _emit_event(
 
     try:
         # Import here to avoid circular imports and make this module standalone
-        from flowspec_cli.hooks.events import Event
         from flowspec_cli.hooks.emitter import emit_event as _emit
+        from flowspec_cli.hooks.events import Event
 
         # Build context
         context: dict[str, Any] = {"task_id": task_id}

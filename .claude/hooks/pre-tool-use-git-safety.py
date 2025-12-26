@@ -22,7 +22,6 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from logging_helper import setup_hook_logging
 
-
 DANGEROUS_GIT_PATTERNS = [
     (r"git\s+push.*--force", "Force push can overwrite remote history"),
     (r"git\s+push.*\s+-f\b", "Force push can overwrite remote history"),

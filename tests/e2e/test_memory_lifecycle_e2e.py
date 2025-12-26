@@ -5,10 +5,12 @@ through archival and deletion. Tests cover state transitions, rollback scenarios
 concurrent operations, and CLAUDE.md integration.
 """
 
-import pytest
-from flowspec_cli.memory import TaskMemoryStore, LifecycleManager
-from flowspec_cli.memory.injector import ContextInjector
 import shutil
+
+import pytest
+
+from flowspec_cli.memory import LifecycleManager, TaskMemoryStore
+from flowspec_cli.memory.injector import ContextInjector
 
 
 @pytest.fixture

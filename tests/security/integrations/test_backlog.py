@@ -4,12 +4,12 @@ from pathlib import Path
 
 import pytest
 
-from flowspec_cli.security.models import Finding, Location, Severity, Confidence
 from flowspec_cli.security.integrations.backlog import (
     BacklogIntegration,
     FindingTask,
     create_tasks_from_findings,
 )
+from flowspec_cli.security.models import Confidence, Finding, Location, Severity
 
 
 @pytest.fixture

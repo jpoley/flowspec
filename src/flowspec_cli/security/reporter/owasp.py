@@ -7,8 +7,8 @@ associated CWEs for compliance checking.
 from dataclasses import dataclass
 
 from flowspec_cli.security.reporter.models import (
-    OWASPCategory,
     ComplianceStatus,
+    OWASPCategory,
 )
 
 

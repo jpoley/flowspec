@@ -93,6 +93,17 @@
         "description": "Workflow names must be lowercase alphanumeric with underscores or hyphens, starting with a letter"
       }
     },
+    "meta_workflows": {
+      "type": "object",
+      "description": "Meta-workflow definitions that orchestrate multiple workflows together (e.g., research = assess + specify + research + plan)",
+      "additionalProperties": {
+        "$ref": "#/$defs/meta_workflow"
+      },
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_-]*$",
+        "description": "Meta-workflow names must be lowercase alphanumeric with underscores or hyphens, starting with a letter"
+      }
+    },
     "transitions": {
       "type": "array",
       "description": "State transitions defining the workflow state machine edges with artifact validation gates",
@@ -464,6 +475,146 @@
             }
           ],
           "description": "Validation mode: NONE (automatic), KEYWORD (user types keyword), KEYWORD[...] (custom keyword), PULL_REQUEST (blocked until PR merged)"
+        }
+      }
+    },
+    "meta_workflow": {
+      "type": "object",
+      "description": "A meta-workflow definition that orchestrates multiple sub-workflows",
+      "required": ["command", "sub_workflows", "input_state", "output_state"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "type": "string",
+          "pattern": "^/flow:(meta-)?[a-z][a-z0-9_-]*$",
+          "description": "The /flowspec meta-workflow command (e.g., '/flow:meta-research', '/flow:research', '/flow:build')"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of what this meta-workflow accomplishes"
+        },
+        "summary": {
+          "type": "string",
+          "description": "One-line summary of the meta-workflow (e.g., 'Plan It - All analysis and design')"
+        },
+        "primary_artifacts": {
+          "type": "array",
+          "description": "Primary artifacts produced by this meta-workflow",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sub_workflows": {
+          "type": "array",
+          "description": "List of sub-workflows to execute in sequence",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/sub_workflow"
+          }
+        },
+        "input_state": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Valid task state from which this meta-workflow can be executed"
+        },
+        "output_state": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The state a task transitions to after this meta-workflow completes successfully"
+        },
+        "quality_gates": {
+          "type": "array",
+          "description": "Quality gates that must pass before completing the meta-workflow",
+          "items": {
+            "$ref": "#/$defs/quality_gate"
+          }
+        },
+        "orchestration": {
+          "type": "object",
+          "description": "Orchestration configuration for meta-workflow execution",
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": ["sequential", "parallel"],
+              "default": "sequential",
+              "description": "Execution mode: sequential (one sub-workflow at a time) or parallel (concurrent)"
+            },
+            "atomic": {
+              "type": "boolean",
+              "default": false,
+              "description": "If true, all sub-workflows must complete successfully or none complete (all-or-nothing semantics)"
+            },
+            "stop_on_error": {
+              "type": "boolean",
+              "default": true,
+              "description": "If true, stop execution when a sub-workflow fails. If false, continue with remaining sub-workflows."
+            },
+            "emit_events": {
+              "type": "boolean",
+              "default": true,
+              "description": "If true, emit workflow events to .logs/events/"
+            }
+          }
+        }
+      }
+    },
+    "sub_workflow": {
+      "type": "object",
+      "description": "A sub-workflow reference within a meta-workflow",
+      "required": ["workflow", "required"],
+      "additionalProperties": false,
+      "properties": {
+        "workflow": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name of the workflow to execute (must match a workflow in the workflows section)"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "If true, this sub-workflow must execute. If false, it may be skipped based on condition."
+        },
+        "condition": {
+          "type": "string",
+          "description": "Optional condition expression for when to run this sub-workflow (e.g., 'complexity_score >= 7 OR light_mode == false')"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of what this sub-workflow does"
+        }
+      }
+    },
+    "quality_gate": {
+      "type": "object",
+      "description": "A quality gate that must pass before completing a meta-workflow",
+      "required": ["type", "required"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["test_coverage", "security_scan", "acceptance_criteria"],
+          "description": "Type of quality gate"
+        },
+        "threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Threshold percentage for test_coverage gate (e.g., 80 for 80%)"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"],
+          "description": "Minimum severity level for security_scan gate (findings at this level or higher block completion)"
+        },
+        "coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Required percentage of acceptance criteria that must be met (e.g., 100 for all criteria)"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "If true, this quality gate must pass. If false, it's advisory only."
         }
       }
     }

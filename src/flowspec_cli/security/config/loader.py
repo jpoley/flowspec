@@ -9,14 +9,14 @@ from pathlib import Path
 import yaml
 
 from flowspec_cli.security.config.models import (
+    BanditConfig,
+    CodeQLConfig,
+    ExclusionConfig,
+    FailOnSeverity,
+    ReportingConfig,
     SecurityConfig,
     SemgrepConfig,
-    CodeQLConfig,
-    BanditConfig,
     TriageConfig,
-    ExclusionConfig,
-    ReportingConfig,
-    FailOnSeverity,
 )
 from flowspec_cli.security.config.schema import ConfigSchema, SchemaError
 

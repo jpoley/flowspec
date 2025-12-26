@@ -26,11 +26,13 @@ from .config import (
     is_telemetry_enabled,
     load_telemetry_config,
 )
+from .events import RoleEvent
 from .integration import (
     track_handoff,
+)
+from .integration import (
     track_role_selection as _track_role,
 )
-from .events import RoleEvent
 from .tracker import DEFAULT_TELEMETRY_DIR, DEFAULT_TELEMETRY_FILE, track_role_event
 from .writer import TelemetryWriter
 

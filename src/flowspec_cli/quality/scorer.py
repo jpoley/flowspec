@@ -1,18 +1,18 @@
 """Main quality scoring logic."""
 
-from pathlib import Path
-from typing import Optional, List
 from dataclasses import dataclass
+from pathlib import Path
+from typing import List, Optional
 
-from .config import QualityConfig
 from .assessors import (
-    assess_completeness,
-    assess_clarity,
-    assess_traceability,
-    assess_constitutional_compliance,
-    assess_ambiguity,
     AssessmentResult,
+    assess_ambiguity,
+    assess_clarity,
+    assess_completeness,
+    assess_constitutional_compliance,
+    assess_traceability,
 )
+from .config import QualityConfig
 
 
 @dataclass

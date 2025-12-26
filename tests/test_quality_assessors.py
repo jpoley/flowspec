@@ -1,12 +1,12 @@
 """Tests for individual quality assessors."""
 
 from flowspec_cli.quality.assessors import (
-    assess_completeness,
-    assess_clarity,
-    assess_traceability,
-    assess_constitutional_compliance,
-    assess_ambiguity,
     AssessmentResult,
+    assess_ambiguity,
+    assess_clarity,
+    assess_completeness,
+    assess_constitutional_compliance,
+    assess_traceability,
 )
 
 

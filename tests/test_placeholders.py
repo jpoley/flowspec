@@ -3,7 +3,6 @@
 import json
 from datetime import datetime
 
-
 from flowspec_cli.placeholders import (
     detect_languages_and_frameworks,
     detect_linting_tools,

@@ -1,27 +1,28 @@
 """Unit tests for task context loader."""
 
-import pytest
 from textwrap import dedent
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from flowspec_cli.task_context import (
     AcceptanceCriterion,
+    InvalidTaskIDError,
+    NoInProgressTaskError,
     TaskContext,
+    TaskNotFoundError,
+    _build_validation_plan,
+    _extract_labels,
+    _extract_priority,
+    _extract_section,
+    _extract_status,
+    _extract_title,
+    _find_related_tests,
+    _normalize_task_id,
+    determine_validation_approach,
+    find_related_files,
     load_task_context,
     parse_acceptance_criteria,
-    find_related_files,
-    determine_validation_approach,
-    TaskNotFoundError,
-    NoInProgressTaskError,
-    InvalidTaskIDError,
-    _normalize_task_id,
-    _extract_title,
-    _extract_status,
-    _extract_priority,
-    _extract_labels,
-    _extract_section,
-    _find_related_tests,
-    _build_validation_plan,
 )
 
 

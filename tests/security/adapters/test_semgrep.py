@@ -18,7 +18,6 @@ import pytest
 from flowspec_cli.security.adapters.semgrep import SemgrepAdapter
 from flowspec_cli.security.models import Confidence, Severity
 
-
 # Sample Semgrep JSON output for testing
 SAMPLE_SEMGREP_OUTPUT = {
     "results": [

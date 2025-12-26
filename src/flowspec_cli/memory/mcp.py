@@ -29,8 +29,8 @@ try:
 except ImportError:
     MCP_AVAILABLE = False
 
-from flowspec_cli.memory.store import TaskMemoryStore
 from flowspec_cli.memory.injector import ContextInjector
+from flowspec_cli.memory.store import TaskMemoryStore
 
 
 def register_memory_resources(

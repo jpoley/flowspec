@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 
-from flowspec_cli.security.fixer.models import Patch, FixResult
+from flowspec_cli.security.fixer.models import FixResult, Patch
 
 
 class ApplyStatus(Enum):

@@ -61,66 +61,65 @@ __all__ = [
 ]
 
 # Enums
-from .enums import (
-    ProviderType,
-    SyncOperation,
-    SyncDirection,
-    ResolutionResult,
+# Audit
+from .audit import (
+    AuditEvent,
+    AuditEventType,
+    AuditLogger,
+    AuditQuery,
+    AuditSeverity,
+    JSONFormatter,
+    MarkdownFormatter,
+    SLSAAttestation,
 )
 
 # Entities
 from .entities import (
-    RemoteUser,
-    RemoteTask,
-    TaskUpdate,
-    TaskCreate,
-    RemotePullRequest,
-    TaskHistoryEntry,
+    ConflictData,
     ConnectionStatus,
     RateLimitStatus,
-    TaskSyncOp,
-    ConflictData,
+    RemotePullRequest,
+    RemoteTask,
+    RemoteUser,
     SyncResult,
+    TaskCreate,
+    TaskHistoryEntry,
+    TaskSyncOp,
+    TaskUpdate,
 )
+from .enums import (
+    ProviderType,
+    ResolutionResult,
+    SyncDirection,
+    SyncOperation,
+)
+
+# Errors
+from .errors import (
+    AuthenticationError,
+    ConflictError,
+    InvalidTokenError,
+    PermissionDeniedError,
+    ProviderNotFoundError,
+    ProviderUnavailableError,
+    RateLimitError,
+    SatelliteError,
+    SecretStorageUnavailableError,
+    SyncCancelledError,
+    SyncError,
+    TaskNotFoundError,
+    TokenExpiredError,
+    ValidationError,
+)
+
+# Migration
+from .migration import MigrationError, TaskMigrator, cleanup_backups, migrate_tasks_cli
 
 # Provider ABC
 from .provider import RemoteProvider
 
 # Registry
-from .registry import ProviderRegistry, LazyProvider, PROVIDER_PATTERNS
-
-# Errors
-from .errors import (
-    SatelliteError,
-    AuthenticationError,
-    TokenExpiredError,
-    SecretStorageUnavailableError,
-    InvalidTokenError,
-    TaskNotFoundError,
-    PermissionDeniedError,
-    ConflictError,
-    SyncError,
-    SyncCancelledError,
-    RateLimitError,
-    ProviderUnavailableError,
-    ProviderNotFoundError,
-    ValidationError,
-)
-
-# Migration
-from .migration import TaskMigrator, MigrationError, migrate_tasks_cli, cleanup_backups
+from .registry import PROVIDER_PATTERNS, LazyProvider, ProviderRegistry
 
 # Secrets
-from .secrets import SecretManager, TokenRedactionFilter, ENV_VAR_NAMES, TOKEN_PATTERNS
-
-# Audit
-from .audit import (
-    AuditLogger,
-    AuditEvent,
-    AuditEventType,
-    AuditSeverity,
-    AuditQuery,
-    SLSAAttestation,
-    JSONFormatter,
-    MarkdownFormatter,
-)
+from .secrets import ENV_VAR_NAMES, TOKEN_PATTERNS, SecretManager, TokenRedactionFilter

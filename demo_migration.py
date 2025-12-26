@@ -2,7 +2,8 @@
 """Demo script showing task schema migration usage."""
 
 from pathlib import Path
-from flowspec_cli.satellite.migration import migrate_tasks_cli, TaskMigrator
+
+from flowspec_cli.satellite.migration import TaskMigrator, migrate_tasks_cli
 
 
 def demo_single_file():

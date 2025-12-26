@@ -3,8 +3,8 @@
 This module provides logging setup for hooks when FLOWSPEC_CAPTURE_HOOKS is enabled.
 """
 
-import os
 import logging
+import os
 from pathlib import Path
 
 

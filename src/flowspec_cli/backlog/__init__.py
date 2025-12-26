@@ -18,27 +18,27 @@ Example using shim (recommended for agents):
     >>> result = complete_task("task-123")  # Emits task.completed event
 """
 
-from .parser import TaskParser
-from .writer import BacklogWriter
-from .mapper import TaskMapper
 from .dependency_graph import DependencyGraphBuilder
+from .mapper import TaskMapper
+from .parser import TaskParser
 
 # Import shim functions for convenience
 from .shim import (
     ShimResult,
-    task_create,
-    task_edit,
-    task_view,
-    task_list,
-    task_search,
-    task_archive,
+    check_acceptance_criteria,
+    complete_task,
     # Convenience aliases
     create_task,
     edit_task,
-    complete_task,
     start_task,
-    check_acceptance_criteria,
+    task_archive,
+    task_create,
+    task_edit,
+    task_list,
+    task_search,
+    task_view,
 )
+from .writer import BacklogWriter
 
 __all__ = [
     # Legacy components

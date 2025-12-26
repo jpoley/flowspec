@@ -15,11 +15,9 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from flowspec_cli.security.models import Confidence, Finding, Location, Severity
-
-
 # Import MCP server module
 import flowspec_cli.security.mcp_server as mcp_server
+from flowspec_cli.security.models import Confidence, Finding, Location, Severity
 
 
 @pytest.fixture

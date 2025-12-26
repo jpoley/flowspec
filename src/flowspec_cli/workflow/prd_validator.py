@@ -30,7 +30,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-
 # HTML comment pattern for stripping demo/example content in comments
 HTML_COMMENT_PATTERN = re.compile(r"<!--.*?-->", re.DOTALL)
 

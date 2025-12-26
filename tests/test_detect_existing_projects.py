@@ -3,7 +3,8 @@
 import sys
 
 import pytest
-from flowspec_cli import is_existing_project, has_constitution, PROJECT_MARKERS
+
+from flowspec_cli import PROJECT_MARKERS, has_constitution, is_existing_project
 
 
 class TestIsExistingProject:

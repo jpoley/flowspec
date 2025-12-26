@@ -10,7 +10,6 @@ from pathlib import Path
 import pytest
 import yaml
 
-
 # Persona file paths
 SKILLS_DIR = Path(__file__).parent.parent.parent / ".claude" / "skills"
 PERSONAS = [

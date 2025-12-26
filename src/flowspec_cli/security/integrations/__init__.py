@@ -11,14 +11,14 @@ from flowspec_cli.security.integrations.backlog import (
     FindingTask,
     create_tasks_from_findings,
 )
-from flowspec_cli.security.integrations.hooks import (
-    PreCommitConfig,
-    generate_precommit_config,
-)
 from flowspec_cli.security.integrations.cicd import (
     CICDIntegration,
     generate_github_action,
     generate_gitlab_ci,
+)
+from flowspec_cli.security.integrations.hooks import (
+    PreCommitConfig,
+    generate_precommit_config,
 )
 
 __all__ = [

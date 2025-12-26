@@ -6,8 +6,9 @@ and workflow integration.
 """
 
 import re
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 @pytest.fixture

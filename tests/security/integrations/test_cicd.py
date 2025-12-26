@@ -1,8 +1,7 @@
 """Tests for CI/CD integration."""
 
-import yaml
-
 import pytest
+import yaml
 
 from flowspec_cli.security.integrations.cicd import (
     CICDIntegration,

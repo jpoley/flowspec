@@ -18,7 +18,7 @@ from typing import Any
 
 import yaml
 
-from .schema import HooksConfig, HOOKS_CONFIG_JSON_SCHEMA
+from .schema import HOOKS_CONFIG_JSON_SCHEMA, HooksConfig
 
 # Default locations to search for hooks.yaml
 DEFAULT_HOOKS_CONFIG_PATHS = [

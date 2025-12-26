@@ -1,9 +1,11 @@
 """Tests for constitution version command."""
 
-import pytest
 from pathlib import Path
+
+import pytest
 from typer.testing import CliRunner
-from flowspec_cli import app, CONSTITUTION_VERSION
+
+from flowspec_cli import CONSTITUTION_VERSION, app
 
 runner = CliRunner()
 

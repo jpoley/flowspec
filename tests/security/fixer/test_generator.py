@@ -3,10 +3,9 @@
 from pathlib import Path
 from unittest.mock import Mock
 
-
-from flowspec_cli.security.models import Finding, Location, Severity
-from flowspec_cli.security.fixer.models import FixStatus
 from flowspec_cli.security.fixer.generator import FixGenerator, FixGeneratorConfig
+from flowspec_cli.security.fixer.models import FixStatus
+from flowspec_cli.security.models import Finding, Location, Severity
 
 
 def make_finding(

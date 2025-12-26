@@ -1,6 +1,7 @@
 """Tests for LifecycleManager component."""
 
 import pytest
+
 from flowspec_cli.memory import TaskMemoryStore
 from flowspec_cli.memory.lifecycle import LifecycleManager
 

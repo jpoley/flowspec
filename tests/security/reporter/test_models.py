@@ -5,12 +5,12 @@ from datetime import datetime
 import pytest
 
 from flowspec_cli.security.reporter.models import (
-    SecurityPosture,
-    ComplianceStatus,
-    OWASPCategory,
-    FindingSummary,
-    Remediation,
     AuditReport,
+    ComplianceStatus,
+    FindingSummary,
+    OWASPCategory,
+    Remediation,
+    SecurityPosture,
 )
 
 

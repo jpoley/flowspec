@@ -5,9 +5,10 @@ Mock task DESCRIPTIONS contain "MOCK" to distinguish from real tasks.
 Task IDs use T001 format for parser regex compatibility.
 """
 
-import pytest
 from pathlib import Path
 from textwrap import dedent
+
+import pytest
 
 
 @pytest.fixture

@@ -2,9 +2,10 @@
 
 import json
 from pathlib import Path
+
 import pytest
 
-from flowspec_cli.quality import QualityScorer, QualityConfig, QualityResult
+from flowspec_cli.quality import QualityConfig, QualityResult, QualityScorer
 
 
 @pytest.fixture

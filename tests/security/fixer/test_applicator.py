@@ -1,7 +1,8 @@
 """Tests for PatchApplicator."""
 
 from pathlib import Path
-from unittest.mock import patch as mock_patch, MagicMock
+from unittest.mock import MagicMock
+from unittest.mock import patch as mock_patch
 
 import pytest
 

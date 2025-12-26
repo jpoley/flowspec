@@ -12,10 +12,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from flowspec_cli.backlog.shim import task_edit, task_view
-from flowspec_cli.hooks.events import Event
 from flowspec_cli.hooks.emitter import emit_event as _emit_event
+from flowspec_cli.hooks.events import Event
 from flowspec_cli.workflow.config import WorkflowConfig
-from flowspec_cli.workflow.state_guard import WorkflowStateGuard
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +93,6 @@ class MetaWorkflowOrchestrator:
             config: Workflow configuration instance (defaults to singleton)
         """
         self.config = config or WorkflowConfig()
-        self.state_guard = WorkflowStateGuard(self.config)
         self.workspace_root = Path.cwd()
 
     def get_meta_workflow(self, meta_name: str) -> Dict[str, Any]:
@@ -110,7 +108,7 @@ class MetaWorkflowOrchestrator:
         Raises:
             ValueError: If meta-workflow not found
         """
-        meta_workflows = self.config.config.get("meta_workflows", {})
+        meta_workflows = self.config._data.get("meta_workflows", {})
         if meta_name not in meta_workflows:
             available = ", ".join(meta_workflows.keys())
             raise ValueError(
@@ -619,7 +617,7 @@ class MetaWorkflowOrchestrator:
             >>> for meta in orchestrator.list_meta_workflows():
             ...     print(f"{meta['name']}: {meta['summary']}")
         """
-        meta_workflows = self.config.config.get("meta_workflows", {})
+        meta_workflows = self.config._data.get("meta_workflows", {})
         return [
             {
                 "name": name,

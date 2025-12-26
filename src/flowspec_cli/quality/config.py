@@ -1,9 +1,9 @@
 """Configuration loading for quality assessment."""
 
 import json
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Optional
-from dataclasses import dataclass, field
 
 
 @dataclass

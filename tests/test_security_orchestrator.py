@@ -12,15 +12,14 @@ from unittest.mock import Mock
 
 import pytest
 
-from flowspec_cli.security.orchestrator import ScannerOrchestrator
 from flowspec_cli.security.adapters.base import ScannerAdapter
 from flowspec_cli.security.models import (
+    Confidence,
     Finding,
     Location,
     Severity,
-    Confidence,
 )
-
+from flowspec_cli.security.orchestrator import ScannerOrchestrator
 
 # ============================================================================
 # Fixtures

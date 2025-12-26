@@ -12,6 +12,7 @@ Requirements:
 import json
 import math
 from pathlib import Path
+
 from PIL import Image, ImageDraw, ImageFont
 
 # Configuration

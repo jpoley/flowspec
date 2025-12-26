@@ -1,9 +1,10 @@
 """Unit tests for TaskParser."""
 
-import pytest
 from textwrap import dedent
 
-from flowspec_cli.backlog.parser import TaskParser, Task, parse_tasks
+import pytest
+
+from flowspec_cli.backlog.parser import Task, TaskParser, parse_tasks
 
 
 class TestTaskParser:

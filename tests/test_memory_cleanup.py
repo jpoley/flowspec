@@ -1,8 +1,10 @@
 """Tests for CleanupManager component."""
 
-import pytest
 from datetime import datetime, timedelta
 from pathlib import Path
+
+import pytest
+
 from flowspec_cli.memory import TaskMemoryStore
 from flowspec_cli.memory.cleanup import CleanupManager
 

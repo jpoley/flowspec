@@ -7,6 +7,7 @@ Generates Backlog.md format task files from parsed flowspec tasks.
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+
 from .parser import Task
 
 

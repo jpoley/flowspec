@@ -8,9 +8,9 @@ import pytest
 
 from flowspec_cli.security.tools.manager import (
     DANGEROUS_PATH_CHARS,
-    ToolManager,
     VERSION_PATTERN,
     VERSION_SEARCH_PATTERN,
+    ToolManager,
 )
 from flowspec_cli.security.tools.models import (
     InstallMethod,

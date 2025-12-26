@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Iterator, List, Optional
 
-from .enums import ProviderType
 from .entities import (
     ConnectionStatus,
     RateLimitStatus,
@@ -15,6 +14,7 @@ from .entities import (
     TaskHistoryEntry,
     TaskUpdate,
 )
+from .enums import ProviderType
 
 
 class RemoteProvider(ABC):

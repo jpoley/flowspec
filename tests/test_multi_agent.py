@@ -1,6 +1,6 @@
 """Tests for multi-agent installation support."""
 
-from flowspec_cli import parse_agent_list, AGENT_CONFIG
+from flowspec_cli import AGENT_CONFIG, parse_agent_list
 
 
 class TestParseAgentList:
@@ -245,6 +245,7 @@ class TestMultiAgentDownloadAndExtract:
     def test_extract_zip_to_project_single_agent(self, tmp_path):
         """Test ZIP extraction for single agent."""
         import zipfile
+
         from flowspec_cli import _extract_zip_to_project
 
         # Create a mock ZIP with agent-specific directory
@@ -265,6 +266,7 @@ class TestMultiAgentDownloadAndExtract:
     def test_extract_zip_to_project_with_shared_directories(self, tmp_path):
         """Test ZIP extraction handles shared directories correctly."""
         import zipfile
+
         from flowspec_cli import _extract_zip_to_project
 
         # Create first agent's ZIP with shared .flowspec/
@@ -296,6 +298,7 @@ class TestMultiAgentDownloadAndExtract:
     def test_extract_zip_with_nested_directory(self, tmp_path):
         """Test ZIP extraction handles nested directory structure."""
         import zipfile
+
         from flowspec_cli import _extract_zip_to_project
 
         # Create ZIP with nested directory (github/spec-kit style)
@@ -321,6 +324,7 @@ class TestMultiAgentDownloadAndExtract:
     ):
         """Test that multi-agent installation creates directories for all agents."""
         import zipfile
+
         from flowspec_cli import download_and_extract_two_stage
 
         # Create mock ZIPs for base and extension (2 agents)
@@ -411,6 +415,7 @@ class TestMultiAgentDownloadAndExtract:
     ):
         """Test that failure during second agent installation leaves first agent intact."""
         import zipfile
+
         from flowspec_cli import download_and_extract_two_stage
 
         # Create mock ZIP for first agent

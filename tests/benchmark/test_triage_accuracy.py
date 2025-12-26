@@ -12,6 +12,7 @@ from pathlib import Path
 
 import pytest
 
+from flowspec_cli.security.models import Severity
 from scripts.benchmark_triage import (
     BenchmarkMetrics,
     ConfusionMatrix,
@@ -19,7 +20,6 @@ from scripts.benchmark_triage import (
     load_benchmark_dataset,
     run_benchmark,
 )
-from flowspec_cli.security.models import Severity
 
 
 class TestBenchmarkDataset:

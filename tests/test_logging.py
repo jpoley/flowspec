@@ -27,7 +27,6 @@ from flowspec_cli.logging.schemas import (
     LogSource,
 )
 
-
 # Fixtures
 
 

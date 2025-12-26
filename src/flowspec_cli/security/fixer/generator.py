@@ -13,16 +13,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
-from flowspec_cli.security.models import Finding
 from flowspec_cli.security.fixer.models import (
     FixResult,
     FixStatus,
     Patch,
 )
 from flowspec_cli.security.fixer.patterns import (
-    FixPatternLibrary,
     DEFAULT_PATTERN_LIBRARY,
+    FixPatternLibrary,
 )
+from flowspec_cli.security.models import Finding
 
 
 class LLMClient(Protocol):

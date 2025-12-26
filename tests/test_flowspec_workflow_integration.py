@@ -14,16 +14,16 @@ verify that commands properly validate states before execution and
 update states after successful completion.
 """
 
-import pytest
 from pathlib import Path
 from typing import Optional
+
+import pytest
 import yaml
 
 from flowspec_cli.workflow.state_guard import (
-    WorkflowStateGuard,
     StateCheckResult,
+    WorkflowStateGuard,
 )
-
 
 # =============================================================================
 # Test Fixtures

@@ -11,9 +11,9 @@ from flowspec_cli.security.config.loader import (
     load_config,
 )
 from flowspec_cli.security.config.models import (
-    SecurityConfig,
     FailOnSeverity,
     ScannerType,
+    SecurityConfig,
 )
 
 

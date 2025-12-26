@@ -4,8 +4,9 @@ This test module verifies that the operate command correctly integrates
 with backlog.md CLI for operational task management.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 @pytest.fixture

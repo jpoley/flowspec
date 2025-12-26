@@ -4,8 +4,9 @@ This test module verifies that the /flow:plan command correctly integrates
 with backlog.md CLI for architecture and infrastructure task management.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 @pytest.fixture

@@ -7,8 +7,9 @@ Note: We test the resource registration and business logic separately,
 as testing actual MCP resource invocation requires a running MCP server.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 # Check if MCP is available
 try:
@@ -18,8 +19,8 @@ try:
 except ImportError:
     MCP_AVAILABLE = False
 
-from flowspec_cli.memory.store import TaskMemoryStore
 from flowspec_cli.memory.injector import ContextInjector
+from flowspec_cli.memory.store import TaskMemoryStore
 
 # Skip all tests if MCP not available
 pytestmark = pytest.mark.skipif(not MCP_AVAILABLE, reason="MCP not installed")

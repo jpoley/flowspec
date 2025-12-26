@@ -4,8 +4,9 @@ This test module verifies that all flowspec commands (research, validate, specif
 correctly integrate with backlog.md CLI for comprehensive task management.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 @pytest.fixture

@@ -1,10 +1,11 @@
 """Unit tests for BacklogWriter."""
 
-import pytest
 from datetime import datetime
 
-from flowspec_cli.backlog.writer import BacklogWriter
+import pytest
+
 from flowspec_cli.backlog.parser import Task
+from flowspec_cli.backlog.writer import BacklogWriter
 
 
 class TestBacklogWriter:

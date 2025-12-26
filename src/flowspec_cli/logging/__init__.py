@@ -9,7 +9,7 @@ Logs are always appended in JSONL format.
 """
 
 from flowspec_cli.logging.config import LoggingConfig, get_config
-from flowspec_cli.logging.decision_logger import DecisionLogger, Decision
+from flowspec_cli.logging.decision_logger import Decision, DecisionLogger
 from flowspec_cli.logging.event_logger import EventLogger, LogEvent
 
 __all__ = [

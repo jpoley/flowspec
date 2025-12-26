@@ -12,6 +12,7 @@ Tests cover:
 from textwrap import dedent
 
 import pytest
+
 from flowspec_cli import (
     check_constitution_tier,
     count_validation_markers,

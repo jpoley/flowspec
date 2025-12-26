@@ -3,7 +3,6 @@
 import json
 from pathlib import Path
 
-
 from flowspec_cli.validation_agents import (
     QAAgentDispatcher,
     QAReport,

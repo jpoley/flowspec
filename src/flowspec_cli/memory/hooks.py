@@ -9,8 +9,8 @@ management layer, ensuring memory operations happen automatically on task
 state transitions.
 """
 
-from typing import Optional
 import logging
+from typing import Optional
 
 from .lifecycle import LifecycleManager
 

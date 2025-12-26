@@ -1,9 +1,9 @@
 """Individual assessment functions for spec quality dimensions."""
 
 import re
-from pathlib import Path
-from typing import List, Dict, Any
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List
 
 
 @dataclass

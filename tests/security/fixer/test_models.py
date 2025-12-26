@@ -5,10 +5,10 @@ from pathlib import Path
 import pytest
 
 from flowspec_cli.security.fixer.models import (
+    FixPattern,
     FixResult,
     FixStatus,
     Patch,
-    FixPattern,
 )
 
 

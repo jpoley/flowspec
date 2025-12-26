@@ -10,22 +10,22 @@ Example:
     FailOnSeverity.HIGH
 """
 
-from flowspec_cli.security.config.models import (
-    SecurityConfig,
-    ScannerType,
-    FailOnSeverity,
-    ScannerConfig,
-    SemgrepConfig,
-    CodeQLConfig,
-    BanditConfig,
-    TriageConfig,
-    ExclusionConfig,
-    ReportingConfig,
-)
 from flowspec_cli.security.config.loader import (
     ConfigLoader,
     ConfigLoadError,
     load_config,
+)
+from flowspec_cli.security.config.models import (
+    BanditConfig,
+    CodeQLConfig,
+    ExclusionConfig,
+    FailOnSeverity,
+    ReportingConfig,
+    ScannerConfig,
+    ScannerType,
+    SecurityConfig,
+    SemgrepConfig,
+    TriageConfig,
 )
 from flowspec_cli.security.config.schema import (
     ConfigSchema,

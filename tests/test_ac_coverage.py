@@ -14,9 +14,9 @@ from textwrap import dedent
 import pytest
 
 from flowspec_cli.workflow.ac_coverage import (
+    AcceptanceCriterion,
     ACCoverageReport,
     ACTestScanner,
-    AcceptanceCriterion,
     CoverageSummary,
     PRDScanner,
     generate_coverage_report,

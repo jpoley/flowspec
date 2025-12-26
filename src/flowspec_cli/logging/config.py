@@ -5,8 +5,8 @@ or user project mode (using flowspec in another project), and routes logs
 to the appropriate directories.
 """
 
-import os
 import logging
+import os
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path

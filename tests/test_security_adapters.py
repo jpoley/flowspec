@@ -14,13 +14,12 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from flowspec_cli.security.adapters.semgrep import SemgrepAdapter
 from flowspec_cli.security.adapters.discovery import ToolDiscovery
+from flowspec_cli.security.adapters.semgrep import SemgrepAdapter
 from flowspec_cli.security.models import (
-    Severity,
     Confidence,
+    Severity,
 )
-
 
 # ============================================================================
 # Fixtures
