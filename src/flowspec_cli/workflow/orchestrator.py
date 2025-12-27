@@ -16,6 +16,7 @@ from typing import Any, Dict, List, Optional
 import yaml
 
 from flowspec_cli.workflow.config import WorkflowConfig
+from flowspec_cli.workflow.dispatcher import WorkflowDispatcher
 from flowspec_cli.workflow.rigor import RigorEnforcer
 
 logger = logging.getLogger(__name__)
@@ -71,6 +72,7 @@ class WorkflowOrchestrator:
             self.workflow_config = None
 
         self.rigor = RigorEnforcer(workspace_root, session_id)
+        self.dispatcher = WorkflowDispatcher(workspace_root)
 
         # Load custom workflows from config
         self.custom_workflows = self._load_custom_workflows()
@@ -379,7 +381,7 @@ class WorkflowOrchestrator:
             logger.warning(f"No workflow config available")
             return
 
-        workflows = self.workflow_config.config.get("workflows", {})
+        workflows = self.workflow_config._data.get("workflows", {})
 
         if workflow_name not in workflows:
             raise ValueError(f"Workflow '{workflow_name}' not found in configuration")
@@ -389,38 +391,38 @@ class WorkflowOrchestrator:
 
         logger.info(f"Invoking workflow '{workflow_name}' via command '{command}'")
 
-        # NOTE: In a full implementation, this would:
-        # 1. Import and call the actual workflow module
-        # 2. Pass necessary parameters
-        # 3. Handle workflow-specific logic
-        #
-        # For MVP, we log that we would invoke it, but the infrastructure is REAL
-        # The calling code (CLI) would need to actually dispatch to workflow handlers
-        #
-        # Example of what full implementation would look like:
-        # from flowspec_cli.workflows import specify, plan, implement, validate
-        # workflow_handlers = {
-        #     "specify": specify.execute,
-        #     "plan": plan.execute,
-        #     "implement": implement.execute,
-        #     "validate": validate.execute,
-        # }
-        # handler = workflow_handlers.get(workflow_name)
-        # if handler:
-        #     handler(self.workspace_root, ...)
-        # else:
-        #     raise ValueError(f"No handler for workflow '{workflow_name}'")
+        # Dispatch workflow execution
+        try:
+            result = self.dispatcher.dispatch(workflow_name, context={})
 
-        # For now, we mark this as a point where the actual workflow would be called
-        self.rigor.log_decision(
-            decision="WORKFLOW_INVOCATION_POINT",
-            context=f"Would invoke workflow '{workflow_name}' via command '{command}'",
-            reasoning="Real workflow invocation would happen here in full implementation",
-            outcome="Integration point identified for CLI dispatch",
-        )
+            # Log the dispatch result
+            self.rigor.log_decision(
+                decision="WORKFLOW_DISPATCHED",
+                context=f"Dispatched workflow '{workflow_name}' -> '{result['command']}'",
+                reasoning=f"Execution mode: {result['execution_mode']}",
+                outcome=result["message"],
+            )
 
-        # Actual invocation would happen here
-        # This is the hook point for integrating with existing /flow commands
+            # Log next action for agent execution
+            self.rigor.log_event(
+                event_type="WORKFLOW_DISPATCH_READY",
+                event=f"Workflow '{workflow_name}' dispatched",
+                workflow=workflow_name,
+                details={
+                    "command": result["command"],
+                    "next_action": result["next_action"],
+                    "execution_mode": result["execution_mode"],
+                },
+            )
+
+            # For agent-based workflows, the actual execution happens via Claude Code
+            # The dispatcher has prepared the execution metadata
+            # In a Claude Code context, this would trigger a Skill invocation
+            logger.info(f"Next action: {result['next_action']}")
+
+        except ValueError as e:
+            logger.error(f"Dispatch failed: {e}")
+            raise RuntimeError(f"Failed to dispatch workflow '{workflow_name}': {e}")
 
     def list_custom_workflows(self) -> List[str]:
         """
