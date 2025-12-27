@@ -37,7 +37,14 @@ RUN apk add --no-cache \
     jq \
     tar \
     gzip \
-    libc-utils
+    libc-utils \
+    # Developer tools
+    tmux \
+    btop \
+    fzf \
+    neovim \
+    lazygit \
+    asciinema
 
 # Upgrade npm to latest version to fix vulnerabilities in npm's internal dependencies
 # - CVE-2025-64756: glob@11.0.3 -> 11.1.0 (command injection in npm's bundled glob)
@@ -83,6 +90,9 @@ ENV PATH="/home/vscode/.local/bin:${PNPM_HOME}:/usr/local/bin:${PATH}"
 # Install uv (installs to ~/.local/bin)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
+# Install oh-my-posh (prompt theme engine)
+RUN curl -s https://ohmyposh.dev/install.sh | bash -s -- -d /home/vscode/.local/bin
+
 # Configure pnpm global bin directory
 RUN mkdir -p "$PNPM_HOME" && pnpm config set global-bin-dir "$PNPM_HOME"
 
@@ -116,8 +126,11 @@ RUN mkdir -p /home/vscode/.config/claude \
     && echo 'export PNPM_HOME="/home/vscode/.local/share/pnpm"' >> /home/vscode/.zshenv \
     && echo 'export PATH="/home/vscode/.local/bin:$PNPM_HOME:/usr/local/bin:$PATH"' >> /home/vscode/.zshenv
 
-# Create .zshrc with YOLO aliases (commented out by default for safety)
+# Create .zshrc with oh-my-posh and aliases
 RUN touch /home/vscode/.zshrc \
+    && echo '' >> /home/vscode/.zshrc \
+    && echo '# Oh My Posh prompt initialization' >> /home/vscode/.zshrc \
+    && echo 'eval "$(oh-my-posh init zsh --config ~/.cache/oh-my-posh/themes/agnoster.omp.json 2>/dev/null || echo "")"' >> /home/vscode/.zshrc \
     && echo '' >> /home/vscode/.zshrc \
     && echo '# AI coding agent YOLO aliases (uncomment at your own risk)' >> /home/vscode/.zshrc \
     && echo '# alias claude-yolo="claude --dangerously-skip-permissions"' >> /home/vscode/.zshrc \
@@ -141,6 +154,12 @@ RUN echo "=== Installation Verification ===" \
     && echo "pnpm: $(pnpm --version)" \
     && echo "uv: $(/home/vscode/.local/bin/uv --version)" \
     && echo "gh: $(gh --version | head -1)" \
+    && echo "oh-my-posh: $(oh-my-posh --version)" \
+    && echo "tmux: $(tmux -V)" \
+    && echo "nvim: $(nvim --version | head -1)" \
+    && echo "lazygit: $(lazygit --version | head -1)" \
+    && echo "fzf: $(fzf --version)" \
+    && echo "btop: $(btop --version 2>&1 | head -1 || echo 'installed')" \
     && echo "PATH: $PATH"
 
 # Default command
