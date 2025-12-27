@@ -424,23 +424,6 @@ transitions:
         path: "./docs/security/{feature}-security.md"
     validation: "NONE"
 
-  - name: "operate"
-    from: "Validated"
-    to: "Deployed"
-    via: "operate"
-    description: "Deployed to production"
-    input_artifacts:
-      - type: "qa_report"
-        path: "./docs/qa/{feature}-qa-report.md"
-        required: true
-      - type: "security_report"
-        path: "./docs/security/{feature}-security.md"
-        required: true
-    output_artifacts:
-      - type: "deployment_manifest"
-        path: "./deploy/"
-    validation: "NONE"
-
   - name: "submit_pr"
     from: "Validated"
     to: "Validated"
@@ -467,13 +450,6 @@ transitions:
     validation: "PULL_REQUEST"
 
   # === Terminal Transitions ===
-
-  - name: "complete_from_deployed"
-    from: "Deployed"
-    to: "Done"
-    via: "manual"
-    description: "Production deployment confirmed successful"
-    validation: "NONE"
 
   - name: "complete_from_validated"
     from: "Validated"
@@ -503,13 +479,6 @@ transitions:
     to: "In Implementation"
     via: "rework"
     description: "Rework needed based on validation findings"
-    validation: "NONE"
-
-  - name: "rollback"
-    from: "Deployed"
-    to: "Validated"
-    via: "rollback"
-    description: "Rollback from production due to issues"
     validation: "NONE"
 
 # ==============================================================================
@@ -609,10 +578,10 @@ custom_workflows:
 
 metadata:
   schema_version: "2.0"
-  last_updated: "2025-12-23"
-  state_count: 9
-  workflow_count: 8
-  agent_count: 17
+  last_updated: "2025-12-26"
+  state_count: 8  # Removed "Deployed" (outer loop)
+  workflow_count: 7  # Removed "operate", added custom workflows support
+  agent_count: 16  # Removed sre-agent from workflows (outer loop)
   inner_loop_agent_count: 5
-  outer_loop_agent_count: 12
-  transition_count: 16
+  outer_loop_agent_count: 12  # SRE moved to outer loop tools
+  transition_count: 12  # Removed Deployed state and related transitions (operate, complete_from_deployed, rollback)
