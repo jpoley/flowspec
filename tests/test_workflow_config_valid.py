@@ -71,7 +71,7 @@ class TestStates:
     """Test the states configuration."""
 
     def test_has_all_required_states(self, workflow_config: dict[str, Any]) -> None:
-        """Verify all 9 required states are defined (including Assessed)."""
+        """Verify all 8 required states are defined (Deployed removed - outer loop)."""
         expected_states = [
             "To Do",
             "Assessed",
@@ -80,11 +80,10 @@ class TestStates:
             "Planned",
             "In Implementation",
             "Validated",
-            "Deployed",
             "Done",
         ]
         states = workflow_config["states"]
-        assert len(states) == 9, f"Expected 9 states, got {len(states)}"
+        assert len(states) == 8, f"Expected 8 states, got {len(states)}"
         for state in expected_states:
             assert state in states, f"Missing state: {state}"
 
@@ -107,8 +106,8 @@ class TestStates:
 class TestWorkflows:
     """Test the workflows configuration."""
 
-    def test_has_all_seven_workflows(self, workflow_config: dict[str, Any]) -> None:
-        """Verify all 7 /flowspec workflows are defined (including assess)."""
+    def test_has_all_six_workflows(self, workflow_config: dict[str, Any]) -> None:
+        """Verify all 6 /flowspec workflows are defined (operate removed - outer loop)."""
         expected_workflows = [
             "assess",
             "specify",
@@ -116,11 +115,11 @@ class TestWorkflows:
             "plan",
             "implement",
             "validate",
-            "operate",
         ]
         workflows = workflow_config["workflows"]
-        assert len(workflows) >= 7, (
-            f"Expected at least 7 workflows, got {len(workflows)}"
+        # We have 6 core workflows + submit-n-watch-pr = 7 total
+        assert len(workflows) >= 6, (
+            f"Expected at least 6 core workflows, got {len(workflows)}"
         )
         for workflow in expected_workflows:
             assert workflow in workflows, f"Missing workflow: {workflow}"
@@ -223,11 +222,10 @@ class TestAgentAssignments:
         assert "tech-writer" in agent_names
         assert "release-manager" in agent_names
 
-    def test_operate_has_sre_agent(self, workflow_config: dict[str, Any]) -> None:
-        """Verify operate workflow uses SRE agent."""
-        agents = workflow_config["workflows"]["operate"]["agents"]
-        agent_names = [a["name"] for a in agents]
-        assert "sre-agent" in agent_names
+    # NOTE: test_operate_has_sre_agent REMOVED
+    # /flow:operate was removed - it's outer loop (Promote/Observe/Operate/Feedback)
+    # Outer loop belongs to falcondev, not flowspec
+    # See: build-docs/simplify/flowspec-loop.md
 
 
 class TestTransitions:
@@ -266,9 +264,10 @@ class TestTransitions:
         for t in transitions:
             adj[t["from"]].append(t["to"])
 
-        # Verify primary path exists
+        # Verify primary path exists (INNER LOOP ONLY)
         # To Do -> Assessed -> Specified -> (Researched or Planned) -> Planned
-        # -> In Implementation -> Validated -> Deployed -> Done
+        # -> In Implementation -> Validated -> Done
+        # Note: "Deployed" state removed - outer loop (belongs to falcondev)
         assert "Assessed" in adj["To Do"], "No transition from 'To Do' to 'Assessed'"
         assert "Specified" in adj["Assessed"], (
             "No transition from 'Assessed' to 'Specified'"
@@ -285,8 +284,7 @@ class TestTransitions:
         assert "Validated" in adj["In Implementation"], (
             "No transition from 'In Implementation'"
         )
-        assert "Deployed" in adj["Validated"], "No transition from 'Validated'"
-        assert "Done" in adj["Deployed"], "No transition from 'Deployed'"
+        assert "Done" in adj["Validated"], "No transition from 'Validated' to 'Done'"
 
 
 class TestStateReachability:
