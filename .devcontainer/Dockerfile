@@ -123,6 +123,9 @@ RUN cd "${PNPM_HOME}" && pnpm update semver --latest 2>/dev/null || echo "pnpm s
 RUN /home/vscode/.local/bin/uv tool install ruff \
     && /home/vscode/.local/bin/uv tool install pytest
 
+# Install flowspec CLI from GitHub
+RUN /home/vscode/.local/bin/uv tool install git+https://github.com/jpoley/flowspec.git || echo "flowspec install skipped"
+
 # Create shell configuration for PATH
 RUN mkdir -p /home/vscode/.config/claude \
     && echo '# flowspec Agents PATH setup' > /home/vscode/.zshenv \
@@ -156,6 +159,7 @@ RUN echo "=== Installation Verification ===" \
     && echo "npm: $(npm --version)" \
     && echo "pnpm: $(pnpm --version)" \
     && echo "uv: $(/home/vscode/.local/bin/uv --version)" \
+    && echo "flowspec: $(flowspec --version 2>&1 || echo 'not installed')" \
     && echo "gh: $(gh --version | head -1)" \
     && echo "oh-my-posh: $(oh-my-posh --version)" \
     && echo "tmux: $(tmux -V)" \
