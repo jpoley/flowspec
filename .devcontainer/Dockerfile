@@ -24,6 +24,7 @@ FROM dhi.io/python:3.13-alpine3.22-dev
 # DHI dev image provides: gcc, make, libc-dev, libffi-dev, linux-headers,
 # openssl-dev, git, and other build essentials
 # We add: nodejs/npm for AI CLI tools, shell utilities
+# IMPORTANT: libc-utils is required for VS Code Server (provides getconf, getent)
 RUN apk add --no-cache \
     bash \
     git \
@@ -35,7 +36,8 @@ RUN apk add --no-cache \
     sudo \
     jq \
     tar \
-    gzip
+    gzip \
+    libc-utils
 
 # Upgrade npm to latest version to fix vulnerabilities in npm's internal dependencies
 # - CVE-2025-64756: glob@11.0.3 -> 11.1.0 (command injection in npm's bundled glob)
@@ -86,10 +88,14 @@ RUN mkdir -p "$PNPM_HOME" && pnpm config set global-bin-dir "$PNPM_HOME"
 
 # Install AI coding assistant CLIs
 # Note: These are best-effort installs; some may not be available in all regions
+# pnpm v10+ blocks build scripts by default; we allow them for native modules
 RUN pnpm install -g @anthropic-ai/claude-code || echo "claude-code install skipped" \
-    && pnpm install -g @githubnext/github-copilot-cli || echo "copilot-cli install skipped" \
+    && pnpm install -g @github/copilot || echo "copilot-cli install skipped" \
     && pnpm install -g @openai/codex || echo "codex install skipped" \
-    && pnpm install -g @google/gemini-cli || echo "gemini-cli install skipped"
+    && pnpm install -g @google/gemini-cli || echo "gemini-cli install skipped" \
+    && pnpm install -g opencode-ai || echo "opencode install skipped" \
+    && pnpm approve-builds -g node-pty protobufjs tree-sitter-bash 2>/dev/null || true \
+    && pnpm rebuild -g 2>/dev/null || true
 
 # Install task management tools
 RUN pnpm install -g backlog.md || echo "backlog.md install skipped"

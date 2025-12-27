@@ -88,13 +88,16 @@ echo "   Installing Claude Code CLI..."
 pnpm install -g @anthropic-ai/claude-code || echo "   Warning: claude-code install failed"
 
 echo "   Installing GitHub Copilot CLI..."
-pnpm install -g @githubnext/github-copilot-cli || echo "   Warning: copilot install failed"
+pnpm install -g @github/copilot || echo "   Warning: copilot install failed"
 
 echo "   Installing OpenAI Codex CLI..."
 pnpm install -g @openai/codex || echo "   Warning: codex install failed"
 
 echo "   Installing Google Gemini CLI..."
 pnpm install -g @google/gemini-cli || echo "   Warning: gemini-cli install failed"
+
+echo "   Installing OpenCode CLI..."
+pnpm install -g opencode-ai || echo "   Warning: opencode install failed"
 
 echo "   Done."
 
@@ -218,9 +221,10 @@ echo ""
 echo "Installed CLI tools:"
 command -v flowspec >/dev/null 2>&1 && echo "  - specify:     $(flowspec --version 2>&1 || echo 'installed')" || echo "  - specify:     NOT FOUND"
 command -v claude >/dev/null 2>&1 && echo "  - claude:      $(claude --version 2>&1 || echo 'installed')" || echo "  - claude:      NOT FOUND"
-command -v github-copilot-cli >/dev/null 2>&1 && echo "  - copilot:     installed" || echo "  - copilot:     NOT FOUND"
+command -v github-copilot >/dev/null 2>&1 && echo "  - copilot:     installed" || echo "  - copilot:     NOT FOUND"
 command -v codex >/dev/null 2>&1 && echo "  - codex:       installed" || echo "  - codex:       NOT FOUND"
 command -v gemini >/dev/null 2>&1 && echo "  - gemini:      installed" || echo "  - gemini:      NOT FOUND"
+command -v opencode >/dev/null 2>&1 && echo "  - opencode:    installed" || echo "  - opencode:    NOT FOUND"
 command -v backlog >/dev/null 2>&1 && echo "  - backlog:     $(backlog --version 2>&1 || echo 'installed')" || echo "  - backlog:     NOT FOUND"
 
 echo ""
