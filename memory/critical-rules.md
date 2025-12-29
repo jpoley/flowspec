@@ -136,7 +136,7 @@ When a PR completes a backlog task, update the task **before or with** PR creati
 
 ```bash
 # Mark ACs complete and set status with PR reference
-backlog task edit <id> --check-ac 1 --check-ac 2 -s Done \
+backlog task edit <task-id> --check-ac 1 --check-ac 2 -s Done \
   --notes $'Completed via PR #<number>\n\nStatus: Pending CI verification'
 ```
 
@@ -213,30 +213,30 @@ Configure in `.flowspec/rigor-config.yml` or accept defaults (all BLOCKING rules
 | SETUP-002 | Specify | Dependencies must be mapped |
 | EXEC-001 | Implement | Git worktree required |
 | EXEC-003 | Implement | Decision logging required |
-| VALID-005 | Validate | All acceptance criteria checked |
-| PR-001 | PR | DCO sign-off required on all commits |
+| VALID-005 | Validate | Acceptance Criteria Met |
+| PR-001 | PR | DCO Sign-off Required |
 
 ### Common Violations and Fixes
 
 ```bash
 # SETUP-001: Missing implementation plan
-backlog task edit <id> --plan $'1. Research\n2. Implement\n3. Test'
+backlog task edit <task-id> --plan $'1. Research\n2. Implement\n3. Test'
 
 # EXEC-001: Git worktree required
-BRANCH="$(hostname -s | tr '[:upper:]' '[:lower:]')/task-<id>/feature-slug"
+BRANCH="$(hostname -s | tr '[:upper:]' '[:lower:]')/task-<task-id>/feature-slug"
 git worktree add "../$(basename $BRANCH)" "$BRANCH"
 cd "../$(basename $BRANCH)"
 
 # EXEC-003: Decision logging required
 ./scripts/bash/rigor-decision-log.sh \
-  --task task-<id> \
+  --task task-<task-id> \
   --phase execution \
   --decision "Description of decision" \
   --rationale "Why this choice" \
   --actor "@developer"
 
 # VALID-005: Unchecked acceptance criteria
-backlog task edit <id> --check-ac 1 --check-ac 2
+backlog task edit <task-id> --check-ac 1 --check-ac 2
 ```
 
 ### Override (Emergency Only)
