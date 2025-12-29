@@ -1,11 +1,11 @@
 ---
 id: task-310
 title: 'Fix upgrade-tools: Reports success but doesn''t actually upgrade'
-status: To Do
+status: Done
 assignee:
   - '@adare'
 created_date: '2025-12-08 01:40'
-updated_date: '2025-12-15 01:48'
+updated_date: '2025-12-29 12:12'
 labels:
   - bug
   - cli
@@ -86,9 +86,15 @@ git_url = f"{git_url}@v{install_version}"
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 When Available > Current version, `specify upgrade-tools` actually installs the new version
-- [ ] #2 Status message shows correct 'Upgraded from X to Y' (not same version twice)
-- [ ] #3 Version detection after install correctly reads new version
-- [ ] #4 Works for both targeted (--version X.X.X) and latest upgrades
-- [ ] #5 Unit tests cover the upgrade flow scenarios
+- [x] #1 When Available > Current version, `specify upgrade-tools` actually installs the new version
+- [x] #2 Status message shows correct 'Upgraded from X to Y' (not same version twice)
+- [x] #3 Version detection after install correctly reads new version
+- [x] #4 Works for both targeted (--version X.X.X) and latest upgrades
+- [x] #5 Unit tests cover the upgrade flow scenarios
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+All subtasks (310.01, 310.02, 310.03) verified complete - fix was already implemented
+<!-- SECTION:NOTES:END -->

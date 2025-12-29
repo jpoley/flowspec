@@ -1,11 +1,11 @@
 ---
 id: task-310.03
 title: Add unit tests for upgrade-tools scenarios
-status: To Do
+status: Done
 assignee:
   - '@galway'
 created_date: '2025-12-08 01:41'
-updated_date: '2025-12-15 02:17'
+updated_date: '2025-12-29 12:12'
 labels:
   - test
   - cli
@@ -32,8 +32,14 @@ Add comprehensive unit tests for `_upgrade_jp_spec_kit()` covering:
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Tests cover upgrade success path
-- [ ] #2 Tests cover already-at-latest path
-- [ ] #3 Tests cover error scenarios
-- [ ] #4 Tests use mocking for subprocess calls
+- [x] #1 Tests cover upgrade success path
+- [x] #2 Tests cover already-at-latest path
+- [x] #3 Tests cover error scenarios
+- [x] #4 Tests use mocking for subprocess calls
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Tests already exist in tests/test_upgrade_commands.py covering all scenarios
+<!-- SECTION:NOTES:END -->

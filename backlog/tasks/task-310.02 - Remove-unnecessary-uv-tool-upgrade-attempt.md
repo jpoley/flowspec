@@ -1,11 +1,11 @@
 ---
 id: task-310.02
 title: Remove unnecessary uv tool upgrade attempt
-status: To Do
+status: Done
 assignee:
   - '@adare'
 created_date: '2025-12-08 01:41'
-updated_date: '2025-12-15 01:48'
+updated_date: '2025-12-29 12:11'
 labels:
   - bug
   - cli
@@ -32,6 +32,12 @@ Remove or skip the `uv tool upgrade flowspec-cli` attempt at lines 3973-3986.
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 uv tool upgrade is not called for git-installed packages
-- [ ] #2 Git install is used directly for upgrades
+- [x] #1 uv tool upgrade is not called for git-installed packages
+- [x] #2 Git install is used directly for upgrades
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Already implemented - code goes directly to git install, no uv tool upgrade call exists
+<!-- SECTION:NOTES:END -->
