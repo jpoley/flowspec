@@ -97,9 +97,9 @@ For complex multi-step implementations, create beads issues:
 
 ```bash
 # Create detailed agent tasks that reference the parent backlog task
-bd create --title="Implement JWT token service" --type=task --priority=2
-bd create --title="Create login endpoint" --type=task --priority=2
-bd create --title="Add session persistence" --type=task --priority=2
+bd create "Implement JWT token service"
+bd create "Create login endpoint"
+bd create "Add session persistence"
 
 # Set up dependencies
 bd dep add beads-002 beads-001  # Login depends on JWT service
