@@ -328,7 +328,7 @@ Every workflow (existing and custom) MUST:
 - Log decisions to `.logs/decisions/*.jsonl`
 - Log events to `.logs/events/*.jsonl`
 - Create ADRs for architectural decisions
-- Follow constitution from `.specify/memory/constitution.md`
+- Follow constitution from `memory/constitution.md`
 - Stay in branch
 - Stay on task
 

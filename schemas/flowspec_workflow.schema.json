@@ -535,7 +535,7 @@
             "follow_constitution": {
               "type": "boolean",
               "const": true,
-              "description": "REQUIRED: Must follow .specify/memory/constitution.md"
+              "description": "REQUIRED: Must follow memory/constitution.md"
             },
             "create_adrs": {
               "type": "boolean",

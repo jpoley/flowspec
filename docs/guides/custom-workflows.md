@@ -105,7 +105,7 @@ rigor:
   log_events: true          # Log to .logs/events/*.jsonl
   backlog_integration: true # Integrate with backlog.md via MCP
   memory_tracking: true     # Track task state across sessions
-  follow_constitution: true # Follow .specify/memory/constitution.md
+  follow_constitution: true # Follow memory/constitution.md
   create_adrs: true         # Create ADRs (optional, defaults to true)
 ```
 

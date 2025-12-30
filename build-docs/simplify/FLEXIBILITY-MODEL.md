@@ -50,7 +50,7 @@ Users can edit:
 
 ### 5. Constitution Customization
 Users can customize:
-- `.specify/memory/constitution.md` - Project principles and guidelines
+- `memory/constitution.md` - Project principles and guidelines
 - Custom rigor rules (beyond the required ones)
 
 ### 6. Workflow Sequences (Orchestration)

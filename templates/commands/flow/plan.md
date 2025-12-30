@@ -1,5 +1,5 @@
 ---
-description: Execute planning workflow using project architect and platform engineer agents (builds out /spec.constitution).
+description: Execute planning workflow using project architect and platform engineer agents to create ADRs and platform design.
 loop: outer
 # Loop Classification: OUTER LOOP
 # This command is part of the outer loop (planning/design phase). It designs system
@@ -44,7 +44,7 @@ Continue with the workflow below, but:
 
 ## Execution Instructions
 
-This command creates comprehensive architectural and platform planning using two specialized agents working in parallel, building out /spec.constitution.
+This command creates comprehensive architectural and platform planning using two specialized agents working in parallel, producing ADRs and platform design documents.
 
 {{INCLUDE:.claude/partials/flow/_constitution-check.md}}
 
@@ -211,7 +211,7 @@ Apply Gregor Hohpe's architectural principles and create:
    - Consumption (Developer Experience)
    - Credibility (Reliability)
 
-5. **For /spec.constitution - Architectural Principles**
+5. **Architectural Principles** (for ADR documentation)
    - Core architectural constraints
    - Design patterns and anti-patterns
    - Integration standards
@@ -385,7 +385,7 @@ Apply DevOps/Platform Engineering best practices and create:
    - Alerting strategy
    - Dashboard design
 
-6. **For /spec.constitution - Platform Principles**
+6. **Platform Principles** (for platform design docs)
    - Platform engineering standards
    - Infrastructure as Code requirements
    - CI/CD best practices
@@ -404,19 +404,16 @@ After both agents complete:
    - Resolve any conflicts or gaps
    - Ensure alignment between layers
 
-2. **Build /spec.constitution**
-   - Architectural principles and constraints
-   - Platform engineering standards
-   - Infrastructure requirements
-   - CI/CD and deployment guidelines
-   - Security and compliance requirements
-   - Operational standards
-   - Quality gates and acceptance criteria
+2. **Create Planning Artifacts**
+   - Architecture Decision Records (ADRs) in `docs/adr/`
+   - Platform design document in `docs/platform/`
+   - API contracts (if applicable) in `docs/specs/`
+   - Data models and schemas
+   - Implementation readiness assessment
 
 3. **Deliverables**
    - Complete system architecture document
    - Platform and infrastructure design
-   - Updated /spec.constitution
    - ADRs for key decisions
    - Implementation readiness assessment
 

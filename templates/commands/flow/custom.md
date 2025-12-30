@@ -194,7 +194,7 @@ All custom workflows MUST have rigor rules set to `true`. This is enforced by th
 - `log_events`: Log to `.logs/events/*.jsonl`
 - `backlog_integration`: Integrate with backlog.md via MCP
 - `memory_tracking`: Track task state across sessions
-- `follow_constitution`: Follow `.specify/memory/constitution.md`
+- `follow_constitution`: Follow `memory/constitution.md`
 
 ### Integration Point
 
