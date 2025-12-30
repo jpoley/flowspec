@@ -28,6 +28,7 @@ EXPECTED_COMMAND_NAMESPACES = {
     "ops",
     "qa",
     "sec",
+    "vibe",
 }
 
 
