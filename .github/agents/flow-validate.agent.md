@@ -1561,7 +1561,6 @@ Extract the `workflow:*` label from the task. The state must match one of the **
 | /flow:plan | workflow:Specified, workflow:Researched | workflow:Planned |
 | /flow:implement | workflow:Planned | workflow:In Implementation |
 | /flow:validate | workflow:In Implementation | workflow:Validated |
-| /flow:operate | workflow:Validated | workflow:Deployed |
 
 ### 3. Handle Invalid State
 
@@ -1601,8 +1600,7 @@ Tasks use labels with the `workflow:` prefix to track their current workflow sta
 - `workflow:Researched` - Technical research completed (/flow:research complete)
 - `workflow:Planned` - Architecture planned (/flow:plan complete)
 - `workflow:In Implementation` - Code being written (/flow:implement in progress)
-- `workflow:Validated` - QA and security validated (/flow:validate complete)
-- `workflow:Deployed` - Released to production (/flow:operate complete)
+- `workflow:Validated` - QA and security validated (/flow:validate complete) - this is the final workflow state
 
 ## Programmatic State Checking
 
@@ -3221,6 +3219,7 @@ Next steps:
 2. Request code review if needed
 3. Merge PR once approved and all checks pass
 4. Delete feature branch after merge
+5. Task is complete (status: Done)
 ================================================================================
 ```
 
