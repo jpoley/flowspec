@@ -40,10 +40,10 @@ flowspec init
 specify constitution validate
 
 # View constitution
-cat .flowspec/memory/constitution.md
+cat memory/constitution.md
 
-# Check detected facts
-cat .flowspec/memory/repo-facts.md
+# Check detected facts (if available)
+cat memory/repo-facts.md
 ```
 
 ### Step 3: Apply Customizations
@@ -118,13 +118,13 @@ flowspec init
 cat docs/examples/constitutions/python-fastapi.md
 
 # 3. Edit constitution
-vim .flowspec/memory/constitution.md
+vim memory/constitution.md
 
 # 4. Validate
 specify constitution validate
 
 # 5. Commit
-git add .flowspec/memory/constitution.md
+git add memory/constitution.md
 git commit -s -m "docs: customize constitution for Python/FastAPI"
 ```
 
@@ -179,7 +179,7 @@ To add a new example:
 
 ### Q: Can I have multiple constitutions?
 
-**A**: No. Each project should have one constitution in `.flowspec/memory/constitution.md`. However, you can customize sections extensively for different components.
+**A**: No. Each project should have one constitution in `memory/constitution.md`. However, you can customize sections extensively for different components.
 
 ### Q: What if my tech stack isn't shown?
 
@@ -217,7 +217,7 @@ To add a new example:
 
 ### Q: What if detected facts are wrong?
 
-**A**: Manually edit `.flowspec/memory/repo-facts.md`. Detection is a starting point, not authoritative.
+**A**: Manually edit `memory/repo-facts.md`. Detection is a starting point, not authoritative.
 
 ### Q: Do I need to re-run detection after changes?
 

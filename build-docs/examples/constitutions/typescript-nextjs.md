@@ -129,7 +129,7 @@ deployment: Vercel
 specify constitution validate
 
 # Apply customizations from this example
-# Edit .flowspec/memory/constitution.md
+# Edit memory/constitution.md
 # Replace template sections with customized versions
 ```
 

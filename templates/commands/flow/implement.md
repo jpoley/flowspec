@@ -174,7 +174,7 @@ Recommendations:
 
 Action Required:
 1. Improve spec quality using recommendations
-2. Re-run: flowspec quality .flowspec/spec.md
+2. Re-run: flowspec quality docs/prd/<feature>-spec.md
 3. When quality ≥70, re-run: /flow:implement
 
 OR (not recommended without user approval):
