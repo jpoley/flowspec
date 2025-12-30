@@ -1,6 +1,6 @@
 # Command Fixes: `flowspec gate`
 
-## Current Status: WORKING
+## Current Status: WORKING ✅
 
 ## Gap Analysis
 
@@ -10,11 +10,12 @@
 | Threshold enforcement | Working | None |
 | Exit codes | Working correctly | None |
 | Force bypass | Working | None |
+| Default path | docs/prd/spec.md | None |
 
 ## Issues Found
 
 ### No Issues Found
-The command works as intended.
+The command works as intended. Default path updated to `docs/prd/spec.md` in cleanup-dec30 branch.
 
 ## Recommendations
 
@@ -28,7 +29,7 @@ The command works as intended.
 ## Test Evidence
 ```
 $ flowspec gate
-Error: No spec.md found at .flowspec/spec.md
+Error: No spec.md found at docs/prd/spec.md
 $ echo $?
 2
 ```

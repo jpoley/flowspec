@@ -6808,7 +6808,7 @@ def backlog_upgrade(
 @app.command()
 def quality(
     spec_path: str = typer.Argument(
-        None, help="Path to specification file (defaults to .flowspec/spec.md)"
+        None, help="Path to specification file (defaults to docs/prd/spec.md)"
     ),
     config_path: str = typer.Option(
         None, "--config", help="Path to custom quality config file"
@@ -6843,7 +6843,7 @@ def quality(
 
     # Determine spec path
     if spec_path is None:
-        spec_file = Path.cwd() / ".flowspec" / "spec.md"
+        spec_file = Path.cwd() / "docs" / "prd" / "spec.md"
         if not spec_file.exists():
             # Try current directory
             spec_file = Path.cwd() / "spec.md"
@@ -6854,7 +6854,7 @@ def quality(
         console.print(f"[red]Error: Specification file not found: {spec_file}[/red]")
         console.print("\nUsage:")
         console.print("  flowspec quality [SPEC_PATH]")
-        console.print("  flowspec quality .flowspec/spec.md")
+        console.print("  flowspec quality docs/prd/spec.md")
         raise typer.Exit(1)
 
     # Load configuration
@@ -7015,10 +7015,10 @@ def gate(
     from flowspec_cli.quality import QualityConfig, QualityScorer
 
     project_root = Path.cwd()
-    spec_path = project_root / ".flowspec" / "spec.md"
+    spec_path = project_root / "docs" / "prd" / "spec.md"
 
     if not spec_path.exists():
-        console.print("[red]Error:[/red] No spec.md found at .flowspec/spec.md")
+        console.print("[red]Error:[/red] No spec.md found at docs/prd/spec.md")
         raise typer.Exit(2)
 
     # Load config and override threshold if provided

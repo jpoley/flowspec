@@ -1,6 +1,6 @@
 # Command Fixes: `flowspec quality`
 
-## Current Status: WORKING (but defaults to wrong path)
+## Current Status: WORKING ✅
 
 ## Gap Analysis
 
@@ -11,27 +11,19 @@
 | JSON output | Working | None |
 | Threshold validation | Working | None |
 | CI integration | Working | None |
+| Default path | docs/prd/spec.md | None |
 
 ## Issues Found
 
-### Issue 1: DEFAULT PATH INCONSISTENCY
-**Severity: Low**
+### ~~Issue 1: DEFAULT PATH INCONSISTENCY~~ FIXED
+**Status: Resolved**
 
-The help text says:
-```
-SPEC_PATH  Path to specification file (defaults to .flowspec/spec.md)
-```
+Fixed in cleanup-dec30 branch. Default path is now `docs/prd/spec.md` with fallback to `spec.md` in current directory.
 
-But the error shows:
+Help text now shows:
 ```
-Error: Specification file not found: /home/jpoley/ps/flowspec/spec.md
+SPEC_PATH  Path to specification file (defaults to docs/prd/spec.md)
 ```
-
-The default seems to look for `spec.md` in current directory, not `.flowspec/spec.md`.
-
-**Recommendation:**
-- Either fix the default path to match documentation
-- OR update help text to reflect actual behavior
 
 ### Issue 2: EXIT CODE DOCUMENTATION
 **Severity: Low**
@@ -46,18 +38,18 @@ Quality should have similar documentation.
 ## Recommendations
 
 ### Priority Fixes
-1. **LOW**: Clarify default path behavior
+1. ~~**LOW**: Clarify default path behavior~~ DONE
 2. **LOW**: Add exit code documentation to help
 
 ## Priority
-**Low** - Minor documentation inconsistencies.
+**Low** - Minor documentation enhancement remaining.
 
 ## Test Evidence
 ```
 $ flowspec quality
-Error: Specification file not found: /home/jpoley/ps/flowspec/spec.md
+Error: Specification file not found: docs/prd/spec.md
 
 Usage:
   flowspec quality [SPEC_PATH]
-  flowspec quality .flowspec/spec.md
+  flowspec quality docs/prd/spec.md
 ```

@@ -63,10 +63,10 @@ This document summarizes the comprehensive analysis of all flowspec-cli commands
 
 **Issue:** Recommends "upgrading" backlog-md even when installed version (1.27.1) is NEWER than recommended (1.21.0).
 
-#### 6. quality Default Path Inconsistency
+#### ~~6. quality Default Path Inconsistency~~ FIXED
 **Command:** `flowspec quality`
 
-**Issue:** Help says default is `.flowspec/spec.md` but actually looks for `spec.md`.
+**Status:** Resolved in cleanup-dec30. Default is now `docs/prd/spec.md` with fallback to `spec.md`.
 
 #### 7. constitution version Shows Placeholders
 **Command:** `flowspec constitution version`
