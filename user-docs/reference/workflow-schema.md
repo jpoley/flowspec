@@ -152,9 +152,7 @@ transitions:
   - from: "Specified"
     to: "Researched"
     via: "research"
-  - from: "Deployed"
-    to: "Done"
-    via: "completion"
+
 ```
 
 ### agent_loops (optional)
@@ -243,8 +241,7 @@ states:
     description: "Feature being implemented"
   - name: "Validated"
     description: "Feature validated"
-  - name: "Deployed"
-    description: "Feature deployed"
+
 
 workflows:
   specify:
@@ -304,17 +301,9 @@ workflows:
     description: "Validate implementation"
     optional: false
 
-  operate:
-    command: "/flow:operate"
-    agents:
-      - "sre-agent"
-    input_states:
-      - "Validated"
-    output_state: "Deployed"
-    description: "Deploy to production"
-    optional: true
-
 transitions:
+
+# Note: /flow:operate workflow has been removed from the standard workflow
   - from: "To Do"
     to: "Specified"
     via: "specify"
@@ -331,9 +320,6 @@ transitions:
     to: "Validated"
     via: "validate"
   - from: "Validated"
-    to: "Deployed"
-    via: "operate"
-  - from: "Deployed"
     to: "Done"
     via: "completion"
 
@@ -350,8 +336,8 @@ agent_loops:
     - "secure-by-design-engineer"
     - "tech-writer"
   outer_loop:
-    - "sre-agent"
     - "release-manager"
+    # Note: sre-agent has been removed from the standard workflow
 ```
 
 ## Common Validation Errors

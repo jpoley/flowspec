@@ -83,10 +83,10 @@ In Implementation
 Validated
   ↓ /flow:security-audit (NEW - with approval gate)
 Security Audited
-  ↓ /flow:operate
-Deployed
   ↓ manual
 Done
+
+Note: Deployment (outer loop) is handled by external CI/CD tools.
 ```
 
 ## Security Gates
@@ -115,7 +115,7 @@ Threat model reviewed. All high-risk threats have mitigations."
 
 ### Gate 2: Security Audit Approval
 
-**Location**: Security Audited → Deployed
+**Location**: Security Audited → Done
 
 **Validation**: `KEYWORD[AUDIT_PASSED]`
 
@@ -186,8 +186,8 @@ Pen test complete. All critical vulns resolved."
    # Review docs/security/{feature}-audit-report.md
    # Type AUDIT_PASSED to proceed
 
-   /flow:operate
    backlog task edit task-123 -s Done
+   # Deployment handled by external CI/CD (outer loop)
    ```
 
 ## Threat Modeling Workflow Detail

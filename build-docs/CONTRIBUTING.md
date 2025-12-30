@@ -119,7 +119,8 @@ Once set up, you can use these commands in Claude Code:
 - `/flow:research` - Market research
 - `/flow:implement` - Multi-agent implementation
 - `/flow:validate` - QA and validation
-- `/flow:operate` - SRE operations
+
+Note: `/flow:operate` has been removed - deployment is handled by external CI/CD tools (outer loop).
 
 ## AI contributions in Spec Kit
 

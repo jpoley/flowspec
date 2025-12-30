@@ -50,12 +50,6 @@ This document provides comprehensive documentation of the Flowspec workflow pipe
                               │ Validated │ → QA Report,
                               │           │   Security Report
                               └─────┬─────┘
-                                    │ /flow:operate
-                                    ▼
-                              ┌───────────┐
-                              │ Deployed  │ → Deployment
-                              │           │   Manifest
-                              └─────┬─────┘
                                     │ (manual)
                                     ▼
                               ┌───────────┐
@@ -65,7 +59,10 @@ This document provides comprehensive documentation of the Flowspec workflow pipe
 
 ## Workflow States
 
-The Flowspec workflow consists of 9 states:
+The Flowspec workflow consists of 8 states:
+
+> **Note:** The `/flow:operate` command and `Deployed` state have been removed from the workflow.
+> Tasks now move directly from Validated to Done.
 
 | # | State | Description |
 |---|-------|-------------|
@@ -76,8 +73,7 @@ The Flowspec workflow consists of 9 states:
 | 5 | **Planned** | Architecture and infrastructure planned |
 | 6 | **In Implementation** | Code actively being written |
 | 7 | **Validated** | QA, security, and documentation validated |
-| 8 | **Deployed** | Released to production |
-| 9 | **Done** | Work complete - ready for archive |
+| 8 | **Done** | Work complete - ready for archive |
 
 ## Complete Transition Reference
 
@@ -92,23 +88,20 @@ The Flowspec workflow consists of 9 states:
 | 5 | Researched | Planned | `/flow:plan` | Architecture planning after research |
 | 6 | Planned | In Implementation | `/flow:implement` | Implementation work started |
 | 7 | In Implementation | Validated | `/flow:validate` | QA and security validation |
-| 8 | Validated | Deployed | `/flow:operate` | Production deployment |
-| 9 | Deployed | Done | manual | Deployment confirmed successful |
+| 8 | Validated | Done | manual | Work complete |
 
-### Rework/Rollback Transitions
+### Rework Transitions
 
 | From State | To State | Via | Description |
 |------------|----------|-----|-------------|
 | In Implementation | Planned | rework | Rework needed based on implementation findings |
 | Validated | In Implementation | rework | Rework needed based on validation findings |
-| Deployed | Validated | rollback | Rollback from production due to issues |
 
 ### Direct-to-Done Transitions
 
 Tasks can be manually marked as Done from these states:
 - In Implementation → Done (implementation complete, validation deferred)
-- Validated → Done (feature validated but deployment deferred)
-- Deployed → Done (production deployment confirmed successful)
+- Validated → Done (feature validated, ready for archive)
 
 ## Artifact Specification
 
@@ -192,15 +185,6 @@ Tasks can be manually marked as Done from these states:
 **Output Artifacts:**
 - QA Report: `./docs/qa/{feature}-qa-report.md` (required)
 - Security Report: `./docs/security/{feature}-security.md` (required)
-
-#### 7. operate (Validated → Deployed)
-
-**Input Artifacts:**
-- QA Report (required)
-- Security Report (required)
-
-**Output Artifacts:**
-- Deployment Manifest: `./deploy/` (required)
 
 ## Validation Modes
 

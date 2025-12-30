@@ -18,8 +18,7 @@ Flowspec uses a state machine to coordinate task progression through the SDD lif
 | **Researched** | `/flow:research` | `/flow:plan` | software-architect, platform-engineer |
 | **Planned** | `/flow:plan` | `/flow:implement` | frontend-engineer, backend-engineer, ai-ml-engineer, code-reviewers |
 | **In Implementation** | `/flow:implement` | `/flow:validate` | quality-guardian, secure-by-design-engineer, tech-writer, release-manager |
-| **Validated** | `/flow:validate` | `/flow:operate` or manual → Done | sre-agent (operate) |
-| **Deployed** | `/flow:operate` | Manual → Done | — |
+| **Validated** | `/flow:validate` | Manual → Done | — |
 | **Done** | Manual | — | — |
 
 ## State Lifecycle Diagrams
@@ -40,10 +39,10 @@ Planned
 In Implementation
   ↓ /flow:validate
 Validated
-  ↓ /flow:operate
-Deployed
   ↓ manual
 Done
+
+Note: /flow:operate has been removed - deployment is outer loop
 ```
 
 ### Optional Research Path (Spec-Light Mode)
@@ -62,10 +61,10 @@ Planned
 In Implementation
   ↓ /flow:validate
 Validated
-  ↓ /flow:operate
-Deployed
   ↓ manual
 Done
+
+Note: /flow:operate has been removed - deployment is outer loop
 ```
 
 ### Early Exit Paths
@@ -75,7 +74,7 @@ You can manually move to "Done" from several states:
 ```
 Validated → Done (validation complete, deployment deferred)
 In Implementation → Done (implementation complete, validation deferred)
-Deployed → Done (production deployment confirmed)
+Validated → Done (validation complete)
 ```
 
 ### Rework/Rollback Paths
@@ -85,7 +84,7 @@ When issues are found, you can move backward:
 ```
 In Implementation → Planned (rework needed based on implementation findings)
 Validated → In Implementation (rework needed based on validation findings)
-Deployed → Validated (rollback from production)
+
 ```
 
 ## How States Are Created
@@ -99,13 +98,14 @@ states:
   - "To Do"
   - "Assessed"
   - "Specified"
-  - "Researched"
+  - "Researched"   # Optional (skip with /flow:plan from Specified)
   - "Planned"
   - "In Implementation"
   - "Validated"
-  - "Deployed"
   - "Done"
 ```
+
+**Note**: The `Deployed` state has been removed. Deployment is handled in the "outer loop" by external CI/CD tools.
 
 These states are automatically available in `backlog.md` for task management.
 
@@ -224,11 +224,7 @@ backlog task create "Add user authentication"
 /flow:validate
 # → State: Validated
 
-# 7. Deploy to production
-/flow:operate
-# → State: Deployed
-
-# 8. Confirm deployment success
+# 7. Mark as Done (deployment handled by CI/CD)
 backlog task edit task-123 -s Done
 # → State: Done
 ```

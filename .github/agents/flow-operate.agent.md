@@ -1,6 +1,6 @@
 ---
 name: "flow-operate"
-description: "Execute operations workflow using SRE agent for CI/CD, Kubernetes, DevSecOps, observability, and operational excellence."
+description: "[DEPRECATED] This command has been removed from the standard workflow. Use /ops:* commands directly instead."
 target: "chat"
 tools:
   - "Read"
@@ -13,6 +13,21 @@ tools:
   - "mcp__serena__*"
   - "Skill"
 ---
+## DEPRECATION NOTICE
+
+> **WARNING: This command has been deprecated and removed from the standard SDD workflow.**
+>
+> The `/flow:operate` command is no longer part of the core workflow. Tasks now complete at the `Validated` state after `/flow:validate`.
+>
+> **For operational tasks, use the direct ops commands instead:**
+> - `/ops:monitor` - Set up monitoring and alerting
+> - `/ops:respond` - Incident response guidance
+> - `/ops:scale` - Scaling infrastructure
+>
+> **Migration**: If you have tasks in `workflow:Validated` state expecting to transition to `Deployed`, mark them as `Done` instead.
+
+---
+
 ## User Input
 
 ```text
@@ -21,7 +36,7 @@ $ARGUMENTS
 
 You **MUST** consider the user input before proceeding (if not empty).
 
-## Execution Instructions
+## Execution Instructions (DEPRECATED)
 
 This command establishes comprehensive operational infrastructure using SRE best practices, focusing on reliability, automation, and observability. **All operational work is tracked as backlog tasks.**
 

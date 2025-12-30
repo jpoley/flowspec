@@ -140,9 +140,9 @@ workflows:
 
 | Aspect | Minimal Workflow | Full SDD Workflow |
 |--------|------------------|-------------------|
-| **Phases** | 2 | 7 |
-| **States** | 4 | 9 |
-| **Agents** | 5 | 16 |
+| **Phases** | 2 | 6 |
+| **States** | 4 | 8 |
+| **Agents** | 5 | 14 |
 | **Time to Done** | ~1-2 days | ~1-2 weeks |
 | **Quality Assurance** | Manual | Automated + Manual |
 | **Compliance** | None | SOC2/SLSA ready |
@@ -155,9 +155,10 @@ As projects mature, gradually add phases:
 1. Start with minimal workflow
 2. Add **Planning** when architecture complexity increases
 3. Add **Validation** when quality issues appear
-4. Add **Operations** when deployment becomes frequent
-5. Add **Research** for strategic features
-6. Add **Assessment** for portfolio management
+4. Add **Research** for strategic features
+5. Add **Assessment** for portfolio management
+
+Note: Deployment (operations) is handled by external CI/CD tools in the "outer loop".
 
 ## Limitations
 

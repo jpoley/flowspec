@@ -92,12 +92,13 @@ These agents create and maintain documentation:
 
 ## Outer Loop Agents
 
-The outer loop ensures organizational safety, compliance, and production reliability. These agents handle CI/CD, infrastructure, and operational concerns **after commit**.
+The outer loop ensures organizational safety, compliance, and production reliability. These agents handle release coordination and operational concerns **after commit**.
 
 | Agent | Description | Primary Use |
 |-------|-------------|-------------|
-| **sre-agent** | Site Reliability Engineering | CI/CD pipelines (GitHub Actions), Kubernetes, DevSecOps, observability, monitoring, alerting, incident management |
 | **release-manager** | Release and deployment management | Release readiness assessment, deployment strategy, promotion workflows, change management, production releases |
+
+**Note**: `sre-agent` and `/flow:operate` have been removed from the standard workflow. For SRE operations, use `/ops:*` commands directly (`/ops:monitor`, `/ops:respond`, `/ops:scale`).
 
 ## Inner Loop Requirements
 
@@ -185,8 +186,8 @@ Uses: `quality-guardian`, `secure-by-design-engineer`, `tech-writer`, `release-m
 
 Note: The validate workflow bridges inner and outer loops by preparing artifacts for outer loop deployment while still part of inner loop quality checks.
 
-### /flow:operate (Outer Loop)
-Uses: `sre-agent`
+### /flow:operate (REMOVED)
+Note: `/flow:operate` has been removed. Use `/ops:*` commands directly for SRE operations.
 
 ## Best Practices
 

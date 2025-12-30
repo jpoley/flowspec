@@ -79,7 +79,6 @@ cd my-project
 /flow:plan
 /flow:implement
 /flow:validate
-/flow:operate
 ```
 
 **For Light/Medium (medium features):**
@@ -178,13 +177,13 @@ Light mode is NOT an excuse to skip artifacts. It's permission to move faster.
 │                    └────┬─────┘                                                 │
 │                         │                                                       │
 │                         ▼                                                       │
-│   /flow:specify  ┌──────────┐            • [feature]-prd.md                   │
-│                    │Specified │            • [feature]-functional.md            │
+│   /flow:assess   ┌──────────┐            • [feature]-assessment.md            │
+│                    │ Assessed │            • Complexity scoring                 │
 │                    └────┬─────┘                                                 │
 │                         │                                                       │
 │                         ▼                                                       │
-│   /flow:research ┌──────────┐            • Research reports          OPTIONAL │
-│   (optional)       │Researched│            • Competitive analysis               │
+│   /flow:specify  ┌──────────┐            • [feature]-prd.md                   │
+│                    │Specified │            • Implementation tasks               │
 │                    └────┬─────┘                                                 │
 │                         │                                                       │
 │                         ▼                                                       │
@@ -204,14 +203,12 @@ Light mode is NOT an excuse to skip artifacts. It's permission to move faster.
 │                    └────┬─────┘            • Test coverage reports              │
 │                         │                                                       │
 │                         ▼                                                       │
-│   /flow:operate  ┌──────────┐            • [service]-runbook.md               │
-│                    │Deployed  │            • Deployment configs                 │
-│                    └────┬─────┘            • Monitoring dashboards              │
-│                         │                                                       │
-│                         ▼                                                       │
 │                    ┌──────────┐                                                │
 │                    │   Done   │                                                 │
 │                    └──────────┘                                                 │
+│                                                                                 │
+│   Note: /flow:research (optional) can be run after Specified → Researched     │
+│         before proceeding to /flow:plan                                        │
 │                                                                                 │
 └────────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -225,15 +222,15 @@ Light mode is NOT an excuse to skip artifacts. It's permission to move faster.
 ├──────────────────┬───────────────┬────────────────┬────────────────────────────┤
 │     COMMAND      │  INPUT STATE  │  OUTPUT STATE  │     PRIMARY AGENTS         │
 ├──────────────────┼───────────────┼────────────────┼────────────────────────────┤
-│ /flow:assess   │ (any)         │ (no change)    │ Complexity Scorer          │
-│ /flow:specify  │ To Do         │ Specified      │ PM Planner                 │
+│ /flow:assess   │ To Do         │ Assessed       │ Workflow Assessor          │
+│ /flow:specify  │ Assessed      │ Specified      │ PM Planner                 │
 │ /flow:research │ Specified     │ Researched     │ Researcher, Validator      │
 │ /flow:plan     │ Specified*    │ Planned        │ Architect, Platform Eng    │
 │ /flow:implement│ Planned       │ In Progress    │ Frontend/Backend Engineers │
 │ /flow:validate │ In Progress   │ Validated      │ QA, Security Engineers     │
-│ /flow:operate  │ Validated     │ Deployed       │ SRE Agent                  │
 └──────────────────┴───────────────┴────────────────┴────────────────────────────┘
 * Also accepts "Researched" state
+  /flow:research is optional - can skip directly from Specified to /flow:plan
 ```
 
 ## Artifact Progression
@@ -244,33 +241,31 @@ Every feature follows this document progression:
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │                          ARTIFACT PROGRESSION                                 │
 │                                                                               │
-│   PRD ──► Functional ──► Technical ──► ADR ──► Code ──► Runbook             │
-│           Spec           Spec                                                 │
+│   Assessment ──► PRD ──► Technical ──► ADR ──► Code + Tests                  │
+│                           Spec                                                │
 │                                                                               │
-│   "What &    "What        "How to      "Why this   Actual    "How to         │
-│    Why"      behaviors"    build"       path"      code      operate"        │
+│   "Is SDD      "What &    "How to      "Why this   Working                   │
+│    needed?"     Why"       build"       path"      software                   │
 │                                                                               │
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
 | Stage | Artifact | Question Answered | Location |
 |-------|----------|-------------------|----------|
-| 1 | **PRD** | What must it do and why the user cares | `docs/prd/` |
-| 2 | **Functional Spec** | What behaviors are required | `docs/specs/` |
+| 1 | **Assessment** | Is SDD appropriate, what's the complexity | `docs/assess/` |
+| 2 | **PRD** | What must it do and why the user cares | `docs/prd/` |
 | 3 | **Technical Spec** | How will we build it | `docs/specs/` |
 | 4 | **ADR** | Why we chose this technical path | `docs/adr/` |
-| 5 | **Implementation** | The code itself | `src/` |
-| 6 | **Runbook** | How to operate and troubleshoot | `docs/runbooks/` |
+| 5 | **Implementation** | The code and tests | `src/`, `tests/` |
 
 ### Document Naming
 
 | Document | Pattern | Example |
 |----------|---------|---------|
+| Assessment | `[feature]-assessment.md` | `user-auth-assessment.md` |
 | PRD | `[feature]-prd.md` | `user-auth-prd.md` |
-| Functional Spec | `[feature]-functional.md` | `user-auth-functional.md` |
 | Technical Spec | `[feature]-technical.md` | `user-auth-technical.md` |
 | ADR | `adr-[number]-[topic].md` | `adr-015-auth-provider.md` |
-| Runbook | `[service]-runbook.md` | `auth-service-runbook.md` |
 
 ## Working with Tasks
 
@@ -344,13 +339,13 @@ project/
 ├── .devcontainer/              # Devcontainer configuration
 │   └── devcontainer.json       # Uses jpoley/flowspec-agents image
 ├── docs/
+│   ├── assess/                 # Assessment reports from /flow:assess
 │   ├── prd/                    # PRDs from /flow:specify
-│   ├── specs/                  # Functional & Technical specs
+│   ├── specs/                  # Technical specs from /flow:plan
 │   ├── adr/                    # Architecture Decision Records
 │   ├── platform/               # Platform design docs
 │   ├── qa/                     # QA reports from /flow:validate
-│   ├── security/               # Security scans
-│   └── runbooks/               # Operational runbooks
+│   └── security/               # Security scans
 ├── src/                        # Implementation code
 ├── tests/                      # Test suites
 ├── backlog/                    # Task management

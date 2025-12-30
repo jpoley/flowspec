@@ -6,7 +6,7 @@ Comprehensive guide to using the /flowspec command orchestration system for spec
 
 - [Executive Summary](#executive-summary)
 - [Overview](#overview)
-- [The Seven /flowspec Commands](#the-seven-flowspec-commands)
+- [The Six /flowspec Commands](#the-six-flowspec-commands)
 - [Specialized Agents](#specialized-agents)
 - [Workflow Patterns](#workflow-patterns)
 - [Use Case Examples](#use-case-examples)
@@ -34,17 +34,18 @@ The /flowspec workflow system is Flowspec's **AI-powered command orchestration l
 - **Scale Team Productivity**: Parallel agent execution maximizes throughput
 - **Maintain Consistency**: Proven patterns embedded in agent contexts (SVPG, DORA, SRE, DevSecOps)
 
-### The Seven Commands
+### The Six Commands
 
 ```
 /flow:assess    → Evaluate feature complexity (Simple/Medium/Complex)
 /flow:specify   → Create comprehensive Product Requirements Document (PRD)
-/flow:research  → Market research + business validation
+/flow:research  → Market research + business validation (OPTIONAL)
 /flow:plan      → Architecture + platform design (parallel agents)
 /flow:implement → Frontend + backend implementation with code review
 /flow:validate  → QA testing + security + docs + release readiness
-/flow:operate   → CI/CD pipelines + Kubernetes + observability
 ```
+
+**Note**: `/flow:operate` has been removed. Deployment and operations are "outer loop" concerns handled by external tools (CI/CD pipelines, deployment platforms).
 
 ### When to Use /flowspec
 
@@ -74,7 +75,7 @@ See [/flow:assess](#flowspecassess) for detailed complexity assessment.
 
 ### Architecture
 
-The /flowspec system orchestrates specialized AI agents through seven distinct phases, managing the transition from high-level requirements to production-ready systems:
+The /flowspec system orchestrates specialized AI agents through six distinct phases, managing the transition from high-level requirements to production-ready systems:
 
 ```mermaid
 graph TB
@@ -88,15 +89,14 @@ graph TB
     E --> F[/flow:plan]
     F --> G[/flow:implement]
     G --> H[/flow:validate]
-    H --> I[/flow:operate]
-    I --> J[Production Deployment]
+    H --> J[Done / Production Ready]
 
     D -.-> BL[Backlog Tasks Created]
     E -.-> BL
     F -.-> BL
     G --> BL
     H --> BL
-    I --> BL
+
 
     BL --> TRACK[Task Tracking & Progress]
 
@@ -105,7 +105,7 @@ graph TB
     style F fill:#e1f5ff
     style G fill:#fff4e1
     style H fill:#fff4e1
-    style I fill:#e8f5e9
+
 ```
 
 ### Design Workflow vs. Implementation Workflow
@@ -120,7 +120,6 @@ The /flowspec commands are divided into two categories:
 **Implementation Commands** (Execute Existing Tasks):
 - `/flow:implement` - Requires existing tasks with acceptance criteria
 - `/flow:validate` - Validates task completion and marks tasks Done
-- `/flow:operate` - Implements operational infrastructure from backlog tasks
 
 **Critical Rule**: Design commands produce tasks; implementation commands consume them. Never run `/flow:implement` without first running `/flow:specify` to create implementation tasks.
 
@@ -138,7 +137,7 @@ Commands execute agents in two patterns:
 
 Sequential patterns ensure data dependencies; parallel patterns maximize throughput.
 
-## The Seven /flowspec Commands
+## The Six /flowspec Commands
 
 ### /flow:assess
 
@@ -178,7 +177,7 @@ Sequential patterns ensure data dependencies; parallel patterns maximize through
 **Decision Matrix**:
 - **8-12 points**: Simple → Skip SDD, implement directly
 - **13-20 points**: Medium → Spec-Light mode (specify + implement only)
-- **21-32 points**: Complex → Full SDD workflow (all 7 commands)
+- **21-32 points**: Complex → Full SDD workflow (all 6 commands)
 
 **Reference**: See `.claude/commands/flow/assess.md` for complete assessment framework.
 
@@ -564,138 +563,9 @@ backlog task list -s "Done" --plain
 
 ---
 
-### /flow:operate
-
-**Purpose**: Establish comprehensive operational infrastructure using SRE best practices.
-
-**When to Use**:
-- After validation is complete
-- When CI/CD pipelines are needed
-- When Kubernetes deployment is required
-- When observability infrastructure is needed
-- For production deployment preparation
-- When operational automation is required
-
-**Execution Pattern**: Sequential (single agent)
-
-**Agents Invoked**:
-1. **Principal Site Reliability Engineer** (@sre-agent)
-   - Expertise: CI/CD excellence, Kubernetes operations, DevSecOps, observability, reliability engineering
-   - Principles: SLOs/error budgets, eliminate toil, embrace risk, automation-first
-   - Framework: DORA metrics, NIST/SSDF compliance, production-first observability
-
-**Inputs**:
-- Architecture design
-- Platform specifications
-- Infrastructure requirements
-- Application details
-- Existing operational tasks (discovered via backlog search)
-
-**Outputs**:
-
-1. **Service Level Objectives (SLOs)**
-   - SLIs defined (availability, latency, throughput, error rate)
-   - SLO targets set (e.g., 99.9% availability)
-   - Error budget calculated and tracked
-
-2. **CI/CD Pipeline Architecture (GitHub Actions)**
-   - **Uses stack-specific templates** from `templates/github-actions/`:
-     - `nodejs-ci-cd.yml` for Node.js/TypeScript
-     - `python-ci-cd.yml` for Python
-     - `go-ci-cd.yml` for Go
-     - `dotnet-ci-cd.yml` for .NET
-   - Build pipeline (caching, multi-stage builds, SBOM generation, digest calculation)
-   - Test pipeline (unit, integration, e2e, security scans, parallel execution)
-   - Deployment pipeline (promote artifacts with digest verification, GitOps, progressive delivery, automated rollback)
-
-3. **Kubernetes Architecture**
-   - Cluster architecture (multi-AZ HA, node pools, auto-scaling, resource quotas)
-   - Deployment manifests (deployments, services, ConfigMaps, Secrets, Ingress)
-   - Resource management (requests/limits, QoS, PDBs, HPA)
-   - Security (Pod Security Standards, Network Policies, RBAC, service mesh)
-
-4. **DevSecOps Integration**
-   - Security scanning (SAST, DAST, SCA, container scanning, IaC scanning, secret scanning)
-   - Compliance automation (Policy as Code, automated checks, audit logging, SBOM)
-   - Secret management (secure vault, dynamic injection, rotation, no secrets in code)
-
-5. **Observability Stack**
-   - Metrics (Prometheus/OpenTelemetry, system metrics, custom business metrics, RED/USE)
-   - Logging (structured JSON logs, aggregation, retention policies, contextual logging)
-   - Distributed tracing (OpenTelemetry instrumentation, service dependency mapping)
-   - Dashboards (Grafana for Golden Signals, service dashboards, infrastructure dashboards)
-   - Alerting (AlertManager for SLO violations, routing/grouping, on-call integration, runbook links)
-
-6. **Incident Management**
-   - Incident response process (severity definitions, escalation, incident commander role)
-   - **Runbooks** (common incidents, troubleshooting, rollback, recovery)
-   - Post-mortems (template, blameless culture, action tracking)
-
-7. **Infrastructure as Code**
-   - Terraform/K8s manifests (modular code, remote state, workspaces, version control)
-   - GitOps (Git as source of truth, automated deployment, drift detection, audit trail)
-
-8. **Performance and Scalability**
-   - Horizontal scalability (stateless services, auto-scaling, load balancing)
-   - Caching strategy (Redis, CDN, database query caching)
-   - Performance optimization (connection pooling, async operations, batch processing)
-
-9. **Disaster Recovery**
-   - Backup strategy (database backups, config backups, retention policy, testing)
-   - DR planning (RTO/RPO, testing schedule, failover procedures)
-   - Chaos engineering (testing strategy, failure injection, resilience validation)
-
-**Critical Requirement: Runbook Tasks**
-
-When creating alerts, the SRE agent **MUST** create corresponding runbook tasks:
-
-```bash
-# Example: For each alert, create a runbook task
-backlog task create "Runbook: High Latency Alert Response" \
-  -d "Document response procedure for high-latency alerts" \
-  --ac "Document initial triage steps" \
-  --ac "List common causes and solutions" \
-  --ac "Include rollback procedure" \
-  --ac "Add escalation path" \
-  -a @sre-agent \
-  -l runbook,operations \
-  --priority medium
-```
-
-**Example Usage**:
-```bash
-# Discover existing operational tasks
-backlog search "infrastructure" --plain
-backlog search "cicd" --plain
-
-# Run operations workflow
-/flow:operate E-commerce platform with microservices
-```
-
-**Backlog Integration**:
-Creates operational tasks for:
-- CI/CD pipeline setup (build, test, deployment with SBOM and security scanning)
-- Kubernetes deployment configuration
-- Observability stack implementation
-- SLO and alerting rules definition
-- **Runbook creation** (one task per alert type)
-- IaC implementation
-- DR and backup procedures
-
-**Outer Loop Principles**:
-- Build once in CI, promote everywhere (NO rebuilding for different environments)
-- Immutable artifacts with digest verification
-- SLSA build provenance attestation
-- SBOM generation (CycloneDX format)
-- Security scanning integrated into pipeline
-
-**Reference**: See `.claude/commands/flow/operate.md` for complete agent context.
-
----
-
 ## Specialized Agents
 
-The /flowspec system coordinates 15 specialized agents across the development lifecycle. Each agent brings domain expertise, proven frameworks, and best practices to their area of responsibility.
+The /flowspec system coordinates 14 specialized agents across the development lifecycle. Each agent brings domain expertise, proven frameworks, and best practices to their area of responsibility.
 
 ### Agent Classification
 
@@ -716,8 +586,7 @@ Agents are organized into two loops based on the **Agent Loop Classification** f
 - Secure-by-Design Engineer
 - Technical Writer
 
-**Outer Loop Agents** (Operate production systems):
-- SRE Agent
+**Outer Loop Agents** (Production release coordination):
 - Release Manager
 
 ### Agent Details
@@ -1139,38 +1008,6 @@ Agents are organized into two loops based on the **Agent Loop Classification** f
 
 ---
 
-#### Principal Site Reliability Engineer (@sre-agent)
-**Role**: Establishes operational infrastructure and reliability practices
-
-**Expertise**:
-- CI/CD excellence (automated, reliable pipelines)
-- Kubernetes operations (container orchestration at scale)
-- DevSecOps (security integrated throughout operations)
-- Observability (comprehensive monitoring, logging, tracing)
-- Reliability engineering (SLOs, error budgets, incident management)
-
-**SRE Principles**:
-- Service Level Objectives (define SLIs, set SLOs with error budgets, track usage)
-- Eliminating Toil (automate manual work, target <50% time on toil, build self-service)
-- Embrace Risk (perfect reliability not the goal, use error budgets to balance reliability with velocity)
-
-**Invoked By**: `/flow:operate`
-
-**Responsibilities**:
-- SLO definition (SLIs for availability/latency/throughput/error rate, SLO targets, error budgets)
-- CI/CD pipeline (use stack-specific templates, build/test/deploy automation, SBOM generation, digest verification)
-- Kubernetes architecture (multi-AZ HA, node pools, auto-scaling, deployment manifests, resource management, security)
-- DevSecOps (SAST/DAST/SCA, SBOM, SLSA compliance, secret management, compliance automation)
-- Observability stack (Prometheus/OpenTelemetry metrics, structured logging, distributed tracing, Grafana dashboards, AlertManager)
-- Incident management (incident response process, **runbooks**, post-mortems)
-- Infrastructure as Code (Terraform/K8s manifests, GitOps, drift detection)
-- Performance and scalability (horizontal scaling, caching, optimization)
-- Disaster recovery (backup strategy, DR planning, chaos engineering)
-- **Create operational tasks in backlog** (CI/CD, K8s, observability, security, IaC)
-- **Create runbook tasks** for each alert type
-
----
-
 ## Workflow Patterns
 
 ### Sequential vs. Parallel Execution
@@ -1270,8 +1107,7 @@ The /flowspec system enforces a critical separation between design (task creatio
 
 **Implementation Commands** (Consume Tasks):
 - `/flow:implement` - Engineers pick tasks from backlog and implement
-- `/flow:validate` - Validators verify task completion
-- `/flow:operate` - SRE implements operational tasks
+- `/flow:validate` - Validators verify task completion, mark tasks Done
 
 **Critical Rule**: Never run `/flow:implement` without first running `/flow:specify` to create implementation tasks.
 
@@ -1298,8 +1134,8 @@ backlog task list --plain | grep -i "<feature-keyword>"
 Tasks flow through states as /flowspec commands execute:
 
 ```
-To Do → Specified → Researched → Planned → In Implementation → Validated → Deployed → Done
-         (specify)  (research)   (plan)   (implement)        (validate)  (operate)
+To Do → Specified → Researched → Planned → In Implementation → Validated → Done
+         (specify)  (research)   (plan)   (implement)        (validate)
 ```
 
 **State Semantics**:
@@ -1309,8 +1145,7 @@ To Do → Specified → Researched → Planned → In Implementation → Validat
 - **Planned**: Architecture and platform design complete
 - **In Implementation**: Engineers actively coding
 - **Validated**: QA, security, and docs complete
-- **Deployed**: Operational infrastructure deployed
-- **Done**: All work complete, all ACs checked
+- **Done**: All work complete, all ACs checked, ready for deployment
 
 **Valid Transitions**:
 - `/flow:specify` can run on "To Do" tasks → moves to "Specified"
@@ -1318,7 +1153,6 @@ To Do → Specified → Researched → Planned → In Implementation → Validat
 - `/flow:plan` can run on "Researched" (or "Specified") tasks → moves to "Planned"
 - `/flow:implement` can run on "Planned" tasks → moves to "In Implementation"
 - `/flow:validate` can run on "In Implementation" tasks → moves to "Validated"
-- `/flow:operate` can run on "Validated" tasks → moves to "Deployed"
 - Release Manager marks tasks as "Done" after Definition of Done verified
 
 **Invalid Transitions** (will error):
@@ -1536,22 +1370,9 @@ backlog task create "Fix button alignment on login page" \
 # - Review security assessment (PCI compliance verified)
 # - Deployment plan (staged rollout, feature flag, monitoring)
 # - Human approval request (executive sign-off for revenue-critical feature)
+# - Mark tasks as Done after approval
 
-# 7. Operational deployment
-/flow:operate Stripe payment service infrastructure
-
-# SRE Agent:
-# - SLOs (99.95% payment API availability, <500ms p95 latency, <1% error rate)
-# - CI/CD pipeline (security scanning, PCI compliance checks, SBOM generation)
-# - Kubernetes deployment (PCI-compliant network policies, encrypted secrets)
-# - Observability (payment success/failure dashboards, webhook latency alerts, error tracking)
-# - Incident response (payment failure runbook, webhook retry runbook)
-# - Disaster recovery (payment data backup, reconciliation procedures)
-
-# Deployment:
-# - Staged rollout (1% → 10% → 50% → 100%)
-# - Monitoring (payment success rate, webhook delivery rate, error alerts)
-# - Validation (test transactions, webhook processing verification)
+# Production deployment handled by external CI/CD and operations tooling
 ```
 
 **Why Full SDD**:
@@ -1563,10 +1384,10 @@ backlog task create "Fix button alignment on login page" \
 - Multiple stakeholders (Engineering, Product, Legal, Security, Finance)
 
 **Outcome**:
-- Comprehensive documentation (PRD, architecture, ADRs, runbooks)
+- Comprehensive documentation (PRD, architecture, ADRs)
 - All risks identified and mitigated (DVF+V assessment, security review)
 - PCI compliance verified (security assessment, audit logging)
-- Production-ready deployment (CI/CD, observability, incident response)
+- Production-ready code (validated, tested, approved for deployment)
 - Full traceability (30+ tasks with ACs, all tracked in backlog)
 
 ---
@@ -1623,16 +1444,12 @@ backlog task create "Fix button alignment on login page" \
 
 # QA: Integration testing (cross-service calls, API Gateway routing, distributed transactions)
 # Security: Service-to-service auth, network policies, secrets management
-# Tech Writer: Architecture docs, service APIs, migration runbooks
+# Tech Writer: Architecture docs, service APIs, migration guides
 
-# 7. Operational excellence
-/flow:operate Microservices platform infrastructure
-
-# SRE:
-# - Kubernetes service mesh (Istio/Linkerd for traffic management)
-# - Distributed tracing (Jaeger/Zipkin for cross-service debugging)
-# - Service-level SLOs (per service availability, latency, error rate)
-# - Incident response (service dependency runbook, cascading failure procedures)
+# Release Manager:
+# - Verify all Phase 1 tasks complete with ACs checked
+# - Deployment plan (phased migration, rollback procedures)
+# - Human approval for production deployment
 ```
 
 **Why Architecture-Heavy**:
@@ -1712,15 +1529,10 @@ backlog task create "Fix button alignment on login page" \
 # - User data privacy (GDPR compliance, data anonymization)
 # - Model security (adversarial examples, model extraction attacks)
 
-# 6. MLOps and monitoring
-/flow:operate Recommendation engine ML infrastructure
-
-# SRE:
-# - ML-specific SLOs (model accuracy >X%, inference latency <Yms, data freshness <Zhours)
-# - Model monitoring (prediction distribution, drift detection, performance degradation alerts)
-# - Retraining pipeline (automated retraining on drift detection)
-# - A/B testing infrastructure (feature flags, experimentation platform)
-# - Incident response (model degradation runbook, rollback to previous model version)
+# Release Manager:
+# - Verify all tasks complete with ACs checked
+# - Deployment plan (staged rollout, feature flag, A/B test setup)
+# - Human approval for production deployment
 ```
 
 **Why ML-Heavy**:
@@ -1795,8 +1607,7 @@ backlog task list -s "To Do" --plain
 backlog task list -s "In Progress" --plain
 backlog task list -s "Done" --plain
 
-# /flow:operate discovers operational tasks
-backlog search "infrastructure" --plain
+# /flow:validate discovers tasks ready for validation
 backlog task list -l infrastructure --plain
 ```
 
@@ -1955,7 +1766,7 @@ Implementation Notes: "Implemented OAuth2 with RS256 signing..."
 Code Review Notes: "Security review passed..."
 QA Testing Notes: "All tests passing..."
   ↓ (resulted in)
-Feature Deployed: Users can sign in with Google
+Feature Done: Users can sign in with Google (ready for deployment)
 ```
 
 ---
@@ -1974,7 +1785,7 @@ Run /flow:assess
 Complexity Score?
   ├─ 8-12 (Simple) → Skip workflow, implement directly
   ├─ 13-20 (Medium) → Spec-Light: /flow:specify → /flow:implement
-  └─ 21-32 (Complex) → Full SDD workflow (all 7 commands)
+  └─ 21-32 (Complex) → Full SDD workflow (all 6 commands)
 ```
 
 **Specific Scenarios**:
@@ -1984,9 +1795,9 @@ Complexity Score?
 | Bug fix with known solution | None (direct implementation) | Problem and solution well-understood |
 | New UI component (moderate complexity) | `specify` → `implement` | Spec-Light: Need clear acceptance criteria, skip research/planning |
 | New API endpoint with external integration | `specify` → `plan` → `implement` | Need architecture planning for integration patterns |
-| Business-critical feature with market uncertainty | `specify` → `research` → `plan` → `implement` → `validate` → `operate` | Full workflow: validate business case, ensure quality gates |
-| System-wide architectural change | `specify` → `plan` (heavy) → `implement` → `validate` → `operate` | Architecture-heavy: ADRs critical, extensive planning |
-| Production deployment readiness | `validate` → `operate` | Validation and operational setup for existing implementation |
+| Business-critical feature with market uncertainty | `specify` → `research` → `plan` → `implement` → `validate` | Full workflow: validate business case, ensure quality gates |
+| System-wide architectural change | `specify` → `plan` (heavy) → `implement` → `validate` | Architecture-heavy: ADRs critical, extensive planning |
+| Production deployment readiness | `validate` | Validation for existing implementation ready for deployment |
 
 ---
 
@@ -2015,7 +1826,7 @@ Complexity Score?
 **Comprehensive Validation**:
 - Always run `/flow:validate` for production features
 - Never skip security review for features handling sensitive data
-- Always create runbooks for operational alerts (`/flow:operate`)
+- Always ensure operational documentation is available for deployment
 
 **Backlog Task Discipline**:
 - **Always verify all ACs are checked before marking Done**
@@ -2312,8 +2123,8 @@ workflows:
 
 transitions:
   - from: "Security Audited"
-    to: "Deployed"
-    via: "operate"
+    to: "Done"
+    via: "release"
 ```
 
 See `docs/guides/workflow-architecture.md` for complete customization guide.
@@ -2420,7 +2231,6 @@ The following diagram shows the complete /flowspec workflow with agent coordinat
 - **`/flow:plan`**: `.claude/commands/flow/plan.md`
 - **`/flow:implement`**: `.claude/commands/flow/implement.md`
 - **`/flow:validate`**: `.claude/commands/flow/validate.md`
-- **`/flow:operate`**: `.claude/commands/flow/operate.md`
 
 ### Frameworks and Principles
 - **SVPG Product Operating Model**: Inspired, Empowered, Transformed (Marty Cagan)

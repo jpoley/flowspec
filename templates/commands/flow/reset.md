@@ -113,12 +113,6 @@ For each workflow transition, choose a validation mode:
    [2] KEYWORD
    [3] PULL_REQUEST
    > _
-
-7. Validated -> Deployed (after /flow:operate)
-   [1] NONE (default)
-   [2] KEYWORD
-   [3] PULL_REQUEST
-   > _
 ```
 
 If user selects KEYWORD (option 2), prompt for the approval keyword:
@@ -171,11 +165,6 @@ transitions:
   - name: validate
     from: In Implementation
     to: Validated
-    validation: {MODE}
-
-  - name: operate
-    from: Validated
-    to: Deployed
     validation: {MODE}
 ```
 
@@ -232,7 +221,6 @@ research                 NONE
 plan                     KEYWORD["ADR_APPROVED"]
 implement                PULL_REQUEST
 validate                 NONE
-operate                  NONE
 
 📁 FILES UPDATED
 
@@ -280,7 +268,7 @@ flowspec init --here --force  # Re-runs full init with prompts
 
 Before completing:
 - [ ] flowspec_workflow.yml exists and is valid YAML
-- [ ] All 7 transitions are configured
+- [ ] All 6 transitions are configured
 - [ ] Validation modes are one of: NONE, KEYWORD["..."], PULL_REQUEST
 - [ ] Summary clearly shows configured modes
 - [ ] Next steps are provided

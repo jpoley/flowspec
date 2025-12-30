@@ -1611,6 +1611,7 @@ Next steps:
 2. Request code review if needed
 3. Merge PR once approved and all checks pass
 4. Delete feature branch after merge
+5. Task is complete (status: Done)
 ================================================================================
 ```
 

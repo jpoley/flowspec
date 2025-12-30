@@ -12,7 +12,6 @@ flowchart TB
         research["/flow:research"]
         implement["/flow:implement"]
         validate["/flow:validate"]
-        operate["/flow:operate"]
     end
 
     subgraph Agents["Agents"]
@@ -30,7 +29,6 @@ flowchart TB
         SDE["secure-by-design-engineer"]
         TW["tech-writer"]
         RM["release-manager"]
-        SRE["sre-agent"]
     end
 
     subgraph MCP["MCP Servers"]
@@ -49,11 +47,10 @@ flowchart TB
     research --> RES & BV
     implement --> FE & BE & AI & FCR & BCR
     validate --> QG & SDE & TW & RM
-    operate --> SRE
 
     %% Core MCPs (all agents)
-    PRM & SA & PE & RES & BV & FE & BE & AI & FCR & BCR & QG & SDE & TW & RM & SRE -.-> github
-    PRM & SA & PE & RES & BV & FE & BE & AI & FCR & BCR & QG & SDE & TW & RM & SRE -.-> serena
+    PRM & SA & PE & RES & BV & FE & BE & AI & FCR & BCR & QG & SDE & TW & RM -.-> github
+    PRM & SA & PE & RES & BV & FE & BE & AI & FCR & BCR & QG & SDE & TW & RM -.-> serena
 
     %% Security MCPs
     FCR & BCR & SDE & RM -.-> trivy
@@ -62,7 +59,7 @@ flowchart TB
     %% Frontend MCPs
     FE & FCR -.-> shadcn
     FE & FCR -.-> playwright
-    FE & FCR & QG & SRE -.-> chrome
+    FE & FCR & QG -.-> chrome
 ```
 
 ## Agents by Workflow
@@ -106,13 +103,9 @@ flowchart TB
 | **tech-writer** | Documentation, API references, user guides, tutorials | github, serena |
 | **release-manager** | Release coordination, quality validation, deployment management | github, serena, trivy |
 
-### `/flow:operate` - Operations
-
-| Agent | Description | MCP Servers |
-|-------|-------------|-------------|
-| **sre-agent** | CI/CD (GitHub Actions), Kubernetes, DevSecOps, observability | github, serena, chrome-devtools |
-
 ## MCP Server Reference
+
+> **Note:** The `/flow:operate` workflow and sre-agent have been removed from the standard workflow.
 
 ### Core Servers (All Agents)
 
@@ -136,7 +129,7 @@ These MCP servers are available to every agent:
 |--------|-------------|--------------|
 | **shadcn-ui** | shadcn/ui component library access | frontend-engineer, frontend-code-reviewer |
 | **playwright-test** | Browser automation for E2E testing | frontend-engineer, frontend-code-reviewer |
-| **chrome-devtools** | Chrome DevTools Protocol for debugging | frontend-engineer, frontend-code-reviewer, quality-guardian, sre-agent |
+| **chrome-devtools** | Chrome DevTools Protocol for debugging | frontend-engineer, frontend-code-reviewer, quality-guardian |
 
 ## Agent Loop Classification
 
@@ -165,7 +158,8 @@ These agents focus on fast, local iteration:
 These agents handle post-commit automation:
 
 - **release-manager** - Deployment and release coordination
-- **sre-agent** - CI/CD, Kubernetes, observability
+
+> **Note:** The sre-agent has been removed from the standard workflow.
 
 ## Workflow Execution Patterns
 
@@ -173,7 +167,6 @@ These agents handle post-commit automation:
 
 ```
 /flow:specify  →  product-requirements-manager
-/flow:operate  →  sre-agent
 ```
 
 ### Parallel Workflows
@@ -251,7 +244,7 @@ color: blue
 | secure-by-design-engineer | ✓ | ✓ | ✓ | ✓ | | | |
 | tech-writer | ✓ | ✓ | | | | | |
 | release-manager | ✓ | ✓ | ✓ | | | | |
-| sre-agent | ✓ | ✓ | | | | | ✓ |
+
 
 ## See Also
 

@@ -45,11 +45,11 @@ Frontend Validated    Backend Validated
                     ↓
         Integration Validated
                     ↓
-          /flow:operate
+                  manual
                     ↓
-              Deployed
-                    ↓
-               Done
+                  Done
+
+Note: Deployment (outer loop) is handled by external CI/CD tools.
 ```
 
 ## Key Features
@@ -205,7 +205,7 @@ backlog task create "User auth - backend implementation" \
 # Runs end-to-end tests
 
 /flow:validate-integration
-/flow:operate
+# Deployment handled by external CI/CD (outer loop)
 ```
 
 ## Coordination Points

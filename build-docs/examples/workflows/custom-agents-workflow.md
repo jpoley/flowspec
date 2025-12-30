@@ -86,10 +86,10 @@ Accessibility Tested
 Validated
   ↓ /flow:devrel-review (CUSTOM - developer-advocate)
 Documentation Reviewed
-  ↓ /flow:operate (+ ml-ops-engineer)
-Deployed
   ↓ manual
 Done
+
+Note: Deployment (outer loop) is handled by external CI/CD tools (may include ml-ops-engineer for model deployment).
 ```
 
 ## Custom Workflows Added
@@ -332,10 +332,8 @@ flowspec workflow validate
 /flow:devrel-review
 # Developer documentation review
 
-/flow:operate
-# Includes ml-ops-engineer
-
 backlog task edit task-123 -s Done
+# Deployment handled by external CI/CD (outer loop)
 ```
 
 ## When to Add Custom Agents
@@ -534,9 +532,9 @@ workflows:
 
 | Aspect | Standard Workflow | Custom Agents Workflow |
 |--------|-------------------|------------------------|
-| **Agent Count** | 16 | 25 (16 standard + 9 custom) |
-| **Workflow Count** | 7 | 11 (7 standard + 4 custom) |
-| **State Count** | 9 | 13 (9 standard + 4 custom) |
+| **Agent Count** | 14 | 23 (14 standard + 9 custom) |
+| **Workflow Count** | 6 | 10 (6 standard + 4 custom) |
+| **State Count** | 8 | 12 (8 standard + 4 custom) |
 | **Time to Deploy** | ~1-2 weeks | ~2-4 weeks (more reviews) |
 | **Specialization** | General SDD | Industry-specific |
 | **Best For** | Standard web apps | Regulated industries, ML/AI, APIs |

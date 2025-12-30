@@ -247,12 +247,6 @@ For each workflow transition, choose a validation mode:
    [2] KEYWORD
    [3] PULL_REQUEST
    > _
-
-7. Validated -> Deployed (after /flow:operate)
-   [1] NONE (default)
-   [2] KEYWORD
-   [3] PULL_REQUEST
-   > _
 ```
 
 If user selects KEYWORD (option 2), prompt for the approval keyword:
@@ -329,7 +323,6 @@ research                 {MODE}
 plan                     {MODE}
 implement                {MODE}
 validate                 {MODE}
-operate                  {MODE}
 
 📁 FILES UPDATED
 
@@ -425,7 +418,7 @@ If user confirms, perform migration and keep old file.
 Before completing:
 - [ ] flowspec_workflow.yml exists with v2.0 schema
 - [ ] roles.primary is set to valid role value
-- [ ] If validation modes configured, all 7 transitions have valid modes
+- [ ] If validation modes configured, all 6 transitions have valid modes
 - [ ] Validation modes are one of: NONE, KEYWORD["..."], PULL_REQUEST
 - [ ] Summary clearly shows role change (if changed)
 - [ ] Summary shows validation modes (if configured)

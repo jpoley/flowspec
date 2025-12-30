@@ -1,16 +1,18 @@
 # Agent Architecture Diagrams
 
-This document provides visual representations of the Flowspec agent ecosystem, showing all 16 workflow agents, 13 AI coding platforms, 9 MCP servers, and how they interconnect across the SDD workflow.
+This document provides visual representations of the Flowspec agent ecosystem, showing all 15 workflow agents, 13 AI coding platforms, 9 MCP servers, and how they interconnect across the SDD workflow.
+
+> **Note:** The `/flow:operate` command and sre-agent have been removed from the workflow.
 
 ## Quick Reference
 
 | Category | Count | Description |
 |----------|-------|-------------|
-| Workflow Agents | 16 | SDD workflow specialists (5 inner loop, 11 outer loop) |
+| Workflow Agents | 15 | SDD workflow specialists (5 inner loop, 10 outer loop) |
 | AI Coding Platforms | 13 | Supported IDE/CLI integrations |
 | MCP Servers | 9 | Tool integrations via Model Context Protocol |
-| Workflow States | 9 | Task progression states |
-| Slash Commands | 7 | `/flow:*` workflow commands |
+| Workflow States | 8 | Task progression states |
+| Slash Commands | 6 | `/flow:*` workflow commands |
 
 ---
 
@@ -29,15 +31,12 @@ stateDiagram-v2
     Researched --> Planned: /flow:plan
     Planned --> InImpl: /flow:implement
     InImpl --> Validated: /flow:validate
-    Validated --> Deployed: /flow:operate
 
-    Deployed --> Done: Manual close
     Validated --> Done: Manual close
     InImpl --> Done: Manual close
 
     InImpl --> Planned: Rework
     Validated --> InImpl: Rework
-    Deployed --> Validated: Rollback
 
     Done --> [*]
 
@@ -62,9 +61,11 @@ stateDiagram-v2
     state Validated {
         [*] --> qa_passed
     }
-    state Deployed {
-        [*] --> in_production
-    }
+
+note right of Validated
+    Note: /flow:operate and Deployed state
+    have been removed from the workflow
+end note
 ```
 
 ### ASCII Diagram
@@ -113,13 +114,10 @@ stateDiagram-v2
         │     │                      │ /flow:operate
         │     │                      ▼
         │     │               ┌─────────────┐
-        │     │  Rollback ◄───│  DEPLOYED   │ ◄── In production
-        │     │               └──────┬──────┘
-        │     │                      │ Manual
-        │     │                      ▼
-        │     │               ┌─────────────┐
         └─────┴──────────────►│    DONE     │ ◄── Work complete
                               └─────────────┘
+
+NOTE: /flow:operate and Deployed state have been removed from the workflow.
 ```
 
 ---
@@ -130,7 +128,7 @@ stateDiagram-v2
 
 ```mermaid
 flowchart TB
-    subgraph OUTER["OUTER LOOP (11 Agents) - Governance & Safety"]
+    subgraph OUTER["OUTER LOOP (10 Agents) - Governance & Safety"]
         direction TB
         WA[workflow-assessor]
         PRM[product-requirements-manager]
@@ -142,7 +140,6 @@ flowchart TB
         SBD[secure-by-design-engineer]
         TW[tech-writer]
         RM[release-manager]
-        SRE[sre-agent]
     end
 
     subgraph INNER["INNER LOOP (5 Agents) - Developer Velocity"]
@@ -156,7 +153,7 @@ flowchart TB
 
     subgraph WORKFLOWS["/flowspec Commands"]
         direction LR
-        A[assess] --> S[specify] --> R[research] --> P[plan] --> I[implement] --> V[validate] --> O[operate]
+        A[assess] --> S[specify] --> R[research] --> P[plan] --> I[implement] --> V[validate]
     end
 
     WA --> A
@@ -174,7 +171,6 @@ flowchart TB
     SBD --> V
     TW --> V
     RM --> V
-    SRE --> O
 ```
 
 ### ASCII Diagram
@@ -185,7 +181,7 @@ flowchart TB
 └─────────────────────────────────────────────────────────────────────────────────┘
 
 ╔═══════════════════════════════════════════════════════════════════════════════╗
-║  OUTER LOOP AGENTS (11) - Governance, Safety, Reliability                     ║
+║  OUTER LOOP AGENTS (10) - Governance, Safety, Reliability                     ║
 ╠═══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                               ║
 ║  ┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐             ║
@@ -221,13 +217,13 @@ flowchart TB
 ║           │                     │                     │                       ║
 ║           └─────────────────────┼─────────────────────┘                       ║
 ║                                 ▼                                             ║
-║  ┌─────────────────┐     /flow:validate    ┌─────────────────┐             ║
-║  │ release-manager │            │            │ sre-agent       │             ║
-║  │ @release-       │────────────┘            │ @sre-agent      │             ║
-║  │ manager         │                         └────────┬────────┘             ║
-║  └─────────────────┘                                  │                       ║
-║                                                       ▼                       ║
-║                                                /flow:operate               ║
+║  ┌─────────────────┐     /flow:validate                                     ║
+║  │ release-manager │            │                                            ║
+║  │ @release-       │────────────┘                                            ║
+║  │ manager         │                                                         ║
+║  └─────────────────┘                                                         ║
+║                                                                               ║
+║  NOTE: /flow:operate (sre-agent) has been removed from the workflow.         ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 ╔═══════════════════════════════════════════════════════════════════════════════╗
@@ -283,16 +279,13 @@ flowchart TB
         IMPL[Implementation Agents]
         QA[Quality Agents]
         SECAG[Security Agents]
-        SRE[SRE Agent]
     end
 
     GH --> IMPL
-    GH --> SRE
     SER --> IMPL
     PW --> QA
     PW --> SECAG
     TR --> SECAG
-    TR --> SRE
     SG --> SECAG
     SH --> IMPL
     CD --> QA
@@ -403,7 +396,7 @@ flowchart TB
 
     subgraph WORKFLOW["SDD Workflow"]
         direction LR
-        W1[assess] --> W2[specify] --> W3[plan] --> W4[implement] --> W5[validate] --> W6[operate]
+        W1[assess] --> W2[specify] --> W3[plan] --> W4[implement] --> W5[validate]
     end
 
     CLI --> WORKFLOW
@@ -497,12 +490,11 @@ flowchart TB
         C4["/flow:plan"]
         C5["/flow:implement"]
         C6["/flow:validate"]
-        C7["/flow:operate"]
     end
 
-    subgraph AGENTS["WORKFLOW AGENTS (16)"]
+    subgraph AGENTS["WORKFLOW AGENTS (15)"]
         direction TB
-        subgraph OUTER["Outer Loop (11)"]
+        subgraph OUTER["Outer Loop (10)"]
             A1[workflow-assessor]
             A2[pm-planner]
             A3[researcher]
@@ -513,7 +505,6 @@ flowchart TB
             A8[secure-by-design]
             A9[tech-writer]
             A10[release-manager]
-            A11[sre-agent]
         end
         subgraph INNER["Inner Loop (5)"]
             A12[frontend-engineer]
@@ -579,16 +570,16 @@ flowchart TB
 ┌───────────────────────────────────────────────────────────────────────────────┐
 │                      SDD WORKFLOW COMMANDS (/flow:*)                        │
 │                                                                               │
-│   assess ──► specify ──► research ──► plan ──► implement ──► validate ──► operate │
+│   assess ──► specify ──► research ──► plan ──► implement ──► validate │
 │      │          │           │          │           │            │           │
 └──────┼──────────┼───────────┼──────────┼───────────┼────────────┼───────────┼───┘
        │          │           │          │           │            │           │
        ▼          ▼           ▼          ▼           ▼            ▼           ▼
 ┌───────────────────────────────────────────────────────────────────────────────┐
-│                         WORKFLOW AGENTS (16)                                  │
+│                         WORKFLOW AGENTS (15)                                  │
 │                                                                               │
 │  ╔═══════════════════════════════════════════════════════════════════════╗   │
-│  ║ OUTER LOOP (11) - Governance & Safety                                 ║   │
+│  ║ OUTER LOOP (10) - Governance & Safety                                 ║   │
 │  ║ ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌────────────┐           ║   │
 │  ║ │ workflow-  │ │ pm-planner │ │ researcher │ │ business-  │           ║   │
 │  ║ │ assessor   │ │            │ │            │ │ validator  │           ║   │
@@ -597,10 +588,10 @@ flowchart TB
 │  ║ │ software-  │ │ platform-  │ │ quality-   │ │ secure-by- │           ║   │
 │  ║ │ architect  │ │ engineer   │ │ guardian   │ │ design-eng │           ║   │
 │  ║ └────────────┘ └────────────┘ └────────────┘ └────────────┘           ║   │
-│  ║ ┌────────────┐ ┌────────────┐ ┌────────────┐                          ║   │
-│  ║ │ tech-      │ │ release-   │ │ sre-agent  │                          ║   │
-│  ║ │ writer     │ │ manager    │ │            │                          ║   │
-│  ║ └────────────┘ └────────────┘ └────────────┘                          ║   │
+│  ║ ┌────────────┐ ┌────────────┐                                         ║   │
+│  ║ │ tech-      │ │ release-   │                                         ║   │
+│  ║ │ writer     │ │ manager    │                                         ║   │
+│  ║ └────────────┘ └────────────┘                                         ║   │
 │  ╚═══════════════════════════════════════════════════════════════════════╝   │
 │                                                                               │
 │  ╔═══════════════════════════════════════════════════════════════════════╗   │
@@ -621,7 +612,7 @@ flowchart TB
            │                          │                          │
            ▼                          ▼                          ▼
 ┌─────────────────────┐   ┌─────────────────────┐   ┌─────────────────────┐
-│    MCP SERVERS (9)  │   │  OUTPUT ARTIFACTS   │   │   TASK STATES (9)   │
+│    MCP SERVERS (9)  │   │  OUTPUT ARTIFACTS   │   │   TASK STATES (8)   │
 │                     │   │                     │   │                     │
 │  ┌───────────────┐  │   │  • Assessment.md    │   │  • To Do            │
 │  │    github     │  │   │  • PRD.md           │   │  • Assessed         │
@@ -660,7 +651,7 @@ flowchart TB
 | **secure-by-design** | | | ✓ | ✓ | ✓ | | | | ✓ |
 | **tech-writer** | ✓ | | | | | | | | |
 | **release-manager** | ✓ | | | | | | | ✓ | |
-| **sre-agent** | ✓ | | | ✓ | | | | ✓ | |
+
 
 ### ASCII Matrix
 
@@ -695,7 +686,7 @@ S business-validator│ ● │   │   │   │   │   │   │   │   │
   secure-by-design  │   │   │ ● │ ● │ ● │   │   │   │ ● │
   tech-writer       │ ● │   │   │   │   │   │   │   │   │
   release-manager   │ ● │   │   │   │   │   │   │ ● │   │
-  sre-agent         │ ● │   │   │ ● │   │   │   │ ● │   │
+
                     └───┴───┴───┴───┴───┴───┴───┴───┴───┘
 
 Legend: ● = Uses this MCP server
@@ -715,7 +706,8 @@ Legend: ● = Uses this MCP server
 | `/flow:plan` | software-architect, platform-engineer | Specified, Researched | Planned | `docs/adr/ADR-*.md` |
 | `/flow:implement` | frontend-eng, backend-eng, ai-ml-eng, reviewers | Planned | In Implementation | `src/`, `tests/` |
 | `/flow:validate` | quality-guardian, secure-by-design, tech-writer, release-mgr | In Implementation | Validated | `docs/qa/`, `docs/security/` |
-| `/flow:operate` | sre-agent | Validated | Deployed | `deploy/` |
+
+> **Note:** `/flow:operate` (sre-agent) has been removed from the workflow.
 
 ---
 
@@ -726,10 +718,10 @@ Legend: ● = Uses this MCP server
 │                         FLOWSPEC - QUICK REFERENCE                              │
 ├─────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                 │
-│  WORKFLOW AGENTS: 16 total                                                      │
+│  WORKFLOW AGENTS: 15 total                                                      │
 │    • Inner Loop (5): frontend-eng, backend-eng, ai-ml-eng, 2 reviewers          │
-│    • Outer Loop (11): assessor, pm, researcher, validator, architect,           │
-│                       platform-eng, qa, security, tech-writer, release, sre     │
+│    • Outer Loop (10): assessor, pm, researcher, validator, architect,           │
+│                       platform-eng, qa, security, tech-writer, release          │
 │                                                                                 │
 │  AI PLATFORMS: 13 supported                                                     │
 │    • CLI: Claude Code, Gemini, Qwen, opencode, Codex, Amazon Q                  │
@@ -742,9 +734,9 @@ Legend: ● = Uses this MCP server
 │    • Workflow: backlog                                                          │
 │                                                                                 │
 │  STATES: To Do → Assessed → Specified → Researched → Planned →                  │
-│          In Implementation → Validated → Deployed → Done                        │
+│          In Implementation → Validated → Done                                   │
 │                                                                                 │
-│  COMMANDS: /flow:assess, specify, research, plan, implement, validate, operate│
+│  COMMANDS: /flow:assess, specify, research, plan, implement, validate          │
 │                                                                                 │
 └─────────────────────────────────────────────────────────────────────────────────┘
 ```
