@@ -4542,23 +4542,27 @@ def init(
 
             # Generate .mcp.json file
             tracker.add("mcp-json", "Generate .mcp.json")
-            mcp_json_path = project_path / ".mcp.json"
-            if mcp_json_path.exists():
-                tracker.skip("mcp-json", ".mcp.json already exists")
-            else:
-                tracker.start("mcp-json")
-                try:
-                    generate_mcp_json(project_path)
+            tracker.start("mcp-json")
+            try:
+                # generate_mcp_json returns False when .mcp.json already exists
+                if generate_mcp_json(project_path):
                     tracker.complete("mcp-json", ".mcp.json created")
-                except Exception as mcp_error:
-                    tracker.error("mcp-json", f"generation failed: {mcp_error}")
+                else:
+                    tracker.skip("mcp-json", ".mcp.json already exists")
+            except Exception as mcp_error:
+                tracker.error("mcp-json", f"generation failed: {mcp_error}")
 
             # Generate .vscode/extensions.json
             tracker.add("vscode-ext", "Generate VSCode extensions")
+            vscode_ext_path = project_path / ".vscode" / "extensions.json"
+            vscode_ext_existed = vscode_ext_path.exists()
             tracker.start("vscode-ext")
             try:
                 generate_vscode_extensions(project_path)
-                tracker.complete("vscode-ext", ".vscode/extensions.json created")
+                if vscode_ext_existed:
+                    tracker.complete("vscode-ext", ".vscode/extensions.json updated")
+                else:
+                    tracker.complete("vscode-ext", ".vscode/extensions.json created")
             except Exception as ext_error:
                 tracker.error("vscode-ext", f"generation failed: {ext_error}")
 
