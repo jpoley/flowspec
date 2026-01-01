@@ -25,7 +25,7 @@ class TestMCPJsonGeneration:
         assert config["mcpServers"]["backlog"]["command"] == "backlog"
 
     def test_generate_mcp_json_python_project(self, tmp_path, monkeypatch):
-        """Generate .mcp.json with Python-specific servers for Python projects."""
+        """Generate .mcp.json with the flowspec-security MCP server for Python projects."""
         from flowspec_cli import generate_mcp_json
 
         # Create a Python project marker

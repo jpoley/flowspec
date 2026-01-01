@@ -1999,7 +1999,10 @@ See the `memory/` directory for all available context files."""
 
 
 def generate_mcp_json(project_path: Path) -> bool:
-    """Generate .mcp.json file with common MCP server configurations.
+    """Generate .mcp.json file with MCP server configurations.
+
+    Includes common servers (backlog) and tech-stack-specific servers
+    (e.g., flowspec-security for Python projects).
 
     Args:
         project_path: Path to the project directory
@@ -2042,8 +2045,6 @@ def generate_mcp_json(project_path: Path) -> bool:
     # Build the complete config
     mcp_config = {"mcpServers": mcp_servers}
 
-    # Write .mcp.json
-
     with open(mcp_json_path, "w", encoding="utf-8") as f:
         json.dump(mcp_config, f, indent=2, ensure_ascii=False)
         f.write("\n")
@@ -2077,8 +2078,8 @@ def generate_vscode_extensions(project_path: Path) -> bool:
                 existing_config = json.load(f)
                 existing_recommendations = existing_config.get("recommendations", [])
         except (json.JSONDecodeError, OSError):
-            # If the file is missing, unreadable, or invalid JSON, ignore it and
-            # fall back to an empty recommendation list.
+            # If the existing file is unreadable/corrupted or contains invalid JSON,
+            # ignore it and fall back to an empty recommendation list.
             pass
 
     # Detect tech stack
@@ -4554,7 +4555,10 @@ def init(
                 else:
                     tracker.skip("mcp-json", ".mcp.json already exists")
             except Exception as mcp_error:
-                tracker.error("mcp-json", f"generation failed: {mcp_error}")
+                tracker.error(
+                    "mcp-json",
+                    f"MCP JSON generation failed ({type(mcp_error).__name__}): {mcp_error}",
+                )
 
             # Generate .vscode/extensions.json
             tracker.add("vscode-ext", "Generate VSCode extensions")
@@ -4566,7 +4570,10 @@ def init(
                 else:
                     tracker.complete("vscode-ext", ".vscode/extensions.json updated")
             except Exception as ext_error:
-                tracker.error("vscode-ext", f"generation failed: {ext_error}")
+                tracker.error(
+                    "vscode-ext",
+                    f"VSCode extensions generation failed ({type(ext_error).__name__}): {ext_error}",
+                )
 
             tracker.complete("final", "project ready")
         except Exception as e:
