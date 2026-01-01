@@ -1997,17 +1997,20 @@ See the `memory/` directory for all available context files."""
     claude_md_path.write_text(content)
 
 
-def generate_mcp_json(project_path: Path) -> None:
+def generate_mcp_json(project_path: Path) -> bool:
     """Generate .mcp.json file with common MCP server configurations.
 
     Args:
         project_path: Path to the project directory
+
+    Returns:
+        True if file was created, False if it already existed (skipped).
     """
     mcp_json_path = project_path / ".mcp.json"
 
     # Skip if .mcp.json already exists
     if mcp_json_path.exists():
-        return
+        return False
 
     # Detect tech stack to customize MCP servers
     tech_stack = detect_tech_stack(project_path)
@@ -2045,6 +2048,8 @@ def generate_mcp_json(project_path: Path) -> None:
         json.dump(mcp_config, f, indent=2, ensure_ascii=False)
         f.write("\n")
 
+    return True
+
 
 def generate_vscode_extensions(project_path: Path) -> None:
     """Generate .vscode/extensions.json with tech-stack specific recommendations.
@@ -2068,6 +2073,8 @@ def generate_vscode_extensions(project_path: Path) -> None:
                 existing_config = json.load(f)
                 existing_recommendations = existing_config.get("recommendations", [])
         except (json.JSONDecodeError, OSError):
+            # If the file is missing, unreadable, or invalid JSON, ignore it and
+            # fall back to an empty recommendation list.
             pass
 
     # Detect tech stack
@@ -2123,10 +2130,12 @@ def generate_vscode_extensions(project_path: Path) -> None:
         ]
         recommendations.update(java_extensions)
 
-    # Docker extension if Dockerfile exists
-    if (project_path / "Dockerfile").exists() or (
-        project_path / "docker-compose.yml"
-    ).exists():
+    # Docker extension if Dockerfile or docker-compose configuration exists
+    if (
+        (project_path / "Dockerfile").exists()
+        or (project_path / "docker-compose.yml").exists()
+        or (project_path / "docker-compose.yaml").exists()
+    ):
         recommendations.add("ms-azuretools.vscode-docker")
 
     # Build config
@@ -4533,12 +4542,16 @@ def init(
 
             # Generate .mcp.json file
             tracker.add("mcp-json", "Generate .mcp.json")
-            tracker.start("mcp-json")
-            try:
-                generate_mcp_json(project_path)
-                tracker.complete("mcp-json", ".mcp.json created")
-            except Exception as mcp_error:
-                tracker.error("mcp-json", f"generation failed: {mcp_error}")
+            mcp_json_path = project_path / ".mcp.json"
+            if mcp_json_path.exists():
+                tracker.skip("mcp-json", ".mcp.json already exists")
+            else:
+                tracker.start("mcp-json")
+                try:
+                    generate_mcp_json(project_path)
+                    tracker.complete("mcp-json", ".mcp.json created")
+                except Exception as mcp_error:
+                    tracker.error("mcp-json", f"generation failed: {mcp_error}")
 
             # Generate .vscode/extensions.json
             tracker.add("vscode-ext", "Generate VSCode extensions")

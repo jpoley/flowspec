@@ -170,3 +170,38 @@ class TestVSCodeExtensionsGeneration:
         config = json.loads(extensions_json.read_text())
 
         assert "rust-lang.rust-analyzer" in config["recommendations"]
+
+    def test_generate_vscode_extensions_java(self, tmp_path, monkeypatch):
+        """Generate extensions.json with Java extensions for Java projects."""
+        from flowspec_cli import generate_vscode_extensions
+
+        # Create a Java project marker (Maven)
+        (tmp_path / "pom.xml").write_text(
+            '<?xml version="1.0"?>\n<project></project>\n'
+        )
+
+        monkeypatch.chdir(tmp_path)
+        generate_vscode_extensions(tmp_path)
+
+        extensions_json = tmp_path / ".vscode" / "extensions.json"
+        config = json.loads(extensions_json.read_text())
+
+        assert "redhat.java" in config["recommendations"]
+        assert "vscjava.vscode-java-pack" in config["recommendations"]
+
+    def test_generate_vscode_extensions_docker_compose_yaml(
+        self, tmp_path, monkeypatch
+    ):
+        """Generate extensions.json with Docker extension when docker-compose.yaml exists."""
+        from flowspec_cli import generate_vscode_extensions
+
+        # Create a docker-compose.yaml file (not .yml)
+        (tmp_path / "docker-compose.yaml").write_text("version: '3'\n")
+
+        monkeypatch.chdir(tmp_path)
+        generate_vscode_extensions(tmp_path)
+
+        extensions_json = tmp_path / ".vscode" / "extensions.json"
+        config = json.loads(extensions_json.read_text())
+
+        assert "ms-azuretools.vscode-docker" in config["recommendations"]
