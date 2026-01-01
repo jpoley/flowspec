@@ -26,6 +26,7 @@ Or install globally:
 
 # Note: importlib.resources requires Python 3.9+, we require Python 3.11+
 import importlib.resources  # nosemgrep: python.lang.compatibility.python37.python37-compatibility-importlib2
+import json
 import logging
 import os
 import shlex
@@ -1995,6 +1996,162 @@ See the `memory/` directory for all available context files."""
 
     # Write CLAUDE.md
     claude_md_path.write_text(content)
+
+
+def generate_mcp_json(project_path: Path) -> bool:
+    """Generate .mcp.json file with MCP server configurations.
+
+    Includes common servers (backlog) and tech-stack-specific servers
+    (e.g., flowspec-security for Python projects).
+
+    Args:
+        project_path: Path to the project directory
+
+    Returns:
+        True if file was created, False if it already existed (skipped).
+    """
+    mcp_json_path = project_path / ".mcp.json"
+
+    # Skip if .mcp.json already exists
+    if mcp_json_path.exists():
+        return False
+
+    # Detect tech stack to customize MCP servers
+    tech_stack = detect_tech_stack(project_path)
+
+    # Build MCP servers configuration
+    mcp_servers = {
+        "backlog": {
+            "command": "backlog",
+            "args": ["mcp"],
+        }
+    }
+
+    # Add Python-specific servers
+    if "Python" in tech_stack["languages"]:
+        # Add flowspec security server for Python projects
+        mcp_servers["flowspec-security"] = {
+            "command": "uv",
+            "args": [
+                "--directory",
+                ".",
+                "run",
+                "python",
+                "-m",
+                "flowspec_cli.security.mcp_server",
+            ],
+        }
+
+    # Build the complete config
+    mcp_config = {"mcpServers": mcp_servers}
+
+    with open(mcp_json_path, "w", encoding="utf-8") as f:
+        json.dump(mcp_config, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+
+    return True
+
+
+def generate_vscode_extensions(project_path: Path) -> bool:
+    """Generate .vscode/extensions.json with tech-stack specific recommendations.
+
+    Args:
+        project_path: Path to the project directory
+
+    Returns:
+        True if file was created, False if it was updated (already existed).
+    """
+    vscode_dir = project_path / ".vscode"
+    extensions_path = vscode_dir / "extensions.json"
+
+    # Track if file existed before for return value
+    file_existed = extensions_path.exists()
+
+    # Create .vscode directory if it doesn't exist
+    vscode_dir.mkdir(parents=True, exist_ok=True)
+
+    # Load existing extensions.json if it exists
+    existing_recommendations = []
+    if file_existed:
+        try:
+            with open(extensions_path, encoding="utf-8") as f:
+                existing_config = json.load(f)
+                existing_recommendations = existing_config.get("recommendations", [])
+        except (json.JSONDecodeError, OSError):
+            # If the existing file is unreadable/corrupted or contains invalid JSON,
+            # ignore it and fall back to an empty recommendation list.
+            pass
+
+    # Detect tech stack
+    tech_stack = detect_tech_stack(project_path)
+
+    # Build recommendations list
+    recommendations = set(existing_recommendations)
+
+    # Base extensions for all projects
+    base_extensions = [
+        "github.copilot",
+        "github.copilot-chat",
+        "editorconfig.editorconfig",
+    ]
+    recommendations.update(base_extensions)
+
+    # Python-specific extensions
+    if "Python" in tech_stack["languages"]:
+        python_extensions = [
+            "ms-python.python",
+            "ms-python.vscode-pylance",
+            "charliermarsh.ruff",
+        ]
+        recommendations.update(python_extensions)
+
+    # JavaScript/TypeScript-specific extensions
+    if "JavaScript/TypeScript" in tech_stack["languages"]:
+        js_extensions = [
+            "dbaeumer.vscode-eslint",
+            "esbenp.prettier-vscode",
+        ]
+        recommendations.update(js_extensions)
+
+    # Go-specific extensions
+    if "Go" in tech_stack["languages"]:
+        go_extensions = [
+            "golang.go",
+        ]
+        recommendations.update(go_extensions)
+
+    # Rust-specific extensions
+    if "Rust" in tech_stack["languages"]:
+        rust_extensions = [
+            "rust-lang.rust-analyzer",
+        ]
+        recommendations.update(rust_extensions)
+
+    # Java-specific extensions
+    if "Java" in tech_stack["languages"]:
+        java_extensions = [
+            "redhat.java",
+            "vscjava.vscode-java-pack",
+        ]
+        recommendations.update(java_extensions)
+
+    # Docker extension if Dockerfile or docker-compose configuration exists
+    if (
+        (project_path / "Dockerfile").exists()
+        or (project_path / "docker-compose.yml").exists()
+        or (project_path / "docker-compose.yaml").exists()
+    ):
+        recommendations.add("ms-azuretools.vscode-docker")
+
+    # Build config
+    extensions_config = {"recommendations": sorted(recommendations)}
+
+    # Write extensions.json
+    with open(extensions_path, "w", encoding="utf-8") as f:
+        json.dump(extensions_config, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+
+    return not file_existed
 
 
 class StepTracker:
@@ -4387,6 +4544,36 @@ def init(
             else:
                 tracker.add("claude-md", "Generate CLAUDE.md")
                 tracker.skip("claude-md", "--skip-claude-md flag")
+
+            # Generate .mcp.json file
+            tracker.add("mcp-json", "Generate .mcp.json")
+            tracker.start("mcp-json")
+            try:
+                # generate_mcp_json returns False when .mcp.json already exists
+                if generate_mcp_json(project_path):
+                    tracker.complete("mcp-json", ".mcp.json created")
+                else:
+                    tracker.skip("mcp-json", ".mcp.json already exists")
+            except Exception as mcp_error:
+                tracker.error(
+                    "mcp-json",
+                    f"MCP JSON generation failed ({type(mcp_error).__name__}): {mcp_error}",
+                )
+
+            # Generate .vscode/extensions.json
+            tracker.add("vscode-ext", "Generate VSCode extensions")
+            tracker.start("vscode-ext")
+            try:
+                # generate_vscode_extensions returns True if created, False if updated
+                if generate_vscode_extensions(project_path):
+                    tracker.complete("vscode-ext", ".vscode/extensions.json created")
+                else:
+                    tracker.complete("vscode-ext", ".vscode/extensions.json updated")
+            except Exception as ext_error:
+                tracker.error(
+                    "vscode-ext",
+                    f"VSCode extensions generation failed ({type(ext_error).__name__}): {ext_error}",
+                )
 
             tracker.complete("final", "project ready")
         except Exception as e:
@@ -7828,7 +8015,6 @@ def security_scan(
         flowspec security scan --fail-on critical        # Fail only on critical
         flowspec security scan --format json -o out.json # JSON output to file
     """
-    import json
 
     from flowspec_cli.security.adapters.semgrep import SemgrepAdapter
     from flowspec_cli.security.exporters.json import JSONExporter
@@ -8596,7 +8782,6 @@ def workflow_validate(
         flowspec workflow validate --verbose          # Show detailed output
         flowspec workflow validate --json             # JSON output for CI
     """
-    import json
     from pathlib import Path
 
     from flowspec_cli.workflow.config import WorkflowConfig
