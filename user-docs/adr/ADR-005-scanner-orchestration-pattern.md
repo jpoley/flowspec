@@ -557,7 +557,7 @@ orchestrator.register_adapter("snyk", SnykAdapter())
 
 ### Option C: Container-Based Orchestration (Raptor's Approach)
 
-**Approach:** Package all tools in 6GB Docker container, use DevContainer.
+**Approach:** Package all tools in 6GB Docker container.
 
 **Pros:**
 - Guaranteed tool availability
