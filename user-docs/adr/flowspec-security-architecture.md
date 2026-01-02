@@ -28,7 +28,7 @@ After evaluating [gadievron/raptor](https://github.com/gadievron/raptor) (221 st
 | Dimension | Fork Raptor | Build Native | Winner |
 |-----------|-------------|--------------|--------|
 | **Time to MVP** | 1-2 weeks (integration complexity hidden) | 2-3 weeks (predictable scope) | Raptor +1 week |
-| **Dependencies** | 6GB DevContainer, `--privileged` required | Install tools on-demand (~100MB) | Native -5.9GB |
+| **Dependencies** | 6GB container, `--privileged` required | Install tools on-demand (~100MB) | Native -5.9GB |
 | **Scope Alignment** | Offensive testing (fuzzing, exploits) | SDD workflow integration | Native ✓ |
 | **Maintenance Burden** | Track upstream (alpha maturity) | No upstream dependency | Native ✓ |
 | **Architectural Fit** | Agent coordination mismatch | Native `/flowspec` workflow | Native ✓ |
@@ -36,7 +36,7 @@ After evaluating [gadievron/raptor](https://github.com/gadievron/raptor) (221 st
 
 **Investment Justification:**
 - **Option Value:** Native implementation preserves flexibility to add/remove scanners without upstream constraints
-- **Risk Mitigation:** Avoid 6GB DevContainer requirement that conflicts with lightweight CLI philosophy
+- **Risk Mitigation:** Avoid 6GB container requirement that conflicts with lightweight CLI philosophy
 - **Strategic Alignment:** Building native deepens our security domain expertise and competitive differentiation
 
 **Decision:** Build native, **borrow Raptor's patterns** (progressive token disclosure, tool orchestration, risk scoring formula, expert personas) without forking.

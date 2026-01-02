@@ -29,22 +29,7 @@ flowspec transforms how you build software with AI. Instead of giving AI loose i
 
 ## Quick Start
 
-### Option A: Devcontainer 
-
-Use the pre-built [`jpoley/flowspec-agents`](https://hub.docker.com/r/jpoley/flowspec-agents) Docker image with all AI coding assistants pre-installed:
-
-```bash
-# Copy devcontainer template to your project
-mkdir -p .devcontainer
-curl -o .devcontainer/devcontainer.json \
-  https://raw.githubusercontent.com/jpoley/flowspec/main/templates/devcontainer/devcontainer.json
-```
-
-Open in VS Code → "Reopen in Container". The image includes:
-- **Claude Code**, **Codex**, **Gemini CLI**, **GitHub Copilot CLI**
-- Python 3.11, Node.js 20, pnpm, uv, backlog.md, beads
-
-### Option B: Local Installation
+### Installation
 
 ```bash
 # Install flowspec CLI
@@ -312,18 +297,14 @@ Implementation is NOT complete until all three are delivered.
 
 ## Supported AI Agents
 
-| Agent | Support | Included in Devcontainer |
-|-------|---------|--------------------------|
-| [Claude Code](https://www.anthropic.com/claude-code) | Fully supported (primary) | ✅ |
-| [GitHub Copilot CLI](https://githubnext.com/projects/copilot-cli/) | Fully supported | ✅ |
-| [Codex CLI](https://github.com/openai/codex) | Fully supported | ✅ |
-| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | Fully supported | ✅ |
-| [Cursor](https://cursor.sh/) | Fully supported | - |
-| [Windsurf](https://windsurf.com/) | Fully supported | - |
-
-### Devcontainer: All AI Agents Pre-Installed
-
-The [`jpoley/flowspec-agents`](https://hub.docker.com/r/jpoley/flowspec-agents) Docker image provides a ready-to-use development environment with Claude Code, Codex, Gemini CLI, and GitHub Copilot CLI pre-installed. See [Quick Start](#quick-start) for setup instructions.
+| Agent | Support |
+|-------|---------|
+| [Claude Code](https://www.anthropic.com/claude-code) | Fully supported (primary) |
+| [GitHub Copilot CLI](https://githubnext.com/projects/copilot-cli/) | Fully supported |
+| [Codex CLI](https://github.com/openai/codex) | Fully supported |
+| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | Fully supported |
+| [Cursor](https://cursor.sh/) | Fully supported |
+| [Windsurf](https://windsurf.com/) | Fully supported |
 
 ### Multi-Agent Setup
 
@@ -336,8 +317,6 @@ flowspec init my-project --ai claude,copilot,cursor-agent
 
 ```
 project/
-├── .devcontainer/              # Devcontainer configuration
-│   └── devcontainer.json       # Uses jpoley/flowspec-agents image
 ├── docs/
 │   ├── assess/                 # Assessment reports from /flow:assess
 │   ├── prd/                    # PRDs from /flow:specify
@@ -356,20 +335,17 @@ project/
 ## Documentation
 
 ### Getting Started
-- **[Backlog Quick Start](docs/guides/backlog-quickstart.md)** - 5-minute intro
-- **[Problem Sizing Assessment](docs/guides/problem-sizing-assessment.md)** - When to use SDD
-- **[Devcontainer Template](templates/devcontainer/README.md)** - Devcontainer setup guide
+- **[Spec-Driven Development](docs/spec-driven.md)** - Core SDD methodology
+- **[What's New](docs/whats-new.md)** - Recent updates and changes
 
-### Workflow Details
-- **[Flowspec Workflow Diagram](docs/diagrams/flowspec-workflow.md)** - Full visual workflow
-- **[Flowspec + Backlog Integration](docs/guides/flowspec-backlog-workflow.md)** - How commands integrate
-- **[Agent Loop Classification](docs/reference/agent-loop-classification.md)** - Which agents for which phases
+### Guides
+- **[Task Management Tiers](docs/guides/task-management-tiers.md)** - Backlog.md + Beads workflow
+- **[Custom Workflows](docs/guides/custom-workflows.md)** - Customize flowspec workflows
+- **[Logging](docs/guides/logging.md)** - Agent logging configuration
 
 ### Reference
-- **[Backlog User Guide](docs/guides/backlog-user-guide.md)** - Complete task management
-- **[Inner Loop Reference](docs/reference/inner-loop.md)** - Development cycle
-- **[Outer Loop Reference](docs/reference/outer-loop.md)** - CI/CD and deployment
-- **[Docker Hub Architecture](docs/platform/dockerhub-devcontainer-architecture.md)** - flowspec-agents image details
+- **[Security CI/CD Setup](docs/guides/security-cicd-setup.md)** - Security scanning in CI/CD
+- **[Pre-commit Hooks](docs/guides/pre-commit-hooks.md)** - Git hook integration
 
 ## Legacy /speckit Commands
 
@@ -377,11 +353,15 @@ The original `/speckit.*` commands are available for standalone specification wo
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. All commits require DCO sign-off:
+Contributions are welcome! All commits require DCO sign-off:
 
 ```bash
 git commit -s -m "feat: your feature"
 ```
+
+See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for community guidelines.
+
+**Found a bug or have a suggestion?** Please open an issue at [github.com/jpoley/flowspec/issues](https://github.com/jpoley/flowspec/issues)
 
 ## License
 
@@ -390,5 +370,5 @@ MIT License - see [LICENSE](LICENSE) for details.
 ---
 
 <div align="center">
-    <p><em>Built on <a href="https://github.com/github/spec-kit">GitHub's spec-kit</a> | Powered by <a href="https://github.com/MrLesk/Backlog.md">Backlog.md</a> | Docker: <a href="https://hub.docker.com/r/jpoley/flowspec-agents">jpoley/flowspec-agents</a></em></p>
+    <p><em>Built on <a href="https://github.com/github/spec-kit">GitHub's spec-kit</a> | Powered by <a href="https://github.com/MrLesk/Backlog.md">Backlog.md</a></em></p>
 </div>

@@ -4,7 +4,7 @@ The Flowspec logging system provides comprehensive visibility into agent executi
 
 ## Quick Start
 
-Logging is **enabled by default** in the devcontainer. All logs are written to `.logs/`:
+Logging writes to `.logs/` when enabled:
 
 ```bash
 # Use claude normally - logging happens automatically
@@ -39,8 +39,6 @@ export FLOWSPEC_CAPTURE_HOOKS=true     # Enable hook logging (default: true)
 export LOG_DIR=".logs"                 # Log directory (default: .logs)
 ```
 
-These are set automatically in `.devcontainer/devcontainer.json` but can be overridden.
-
 ### Disable Logging
 
 To disable all logging for a single session:
@@ -49,7 +47,7 @@ To disable all logging for a single session:
 FLOWSPEC_CAPTURE_TTY=false FLOWSPEC_CAPTURE_HOOKS=false claude
 ```
 
-To disable logging permanently, edit `.devcontainer/devcontainer.json` and set the environment variables to `false`.
+To disable logging permanently, set these environment variables to `false` in your shell profile.
 
 ## Log Files
 
@@ -122,7 +120,12 @@ rm -rf .logs/
 
 ### Automated Cleanup
 
-The devcontainer automatically cleans up logs older than 7 days on startup (configured in `.devcontainer/post-create.sh`).
+Consider adding a cron job or startup script to clean up logs older than 7 days:
+
+```bash
+# Example cron entry (add to crontab -e)
+0 0 * * * find ~/.logs -name "*.log" -mtime +7 -delete
+```
 
 ## Architecture
 
@@ -165,7 +168,7 @@ def main():
 
 **Mitigations:**
 1. `.logs/` is in `.gitignore` (prevents commit)
-2. Log files have restrictive permissions in devcontainer
+2. Set restrictive permissions on log files (`chmod 600 .logs/*.log`)
 3. Review logs before sharing externally
 
 ### Scrubbing Sensitive Data
