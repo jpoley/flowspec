@@ -22,6 +22,7 @@ dependencies = [
 
 [project.scripts]
 flowspec = "flowspec_cli:main"
+specify = "flowspec_cli:main"
 
 [project.entry-points.pytest11]
 flowspec_ac = "flowspec_cli.pytest_plugin"
