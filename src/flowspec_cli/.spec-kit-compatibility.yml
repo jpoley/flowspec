@@ -28,8 +28,7 @@ flowspec:
         description: "Multi-agent implementation (Frontend/Backend/AI/ML + Reviews)"
       - name: "flow:validate"
         description: "QA, Security, Documentation, and Release validation"
-      - name: "flow:operate"
-        description: "SRE operations (CI/CD, K8s, DevSecOps)"
+      # NOTE: flow:operate removed - deployment is outer loop (use /ops:* commands)
     
     languages:
       - python
@@ -74,8 +73,8 @@ backlog-md:
   compatible_with:
     min: "1.20.0"
     max: "2.0.0"
-    tested: "1.21.0"
-    recommended: "1.21.0"
+    tested: "1.28.1"
+    recommended: "1.28.0"
   repository: "jpoley/backlog-md"
   installation:
     pnpm:

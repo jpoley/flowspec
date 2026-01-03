@@ -6948,8 +6948,17 @@ def backlog_upgrade(
     console.print(f"[cyan]Current Version:[/cyan] {current_version}")
     console.print(f"[cyan]Target Version:[/cyan] {target_version}\n")
 
-    # Check if upgrade needed
-    if current_version == target_version and not force:
+    # Check if upgrade needed (don't downgrade unless forced)
+    version_cmp = compare_semver(current_version, target_version)
+    if version_cmp > 0 and not force:
+        console.print(
+            f"[green]backlog-md is already at a newer version ({current_version})[/green]"
+        )
+        console.print(
+            "[dim]Use --force to downgrade, or update .spec-kit-compatibility.yml[/dim]"
+        )
+        raise typer.Exit(0)
+    if version_cmp == 0 and not force:
         console.print("[green]backlog-md is already at the recommended version[/green]")
         raise typer.Exit(0)
 
