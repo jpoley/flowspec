@@ -9,6 +9,7 @@ Tests cover:
 """
 
 import re
+import subprocess
 import sys
 from unittest.mock import MagicMock, patch
 
@@ -18,6 +19,7 @@ from typer.testing import CliRunner
 from flowspec_cli import (
     UPGRADE_TOOLS_COMPONENTS,
     _get_installed_jp_spec_kit_version,
+    _run_npm_global_install,
     _upgrade_backlog_md,
     _upgrade_jp_spec_kit,
     _upgrade_spec_kit,
@@ -48,6 +50,131 @@ class TestUpgradeToolsComponents:
     def test_contains_beads(self):
         """beads is a valid component."""
         assert "beads" in UPGRADE_TOOLS_COMPONENTS
+
+
+class TestRunNpmGlobalInstall:
+    """Tests for _run_npm_global_install helper function."""
+
+    def test_no_package_manager_available(self):
+        """Returns failure when no package manager is available."""
+        with patch("flowspec_cli.get_available_package_managers", return_value=[]):
+            success, message, pkg_mgr = _run_npm_global_install("backlog.md", "1.0.0")
+            assert success is False
+            assert "No Node.js package manager" in message
+            assert pkg_mgr is None
+
+    def test_npm_success(self):
+        """Successfully installs with npm."""
+        with patch("flowspec_cli.get_available_package_managers", return_value=["npm"]):
+            mock_result = MagicMock()
+            mock_result.returncode = 0
+            with patch("subprocess.run", return_value=mock_result):
+                success, message, pkg_mgr = _run_npm_global_install(
+                    "backlog.md", "1.0.0"
+                )
+                assert success is True
+                assert "npm" in message
+                assert pkg_mgr == "npm"
+
+    def test_pnpm_success(self):
+        """Successfully installs with pnpm."""
+        with patch(
+            "flowspec_cli.get_available_package_managers", return_value=["pnpm"]
+        ):
+            mock_result = MagicMock()
+            mock_result.returncode = 0
+            with patch("subprocess.run", return_value=mock_result):
+                success, message, pkg_mgr = _run_npm_global_install(
+                    "@beads/bd", "0.30.0"
+                )
+                assert success is True
+                assert "pnpm" in message
+                assert pkg_mgr == "pnpm"
+
+    def test_fallback_pnpm_to_npm(self):
+        """Falls back to npm when pnpm fails."""
+        with patch(
+            "flowspec_cli.get_available_package_managers", return_value=["pnpm", "npm"]
+        ):
+            call_count = [0]
+
+            def mock_run(cmd, **kwargs):
+                call_count[0] += 1
+                if cmd[0] == "pnpm":
+                    # pnpm fails - CalledProcessError uses output= for stdout
+                    e = subprocess.CalledProcessError(
+                        1, cmd, output="pnpm error message"
+                    )
+                    e.stderr = ""
+                    raise e
+                else:
+                    # npm succeeds
+                    result = MagicMock()
+                    result.returncode = 0
+                    return result
+
+            with patch("subprocess.run", side_effect=mock_run):
+                success, message, pkg_mgr = _run_npm_global_install(
+                    "backlog.md", "1.0.0"
+                )
+                assert success is True
+                assert call_count[0] == 2  # pnpm tried, then npm
+                assert pkg_mgr == "npm"
+
+    def test_all_package_managers_fail(self):
+        """Returns failure with combined error when all package managers fail."""
+        with patch(
+            "flowspec_cli.get_available_package_managers", return_value=["pnpm", "npm"]
+        ):
+
+            def mock_run(cmd, **kwargs):
+                if cmd[0] == "pnpm":
+                    e = subprocess.CalledProcessError(
+                        1, cmd, output="pnpm config error"
+                    )
+                    e.stderr = ""
+                    raise e
+                else:
+                    e = subprocess.CalledProcessError(1, cmd, output="")
+                    e.stderr = "npm network error"
+                    raise e
+
+            with patch("subprocess.run", side_effect=mock_run):
+                success, message, pkg_mgr = _run_npm_global_install(
+                    "backlog.md", "1.0.0"
+                )
+                assert success is False
+                assert "pnpm" in message
+                assert "npm" in message
+                assert pkg_mgr is None
+
+    def test_captures_stdout_when_stderr_empty(self):
+        """Captures stdout when stderr is empty (pnpm writes errors to stdout)."""
+        with patch(
+            "flowspec_cli.get_available_package_managers", return_value=["pnpm"]
+        ):
+
+            def mock_run(cmd, **kwargs):
+                e = subprocess.CalledProcessError(
+                    1,
+                    cmd,
+                    output="ERR_PNPM_NO_GLOBAL_BIN_DIR: Unable to find global bin",
+                )
+                e.stderr = ""
+                raise e
+
+            with patch("subprocess.run", side_effect=mock_run):
+                success, message, _ = _run_npm_global_install("backlog.md", "1.0.0")
+                assert success is False
+                assert "ERR_PNPM_NO_GLOBAL_BIN_DIR" in message
+
+    def test_file_not_found_graceful(self):
+        """Handles FileNotFoundError gracefully."""
+        with patch("flowspec_cli.get_available_package_managers", return_value=["npm"]):
+            with patch("subprocess.run", side_effect=FileNotFoundError()):
+                success, message, _ = _run_npm_global_install("backlog.md", "1.0.0")
+                assert success is False
+                assert "not found" in message.lower()
 
 
 class TestGetInstalledFlowspecKitVersion:
@@ -213,7 +340,9 @@ class TestUpgradeBacklogMd:
             "flowspec_cli.check_backlog_installed_version", return_value="1.0.0"
         ):
             with patch("flowspec_cli.get_npm_latest_version", return_value="2.0.0"):
-                with patch("flowspec_cli.detect_package_manager", return_value=None):
+                with patch(
+                    "flowspec_cli.get_available_package_managers", return_value=[]
+                ):
                     success, message = _upgrade_backlog_md(dry_run=False)
                     assert success is False
                     assert "No Node.js package manager" in message
@@ -224,7 +353,9 @@ class TestUpgradeBacklogMd:
             "flowspec_cli.check_backlog_installed_version", return_value="1.0.0"
         ):
             with patch("flowspec_cli.get_npm_latest_version", return_value="2.0.0"):
-                with patch("flowspec_cli.detect_package_manager", return_value="npm"):
+                with patch(
+                    "flowspec_cli.get_available_package_managers", return_value=["npm"]
+                ):
                     with patch("subprocess.run", side_effect=FileNotFoundError()):
                         success, message = _upgrade_backlog_md(dry_run=False)
                         assert success is False
@@ -237,7 +368,9 @@ class TestUpgradeBacklogMd:
             "flowspec_cli.check_backlog_installed_version", return_value="1.0.0"
         ):
             with patch("flowspec_cli.get_npm_latest_version", return_value="2.0.0"):
-                with patch("flowspec_cli.detect_package_manager", return_value="npm"):
+                with patch(
+                    "flowspec_cli.get_available_package_managers", return_value=["npm"]
+                ):
                     captured_cmd = []
 
                     def capture_cmd(cmd, **kwargs):
@@ -259,7 +392,9 @@ class TestUpgradeBacklogMd:
             "flowspec_cli.check_backlog_installed_version", return_value="1.0.0"
         ):
             with patch("flowspec_cli.get_npm_latest_version", return_value="2.0.0"):
-                with patch("flowspec_cli.detect_package_manager", return_value="pnpm"):
+                with patch(
+                    "flowspec_cli.get_available_package_managers", return_value=["pnpm"]
+                ):
                     captured_cmd = []
 
                     def capture_cmd(cmd, **kwargs):

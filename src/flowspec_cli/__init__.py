@@ -956,6 +956,64 @@ def detect_package_manager() -> Optional[str]:
     return None
 
 
+def get_available_package_managers() -> list[str]:
+    """Get list of available Node.js package managers.
+
+    Returns:
+        List of available package managers in order of preference (pnpm first, then npm)
+    """
+    pkg_managers = []
+    if shutil.which("pnpm"):
+        pkg_managers.append("pnpm")
+    if shutil.which("npm"):
+        pkg_managers.append("npm")
+    return pkg_managers
+
+
+def _run_npm_global_install(
+    package: str, version: str
+) -> tuple[bool, str, Optional[str]]:
+    """Install an npm package globally, with fallback from pnpm to npm.
+
+    Args:
+        package: npm package name (e.g., "backlog.md" or "@beads/bd")
+        version: version to install (e.g., "1.28.1")
+
+    Returns:
+        Tuple of (success, message, package_manager_used)
+        - success: True if installation succeeded
+        - message: Success/error message
+        - package_manager_used: "pnpm", "npm", or None if both failed
+    """
+    pkg_managers = get_available_package_managers()
+
+    if not pkg_managers:
+        return False, "No Node.js package manager found (npm or pnpm required)", None
+
+    errors = []
+    for pkg_manager in pkg_managers:
+        try:
+            if pkg_manager == "pnpm":
+                cmd = ["pnpm", "add", "-g", f"{package}@{version}"]
+            else:
+                cmd = ["npm", "install", "-g", f"{package}@{version}"]
+
+            subprocess.run(cmd, capture_output=True, text=True, check=True)
+            return True, f"Installed with {pkg_manager}", pkg_manager
+        except subprocess.CalledProcessError as e:
+            # Capture both stdout and stderr for error message
+            error_output = (e.stderr or e.stdout or "").strip()
+            if not error_output:
+                error_output = f"Command failed with exit code {e.returncode}"
+            errors.append(f"{pkg_manager}: {error_output}")
+            # Continue to try next package manager
+        except FileNotFoundError:
+            errors.append(f"{pkg_manager}: binary not found")
+
+    # All package managers failed
+    return False, "; ".join(errors), None
+
+
 def compare_semver(version1: str, version2: str) -> int:
     """Simple semantic version comparison.
 
@@ -5353,6 +5411,8 @@ def _upgrade_jp_spec_kit(
 def _upgrade_backlog_md(dry_run: bool = False) -> tuple[bool, str]:
     """Upgrade or install backlog-md via npm/pnpm.
 
+    Uses _run_npm_global_install which tries pnpm first, then falls back to npm.
+
     Args:
         dry_run: If True, only show what would be done
 
@@ -5370,26 +5430,14 @@ def _upgrade_backlog_md(dry_run: bool = False) -> tuple[bool, str]:
         if dry_run:
             return True, f"Would install version {available_version}"
 
-        pkg_manager = detect_package_manager()
-        if not pkg_manager:
-            return False, "No Node.js package manager found (npm or pnpm required)"
+        success, message, _ = _run_npm_global_install("backlog.md", available_version)
+        if not success:
+            return False, f"Install failed: {message}"
 
-        try:
-            if pkg_manager == "pnpm":
-                cmd = ["pnpm", "add", "-g", f"backlog.md@{available_version}"]
-            else:
-                cmd = ["npm", "install", "-g", f"backlog.md@{available_version}"]
-
-            subprocess.run(cmd, check=True, capture_output=True, text=True)
-
-            new_version = check_backlog_installed_version()
-            if new_version:
-                return True, f"Installed version {new_version}"
-            return False, "Install completed but version check failed"
-        except FileNotFoundError:
-            return False, f"{pkg_manager} not found"
-        except subprocess.CalledProcessError as e:
-            return False, f"Install failed: {e.stderr}"
+        new_version = check_backlog_installed_version()
+        if new_version:
+            return True, f"Installed version {new_version}"
+        return False, "Install completed but version check failed"
 
     # Already at latest
     if compare_semver(current_version, available_version) >= 0:
@@ -5398,30 +5446,20 @@ def _upgrade_backlog_md(dry_run: bool = False) -> tuple[bool, str]:
     if dry_run:
         return True, f"Would upgrade from {current_version} to {available_version}"
 
-    pkg_manager = detect_package_manager()
-    if not pkg_manager:
-        return False, "No Node.js package manager found (npm or pnpm required)"
+    success, message, _ = _run_npm_global_install("backlog.md", available_version)
+    if not success:
+        return False, f"Upgrade failed: {message}"
 
-    try:
-        if pkg_manager == "pnpm":
-            cmd = ["pnpm", "add", "-g", f"backlog.md@{available_version}"]
-        else:
-            cmd = ["npm", "install", "-g", f"backlog.md@{available_version}"]
-
-        subprocess.run(cmd, check=True, capture_output=True, text=True)
-
-        new_version = check_backlog_installed_version()
-        if new_version == available_version:
-            return True, f"Upgraded from {current_version} to {new_version}"
-        return True, f"Upgrade completed (version: {new_version or 'unknown'})"
-    except FileNotFoundError:
-        return False, f"{pkg_manager} not found - package manager may have been removed"
-    except subprocess.CalledProcessError as e:
-        return False, f"Upgrade failed: {e.stderr}"
+    new_version = check_backlog_installed_version()
+    if new_version == available_version:
+        return True, f"Upgraded from {current_version} to {new_version}"
+    return True, f"Upgrade completed (version: {new_version or 'unknown'})"
 
 
 def _upgrade_beads(dry_run: bool = False) -> tuple[bool, str]:
     """Upgrade or install beads via npm/pnpm.
+
+    Uses _run_npm_global_install which tries pnpm first, then falls back to npm.
 
     Args:
         dry_run: If True, only show what would be done
@@ -5440,26 +5478,14 @@ def _upgrade_beads(dry_run: bool = False) -> tuple[bool, str]:
         if dry_run:
             return True, f"Would install version {available_version}"
 
-        pkg_manager = detect_package_manager()
-        if not pkg_manager:
-            return False, "No Node.js package manager found (npm or pnpm required)"
+        success, message, _ = _run_npm_global_install("@beads/bd", available_version)
+        if not success:
+            return False, f"Install failed: {message}"
 
-        try:
-            if pkg_manager == "pnpm":
-                cmd = ["pnpm", "add", "-g", f"@beads/bd@{available_version}"]
-            else:
-                cmd = ["npm", "install", "-g", f"@beads/bd@{available_version}"]
-
-            subprocess.run(cmd, check=True, capture_output=True, text=True)
-
-            new_version = check_beads_installed_version()
-            if new_version:
-                return True, f"Installed version {new_version}"
-            return False, "Install completed but version check failed"
-        except FileNotFoundError:
-            return False, f"{pkg_manager} not found"
-        except subprocess.CalledProcessError as e:
-            return False, f"Install failed: {e.stderr}"
+        new_version = check_beads_installed_version()
+        if new_version:
+            return True, f"Installed version {new_version}"
+        return False, "Install completed but version check failed"
 
     # Already at latest
     if compare_semver(current_version, available_version) >= 0:
@@ -5468,26 +5494,14 @@ def _upgrade_beads(dry_run: bool = False) -> tuple[bool, str]:
     if dry_run:
         return True, f"Would upgrade from {current_version} to {available_version}"
 
-    pkg_manager = detect_package_manager()
-    if not pkg_manager:
-        return False, "No Node.js package manager found (npm or pnpm required)"
+    success, message, _ = _run_npm_global_install("@beads/bd", available_version)
+    if not success:
+        return False, f"Upgrade failed: {message}"
 
-    try:
-        if pkg_manager == "pnpm":
-            cmd = ["pnpm", "add", "-g", f"@beads/bd@{available_version}"]
-        else:
-            cmd = ["npm", "install", "-g", f"@beads/bd@{available_version}"]
-
-        subprocess.run(cmd, check=True, capture_output=True, text=True)
-
-        new_version = check_beads_installed_version()
-        if new_version == available_version:
-            return True, f"Upgraded from {current_version} to {new_version}"
-        return True, f"Upgrade completed (version: {new_version or 'unknown'})"
-    except FileNotFoundError:
-        return False, f"{pkg_manager} not found - package manager may have been removed"
-    except subprocess.CalledProcessError as e:
-        return False, f"Upgrade failed: {e.stderr}"
+    new_version = check_beads_installed_version()
+    if new_version == available_version:
+        return True, f"Upgraded from {current_version} to {new_version}"
+    return True, f"Upgrade completed (version: {new_version or 'unknown'})"
 
 
 def _upgrade_spec_kit(dry_run: bool = False) -> tuple[bool, str]:
