@@ -293,7 +293,14 @@ build_variant() {
   case $agent in
     claude)
       mkdir -p "$base_dir/.claude/commands"
-      generate_commands claude md "\$ARGUMENTS" "$base_dir/.claude/commands" "$script" ;;
+      generate_commands claude md "\$ARGUMENTS" "$base_dir/.claude/commands" "$script"
+      # Copy partials for {{INCLUDE:...}} directive resolution
+      if [[ -d templates/partials ]]; then
+        mkdir -p "$base_dir/.claude/partials"
+        cp -r templates/partials/* "$base_dir/.claude/partials/"
+        echo "Copied partials to .claude/partials/"
+      fi
+      ;;
     gemini)
       mkdir -p "$base_dir/.gemini/commands"
       generate_commands gemini toml "{{args}}" "$base_dir/.gemini/commands" "$script"
