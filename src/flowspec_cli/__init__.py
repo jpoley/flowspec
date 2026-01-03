@@ -1899,7 +1899,7 @@ def generate_claude_md(project_path: Path, project_name: str) -> None:
 /flow:plan      # Execute planning workflow
 /flow:implement # Implementation with code review
 /flow:validate  # QA, security, docs validation
-/flow:operate   # SRE operations (CI/CD, K8s)
+/flow:submit-n-watch-pr  # Submit PR and watch CI/reviews
 
 # Setup & Configuration Commands
 /flow:init      # Initialize constitution (greenfield/brownfield)
@@ -2599,6 +2599,7 @@ app = typer.Typer(
 
 # Workflow transitions with their default validation modes
 # Each transition can have a different validation mode
+# NOTE: operate removed - deployment is outer loop (use /ops:* commands)
 WORKFLOW_TRANSITIONS = [
     {"name": "assess", "from": "To Do", "to": "Assessed", "default": "NONE"},
     {"name": "research", "from": "Assessed", "to": "Researched", "default": "NONE"},
@@ -2606,7 +2607,6 @@ WORKFLOW_TRANSITIONS = [
     {"name": "plan", "from": "Specified", "to": "Planned", "default": "NONE"},
     {"name": "implement", "from": "Planned", "to": "Implemented", "default": "NONE"},
     {"name": "validate", "from": "Implemented", "to": "Validated", "default": "NONE"},
-    {"name": "operate", "from": "Validated", "to": "Operated", "default": "NONE"},
 ]
 
 
@@ -2628,7 +2628,7 @@ def prompt_validation_modes() -> dict[str, str]:
         ("plan", "Researched → Planned", "after /flow:plan, produces ADRs"),
         ("implement", "Planned → In Implementation", "after /flow:implement"),
         ("validate", "In Implementation → Validated", "after /flow:validate"),
-        ("operate", "Validated → Deployed", "after /flow:operate"),
+        # NOTE: operate removed - deployment is outer loop
     ]
 
     modes: dict[str, str] = {}
@@ -3398,6 +3398,212 @@ def download_template_from_github(
     return zip_path, metadata
 
 
+def download_and_build_from_branch(
+    branch: str,
+    ai_assistant: str,
+    script_type: str = "sh",
+    download_dir: Path = None,
+    *,
+    verbose: bool = True,
+    client: httpx.Client = None,
+    debug: bool = False,
+    github_token: str = None,
+    repo_owner: str = None,
+    repo_name: str = None,
+) -> Tuple[Path, dict]:
+    """Download repo from a branch and build template ZIP locally.
+
+    This is used for testing branches before release. It:
+    1. Downloads the repo zipball from the branch
+    2. Extracts to a temp directory
+    3. Runs create-release-packages.sh to build agent-specific ZIPs
+    4. Returns path to the built ZIP
+
+    Args:
+        branch: Git branch name to download from
+        ai_assistant: AI assistant type (claude, copilot, etc.)
+        script_type: Script type (sh or ps)
+        download_dir: Directory for downloads (uses temp if None)
+        verbose: Show progress messages
+        client: HTTP client to use
+        debug: Show debug output
+        github_token: GitHub token for API requests
+        repo_owner: Repository owner
+        repo_name: Repository name
+
+    Returns:
+        Tuple of (zip_path, metadata_dict)
+
+    Raises:
+        typer.Exit: On download or build errors
+    """
+    import subprocess
+
+    if repo_owner is None:
+        repo_owner = EXTENSION_REPO_OWNER
+    if repo_name is None:
+        repo_name = EXTENSION_REPO_NAME
+    if download_dir is None:
+        download_dir = Path(tempfile.mkdtemp())
+    if client is None:
+        client = httpx.Client(verify=ssl_context)
+
+    effective_token = _github_token(github_token)
+
+    if verbose:
+        console.print(
+            f"[cyan]Downloading {repo_owner}/{repo_name} branch '{branch}'...[/cyan]"
+        )
+
+    # Download zipball from branch
+    zipball_url = (
+        f"https://api.github.com/repos/{repo_owner}/{repo_name}/zipball/{branch}"
+    )
+
+    try:
+        response = client.get(
+            zipball_url,
+            timeout=120,
+            follow_redirects=True,
+            headers=_github_headers(effective_token),
+        )
+
+        if response.status_code == 404:
+            console.print(
+                f"[red]Branch '{branch}' not found in {repo_owner}/{repo_name}[/red]"
+            )
+            raise typer.Exit(1)
+
+        if response.status_code != 200:
+            console.print(
+                f"[red]Failed to download branch: HTTP {response.status_code}[/red]"
+            )
+            if debug:
+                console.print(f"Response: {response.text[:500]}")
+            raise typer.Exit(1)
+
+        # Save zipball
+        branch_zip = download_dir / f"{repo_name}-{branch}.zip"
+        with open(branch_zip, "wb") as f:
+            f.write(response.content)
+
+        if verbose:
+            console.print(f"[cyan]Downloaded:[/cyan] {len(response.content):,} bytes")
+
+    except httpx.RequestError as e:
+        console.print(f"[red]Network error downloading branch:[/red] {e}")
+        raise typer.Exit(1)
+
+    # Extract zipball
+    extract_dir = download_dir / "extracted"
+    extract_dir.mkdir(exist_ok=True)
+
+    try:
+        with zipfile.ZipFile(branch_zip, "r") as zf:
+            zf.extractall(extract_dir)
+    except zipfile.BadZipFile:
+        console.print("[red]Downloaded file is not a valid ZIP[/red]")
+        raise typer.Exit(1)
+
+    # Find the extracted directory (GitHub adds a prefix like 'jpoley-flowspec-abc123/')
+    extracted_items = list(extract_dir.iterdir())
+    if len(extracted_items) != 1 or not extracted_items[0].is_dir():
+        console.print("[red]Unexpected ZIP structure[/red]")
+        raise typer.Exit(1)
+
+    source_dir = extracted_items[0]
+
+    if verbose:
+        console.print(f"[cyan]Extracted to:[/cyan] {source_dir.name}")
+
+    # Run create-release-packages.sh to build the template
+    build_script = (
+        source_dir / ".github" / "workflows" / "scripts" / "create-release-packages.sh"
+    )
+
+    if not build_script.exists():
+        console.print(
+            "[red]Build script not found in branch[/red]\n"
+            f"Expected: {build_script.relative_to(source_dir)}"
+        )
+        raise typer.Exit(1)
+
+    if verbose:
+        console.print(
+            f"[cyan]Building templates for {ai_assistant} ({script_type})...[/cyan]"
+        )
+
+    try:
+        # Run the build script with limited agent/script to speed up
+        env = os.environ.copy()
+        env["AGENTS"] = ai_assistant
+        env["SCRIPTS"] = script_type
+
+        # Pass branch name without "v" prefix - script handles versioning
+        result = subprocess.run(
+            ["bash", str(build_script), branch],
+            cwd=str(source_dir),
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+
+        if result.returncode != 0:
+            console.print("[red]Template build failed[/red]")
+            if result.stderr:
+                console.print(
+                    Panel(result.stderr[:1000], title="Build Error", border_style="red")
+                )
+            raise typer.Exit(1)
+
+        if verbose and debug:
+            console.print(f"[dim]{result.stdout}[/dim]")
+
+    except subprocess.TimeoutExpired:
+        console.print("[red]Template build timed out[/red]")
+        raise typer.Exit(1)
+    except FileNotFoundError:
+        console.print(
+            "[red]bash not found - required for building templates from branch[/red]"
+        )
+        raise typer.Exit(1)
+
+    # Find the built ZIP
+    genreleases_dir = source_dir / ".genreleases"
+    expected_zip = f"spec-kit-template-{ai_assistant}-{script_type}-v{branch}.zip"
+    built_zip = genreleases_dir / expected_zip
+
+    if not built_zip.exists():
+        # Try finding any matching ZIP (version might differ)
+        pattern = f"spec-kit-template-{ai_assistant}-{script_type}-*.zip"
+        matches = list(genreleases_dir.glob(pattern))
+        if matches:
+            built_zip = matches[0]
+        else:
+            console.print(f"[red]Built template not found:[/red] {expected_zip}")
+            if genreleases_dir.exists():
+                console.print(f"Available: {list(genreleases_dir.glob('*.zip'))}")
+            raise typer.Exit(1)
+
+    # Copy to download_dir for consistent handling
+    final_zip = download_dir / built_zip.name
+    shutil.copy2(built_zip, final_zip)
+
+    if verbose:
+        console.print(f"[green]✓[/green] Built template: {final_zip.name}")
+
+    metadata = {
+        "filename": final_zip.name,
+        "size": final_zip.stat().st_size,
+        "release": f"branch:{branch}",
+        "branch": branch,
+        "source_dir": str(source_dir),
+    }
+
+    return final_zip, metadata
+
+
 def _cleanup_legacy_speckit_files(project_path: Path, ai_assistants: list[str]) -> None:
     """Remove legacy speckit.* files from base spec-kit after flowspec overlay.
 
@@ -3514,11 +3720,16 @@ def download_and_extract_two_stage(
     github_token: str = None,
     base_version: str = None,
     extension_version: str = None,
+    branch: str = None,
 ) -> Path:
     """Two-stage download: base spec-kit + flowspec extension overlay.
 
     Supports single or multiple AI assistants. When multiple assistants are specified,
     their respective agent directories are all extracted to the project.
+
+    When `branch` is specified, the flowspec extension is downloaded and built from
+    that git branch instead of from releases. This is useful for testing branches
+    before release. The base spec-kit still comes from releases.
 
     Returns project_path. Uses tracker if provided.
     """
@@ -3587,42 +3798,75 @@ def download_and_extract_two_stage(
             raise
 
         # Stage 2: Download flowspec extension for this agent
+        # When branch is specified, download and build from branch instead of release
         step_name = (
             f"fetch-extension-{agent}" if len(ai_assistants) > 1 else "fetch-extension"
         )
-        if tracker:
-            tracker.start(
-                step_name,
-                f"downloading {agent} extension from {EXTENSION_REPO_OWNER}/{EXTENSION_REPO_NAME}",
-            )
-
-        try:
-            ext_zip, ext_meta = download_template_from_github(
-                agent,
-                current_dir,
-                script_type=script_type,
-                verbose=verbose and tracker is None,
-                show_progress=(tracker is None),
-                client=client,
-                debug=debug,
-                github_token=github_token,
-                repo_owner=EXTENSION_REPO_OWNER,
-                repo_name=EXTENSION_REPO_NAME,
-                version=extension_version or EXTENSION_REPO_DEFAULT_VERSION,
-            )
+        if branch:
             if tracker:
-                tracker.complete(
+                tracker.start(
                     step_name,
-                    f"{agent} extension {ext_meta['release']} ({ext_meta['size']:,} bytes)",
+                    f"building {agent} extension from branch '{branch}'",
                 )
-        except Exception as e:
+            try:
+                ext_zip, ext_meta = download_and_build_from_branch(
+                    branch=branch,
+                    ai_assistant=agent,
+                    script_type=script_type,
+                    download_dir=current_dir,
+                    verbose=verbose and tracker is None,
+                    client=client,
+                    debug=debug,
+                    github_token=github_token,
+                    repo_owner=EXTENSION_REPO_OWNER,
+                    repo_name=EXTENSION_REPO_NAME,
+                )
+                if tracker:
+                    tracker.complete(
+                        step_name,
+                        f"{agent} extension from branch:{branch} ({ext_meta['size']:,} bytes)",
+                    )
+            except Exception as e:
+                if tracker:
+                    tracker.error(step_name, str(e))
+                # Clean up base_zip since we won't reach extraction
+                if base_zip and base_zip.exists():
+                    base_zip.unlink()
+                raise
+        else:
             if tracker:
-                tracker.error(step_name, str(e))
-            # download_template_from_github already cleans up its zip on error
-            # But we need to clean up the base_zip since we won't reach extraction
-            if base_zip and base_zip.exists():
-                base_zip.unlink()
-            raise
+                tracker.start(
+                    step_name,
+                    f"downloading {agent} extension from {EXTENSION_REPO_OWNER}/{EXTENSION_REPO_NAME}",
+                )
+
+            try:
+                ext_zip, ext_meta = download_template_from_github(
+                    agent,
+                    current_dir,
+                    script_type=script_type,
+                    verbose=verbose and tracker is None,
+                    show_progress=(tracker is None),
+                    client=client,
+                    debug=debug,
+                    github_token=github_token,
+                    repo_owner=EXTENSION_REPO_OWNER,
+                    repo_name=EXTENSION_REPO_NAME,
+                    version=extension_version or EXTENSION_REPO_DEFAULT_VERSION,
+                )
+                if tracker:
+                    tracker.complete(
+                        step_name,
+                        f"{agent} extension {ext_meta['release']} ({ext_meta['size']:,} bytes)",
+                    )
+            except Exception as e:
+                if tracker:
+                    tracker.error(step_name, str(e))
+                # download_template_from_github already cleans up its zip on error
+                # But we need to clean up the base_zip since we won't reach extraction
+                if base_zip and base_zip.exists():
+                    base_zip.unlink()
+                raise
 
         # Extract base for this agent
         step_name = (
@@ -3999,6 +4243,12 @@ def init(
         "--extension-version",
         help="Specific version of flowspec extension to use (default: latest)",
     ),
+    branch: str = typer.Option(
+        None,
+        "--branch",
+        "-b",
+        help="Install flowspec templates from a git branch (for testing). Builds templates locally.",
+    ),
     layered: bool = typer.Option(
         True,
         "--layered/--no-layered",
@@ -4126,6 +4376,14 @@ def init(
     if not here and not project_name:
         console.print(
             "[red]Error:[/red] Must specify either a project name, use '.' for current directory, or use --here flag"
+        )
+        raise typer.Exit(1)
+
+    # Branch mode requires layered download (two-stage: base + extension from branch)
+    if branch and not layered:
+        console.print(
+            "[red]Error:[/red] --branch requires --layered mode (the default). "
+            "Branch mode builds the extension from a git branch."
         )
         raise typer.Exit(1)
 
@@ -4446,6 +4704,7 @@ def init(
                     github_token=github_token,
                     base_version=base_version,
                     extension_version=extension_version,
+                    branch=branch,
                 )
             else:
                 # Single-stage download (legacy mode or base-only, supports multiple agents)
@@ -4548,6 +4807,65 @@ def init(
                 tracker.error(
                     "skills",
                     f"deployment failed ({type(skills_error).__name__}): {skills_error}",
+                )
+
+            # Generate VS Code Copilot agents from .claude/commands/
+            tracker.add("copilot-agents", "Generate VS Code Copilot agents")
+            tracker.start("copilot-agents")
+            try:
+                claude_commands_dir = project_path / ".claude" / "commands"
+                sync_script = (
+                    project_path
+                    / ".flowspec"
+                    / "scripts"
+                    / "bash"
+                    / "sync-copilot-agents.sh"
+                )
+
+                if not claude_commands_dir.exists():
+                    tracker.skip("copilot-agents", "no .claude/commands/ directory")
+                elif not sync_script.exists():
+                    tracker.skip("copilot-agents", "sync script not found")
+                elif shutil.which("bash") is None:
+                    tracker.skip("copilot-agents", "bash not available")
+                else:
+                    # Run the sync script to generate .github/agents/
+                    # Set PROJECT_ROOT explicitly since script is in .flowspec/scripts/bash/
+                    env = os.environ.copy()
+                    env["PROJECT_ROOT"] = str(project_path)
+                    result = subprocess.run(
+                        ["bash", str(sync_script), "--force"],
+                        cwd=str(project_path),
+                        capture_output=True,
+                        text=True,
+                        timeout=60,
+                        env=env,
+                    )
+                    if result.returncode == 0:
+                        # Count generated agents
+                        agents_dir = project_path / ".github" / "agents"
+                        if agents_dir.exists():
+                            agent_count = len(list(agents_dir.glob("*.agent.md")))
+                            tracker.complete(
+                                "copilot-agents",
+                                f"generated {agent_count} agents in .github/agents/",
+                            )
+                        else:
+                            tracker.complete("copilot-agents", "sync completed")
+                    else:
+                        # Non-fatal - continue with init
+                        error_msg = (
+                            result.stderr.strip()[:100]
+                            if result.stderr
+                            else "unknown error"
+                        )
+                        tracker.error("copilot-agents", f"sync failed: {error_msg}")
+            except subprocess.TimeoutExpired:
+                tracker.error("copilot-agents", "sync timed out after 60s")
+            except Exception as agents_error:
+                tracker.error(
+                    "copilot-agents",
+                    f"generation failed ({type(agents_error).__name__}): {agents_error}",
                 )
 
             # Set up constitution template
@@ -4960,7 +5278,7 @@ def init(
         "",
         "○ [cyan]/flow:assess[/] - Evaluate complexity and recommend workflow mode",
         "○ [cyan]/flow:research[/] - Research and business validation (after specify)",
-        "○ [cyan]/flow:operate[/] - Deploy and create runbooks (after validate)",
+        "○ [cyan]/flow:submit-n-watch-pr[/] - Submit PR and watch CI/reviews",
     ]
     enhancements_panel = Panel(
         "\n".join(enhancement_lines),
@@ -4999,6 +5317,12 @@ def upgrade_repo(
         "--github-token",
         help="GitHub token to use for API requests (or set GITHUB_FLOWSPEC environment variable)",
     ),
+    branch: str = typer.Option(
+        None,
+        "--branch",
+        "-b",
+        help="Upgrade templates from a git branch (for testing). Builds templates locally.",
+    ),
 ):
     """
     Upgrade repository templates to latest spec-kit and flowspec versions.
@@ -5009,7 +5333,7 @@ def upgrade_repo(
     This command will:
     1. Detect the AI assistant type from the project
     2. Download latest base spec-kit templates
-    3. Download latest flowspec extension
+    3. Download latest flowspec extension (or from branch if --branch specified)
     4. Merge with precedence (extension overrides base)
     5. Apply updates to current project
 
@@ -5019,6 +5343,7 @@ def upgrade_repo(
         flowspec upgrade-repo --base-version 0.0.20         # Pin base to specific version
         flowspec upgrade-repo --extension-version 0.0.21    # Pin extension to specific version
         flowspec upgrade-repo --templates-only              # Only update template files
+        flowspec upgrade-repo --branch fix3                 # Upgrade from git branch
 
     See also:
         flowspec upgrade-tools    # Upgrade globally installed CLI tools
@@ -5196,6 +5521,7 @@ def upgrade_repo(
                 github_token=github_token,
                 base_version=base_version,
                 extension_version=extension_version,
+                branch=branch,
             )
 
             tracker.complete("apply", "templates updated")
@@ -5331,20 +5657,70 @@ def _get_installed_jp_spec_kit_version() -> Optional[str]:
 
 
 def _upgrade_jp_spec_kit(
-    dry_run: bool = False, target_version: str | None = None
+    dry_run: bool = False,
+    target_version: str | None = None,
+    branch: str | None = None,
 ) -> tuple[bool, str]:
     """Upgrade flowspec (flowspec-cli) via uv tool.
 
     Args:
         dry_run: If True, only show what would be done
         target_version: Specific version to install (e.g., "0.2.325"). If None, uses latest.
+        branch: Git branch to install from (for testing). Mutually exclusive with target_version.
 
     Returns:
         Tuple of (success, message)
     """
     current_version = __version__
 
-    # Determine target version
+    if not current_version:
+        return False, "flowspec not installed via uv tool"
+
+    # Branch install mode - install from git branch
+    if branch:
+        # Check if there's a newer release available - user might want to upgrade
+        latest_release = get_github_latest_release(
+            EXTENSION_REPO_OWNER, EXTENSION_REPO_NAME
+        )
+        if latest_release and compare_semver(current_version, latest_release) < 0:
+            console.print(
+                f"[yellow]Note:[/yellow] Release v{latest_release} available "
+                f"(current: {current_version})"
+            )
+            console.print(
+                "[dim]Run 'flowspec upgrade-tools' without --branch to upgrade to release[/dim]\n"
+            )
+
+        if dry_run:
+            return True, f"Would install from branch '{branch}'"
+
+        git_url = (
+            f"git+https://github.com/{EXTENSION_REPO_OWNER}/{EXTENSION_REPO_NAME}.git"
+        )
+        git_url = f"{git_url}@{branch}"
+
+        try:
+            subprocess.run(
+                [
+                    "uv",
+                    "tool",
+                    "install",
+                    "--force",
+                    "flowspec-cli",
+                    "--from",
+                    git_url,
+                ],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            return True, f"Installed from branch '{branch}'"
+        except subprocess.CalledProcessError as e:
+            return False, f"Install failed: {e.stderr}"
+        except FileNotFoundError:
+            return False, "uv not found - install uv first"
+
+    # Normal version-based upgrade
     if target_version:
         # Validate that the requested version exists
         target_version = target_version.lstrip("v")
@@ -5359,9 +5735,6 @@ def _upgrade_jp_spec_kit(
         )
         if not install_version:
             return False, "Could not determine latest version"
-
-    if not current_version:
-        return False, "flowspec not installed via uv tool"
 
     # Check if already at target version
     if current_version == install_version:
@@ -5626,6 +5999,12 @@ def upgrade_tools(
         "-l",
         help="List available flowspec versions and exit.",
     ),
+    branch: str = typer.Option(
+        None,
+        "--branch",
+        "-b",
+        help="Install flowspec from a git branch (for testing). Upgrades to releases when available.",
+    ),
 ):
     """
     Install or upgrade CLI tools (flowspec, backlog-md, beads).
@@ -5645,6 +6024,7 @@ def upgrade_tools(
         flowspec upgrade-tools --dry-run          # Preview what would happen
         flowspec upgrade-tools --version 0.2.325  # Install specific flowspec version
         flowspec upgrade-tools --list-versions    # Show available versions
+        flowspec upgrade-tools --branch fix-bug   # Install from a git branch (testing)
 
     See also:
         flowspec upgrade-repo    # Upgrade repository templates
@@ -5656,22 +6036,32 @@ def upgrade_tools(
         _list_jp_spec_kit_versions()
         return
 
-    # Version flag only applies to flowspec
-    if version and component and component != "flowspec":
-        console.print("[red]Error:[/red] --version only applies to flowspec component")
+    # Version and branch are mutually exclusive
+    if version and branch:
+        console.print("[red]Error:[/red] --version and --branch are mutually exclusive")
         raise typer.Exit(1)
 
-    # If version specified without component, assume flowspec only
-    if version and not component:
+    # Version/branch flags only apply to flowspec
+    if (version or branch) and component and component != "flowspec":
+        console.print(
+            "[red]Error:[/red] --version and --branch only apply to flowspec component"
+        )
+        raise typer.Exit(1)
+
+    # If version or branch specified without component, assume flowspec only
+    if (version or branch) and not component:
         component = "flowspec"
 
-    _run_upgrade_tools(dry_run=dry_run, component=component, target_version=version)
+    _run_upgrade_tools(
+        dry_run=dry_run, component=component, target_version=version, branch=branch
+    )
 
 
 def _run_upgrade_tools(
     dry_run: bool = False,
     component: str | None = None,
     target_version: str | None = None,
+    branch: str | None = None,
 ) -> None:
     """Internal helper to run upgrade-tools logic.
 
@@ -5679,12 +6069,16 @@ def _run_upgrade_tools(
         dry_run: If True, only show what would be done
         component: Optional specific component to upgrade
         target_version: Optional specific version for flowspec
+        branch: Optional git branch to install from (for testing)
     """
     if dry_run:
         console.print("[yellow]DRY RUN MODE - No changes will be made[/yellow]\n")
 
     if target_version:
         console.print(f"[cyan]Target version: {target_version}[/cyan]\n")
+
+    if branch:
+        console.print(f"[cyan]Installing from branch: {branch}[/cyan]\n")
 
     # Validate component if specified
     if component and component not in UPGRADE_TOOLS_COMPONENTS:
@@ -5709,10 +6103,12 @@ def _run_upgrade_tools(
     # flowspec
     if not component or component == "flowspec":
         jp_current = versions["jp_spec_kit"].get("installed", "-")
-        jp_available = target_version or versions["jp_spec_kit"].get("available", "-")
+        jp_available = (
+            branch or target_version or versions["jp_spec_kit"].get("available", "-")
+        )
 
         success, message = _upgrade_jp_spec_kit(
-            dry_run=dry_run, target_version=target_version
+            dry_run=dry_run, target_version=target_version, branch=branch
         )
         status = "[green]✓[/green]" if success else "[red]✗[/red]"
         results.append(("flowspec", success, message))
@@ -6948,9 +7344,20 @@ def backlog_upgrade(
     console.print(f"[cyan]Current Version:[/cyan] {current_version}")
     console.print(f"[cyan]Target Version:[/cyan] {target_version}\n")
 
-    # Check if upgrade needed
-    if current_version == target_version and not force:
+    # Check if upgrade needed (don't downgrade unless forced)
+    version_cmp = compare_semver(current_version, target_version)
+    if version_cmp > 0 and not force:
+        console.print(
+            f"[green]backlog-md is already at a newer version ({current_version})[/green]"
+        )
+        console.print(
+            "[dim]Use --force to downgrade, or update .spec-kit-compatibility.yml[/dim]"
+        )
+        # Exit 0: This is a successful outcome (already up-to-date), not an error
+        raise typer.Exit(0)
+    if version_cmp == 0 and not force:
         console.print("[green]backlog-md is already at the recommended version[/green]")
+        # Exit 0: This is a successful outcome (already up-to-date), not an error
         raise typer.Exit(0)
 
     # Detect package manager
@@ -8948,6 +9355,268 @@ def workflow_validate(
             console.print()
 
         console.print("[dim]Fix the errors above and run validation again.[/dim]")
+        raise typer.Exit(1)
+
+
+def _get_dir_size(path: Path) -> tuple[int, int]:
+    """Get total size and file count for a directory.
+
+    Returns:
+        Tuple of (total_bytes, file_count)
+    """
+    total_size = 0
+    file_count = 0
+    try:
+        for item in path.rglob("*"):
+            if item.is_file():
+                try:
+                    total_size += item.stat().st_size
+                    file_count += 1
+                except (OSError, PermissionError):
+                    # Skip files we can't stat (permission issues or transient errors)
+                    pass
+    except (OSError, PermissionError):
+        # Skip directories we can't traverse; return best-effort size/count
+        pass
+    return total_size, file_count
+
+
+def _format_size(size_bytes: int) -> str:
+    """Format bytes as human-readable size."""
+    if size_bytes < 1024:
+        return f"{size_bytes} B"
+    elif size_bytes < 1024 * 1024:
+        return f"{size_bytes / 1024:.1f} KB"
+    else:
+        return f"{size_bytes / (1024 * 1024):.1f} MB"
+
+
+@app.command()
+def uninstall(
+    keep_docs: bool = typer.Option(
+        False, "--keep-docs", help="Preserve docs/ directory"
+    ),
+    keep_memory: bool = typer.Option(
+        False, "--keep-memory", help="Preserve memory/ directory"
+    ),
+    keep_workflows: bool = typer.Option(
+        False, "--keep-workflows", help="Preserve .github/workflows/"
+    ),
+    keep_all_github: bool = typer.Option(
+        False, "--keep-all-github", help="Preserve entire .github/ directory"
+    ),
+    keep_claude: bool = typer.Option(
+        False, "--keep-claude", help="Preserve .claude/ directory (user customizations)"
+    ),
+    keep_vscode: bool = typer.Option(
+        False, "--keep-vscode", help="Preserve .vscode/ files (user customizations)"
+    ),
+    force: bool = typer.Option(False, "--force", "-f", help="Skip confirmation prompt"),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="Show what would be removed without removing"
+    ),
+) -> None:
+    """Remove flowspec from the current project.
+
+    This command removes all flowspec-generated files and directories
+    from the current project. Use flags to preserve specific content.
+
+    Examples:
+        flowspec uninstall --dry-run          # Preview what will be removed
+        flowspec uninstall --keep-docs        # Remove flowspec but keep docs/
+        flowspec uninstall --keep-memory      # Preserve memory/ (constitution)
+        flowspec uninstall --keep-claude      # Preserve .claude/ customizations
+        flowspec uninstall --force            # Remove without confirmation
+    """
+    project_root = Path.cwd()
+
+    # Check if this is a flowspec project
+    flowspec_dir = project_root / ".flowspec"
+    workflow_file = project_root / "flowspec_workflow.yml"
+
+    if not flowspec_dir.exists() and not workflow_file.exists():
+        console.print(
+            "[red]Error:[/red] This doesn't appear to be a flowspec project.\n"
+            "No .flowspec/ directory or flowspec_workflow.yml found."
+        )
+        raise typer.Exit(1)
+
+    # Build list of items to remove
+    items_to_remove: list[tuple[Path, str]] = []  # (path, description)
+
+    # Core flowspec files (always removed)
+    core_items = [
+        (project_root / ".flowspec", "Flowspec configuration"),
+        (project_root / "flowspec_workflow.yml", "Workflow configuration"),
+        (project_root / ".mcp.json", "MCP server configuration"),
+        (project_root / "CLAUDE.md", "Claude configuration guide"),
+        (project_root / ".flowspec-light-mode", "Light mode marker"),
+    ]
+
+    for path, desc in core_items:
+        if path.exists():
+            items_to_remove.append((path, desc))
+
+    # Conditionally remove .claude/ (unless --keep-claude)
+    # Note: May contain user customizations beyond flowspec templates
+    if not keep_claude:
+        claude_dir = project_root / ".claude"
+        if claude_dir.exists():
+            items_to_remove.append((claude_dir, "Claude Code configuration"))
+
+    # Conditionally remove .vscode/extensions.json (unless --keep-vscode)
+    # Note: May contain user-added extension recommendations
+    if not keep_vscode:
+        vscode_ext = project_root / ".vscode" / "extensions.json"
+        if vscode_ext.exists():
+            items_to_remove.append((vscode_ext, "VS Code extensions"))
+
+    # Conditionally remove .github/agents/ (unless --keep-all-github)
+    if not keep_all_github:
+        agents_dir = project_root / ".github" / "agents"
+        if agents_dir.exists():
+            items_to_remove.append((agents_dir, "VS Code Copilot agents"))
+
+    # Conditionally remove docs/ (unless --keep-docs)
+    if not keep_docs:
+        docs_dir = project_root / "docs"
+        if docs_dir.exists():
+            items_to_remove.append((docs_dir, "Documentation"))
+
+    # Conditionally remove memory/ (unless --keep-memory)
+    if not keep_memory:
+        memory_dir = project_root / "memory"
+        if memory_dir.exists():
+            items_to_remove.append((memory_dir, "Memory (constitution)"))
+
+    # Conditionally remove .github/workflows/ (unless --keep-workflows or --keep-all-github)
+    if not keep_workflows and not keep_all_github:
+        workflows_dir = project_root / ".github" / "workflows"
+        if workflows_dir.exists():
+            items_to_remove.append((workflows_dir, "GitHub workflows"))
+
+    if not items_to_remove:
+        console.print("[yellow]Nothing to remove.[/yellow]")
+        raise typer.Exit(0)
+
+    # Calculate sizes and display preview
+    console.print("\n[bold]Flowspec Uninstall Preview[/bold]")
+    console.print("=" * 40 + "\n")
+
+    total_size = 0
+    total_files = 0
+
+    console.print("[bold red]The following will be REMOVED:[/bold red]")
+    for path, desc in items_to_remove:
+        if path.is_dir():
+            size, count = _get_dir_size(path)
+            total_size += size
+            total_files += count
+            console.print(
+                f"  {path.relative_to(project_root)}/".ljust(30)
+                + f"({_format_size(size)}, {count} files) - {desc}"
+            )
+        else:
+            try:
+                size = path.stat().st_size
+                total_size += size
+                total_files += 1
+            except (OSError, PermissionError):
+                size = 0
+            console.print(
+                f"  {path.relative_to(project_root)}".ljust(30)
+                + f"({_format_size(size)}) - {desc}"
+            )
+
+    # Show what's preserved
+    preserved = []
+    if keep_docs and (project_root / "docs").exists():
+        preserved.append("docs/ (--keep-docs)")
+    if keep_memory and (project_root / "memory").exists():
+        preserved.append("memory/ (--keep-memory)")
+    if keep_workflows and (project_root / ".github" / "workflows").exists():
+        preserved.append(".github/workflows/ (--keep-workflows)")
+    if keep_all_github and (project_root / ".github").exists():
+        preserved.append(".github/ (--keep-all-github)")
+    if keep_claude and (project_root / ".claude").exists():
+        preserved.append(".claude/ (--keep-claude)")
+    if keep_vscode and (project_root / ".vscode").exists():
+        preserved.append(".vscode/ (--keep-vscode)")
+
+    if preserved:
+        console.print("\n[bold green]The following will be PRESERVED:[/bold green]")
+        for item in preserved:
+            console.print(f"  {item}")
+
+    console.print(
+        f"\n[bold]Total: {_format_size(total_size)} ({total_files} files)[/bold]\n"
+    )
+
+    # Dry run - exit here
+    if dry_run:
+        console.print("[cyan]Dry run - no changes made.[/cyan]")
+        raise typer.Exit(0)
+
+    # Confirmation
+    if not force:
+        confirm = typer.confirm("Continue with removal?", default=False)
+        if not confirm:
+            console.print("[yellow]Cancelled.[/yellow]")
+            raise typer.Exit(0)
+
+    # Execute removal
+    console.print("\n[bold]Removing files...[/bold]\n")
+    removed_count = 0
+    error_count = 0
+
+    for path, desc in items_to_remove:
+        try:
+            if path.is_dir():
+                shutil.rmtree(path)
+            else:
+                path.unlink()
+            console.print(
+                f"  [green]✓[/green] Removed {path.relative_to(project_root)}"
+            )
+            removed_count += 1
+        except Exception as e:
+            console.print(
+                f"  [red]✗[/red] Failed to remove {path.relative_to(project_root)}: {e}"
+            )
+            error_count += 1
+
+    # Clean up empty .github/ directory if it's now empty
+    github_dir = project_root / ".github"
+    if github_dir.exists() and not any(github_dir.iterdir()):
+        try:
+            github_dir.rmdir()
+            console.print("  [green]✓[/green] Removed empty .github/")
+        except Exception:
+            # Best effort: ignore failures to remove empty directory
+            pass
+
+    # Clean up empty .vscode/ directory if it's now empty
+    vscode_dir = project_root / ".vscode"
+    if vscode_dir.exists() and not any(vscode_dir.iterdir()):
+        try:
+            vscode_dir.rmdir()
+            console.print("  [green]✓[/green] Removed empty .vscode/")
+        except Exception:
+            # Best effort: ignore failures to remove empty directory
+            pass
+
+    # Summary
+    console.print()
+    if error_count == 0:
+        console.print(
+            f"[bold green]✓ Flowspec removed successfully[/bold green] "
+            f"({removed_count} items removed)"
+        )
+    else:
+        console.print(
+            f"[bold yellow]⚠ Flowspec partially removed[/bold yellow] "
+            f"({removed_count} removed, {error_count} errors)"
+        )
         raise typer.Exit(1)
 
 
