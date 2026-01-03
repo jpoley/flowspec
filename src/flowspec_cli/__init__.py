@@ -3539,8 +3539,9 @@ def download_and_build_from_branch(
         env["AGENTS"] = ai_assistant
         env["SCRIPTS"] = script_type
 
+        # Pass branch name without "v" prefix - script handles versioning
         result = subprocess.run(
-            ["bash", str(build_script), f"v{branch}"],
+            ["bash", str(build_script), branch],
             cwd=str(source_dir),
             env=env,
             capture_output=True,
@@ -7352,9 +7353,11 @@ def backlog_upgrade(
         console.print(
             "[dim]Use --force to downgrade, or update .spec-kit-compatibility.yml[/dim]"
         )
+        # Exit 0: This is a successful outcome (already up-to-date), not an error
         raise typer.Exit(0)
     if version_cmp == 0 and not force:
         console.print("[green]backlog-md is already at the recommended version[/green]")
+        # Exit 0: This is a successful outcome (already up-to-date), not an error
         raise typer.Exit(0)
 
     # Detect package manager
@@ -9370,8 +9373,10 @@ def _get_dir_size(path: Path) -> tuple[int, int]:
                     total_size += item.stat().st_size
                     file_count += 1
                 except (OSError, PermissionError):
+                    # Skip files we can't stat (permission issues or transient errors)
                     pass
     except (OSError, PermissionError):
+        # Skip directories we can't traverse; return best-effort size/count
         pass
     return total_size, file_count
 
@@ -9400,9 +9405,13 @@ def uninstall(
     keep_all_github: bool = typer.Option(
         False, "--keep-all-github", help="Preserve entire .github/ directory"
     ),
-    force: bool = typer.Option(
-        False, "--force", "-f", help="Skip confirmation prompt"
+    keep_claude: bool = typer.Option(
+        False, "--keep-claude", help="Preserve .claude/ directory (user customizations)"
     ),
+    keep_vscode: bool = typer.Option(
+        False, "--keep-vscode", help="Preserve .vscode/ files (user customizations)"
+    ),
+    force: bool = typer.Option(False, "--force", "-f", help="Skip confirmation prompt"),
     dry_run: bool = typer.Option(
         False, "--dry-run", help="Show what would be removed without removing"
     ),
@@ -9416,6 +9425,7 @@ def uninstall(
         flowspec uninstall --dry-run          # Preview what will be removed
         flowspec uninstall --keep-docs        # Remove flowspec but keep docs/
         flowspec uninstall --keep-memory      # Preserve memory/ (constitution)
+        flowspec uninstall --keep-claude      # Preserve .claude/ customizations
         flowspec uninstall --force            # Remove without confirmation
     """
     project_root = Path.cwd()
@@ -9434,20 +9444,32 @@ def uninstall(
     # Build list of items to remove
     items_to_remove: list[tuple[Path, str]] = []  # (path, description)
 
-    # Always remove these (core flowspec files)
+    # Core flowspec files (always removed)
     core_items = [
         (project_root / ".flowspec", "Flowspec configuration"),
-        (project_root / ".claude", "Claude Code configuration"),
         (project_root / "flowspec_workflow.yml", "Workflow configuration"),
         (project_root / ".mcp.json", "MCP server configuration"),
         (project_root / "CLAUDE.md", "Claude configuration guide"),
         (project_root / ".flowspec-light-mode", "Light mode marker"),
-        (project_root / ".vscode" / "extensions.json", "VS Code extensions"),
     ]
 
     for path, desc in core_items:
         if path.exists():
             items_to_remove.append((path, desc))
+
+    # Conditionally remove .claude/ (unless --keep-claude)
+    # Note: May contain user customizations beyond flowspec templates
+    if not keep_claude:
+        claude_dir = project_root / ".claude"
+        if claude_dir.exists():
+            items_to_remove.append((claude_dir, "Claude Code configuration"))
+
+    # Conditionally remove .vscode/extensions.json (unless --keep-vscode)
+    # Note: May contain user-added extension recommendations
+    if not keep_vscode:
+        vscode_ext = project_root / ".vscode" / "extensions.json"
+        if vscode_ext.exists():
+            items_to_remove.append((vscode_ext, "VS Code extensions"))
 
     # Conditionally remove .github/agents/ (unless --keep-all-github)
     if not keep_all_github:
@@ -9516,13 +9538,19 @@ def uninstall(
         preserved.append(".github/workflows/ (--keep-workflows)")
     if keep_all_github and (project_root / ".github").exists():
         preserved.append(".github/ (--keep-all-github)")
+    if keep_claude and (project_root / ".claude").exists():
+        preserved.append(".claude/ (--keep-claude)")
+    if keep_vscode and (project_root / ".vscode").exists():
+        preserved.append(".vscode/ (--keep-vscode)")
 
     if preserved:
         console.print("\n[bold green]The following will be PRESERVED:[/bold green]")
         for item in preserved:
             console.print(f"  {item}")
 
-    console.print(f"\n[bold]Total: {_format_size(total_size)} ({total_files} files)[/bold]\n")
+    console.print(
+        f"\n[bold]Total: {_format_size(total_size)} ({total_files} files)[/bold]\n"
+    )
 
     # Dry run - exit here
     if dry_run:
@@ -9547,7 +9575,9 @@ def uninstall(
                 shutil.rmtree(path)
             else:
                 path.unlink()
-            console.print(f"  [green]✓[/green] Removed {path.relative_to(project_root)}")
+            console.print(
+                f"  [green]✓[/green] Removed {path.relative_to(project_root)}"
+            )
             removed_count += 1
         except Exception as e:
             console.print(
@@ -9562,6 +9592,7 @@ def uninstall(
             github_dir.rmdir()
             console.print("  [green]✓[/green] Removed empty .github/")
         except Exception:
+            # Best effort: ignore failures to remove empty directory
             pass
 
     # Clean up empty .vscode/ directory if it's now empty
@@ -9571,6 +9602,7 @@ def uninstall(
             vscode_dir.rmdir()
             console.print("  [green]✓[/green] Removed empty .vscode/")
         except Exception:
+            # Best effort: ignore failures to remove empty directory
             pass
 
     # Summary
