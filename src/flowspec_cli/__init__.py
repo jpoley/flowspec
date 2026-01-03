@@ -9355,6 +9355,239 @@ def workflow_validate(
         raise typer.Exit(1)
 
 
+def _get_dir_size(path: Path) -> tuple[int, int]:
+    """Get total size and file count for a directory.
+
+    Returns:
+        Tuple of (total_bytes, file_count)
+    """
+    total_size = 0
+    file_count = 0
+    try:
+        for item in path.rglob("*"):
+            if item.is_file():
+                try:
+                    total_size += item.stat().st_size
+                    file_count += 1
+                except (OSError, PermissionError):
+                    pass
+    except (OSError, PermissionError):
+        pass
+    return total_size, file_count
+
+
+def _format_size(size_bytes: int) -> str:
+    """Format bytes as human-readable size."""
+    if size_bytes < 1024:
+        return f"{size_bytes} B"
+    elif size_bytes < 1024 * 1024:
+        return f"{size_bytes / 1024:.1f} KB"
+    else:
+        return f"{size_bytes / (1024 * 1024):.1f} MB"
+
+
+@app.command()
+def uninstall(
+    keep_docs: bool = typer.Option(
+        False, "--keep-docs", help="Preserve docs/ directory"
+    ),
+    keep_memory: bool = typer.Option(
+        False, "--keep-memory", help="Preserve memory/ directory"
+    ),
+    keep_workflows: bool = typer.Option(
+        False, "--keep-workflows", help="Preserve .github/workflows/"
+    ),
+    keep_all_github: bool = typer.Option(
+        False, "--keep-all-github", help="Preserve entire .github/ directory"
+    ),
+    force: bool = typer.Option(
+        False, "--force", "-f", help="Skip confirmation prompt"
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="Show what would be removed without removing"
+    ),
+) -> None:
+    """Remove flowspec from the current project.
+
+    This command removes all flowspec-generated files and directories
+    from the current project. Use flags to preserve specific content.
+
+    Examples:
+        flowspec uninstall --dry-run          # Preview what will be removed
+        flowspec uninstall --keep-docs        # Remove flowspec but keep docs/
+        flowspec uninstall --keep-memory      # Preserve memory/ (constitution)
+        flowspec uninstall --force            # Remove without confirmation
+    """
+    project_root = Path.cwd()
+
+    # Check if this is a flowspec project
+    flowspec_dir = project_root / ".flowspec"
+    workflow_file = project_root / "flowspec_workflow.yml"
+
+    if not flowspec_dir.exists() and not workflow_file.exists():
+        console.print(
+            "[red]Error:[/red] This doesn't appear to be a flowspec project.\n"
+            "No .flowspec/ directory or flowspec_workflow.yml found."
+        )
+        raise typer.Exit(1)
+
+    # Build list of items to remove
+    items_to_remove: list[tuple[Path, str]] = []  # (path, description)
+
+    # Always remove these (core flowspec files)
+    core_items = [
+        (project_root / ".flowspec", "Flowspec configuration"),
+        (project_root / ".claude", "Claude Code configuration"),
+        (project_root / "flowspec_workflow.yml", "Workflow configuration"),
+        (project_root / ".mcp.json", "MCP server configuration"),
+        (project_root / "CLAUDE.md", "Claude configuration guide"),
+        (project_root / ".flowspec-light-mode", "Light mode marker"),
+        (project_root / ".vscode" / "extensions.json", "VS Code extensions"),
+    ]
+
+    for path, desc in core_items:
+        if path.exists():
+            items_to_remove.append((path, desc))
+
+    # Conditionally remove .github/agents/ (unless --keep-all-github)
+    if not keep_all_github:
+        agents_dir = project_root / ".github" / "agents"
+        if agents_dir.exists():
+            items_to_remove.append((agents_dir, "VS Code Copilot agents"))
+
+    # Conditionally remove docs/ (unless --keep-docs)
+    if not keep_docs:
+        docs_dir = project_root / "docs"
+        if docs_dir.exists():
+            items_to_remove.append((docs_dir, "Documentation"))
+
+    # Conditionally remove memory/ (unless --keep-memory)
+    if not keep_memory:
+        memory_dir = project_root / "memory"
+        if memory_dir.exists():
+            items_to_remove.append((memory_dir, "Memory (constitution)"))
+
+    # Conditionally remove .github/workflows/ (unless --keep-workflows or --keep-all-github)
+    if not keep_workflows and not keep_all_github:
+        workflows_dir = project_root / ".github" / "workflows"
+        if workflows_dir.exists():
+            items_to_remove.append((workflows_dir, "GitHub workflows"))
+
+    if not items_to_remove:
+        console.print("[yellow]Nothing to remove.[/yellow]")
+        raise typer.Exit(0)
+
+    # Calculate sizes and display preview
+    console.print("\n[bold]Flowspec Uninstall Preview[/bold]")
+    console.print("=" * 40 + "\n")
+
+    total_size = 0
+    total_files = 0
+
+    console.print("[bold red]The following will be REMOVED:[/bold red]")
+    for path, desc in items_to_remove:
+        if path.is_dir():
+            size, count = _get_dir_size(path)
+            total_size += size
+            total_files += count
+            console.print(
+                f"  {path.relative_to(project_root)}/".ljust(30)
+                + f"({_format_size(size)}, {count} files) - {desc}"
+            )
+        else:
+            try:
+                size = path.stat().st_size
+                total_size += size
+                total_files += 1
+            except (OSError, PermissionError):
+                size = 0
+            console.print(
+                f"  {path.relative_to(project_root)}".ljust(30)
+                + f"({_format_size(size)}) - {desc}"
+            )
+
+    # Show what's preserved
+    preserved = []
+    if keep_docs and (project_root / "docs").exists():
+        preserved.append("docs/ (--keep-docs)")
+    if keep_memory and (project_root / "memory").exists():
+        preserved.append("memory/ (--keep-memory)")
+    if keep_workflows and (project_root / ".github" / "workflows").exists():
+        preserved.append(".github/workflows/ (--keep-workflows)")
+    if keep_all_github and (project_root / ".github").exists():
+        preserved.append(".github/ (--keep-all-github)")
+
+    if preserved:
+        console.print("\n[bold green]The following will be PRESERVED:[/bold green]")
+        for item in preserved:
+            console.print(f"  {item}")
+
+    console.print(f"\n[bold]Total: {_format_size(total_size)} ({total_files} files)[/bold]\n")
+
+    # Dry run - exit here
+    if dry_run:
+        console.print("[cyan]Dry run - no changes made.[/cyan]")
+        raise typer.Exit(0)
+
+    # Confirmation
+    if not force:
+        confirm = typer.confirm("Continue with removal?", default=False)
+        if not confirm:
+            console.print("[yellow]Cancelled.[/yellow]")
+            raise typer.Exit(0)
+
+    # Execute removal
+    console.print("\n[bold]Removing files...[/bold]\n")
+    removed_count = 0
+    error_count = 0
+
+    for path, desc in items_to_remove:
+        try:
+            if path.is_dir():
+                shutil.rmtree(path)
+            else:
+                path.unlink()
+            console.print(f"  [green]✓[/green] Removed {path.relative_to(project_root)}")
+            removed_count += 1
+        except Exception as e:
+            console.print(
+                f"  [red]✗[/red] Failed to remove {path.relative_to(project_root)}: {e}"
+            )
+            error_count += 1
+
+    # Clean up empty .github/ directory if it's now empty
+    github_dir = project_root / ".github"
+    if github_dir.exists() and not any(github_dir.iterdir()):
+        try:
+            github_dir.rmdir()
+            console.print("  [green]✓[/green] Removed empty .github/")
+        except Exception:
+            pass
+
+    # Clean up empty .vscode/ directory if it's now empty
+    vscode_dir = project_root / ".vscode"
+    if vscode_dir.exists() and not any(vscode_dir.iterdir()):
+        try:
+            vscode_dir.rmdir()
+            console.print("  [green]✓[/green] Removed empty .vscode/")
+        except Exception:
+            pass
+
+    # Summary
+    console.print()
+    if error_count == 0:
+        console.print(
+            f"[bold green]✓ Flowspec removed successfully[/bold green] "
+            f"({removed_count} items removed)"
+        )
+    else:
+        console.print(
+            f"[bold yellow]⚠ Flowspec partially removed[/bold yellow] "
+            f"({removed_count} removed, {error_count} errors)"
+        )
+        raise typer.Exit(1)
+
+
 def main():
     app()
 
