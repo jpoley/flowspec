@@ -5666,7 +5666,7 @@ def _detect_duplicate_flowspec_installations() -> list[tuple[str, str]]:
 
     Returns:
         List of (path, source) tuples for each installation found.
-        Example: [("/Users/x/.local/bin/flowspec", "uv"), ("/Users/x/.pyenv/.../flowspec", "pip")]
+        Example: [("/Users/x/.local/bin/flowspec", "uv"), ("/Users/x/.pyenv/.../flowspec", "pip/pyenv")]
     """
     installations: list[tuple[str, str]] = []
     seen_paths: set[str] = set()

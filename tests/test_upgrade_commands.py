@@ -990,3 +990,5 @@ class TestDuplicateInstallationDetection:
         # Should only have the resolved pyenv path, not the shim
         paths = [inst[0] for inst in installations]
         assert "/Users/test/.pyenv/shims/flowspec" not in paths
+        # Verify the resolved pyenv path is properly detected
+        assert "/Users/test/.pyenv/versions/3.11.0/bin/flowspec" in paths
