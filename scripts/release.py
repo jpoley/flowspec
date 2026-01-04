@@ -45,6 +45,50 @@ def run(
     )
 
 
+def safe_rollback(release_branch: str, original_branch: str) -> None:
+    """Safely rollback release changes, handling potential failures gracefully.
+
+    This function attempts to:
+    1. Restore version files to their original state
+    2. Switch back to the original branch
+    3. Delete the release branch
+
+    Each step is wrapped in error handling to ensure the script doesn't crash
+    during error recovery, and provides informative messages about failures.
+    """
+    print("  Rolling back...")
+
+    # Step 1: Restore version files
+    try:
+        result = run(
+            ["git", "checkout", "--", "pyproject.toml", "src/flowspec_cli/__init__.py"],
+            check=False,
+            capture=True,
+        )
+        if result.returncode != 0:
+            print("  Warning: Failed to restore version files with 'git checkout --'.")
+    except Exception as e:
+        print(f"  Warning: Error while restoring version files: {e}")
+
+    # Step 2: Switch back to original branch
+    try:
+        result = run(["git", "checkout", original_branch], check=False, capture=True)
+        if result.returncode != 0:
+            print(f"  Warning: Failed to switch back to '{original_branch}' branch.")
+    except Exception as e:
+        print(
+            f"  Warning: Error while switching back to '{original_branch}' branch: {e}"
+        )
+
+    # Step 3: Delete release branch
+    try:
+        result = run(["git", "branch", "-D", release_branch], check=False, capture=True)
+        if result.returncode != 0:
+            print(f"  Warning: Failed to delete release branch {release_branch}.")
+    except Exception as e:
+        print(f"  Warning: Error while deleting release branch {release_branch}: {e}")
+
+
 def get_current_version() -> str:
     """Read current version from pyproject.toml."""
     pyproject = Path("pyproject.toml")
@@ -61,6 +105,33 @@ def get_current_version() -> str:
     return match.group(1)
 
 
+def get_init_version() -> str:
+    """Read current version from __init__.py."""
+    init_file = Path("src/flowspec_cli/__init__.py")
+    if not init_file.exists():
+        print("Error: src/flowspec_cli/__init__.py not found.")
+        sys.exit(1)
+
+    content = init_file.read_text()
+    match = re.search(r'__version__\s*=\s*"([^"]+)"', content)
+    if not match:
+        print("Error: Could not find __version__ in __init__.py")
+        sys.exit(1)
+
+    return match.group(1)
+
+
+def check_versions_consistent() -> tuple[bool, str, str]:
+    """Check that pyproject.toml and __init__.py versions match.
+
+    Returns:
+        Tuple of (matches, pyproject_version, init_version)
+    """
+    pyproject_version = get_current_version()
+    init_version = get_init_version()
+    return (pyproject_version == init_version, pyproject_version, init_version)
+
+
 def get_latest_tag() -> str | None:
     """Get the latest git tag."""
     result = run(
@@ -73,13 +144,19 @@ def get_latest_tag() -> str | None:
     return result.stdout.strip().split("\n")[0]
 
 
+def validate_version_format(version: str) -> bool:
+    """Validate version is MAJOR.MINOR.PATCH format (3 integers)."""
+    return bool(re.match(r"^\d+\.\d+\.\d+$", version.lstrip("v")))
+
+
 def parse_version(version: str) -> tuple[int, int, int]:
     """Parse a version string into (major, minor, patch)."""
     version = version.lstrip("v")
-    parts = version.split(".")
-    if len(parts) != 3:
+    if not validate_version_format(version):
         print(f"Error: Invalid version format: {version}")
+        print("  Expected: MAJOR.MINOR.PATCH (e.g., 0.3.18 or 1.2.3)")
         sys.exit(1)
+    parts = version.split(".")
     try:
         return int(parts[0]), int(parts[1]), int(parts[2])
     except ValueError:
@@ -290,10 +367,28 @@ Workflow:
         sys.exit(1)
     print("  GitHub CLI authenticated")
 
-    # Get current version
+    # Get current version and validate consistency
     print("\n Current state:")
-    current_version = get_current_version()
-    print(f"  Version in pyproject.toml: {current_version}")
+    matches, pyproject_ver, init_ver = check_versions_consistent()
+    print(f"  Version in pyproject.toml: {pyproject_ver}")
+    print(f"  Version in __init__.py: {init_ver}")
+
+    if not matches:
+        print("\n❌ Version mismatch between pyproject.toml and __init__.py!")
+        print("  Fix this manually before releasing.")
+        sys.exit(1)
+    print("  ✓ Versions are consistent")
+
+    current_version = pyproject_ver
+
+    # Validate current version format
+    if not validate_version_format(current_version):
+        print(
+            f"\n❌ Current version '{current_version}' is not valid MAJOR.MINOR.PATCH format!"
+        )
+        print("  Fix this manually before releasing.")
+        sys.exit(1)
+    print("  ✓ Version format is valid")
 
     latest_tag = get_latest_tag()
     if latest_tag:
@@ -302,6 +397,13 @@ Workflow:
     # Determine new version
     if args.version:
         new_version = args.version.lstrip("v")
+        # Validate user-specified version format
+        if not validate_version_format(new_version):
+            print(
+                f"\n❌ Specified version '{new_version}' is not valid MAJOR.MINOR.PATCH format!"
+            )
+            print("  Use format like: 0.3.19, 1.0.0")
+            sys.exit(1)
     elif args.major:
         new_version = bump_version(current_version, "major")
     elif args.minor:
@@ -360,6 +462,23 @@ Workflow:
     # Update files
     print("\n Updating version files:")
     update_version_files(new_version)
+
+    # Verify update was successful
+    print("\n Verifying version update:")
+    matches, pyproject_ver, init_ver = check_versions_consistent()
+    if not matches:
+        print("  ❌ Version mismatch after update!")
+        print(f"     pyproject.toml: {pyproject_ver}")
+        print(f"     __init__.py: {init_ver}")
+        safe_rollback(release_branch, current_branch)
+        sys.exit(1)
+    if pyproject_ver != new_version:
+        print("  ❌ Version not updated correctly!")
+        print(f"     Expected: {new_version}")
+        print(f"     Got: {pyproject_ver}")
+        safe_rollback(release_branch, current_branch)
+        sys.exit(1)
+    print(f"  ✓ Both files updated to {new_version}")
 
     # Clean up internal development logs
     print("\n Cleaning up internal development logs:")
