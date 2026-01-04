@@ -558,6 +558,80 @@ class TestUpgradeToolsCommand:
                             mock_bl.assert_not_called()
                             mock_bd.assert_called_once()
 
+    def test_duplicate_warning_called_for_all_components(self):
+        """Integration test: _warn_duplicate_installations is called when upgrading all."""
+        with patch("flowspec_cli.show_banner"):
+            with patch("flowspec_cli.get_all_component_versions") as mock_versions:
+                mock_versions.return_value = {
+                    "jp_spec_kit": {"installed": "1.0.0", "available": "1.0.0"},
+                    "spec_kit": {"installed": "1.0.0", "available": "1.0.0"},
+                    "backlog_md": {"installed": "1.0.0", "available": "1.0.0"},
+                    "beads": {"installed": "1.0.0", "available": "1.0.0"},
+                }
+                with patch(
+                    "flowspec_cli._upgrade_jp_spec_kit",
+                    return_value=(True, "Already at latest"),
+                ):
+                    with patch(
+                        "flowspec_cli._upgrade_backlog_md",
+                        return_value=(True, "Already at latest"),
+                    ):
+                        with patch(
+                            "flowspec_cli._upgrade_beads",
+                            return_value=(True, "Already at latest"),
+                        ):
+                            with patch(
+                                "flowspec_cli._warn_duplicate_installations",
+                                return_value=False,
+                            ) as mock_warn:
+                                result = runner.invoke(app, ["upgrade-tools"])
+                                assert result.exit_code == 0
+                                mock_warn.assert_called_once()
+
+    def test_duplicate_warning_called_for_flowspec_component(self):
+        """Integration test: _warn_duplicate_installations called for flowspec component."""
+        with patch("flowspec_cli.show_banner"):
+            with patch("flowspec_cli.get_all_component_versions") as mock_versions:
+                mock_versions.return_value = {
+                    "jp_spec_kit": {"installed": "1.0.0", "available": "1.0.0"},
+                    "spec_kit": {"installed": "1.0.0", "available": "1.0.0"},
+                    "backlog_md": {"installed": "1.0.0", "available": "1.0.0"},
+                    "beads": {"installed": "1.0.0", "available": "1.0.0"},
+                }
+                with patch(
+                    "flowspec_cli._upgrade_jp_spec_kit",
+                    return_value=(True, "Already at latest"),
+                ):
+                    with patch(
+                        "flowspec_cli._warn_duplicate_installations",
+                        return_value=False,
+                    ) as mock_warn:
+                        result = runner.invoke(app, ["upgrade-tools", "-c", "flowspec"])
+                        assert result.exit_code == 0
+                        mock_warn.assert_called_once()
+
+    def test_duplicate_warning_not_called_for_backlog_component(self):
+        """Integration test: _warn_duplicate_installations NOT called for backlog only."""
+        with patch("flowspec_cli.show_banner"):
+            with patch("flowspec_cli.get_all_component_versions") as mock_versions:
+                mock_versions.return_value = {
+                    "jp_spec_kit": {"installed": "1.0.0", "available": "1.0.0"},
+                    "spec_kit": {"installed": "1.0.0", "available": "1.0.0"},
+                    "backlog_md": {"installed": "1.0.0", "available": "1.0.0"},
+                    "beads": {"installed": "1.0.0", "available": "1.0.0"},
+                }
+                with patch(
+                    "flowspec_cli._upgrade_backlog_md",
+                    return_value=(True, "Already at latest"),
+                ):
+                    with patch(
+                        "flowspec_cli._warn_duplicate_installations",
+                        return_value=False,
+                    ) as mock_warn:
+                        result = runner.invoke(app, ["upgrade-tools", "-c", "backlog"])
+                        assert result.exit_code == 0
+                        mock_warn.assert_not_called()
+
 
 class TestUpgradeRepoCommand:
     """Tests for 'flowspec upgrade-repo' command."""
