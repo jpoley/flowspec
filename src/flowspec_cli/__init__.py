@@ -5963,6 +5963,7 @@ def upgrade_repo(
     tracker.add("fetch-extension", "Fetch flowspec extension")
     tracker.add("backup", "Backup current templates")
     tracker.add("apply", "Apply updates")
+    tracker.add("skills", "Sync skills")
     tracker.add("mcp", "Update MCP configuration")
     tracker.add("final", "Finalize")
 
@@ -6015,6 +6016,17 @@ def upgrade_repo(
             )
 
             tracker.complete("apply", "templates updated")
+
+            # Sync skills and report changes
+            tracker.start("skills")
+            from .skills import compare_skills_after_extraction
+
+            skills_result = compare_skills_after_extraction(project_path, backup_dir)
+            if skills_result.has_changes:
+                skills_summary = skills_result.summary()
+                tracker.complete("skills", skills_summary)
+            else:
+                tracker.complete("skills", "no changes")
 
             # Update MCP configuration with required servers
             tracker.start("mcp")
