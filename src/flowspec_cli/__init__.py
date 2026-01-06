@@ -5964,6 +5964,7 @@ def upgrade_repo(
     tracker.add("backup", "Backup current templates")
     tracker.add("apply", "Apply updates")
     tracker.add("skills", "Sync skills")
+    tracker.add("workflow", "Migrate workflow config")
     tracker.add("mcp", "Update MCP configuration")
     tracker.add("final", "Finalize")
 
@@ -5996,6 +5997,11 @@ def upgrade_repo(
                 if src.exists():
                     shutil.copytree(src, backup_dir / dir_name, dirs_exist_ok=True)
 
+            # Backup workflow config file
+            workflow_file = project_path / "flowspec_workflow.yml"
+            if workflow_file.exists():
+                shutil.copy2(workflow_file, backup_dir / "flowspec_workflow.yml")
+
             tracker.complete("backup", f"saved to {backup_dir.name}")
 
             # Apply two-stage upgrade
@@ -6027,6 +6033,21 @@ def upgrade_repo(
                 tracker.complete("skills", skills_summary)
             else:
                 tracker.complete("skills", "no changes")
+
+            # Migrate workflow configuration to v2.0
+            tracker.start("workflow")
+            from .workflow import migrate_workflow_config
+
+            workflow_result = migrate_workflow_config(
+                project_path, backup_dir=backup_dir
+            )
+            if workflow_result.migrated:
+                workflow_summary = workflow_result.summary()
+                tracker.complete("workflow", workflow_summary)
+            elif workflow_result.errors:
+                tracker.complete("workflow", f"error: {workflow_result.errors[0]}")
+            else:
+                tracker.complete("workflow", workflow_result.summary())
 
             # Update MCP configuration with required servers
             tracker.start("mcp")

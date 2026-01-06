@@ -63,6 +63,12 @@ from flowspec_cli.workflow.validator import (
     WorkflowValidator,
     validate_workflow,
 )
+from flowspec_cli.workflow.migration import (
+    WorkflowMigrationResult,
+    compare_workflow_after_extraction,
+    detect_workflow_version,
+    migrate_workflow_config,
+)
 
 __all__ = [
     # Configuration
@@ -109,4 +115,9 @@ __all__ = [
     "check_workflow_state",
     "get_next_state",
     "get_valid_workflows",
+    # Migration
+    "WorkflowMigrationResult",
+    "compare_workflow_after_extraction",
+    "detect_workflow_version",
+    "migrate_workflow_config",
 ]

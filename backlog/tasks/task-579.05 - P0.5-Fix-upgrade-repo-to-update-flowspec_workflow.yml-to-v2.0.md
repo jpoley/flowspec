@@ -1,10 +1,10 @@
 ---
 id: task-579.05
 title: 'P0.5: Fix upgrade-repo to update flowspec_workflow.yml to v2.0'
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-01-06 17:20'
-updated_date: '2026-01-06 18:49'
+updated_date: '2026-01-06 22:02'
 labels:
   - phase-0
   - upgrade-repo
@@ -34,10 +34,10 @@ Changes needed:
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 upgrade_repo detects flowspec_workflow.yml version
-- [ ] #2 v1.0 configs migrated to v2.0 format
-- [ ] #3 Custom configurations preserved during migration
-- [ ] #4 'operate' transition removed during migration
-- [ ] #5 New v2.0 sections added (roles, custom_workflows, agent_loops)
-- [ ] #6 Test: running upgrade-repo updates workflow config correctly
+- [x] #1 upgrade_repo detects flowspec_workflow.yml version
+- [x] #2 v1.0 configs migrated to v2.0 format
+- [x] #3 Custom configurations preserved during migration
+- [x] #4 'operate' transition removed during migration
+- [x] #5 New v2.0 sections added (roles, custom_workflows, agent_loops)
+- [x] #6 Test: running upgrade-repo updates workflow config correctly
 <!-- AC:END -->
