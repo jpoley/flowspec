@@ -191,7 +191,7 @@ CONSTITUTION_TIER_CHOICES = {
 COPILOT_AGENT_TEMPLATES = {
     "flow-specify.agent.md": """---
 name: "flow-specify"
-description: "Create or update feature specifications using PM planner agent (manages /spec.tasks)."
+description: "Create or update feature specifications using the PM planner agent and backlog task management tools."
 target: "chat"
 tools:
   - "Read"
