@@ -4,7 +4,7 @@ title: Update critical-rules.md with rigor rules reference
 status: Done
 assignee: []
 created_date: '2025-12-17 16:42'
-updated_date: '2025-12-29 12:17'
+updated_date: '2026-01-06 21:26'
 labels:
   - rigor
   - documentation
@@ -12,6 +12,7 @@ labels:
 dependencies:
   - task-541
 priority: low
+ordinal: 7000
 ---
 
 ## Description

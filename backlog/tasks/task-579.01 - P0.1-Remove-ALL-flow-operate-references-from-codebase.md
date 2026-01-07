@@ -5,7 +5,7 @@ status: Done
 assignee:
   - '@backend-engineer'
 created_date: '2026-01-06 17:19'
-updated_date: '2026-01-06 18:59'
+updated_date: '2026-01-06 21:26'
 labels:
   - phase-0
   - cleanup
@@ -14,6 +14,7 @@ labels:
 dependencies: []
 parent_task_id: task-579
 priority: high
+ordinal: 2000
 ---
 
 ## Description

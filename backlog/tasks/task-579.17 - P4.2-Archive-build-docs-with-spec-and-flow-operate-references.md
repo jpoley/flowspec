@@ -1,10 +1,10 @@
 ---
 id: task-579.17
 title: 'P4.2: Archive build-docs with /spec:* and /flow:operate references'
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-01-06 17:21'
-updated_date: '2026-01-06 18:52'
+updated_date: '2026-01-06 21:47'
 labels:
   - phase-4
   - documentation

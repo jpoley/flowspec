@@ -1,5 +1,5 @@
 ---
-name: "flow-validate"
+name: FlowValidate
 description: "Execute validation and quality assurance using QA, security, documentation, and release management agents."
 target: "chat"
 tools:
@@ -15,7 +15,7 @@ tools:
 
 handoffs:
   - label: "Submit PR"
-    agent: "flow-submit-n-watch-pr"
+    agent: "flow.submit-n-watch-pr"
     prompt: "Validation is complete. Submit PR and monitor CI/reviews."
     send: false
 ---

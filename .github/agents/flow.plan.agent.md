@@ -1,5 +1,5 @@
 ---
-name: "flow-plan"
+name: FlowPlan
 description: "Execute planning workflow using project architect and platform engineer agents to create ADRs and platform design."
 target: "chat"
 tools:
@@ -15,7 +15,7 @@ tools:
 
 handoffs:
   - label: "Start Implementation"
-    agent: "flow-implement"
+    agent: "flow.implement"
     prompt: "The technical design is complete. Start implementing the feature."
     send: false
 ---

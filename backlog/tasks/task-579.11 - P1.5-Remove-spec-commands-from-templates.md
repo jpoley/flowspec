@@ -1,10 +1,10 @@
 ---
 id: task-579.11
 title: 'P1.5: Remove /spec:* commands from templates'
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-01-06 17:20'
-updated_date: '2026-01-06 18:52'
+updated_date: '2026-01-06 21:46'
 labels:
   - phase-1
   - cleanup

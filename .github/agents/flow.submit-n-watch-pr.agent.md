@@ -1,5 +1,5 @@
 ---
-name: "flow-submit-n-watch-pr"
+name: FlowSubmitNWatchPR
 description: "Submit PR and autonomously monitor CI checks and Copilot reviews until approval-ready. Iteratively fix issues and resubmit."
 target: "chat"
 tools:

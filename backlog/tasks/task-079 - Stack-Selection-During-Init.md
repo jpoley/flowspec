@@ -1,11 +1,11 @@
 ---
 id: task-079
 title: Stack Selection During Init
-status: To Do
+status: Done
 assignee:
   - '@kinsale'
 created_date: '2025-11-27 21:53'
-updated_date: '2025-12-04 17:07'
+updated_date: '2026-01-06 21:26'
 labels:
   - flowspec-cli
   - feature
@@ -13,6 +13,7 @@ labels:
   - 'workflow:Specified'
 dependencies: []
 priority: medium
+ordinal: 6000
 ---
 
 ## Description
@@ -32,3 +33,9 @@ Allow users to select a technology stack (React+Go, React+Python, Full-Stack Typ
 - [ ] #7 Update release packages to include stacks
 - [ ] #8 Create integration tests for stack selection
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Closed as won't do - decided not to implement stack selection during init.
+<!-- SECTION:NOTES:END -->

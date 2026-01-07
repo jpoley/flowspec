@@ -373,3 +373,189 @@ class TestVSCodeExtensionsGeneration:
         config = json.loads(extensions_json.read_text())
 
         assert "ms-azuretools.vscode-docker" in config["recommendations"]
+
+
+class TestCopilotAgentNamingConvention:
+    """Test VSCode Copilot agent naming convention (ADR-001).
+
+    Verifies agents use dot-notation filenames (flow.specify.agent.md)
+    and PascalCase name fields (FlowSpecify) per ADR-001.
+    """
+
+    def test_copilot_agent_templates_use_dot_notation_filenames(self):
+        """Verify COPILOT_AGENT_TEMPLATES keys use dot notation (not hyphens).
+
+        Note: 'submit-n-watch-pr' is an exception - the command name itself
+        contains hyphens (it's "submit-n-watch" not "submitnwatch").
+        """
+        from flowspec_cli import COPILOT_AGENT_TEMPLATES
+
+        for filename in COPILOT_AGENT_TEMPLATES.keys():
+            # Should follow pattern: flow.{command}.agent.md
+            assert filename.endswith(".agent.md"), (
+                f"Agent template filename '{filename}' should end with .agent.md"
+            )
+            assert filename.startswith("flow."), (
+                f"Agent template filename '{filename}' should start with 'flow.'"
+            )
+
+            # Extract the command part: flow.{command}.agent.md -> {command}
+            command_part = filename.replace("flow.", "").replace(".agent.md", "")
+
+            # Filenames should use dot notation for word separation
+            # The exception is 'submit-n-watch-pr' where hyphens are part of the command name
+            if "submit-n-watch" not in command_part:
+                assert "-" not in command_part, (
+                    f"Agent template filename '{filename}' uses hyphen notation. "
+                    f"Per ADR-001, should use dot notation (e.g., flow.specify.agent.md)"
+                )
+
+    def test_copilot_agent_templates_use_pascalcase_names(self):
+        """Verify agent templates use PascalCase name fields (not quoted strings)."""
+        from flowspec_cli import COPILOT_AGENT_TEMPLATES
+        import re
+
+        for filename, content in COPILOT_AGENT_TEMPLATES.items():
+            # Extract the name field from YAML frontmatter
+            name_match = re.search(r"^name:\s*(.+)$", content, re.MULTILINE)
+            assert name_match, f"Agent template '{filename}' missing name field"
+
+            name_value = name_match.group(1).strip()
+
+            # Name should be PascalCase without quotes: FlowSpecify
+            # NOT quoted string: "flow-specify"
+            assert not name_value.startswith('"'), (
+                f"Agent '{filename}' name '{name_value}' should not be quoted. "
+                f"Per ADR-001, use PascalCase without quotes (e.g., FlowSpecify)"
+            )
+            assert name_value[0].isupper(), (
+                f"Agent '{filename}' name '{name_value}' should be PascalCase "
+                f"(start with uppercase). Per ADR-001, use FlowSpecify not flow-specify"
+            )
+            assert "-" not in name_value, (
+                f"Agent '{filename}' name '{name_value}' uses hyphens. "
+                f"Per ADR-001, use PascalCase (e.g., FlowSpecify not flow-specify)"
+            )
+
+    def test_copilot_agent_handoffs_use_dot_notation(self):
+        """Verify agent handoffs reference other agents using dot notation.
+
+        Note: 'submit-n-watch-pr' is an exception - the command name itself
+        contains hyphens (it's "submit-n-watch" not "submitnwatch").
+        """
+        from flowspec_cli import COPILOT_AGENT_TEMPLATES
+        import re
+
+        for filename, content in COPILOT_AGENT_TEMPLATES.items():
+            # Find all handoff agent references
+            handoff_matches = re.findall(r'agent:\s*"([^"]+)"', content)
+
+            for agent_ref in handoff_matches:
+                # Extract the command part after "flow."
+                if agent_ref.startswith("flow."):
+                    command_part = agent_ref.replace("flow.", "")
+                else:
+                    command_part = agent_ref
+
+                # Handoff references should use dot notation: flow.plan
+                # The exception is 'submit-n-watch-pr' where hyphens are part of the name
+                if "submit-n-watch" not in command_part:
+                    assert "-" not in command_part, (
+                        f"Agent '{filename}' has handoff to '{agent_ref}' using hyphen. "
+                        f'Per ADR-001, use dot notation (e.g., agent: "flow.plan")'
+                    )
+
+    def test_init_creates_agents_with_dot_notation_filenames(
+        self, tmp_path, monkeypatch
+    ):
+        """Verify flowspec init creates agent files with dot-notation filenames."""
+        from typer.testing import CliRunner
+        from flowspec_cli import app
+
+        runner = CliRunner()
+        monkeypatch.chdir(tmp_path)
+
+        # Run flowspec init with required flags
+        result = runner.invoke(
+            app,
+            [
+                "init",
+                str(tmp_path / "test-project"),
+                "--ai",
+                "claude",
+                "--ignore-agent-tools",
+                "--constitution",
+                "light",
+            ],
+            input="n\n",  # Answer 'no' to backlog-md install prompt
+        )
+
+        # Check init succeeded
+        assert result.exit_code == 0, f"Init failed: {result.stdout}"
+
+        # Verify .github/agents/ directory exists
+        agents_dir = tmp_path / "test-project" / ".github" / "agents"
+        assert agents_dir.exists(), "Agents directory was not created"
+
+        # List all agent files
+        agent_files = list(agents_dir.glob("*.agent.md"))
+        assert len(agent_files) > 0, "No agent files were created"
+
+        # Verify all agent filenames use dot notation (not hyphens)
+        for agent_file in agent_files:
+            filename = agent_file.name
+            # Remove the .agent.md suffix to check the command part
+            command_part = filename.replace(".agent.md", "")
+
+            # Should NOT have hyphens in the command part (except submit-n-watch)
+            # flow.specify.agent.md is correct
+            # flow-specify.agent.md is wrong
+            if "submit-n-watch" not in filename:
+                assert "-" not in command_part, (
+                    f"Agent file '{filename}' uses hyphen notation. "
+                    f"Per ADR-001, should use dot notation (e.g., flow.specify.agent.md)"
+                )
+
+    def test_init_agents_have_correct_name_fields(self, tmp_path, monkeypatch):
+        """Verify created agent files have PascalCase name fields."""
+        from typer.testing import CliRunner
+        from flowspec_cli import app
+        import re
+
+        runner = CliRunner()
+        monkeypatch.chdir(tmp_path)
+
+        # Run flowspec init with required flags
+        result = runner.invoke(
+            app,
+            [
+                "init",
+                str(tmp_path / "test-project"),
+                "--ai",
+                "claude",
+                "--ignore-agent-tools",
+                "--constitution",
+                "light",
+            ],
+            input="n\n",  # Answer 'no' to backlog-md install prompt
+        )
+
+        assert result.exit_code == 0, f"Init failed: {result.stdout}"
+
+        agents_dir = tmp_path / "test-project" / ".github" / "agents"
+        agent_files = list(agents_dir.glob("*.agent.md"))
+
+        for agent_file in agent_files:
+            content = agent_file.read_text()
+            name_match = re.search(r"^name:\s*(.+)$", content, re.MULTILINE)
+
+            assert name_match, f"Agent '{agent_file.name}' missing name field"
+            name_value = name_match.group(1).strip()
+
+            # Verify PascalCase (no quotes, no hyphens, starts uppercase)
+            assert not name_value.startswith('"'), (
+                f"Agent '{agent_file.name}' name should not be quoted"
+            )
+            assert name_value[0].isupper(), (
+                f"Agent '{agent_file.name}' name should start with uppercase"
+            )

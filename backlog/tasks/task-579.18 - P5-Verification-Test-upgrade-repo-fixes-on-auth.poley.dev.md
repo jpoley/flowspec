@@ -1,10 +1,10 @@
 ---
 id: task-579.18
 title: 'P5: Verification - Test upgrade-repo fixes on auth.poley.dev'
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-01-06 17:21'
-updated_date: '2026-01-06 18:52'
+updated_date: '2026-01-06 21:47'
 labels:
   - phase-5
   - verification

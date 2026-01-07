@@ -5,7 +5,7 @@ status: Done
 assignee:
   - '@galway'
 created_date: '2025-12-08 01:41'
-updated_date: '2025-12-29 12:12'
+updated_date: '2026-01-06 21:26'
 labels:
   - test
   - cli
@@ -13,6 +13,7 @@ labels:
 dependencies: []
 parent_task_id: task-310
 priority: medium
+ordinal: 9000
 ---
 
 ## Description

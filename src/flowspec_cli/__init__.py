@@ -187,10 +187,99 @@ CONSTITUTION_TIER_CHOICES = {
 }
 
 # Embedded VS Code Copilot agent templates (bundled with package for reliable access)
-# These are the 5 key workflow commands that appear in VS Code's agent menu
+# These are the 6 key workflow commands that appear in VS Code's agent menu
 COPILOT_AGENT_TEMPLATES = {
-    "flow-specify.agent.md": """---
-name: "flow-specify"
+    "flow.assess.agent.md": """---
+name: FlowAssess
+description: "Evaluate feature complexity and determine SDD workflow approach (full SDD, spec-light, or skip)."
+target: "chat"
+tools:
+  - "Read"
+  - "Write"
+  - "Edit"
+  - "Grep"
+  - "Glob"
+  - "Bash"
+  - "mcp__backlog__*"
+  - "mcp__serena__*"
+  - "Skill"
+
+handoffs:
+  - label: "Create Specification"
+    agent: "flow.specify"
+    prompt: "Assessment complete. Create the feature specification and PRD."
+    send: false
+---
+
+# /flow:assess - Feature Assessment
+
+Evaluate feature complexity and recommend the appropriate SDD workflow mode.
+
+## User Input
+
+```text
+$ARGUMENTS
+```
+
+You **MUST** consider the user input before proceeding (if not empty).
+
+## Instructions
+
+This command evaluates whether a feature requires the full SDD workflow, a lighter approach, or can skip formal specification entirely.
+
+**Purpose:**
+- Analyze feature complexity and scope
+- Recommend appropriate workflow mode
+- Create initial backlog task for tracking
+
+**Workflow Modes:**
+
+| Mode | When to Use | Artifacts |
+|------|-------------|-----------|
+| **Full SDD** | Complex features, multiple components, significant risk | PRD, ADRs, full spec |
+| **Spec-Light** | Medium complexity, clear requirements | Light spec, tasks |
+| **Skip SDD** | Simple changes, bug fixes, trivial updates | Just tasks |
+
+**Assessment Criteria:**
+1. **Scope**: How many files/components affected?
+2. **Risk**: Security, data, or user-facing impact?
+3. **Complexity**: New patterns, integrations, or dependencies?
+4. **Clarity**: Are requirements well-defined?
+5. **Duration**: Single session or multi-session work?
+
+**Workflow:**
+1. Gather feature description from user
+2. Search codebase for related code and patterns
+3. Assess complexity using criteria above
+4. Recommend workflow mode with rationale
+5. Create initial backlog task
+
+**Key Commands:**
+```bash
+# Search for related code
+grep -r "feature_keyword" src/
+
+# Check existing tasks
+backlog search "$ARGUMENTS" --plain
+
+# Create assessment task
+backlog task create "Assess: [Feature Name]" \\
+  -d "Complexity assessment for feature" \\
+  --ac "Determine workflow mode" \\
+  --ac "Create initial task structure" \\
+  -l assess \\
+  --priority medium
+```
+
+**Output:**
+- Assessment report with recommended mode
+- Initial backlog task created
+- Workflow state set to `Assessed`
+
+After assessment, suggest running `/flow:specify` for Full SDD or Spec-Light modes.
+""",
+    "flow.specify.agent.md": """---
+name: FlowSpecify
 description: "Create or update feature specifications using PM planner agent (manages /spec.tasks)."
 target: "chat"
 tools:
@@ -206,7 +295,7 @@ tools:
 
 handoffs:
   - label: "Create Technical Design"
-    agent: "flow-plan"
+    agent: "flow.plan"
     prompt: "The specification is complete. Create the technical architecture and platform design."
     send: false
 ---
@@ -262,8 +351,8 @@ backlog task create "Implement [Feature]" \
 
 After completion, suggest running `/flow:plan` to create technical design.
 """,
-    "flow-plan.agent.md": """---
-name: "flow-plan"
+    "flow.plan.agent.md": """---
+name: FlowPlan
 description: "Execute planning workflow using project architect and platform engineer agents to create ADRs and platform design."
 target: "chat"
 tools:
@@ -279,7 +368,7 @@ tools:
 
 handoffs:
   - label: "Start Implementation"
-    agent: "flow-implement"
+    agent: "flow.implement"
     prompt: "The technical design is complete. Start implementing the feature."
     send: false
 ---
@@ -326,8 +415,8 @@ This command creates technical architecture and platform design following Gregor
 
 After completion, suggest running `/flow:implement` to start coding.
 """,
-    "flow-implement.agent.md": """---
-name: "flow-implement"
+    "flow.implement.agent.md": """---
+name: FlowImplement
 description: "Execute implementation using specialized frontend and backend engineer agents with code review."
 target: "chat"
 tools:
@@ -343,7 +432,7 @@ tools:
 
 handoffs:
   - label: "Run Validation"
-    agent: "flow-validate"
+    agent: "flow.validate"
     prompt: "Implementation is complete. Run validation and quality assurance."
     send: false
 ---
@@ -399,8 +488,8 @@ uv run pytest tests/ -x -q
 
 After completion, run `/flow:validate` for comprehensive QA.
 """,
-    "flow-validate.agent.md": """---
-name: "flow-validate"
+    "flow.validate.agent.md": """---
+name: FlowValidate
 description: "Execute validation and quality assurance using QA, security, documentation, and release management agents."
 target: "chat"
 tools:
@@ -416,7 +505,7 @@ tools:
 
 handoffs:
   - label: "Submit PR"
-    agent: "flow-submit-n-watch-pr"
+    agent: "flow.submit-n-watch-pr"
     prompt: "Validation is complete. Submit PR and monitor CI/reviews."
     send: false
 ---
@@ -476,8 +565,8 @@ This command performs thorough validation before PR submission.
 
 After validation passes, run `/flow:submit-n-watch-pr` to create and monitor PR.
 """,
-    "flow-submit-n-watch-pr.agent.md": """---
-name: "flow-submit-n-watch-pr"
+    "flow.submit-n-watch-pr.agent.md": """---
+name: FlowSubmitNWatchPR
 description: "Submit PR and autonomously monitor CI checks and Copilot reviews until approval-ready. Iteratively fix issues and resubmit."
 target: "chat"
 tools:
@@ -5966,6 +6055,7 @@ def upgrade_repo(
     tracker.add("skills", "Sync skills")
     tracker.add("workflow", "Migrate workflow config")
     tracker.add("mcp", "Update MCP configuration")
+    tracker.add("cleanup", "Remove deprecated files")
     tracker.add("final", "Finalize")
 
     if dry_run:
@@ -5991,8 +6081,14 @@ def upgrade_repo(
             backup_dir = project_path / f".flowspec-backup-{timestamp}"
             backup_dir.mkdir(parents=True)
 
-            # Backup key directories
-            for dir_name in [".flowspec", ".claude", ".github", "templates"]:
+            # Backup key directories (including deprecated ones for recovery)
+            for dir_name in [
+                ".flowspec",
+                ".claude",
+                ".github",
+                "templates",
+                ".specify",
+            ]:
                 src = project_path / dir_name
                 if src.exists():
                     shutil.copytree(src, backup_dir / dir_name, dirs_exist_ok=True)
@@ -6059,6 +6155,21 @@ def upgrade_repo(
                 tracker.complete("mcp", f"added: {added_servers}")
             else:
                 tracker.complete("mcp", "already up to date")
+
+            # Remove deprecated files and directories
+            tracker.start("cleanup")
+            from .deprecated import cleanup_deprecated_files
+
+            cleanup_result = cleanup_deprecated_files(
+                project_path, backup_dir=backup_dir
+            )
+            if cleanup_result.has_changes:
+                cleanup_summary = cleanup_result.summary()
+                tracker.complete("cleanup", cleanup_summary)
+            elif cleanup_result.errors:
+                tracker.complete("cleanup", f"error: {cleanup_result.errors[0]}")
+            else:
+                tracker.complete("cleanup", "no deprecated items")
 
             tracker.complete("final", "upgrade complete")
 

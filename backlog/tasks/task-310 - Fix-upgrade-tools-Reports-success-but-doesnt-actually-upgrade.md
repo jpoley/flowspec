@@ -5,13 +5,14 @@ status: Done
 assignee:
   - '@adare'
 created_date: '2025-12-08 01:40'
-updated_date: '2025-12-29 12:12'
+updated_date: '2026-01-06 21:26'
 labels:
   - bug
   - cli
   - upgrade-tools
 dependencies: []
 priority: high
+ordinal: 8000
 ---
 
 ## Description

@@ -4,7 +4,7 @@ title: 'P0.2: Remove ALL broken {{INCLUDE:}} directives from templates'
 status: Done
 assignee: []
 created_date: '2026-01-06 17:19'
-updated_date: '2026-01-06 19:10'
+updated_date: '2026-01-06 21:26'
 labels:
   - phase-0
   - cleanup
@@ -13,6 +13,7 @@ labels:
 dependencies: []
 parent_task_id: task-579
 priority: high
+ordinal: 1000
 ---
 
 ## Description

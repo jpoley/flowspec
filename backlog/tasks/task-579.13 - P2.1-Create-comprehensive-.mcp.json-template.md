@@ -1,10 +1,10 @@
 ---
 id: task-579.13
 title: 'P2.1: Create comprehensive .mcp.json template'
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2026-01-06 17:21'
-updated_date: '2026-01-06 18:52'
+updated_date: '2026-01-06 21:46'
 labels:
   - phase-2
   - mcp
