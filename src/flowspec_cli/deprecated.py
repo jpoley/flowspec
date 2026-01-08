@@ -18,8 +18,15 @@ DEPRECATED_DIRECTORIES = [
 ]
 
 # Deprecated file patterns that should be removed during upgrade
+# These patterns are searched in common command locations
 DEPRECATED_FILE_PATTERNS = [
     "_DEPRECATED_*.md",  # Deprecated command files
+]
+
+# Deprecated file patterns specifically for .github/agents/
+# Hyphenated agent files replaced by dot-notation (ADR-001)
+DEPRECATED_GITHUB_AGENT_PATTERNS = [
+    "flow-*.agent.md",  # Old: flow-specify.agent.md -> flow.specify.agent.md
 ]
 
 
@@ -87,19 +94,28 @@ def detect_deprecated_items(
             deprecated_dirs.append(dir_path)
             logger.debug(f"Found deprecated directory: {dir_path}")
 
-    # Check for deprecated file patterns in common locations
-    search_locations = [
+    # Check for deprecated file patterns in common command locations
+    command_locations = [
         project_path / ".claude" / "commands",
         project_path / ".github" / "copilot" / "commands",
         project_path / ".cursor" / "commands",
     ]
 
-    for location in search_locations:
+    for location in command_locations:
         if location.exists():
             for pattern in DEPRECATED_FILE_PATTERNS:
                 for file_path in location.glob(pattern):
                     deprecated_files.append(file_path)
                     logger.debug(f"Found deprecated file: {file_path}")
+
+    # Check for deprecated agent files in .github/agents/
+    # These are hyphenated agent files replaced by dot-notation (ADR-001)
+    github_agents_dir = project_path / ".github" / "agents"
+    if github_agents_dir.exists():
+        for pattern in DEPRECATED_GITHUB_AGENT_PATTERNS:
+            for file_path in github_agents_dir.glob(pattern):
+                deprecated_files.append(file_path)
+                logger.debug(f"Found deprecated agent file: {file_path}")
 
     return deprecated_dirs, deprecated_files
 

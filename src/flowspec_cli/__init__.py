@@ -7052,8 +7052,9 @@ def _run_upgrade_tools(
         )
         raise typer.Exit(1)
 
-    # Get current versions for display
-    versions = get_all_component_versions()
+    # Get current versions for display (involves network calls)
+    with console.status("[cyan]Checking available versions...[/cyan]"):
+        versions = get_all_component_versions()
 
     # Build table of components to upgrade
     table = Table(show_header=True, box=None, padding=(0, 2))
@@ -7071,9 +7072,10 @@ def _run_upgrade_tools(
             branch or target_version or versions["jp_spec_kit"].get("available", "-")
         )
 
-        success, message = _upgrade_jp_spec_kit(
-            dry_run=dry_run, target_version=target_version, branch=branch
-        )
+        with console.status("[cyan]Upgrading flowspec...[/cyan]"):
+            success, message = _upgrade_jp_spec_kit(
+                dry_run=dry_run, target_version=target_version, branch=branch
+            )
         status = "[green]✓[/green]" if success else "[red]✗[/red]"
         results.append(("flowspec", success, message))
 
@@ -7084,7 +7086,8 @@ def _run_upgrade_tools(
         bl_current = versions["backlog_md"].get("installed", "-")
         bl_available = versions["backlog_md"].get("available", "-")
 
-        success, message = _upgrade_backlog_md(dry_run=dry_run)
+        with console.status("[cyan]Upgrading backlog-md...[/cyan]"):
+            success, message = _upgrade_backlog_md(dry_run=dry_run)
         status = "[green]✓[/green]" if success else "[red]✗[/red]"
         results.append(("backlog-md", success, message))
 
@@ -7095,7 +7098,8 @@ def _run_upgrade_tools(
         bd_current = versions["beads"].get("installed", "-")
         bd_available = versions["beads"].get("available", "-")
 
-        success, message = _upgrade_beads(dry_run=dry_run)
+        with console.status("[cyan]Upgrading beads...[/cyan]"):
+            success, message = _upgrade_beads(dry_run=dry_run)
         status = "[green]✓[/green]" if success else "[red]✗[/red]"
         results.append(("beads", success, message))
 

@@ -371,3 +371,67 @@ class TestCleanupErrorHandling:
         assert not deprecated_file.exists()
         assert len(result.files_removed) == 1
         assert len(result.errors) == 1
+
+
+class TestDeprecatedGithubAgentPatterns:
+    """Tests for deprecated .github/agents/ file patterns (ADR-001)."""
+
+    def test_contains_hyphenated_flow_pattern(self):
+        """flow-*.agent.md pattern is included for deprecation."""
+        from flowspec_cli.deprecated import DEPRECATED_GITHUB_AGENT_PATTERNS
+
+        assert "flow-*.agent.md" in DEPRECATED_GITHUB_AGENT_PATTERNS
+
+    def test_detects_hyphenated_agent_files(self, tmp_path: Path):
+        """Detects flow-*.agent.md files in .github/agents/."""
+        agents_dir = tmp_path / ".github" / "agents"
+        agents_dir.mkdir(parents=True)
+
+        # Create deprecated hyphenated files
+        (agents_dir / "flow-specify.agent.md").write_text("# Deprecated")
+        (agents_dir / "flow-implement.agent.md").write_text("# Deprecated")
+        (agents_dir / "flow-plan.agent.md").write_text("# Deprecated")
+
+        # Create current dot-notation file (should NOT be detected)
+        (agents_dir / "flow.specify.agent.md").write_text("# Current")
+
+        dirs, files = detect_deprecated_items(tmp_path)
+
+        assert len(files) == 3
+        filenames = [f.name for f in files]
+        assert "flow-specify.agent.md" in filenames
+        assert "flow-implement.agent.md" in filenames
+        assert "flow-plan.agent.md" in filenames
+        assert "flow.specify.agent.md" not in filenames
+
+    def test_removes_hyphenated_agent_files(self, tmp_path: Path):
+        """Removes flow-*.agent.md files and creates backup."""
+        agents_dir = tmp_path / ".github" / "agents"
+        agents_dir.mkdir(parents=True)
+        deprecated_file = agents_dir / "flow-specify.agent.md"
+        deprecated_file.write_text("# Deprecated Agent")
+
+        backup_dir = tmp_path / ".backup"
+        backup_dir.mkdir()
+
+        result = cleanup_deprecated_files(tmp_path, backup_dir)
+
+        assert not deprecated_file.exists()
+        assert ".github/agents/flow-specify.agent.md" in result.files_removed
+
+    def test_preserves_dot_notation_agent_files(self, tmp_path: Path):
+        """Does NOT remove flow.*.agent.md files (current format)."""
+        agents_dir = tmp_path / ".github" / "agents"
+        agents_dir.mkdir(parents=True)
+        current_file = agents_dir / "flow.specify.agent.md"
+        current_file.write_text("# Current Agent")
+
+        backup_dir = tmp_path / ".backup"
+        backup_dir.mkdir()
+
+        result = cleanup_deprecated_files(tmp_path, backup_dir)
+
+        # File should still exist
+        assert current_file.exists()
+        # Should not be in removed list
+        assert not result.has_changes
