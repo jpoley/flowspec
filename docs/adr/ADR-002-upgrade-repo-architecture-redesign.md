@@ -2,7 +2,9 @@
 
 ## Status
 
-Proposed
+**Implemented** (2025-01-07)
+
+> **Note:** This ADR documents the upgrade-repo architecture redesign that was implemented as part of task-579. References to `/flow:operate` in this document are historical - the command has been removed and deployment is now an "outer loop" concern.
 
 ## Context
 

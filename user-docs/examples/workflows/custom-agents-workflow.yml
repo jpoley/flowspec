@@ -263,27 +263,14 @@ workflows:
     output_state: "Documentation Reviewed"
     optional: false
 
-  operate:
-    command: "/flow:operate"
-    description: "Execute operations workflow"
-    agents:
-      - name: "sre-agent"
-        identity: "@sre-agent"
-        description: "Principal Site Reliability Engineer"
-        responsibilities:
-          - "CI/CD pipeline"
-          - "Kubernetes deployment"
-      - name: "ml-ops-engineer"  # CUSTOM AGENT
-        identity: "@ml-ops-engineer"
-        description: "MLOps Engineer"
-        responsibilities:
-          - "Model deployment to production"
-          - "Model monitoring setup"
-          - "A/B testing infrastructure"
-          - "Model versioning"
-    input_states: ["Documentation Reviewed"]
-    output_state: "Deployed"
-    optional: false
+  # NOTE: /flow:operate has been removed - deployment is outer loop
+  # Use /ops:* commands for operational tasks:
+  #   /ops:monitor - Set up monitoring and alerting
+  #   /ops:respond - Incident response guidance
+  #   /ops:scale - Scaling recommendations
+  #
+  # For ML-specific operations, consider adding custom agents to validate workflow
+  # or use external MLOps platforms (MLflow, Kubeflow, etc.)
 
 transitions:
   - name: "assess"

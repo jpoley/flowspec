@@ -83,10 +83,10 @@ In Implementation
 Validated
   ↓ /flow:security-audit (NEW - with approval gate)
 Security Audited
-  ↓ /flow:operate
-Deployed
-  ↓ manual
+  ↓ (deployment via CI/CD - outer loop)
 Done
+
+> **Note:** `/flow:operate` has been removed. Use `/ops:*` commands for operational tasks.
 ```
 
 ## Security Gates
@@ -186,7 +186,7 @@ Pen test complete. All critical vulns resolved."
    # Review docs/security/{feature}-audit-report.md
    # Type AUDIT_PASSED to proceed
 
-   /flow:operate
+   # Deployment is outer loop - use CI/CD pipeline
    backlog task edit task-123 -s Done
    ```
 

@@ -203,19 +203,11 @@ workflows:
     output_state: "Integration Validated"
     optional: false
 
-  operate:
-    command: "/flow:operate"
-    description: "Execute operations workflow"
-    agents:
-      - name: "sre-agent"
-        identity: "@sre-agent"
-        description: "Principal Site Reliability Engineer"
-        responsibilities:
-          - "CI/CD pipeline"
-          - "Kubernetes deployment"
-    input_states: ["Integration Validated"]
-    output_state: "Deployed"
-    optional: false
+  # NOTE: /flow:operate has been removed - deployment is outer loop
+  # Use /ops:* commands for operational tasks:
+  #   /ops:monitor - Set up monitoring and alerting
+  #   /ops:respond - Incident response guidance
+  #   /ops:scale - Scaling recommendations
 
 transitions:
   # Common path

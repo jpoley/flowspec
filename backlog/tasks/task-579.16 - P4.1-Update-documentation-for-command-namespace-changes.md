@@ -1,10 +1,10 @@
 ---
 id: task-579.16
 title: 'P4.1: Update documentation for command namespace changes'
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-01-06 17:21'
-updated_date: '2026-01-06 21:46'
+updated_date: '2026-01-08 02:45'
 labels:
   - phase-4
   - documentation
@@ -39,3 +39,23 @@ Also update any test references to /spec:* commands.
 - [ ] #4 Agent naming conventions documented
 - [ ] #5 Test references updated or removed
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Updated key user-facing documentation files to remove active /flow:operate references:
+
+- flowspec-workflow-reference.md: Updated quick start, command ref, workflow sequence
+
+- flowspec-backlog-workflow.md: Updated workflow diagram, state table, commands
+
+- backlog-user-guide.md: Updated command-backlog integration table
+
+- workflow-step-visual-reference.md: Updated state diagrams, transitions
+
+- Example workflow YAMLs: Replaced operate with comments about outer loop
+
+- Example workflow MDs: Updated flow diagrams with outer loop notes
+
+Remaining refs in ADRs and ref docs are informational (Note: removed) - kept for history
+<!-- SECTION:NOTES:END -->

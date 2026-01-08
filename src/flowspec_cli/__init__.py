@@ -2712,6 +2712,140 @@ def update_mcp_json(
     return False, {"added": [], "unchanged": list(existing_servers.keys())}
 
 
+def check_mcp_server_availability(
+    server_name: str,
+    server_config: dict,
+) -> tuple[bool, str]:
+    """Check if an MCP server command is available.
+
+    Performs a lightweight check to see if the server's command is executable.
+    Does not actually start the server, just verifies the command exists.
+
+    Args:
+        server_name: Name of the server (for error messages)
+        server_config: Server configuration with 'command' and optional 'args'
+
+    Returns:
+        Tuple of (is_available, message)
+    """
+    import shutil
+
+    command = server_config.get("command", "")
+
+    if not command:
+        return False, f"{server_name}: No command specified"
+
+    # For npx/uvx commands, check if npx/uvx is available
+    if command in ("npx", "uvx"):
+        if shutil.which(command) is None:
+            return False, f"{server_name}: '{command}' not found in PATH"
+        return True, f"{server_name}: {command} available"
+
+    # For other commands, check if they're in PATH
+    if shutil.which(command) is None:
+        return False, f"{server_name}: '{command}' not found in PATH"
+
+    return True, f"{server_name}: available"
+
+
+def check_mcp_servers(
+    project_path: Path,
+    check_recommended: bool = False,
+    console: Console | None = None,
+) -> tuple[bool, dict[str, list[str]]]:
+    """Check MCP server availability for a project.
+
+    Verifies that required MCP servers are available and optionally checks
+    recommended servers as well.
+
+    Args:
+        project_path: Path to the project directory
+        check_recommended: If True, also check recommended servers
+        console: Rich console for output (optional)
+
+    Returns:
+        Tuple of:
+        - bool: True if all required servers are available
+        - dict: {"available": [...], "missing_required": [...], "missing_recommended": [...]}
+    """
+    if console is None:
+        console = Console()
+
+    available: list[str] = []
+    missing_required: list[str] = []
+    missing_recommended: list[str] = []
+
+    console.print("\n[bold]Checking MCP Server Availability[/bold]\n")
+
+    # Check required servers
+    console.print("[cyan]Required Servers:[/cyan]")
+    for server_name, server_config in REQUIRED_MCP_SERVERS.items():
+        is_available, message = check_mcp_server_availability(
+            server_name, server_config
+        )
+        if is_available:
+            console.print(f"  [green]✓[/green] {message}")
+            available.append(server_name)
+        else:
+            console.print(f"  [red]✗[/red] {message}")
+            missing_required.append(server_name)
+
+    # Check tech-stack specific servers
+    tech_stack = detect_tech_stack(project_path)
+    if "Python" in tech_stack["languages"]:
+        python_server = {
+            "command": "python",
+            "args": ["-m", "flowspec_cli.security.mcp_server"],
+        }
+        is_available, message = check_mcp_server_availability(
+            "flowspec-security", python_server
+        )
+        if is_available:
+            console.print(f"  [green]✓[/green] {message}")
+            available.append("flowspec-security")
+        else:
+            console.print(f"  [yellow]⚠[/yellow] {message} (Python project, optional)")
+
+    # Check recommended servers if requested
+    if check_recommended:
+        console.print("\n[cyan]Recommended Servers:[/cyan]")
+        for server_name, server_config in RECOMMENDED_MCP_SERVERS.items():
+            is_available, message = check_mcp_server_availability(
+                server_name, server_config
+            )
+            if is_available:
+                console.print(f"  [green]✓[/green] {message}")
+                available.append(server_name)
+            else:
+                console.print(f"  [yellow]⚠[/yellow] {message}")
+                missing_recommended.append(server_name)
+
+    console.print()
+
+    # Summary
+    all_required_available = len(missing_required) == 0
+
+    if all_required_available:
+        console.print("[green]✓ All required MCP servers are available[/green]")
+    else:
+        console.print(
+            f"[red]✗ Missing {len(missing_required)} required server(s): "
+            f"{', '.join(missing_required)}[/red]"
+        )
+
+    if missing_recommended:
+        console.print(
+            f"[yellow]⚠ Missing {len(missing_recommended)} recommended server(s): "
+            f"{', '.join(missing_recommended)}[/yellow]"
+        )
+
+    return all_required_available, {
+        "available": available,
+        "missing_required": missing_required,
+        "missing_recommended": missing_recommended,
+    }
+
+
 def generate_vscode_extensions(project_path: Path) -> bool:
     """Generate .vscode/extensions.json with tech-stack specific recommendations.
 
@@ -4932,6 +5066,21 @@ def init(
         "--skip-skills",
         help="Skip deployment of skills from templates/skills/ to .claude/skills/",
     ),
+    check_mcp: bool = typer.Option(
+        False,
+        "--check-mcp",
+        help="Check MCP server availability after initialization",
+    ),
+    check_mcp_recommended: bool = typer.Option(
+        False,
+        "--check-mcp-recommended",
+        help="Also check recommended MCP servers (requires --check-mcp)",
+    ),
+    check_mcp_fail_on_missing: bool = typer.Option(
+        False,
+        "--check-mcp-fail-on-missing",
+        help="Fail if required MCP servers are missing (requires --check-mcp)",
+    ),
 ):
     """
     Initialize a new Specify project from the latest template.
@@ -5860,6 +6009,20 @@ def init(
     console.print()
     console.print(enhancements_panel)
 
+    # MCP server health check if requested
+    if check_mcp:
+        all_available, status = check_mcp_servers(
+            project_path,
+            check_recommended=check_mcp_recommended,
+            console=console,
+        )
+        if not all_available and check_mcp_fail_on_missing:
+            console.print(
+                "\n[red]Error: Required MCP servers are missing. "
+                "Install them or remove --check-mcp-fail-on-missing flag.[/red]"
+            )
+            raise typer.Exit(1)
+
 
 @app.command(name="upgrade-repo")
 def upgrade_repo(
@@ -5898,6 +6061,21 @@ def upgrade_repo(
         False,
         "--recommended-servers",
         help="Include recommended MCP servers (playwright-test, trivy, semgrep) in .mcp.json",
+    ),
+    check_mcp: bool = typer.Option(
+        False,
+        "--check-mcp",
+        help="Check MCP server availability after upgrade",
+    ),
+    check_mcp_recommended: bool = typer.Option(
+        False,
+        "--check-mcp-recommended",
+        help="Also check recommended MCP servers (requires --check-mcp)",
+    ),
+    check_mcp_fail_on_missing: bool = typer.Option(
+        False,
+        "--check-mcp-fail-on-missing",
+        help="Fail if required MCP servers are missing (requires --check-mcp)",
     ),
 ):
     """
@@ -6260,6 +6438,20 @@ def upgrade_repo(
     console.print(
         f"  3. If needed, restore from backup: [cyan]cp -r {backup_dir}/* .[/cyan]"
     )
+
+    # MCP server health check if requested
+    if check_mcp:
+        all_available, status = check_mcp_servers(
+            project_path,
+            check_recommended=check_mcp_recommended,
+            console=console,
+        )
+        if not all_available and check_mcp_fail_on_missing:
+            console.print(
+                "\n[red]Error: Required MCP servers are missing. "
+                "Install them or remove --check-mcp-fail-on-missing flag.[/red]"
+            )
+            raise typer.Exit(1)
 
 
 # Valid component names for upgrade-tools
