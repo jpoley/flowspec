@@ -37,8 +37,10 @@ The `/flow` workflow system and backlog.md are deeply integrated to provide:
        ↓
 /flow:validate  →  QA + security (In Implementation → Validated)
        ↓
-/flow:operate   →  Deploy to production (Validated → Deployed)
+(Deployment via CI/CD - outer loop)
 ```
+
+> **Note:** `/flow:operate` has been removed. Use `/ops:*` commands for operational tasks or your CI/CD pipeline for deployment.
 
 ## How It Works
 
@@ -67,7 +69,7 @@ backlog task create "ADR: Authentication approach" \
 
 ### Implementation Commands Consume Tasks
 
-**Implementation commands** (`/flow:implement`, `/flow:validate`, `/flow:operate`) work from existing tasks:
+**Implementation commands** (`/flow:implement`, `/flow:validate`) work from existing tasks:
 
 ```bash
 # Step 0: Discover existing tasks
@@ -140,8 +142,9 @@ Use these exact status values for workflow compatibility:
 | `In Progress` | Engineer working | During `/flow:implement` |
 | `In Implementation` | Active coding | `/flow:implement` phase |
 | `Validated` | QA + security passed | After `/flow:validate` |
-| `Deployed` | In production | After `/flow:operate` |
-| `Done` | All work complete | Final state |
+| `Done` | All work complete | After validation + deployment |
+
+> **Note:** The `Deployed` state has been removed. Use `Validated` → `Done` transition after CI/CD deployment.
 
 ### Labels for Traceability
 
@@ -215,10 +218,7 @@ Researched                     │                       │
                ↓ /flow:validate                      │
            Validated                                   │
                │                                       │
-               ↓ /flow:operate                       │
-           Deployed                                    │
-               │                                       │
-               ↓ Release Manager verification          │
+               ↓ (CI/CD deployment - outer loop)       │
              Done ←────────────────────────────────────┘
                     (simple tasks can go direct)
 ```
@@ -345,21 +345,20 @@ backlog task 42 --plain  # Verify all ACs checked
 backlog task edit task-42 -s "Validated"
 ```
 
-### /flow:operate
+### Deployment (Outer Loop)
 
-**State Transition**: `Validated` → `Deployed`
+> **Note:** `/flow:operate` has been removed. Deployment is an "outer loop" concern.
 
-**Backlog Operations**:
+**After validation**, use CI/CD for deployment:
 ```bash
-# Creates operational tasks
-backlog task create "Runbook: Auth service high latency" \
-  --ac "Document triage steps" \
-  --ac "Add rollback procedure" \
-  -l operations,runbook
-
-# Marks feature as deployed
-backlog task edit task-42 -s "Deployed"
+# Mark feature as done after deployment verification
+backlog task edit task-42 -s "Done"
 ```
+
+**For operational tasks**, use `/ops:*` commands:
+- `/ops:monitor` - Set up monitoring and alerting
+- `/ops:respond` - Incident response guidance
+- `/ops:scale` - Scaling recommendations
 
 ## Best Practices
 

@@ -2,7 +2,9 @@
 
 ## Status
 
-Proposed
+**Implemented** (2025-01-07)
+
+> **Note:** This ADR documents the implementation approach for fixing upgrade-repo as part of task-579. References to `/flow:operate` are historical - the command has been removed.
 
 ## Context
 

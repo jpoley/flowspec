@@ -45,11 +45,11 @@ Frontend Validated    Backend Validated
                     ↓
         Integration Validated
                     ↓
-          /flow:operate
-                    ↓
-              Deployed
+    (deployment via CI/CD - outer loop)
                     ↓
                Done
+
+> **Note:** `/flow:operate` has been removed. Use `/ops:*` commands for operational tasks.
 ```
 
 ## Key Features
@@ -205,7 +205,7 @@ backlog task create "User auth - backend implementation" \
 # Runs end-to-end tests
 
 /flow:validate-integration
-/flow:operate
+# Deployment is outer loop - use CI/CD pipeline
 ```
 
 ## Coordination Points

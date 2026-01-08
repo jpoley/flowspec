@@ -978,7 +978,8 @@ Backlog.md integrates seamlessly with the `/flowspec` workflow commands. Each co
 | `/flow:plan` | Creates architecture/infra tasks | Researched → Planned |
 | `/flow:implement` | Assigns and tracks existing tasks | Planned → In Implementation |
 | `/flow:validate` | Validates task completion | In Implementation → Validated |
-| `/flow:operate` | Creates operational tasks | Validated → Deployed |
+
+> **Note:** `/flow:operate` has been removed. Use `/ops:*` commands for operational tasks.
 
 ### How Commands Use Backlog
 
