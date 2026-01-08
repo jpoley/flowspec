@@ -1,6 +1,9 @@
 """Tests for role selection in init and configure commands.
 
-This module tests that:
+NOTE: These tests are SKIPPED because /spec:* commands have been removed.
+Role selection is now part of /flow:init and handled differently.
+
+This module previously tested that:
 - /spec:init command includes role selection prompts
 - /spec:configure command includes role selection prompts
 - Both commands document FLOWSPEC_PRIMARY_ROLE environment variable
@@ -13,6 +16,7 @@ from pathlib import Path
 import pytest
 
 
+@pytest.mark.skip(reason="/spec:* commands removed - replaced by /flow:* commands")
 class TestRoleSelectionCommandTemplates:
     """Tests for role selection in command templates."""
 
@@ -257,6 +261,7 @@ class TestRoleSelectionCommandTemplates:
         assert configure_file.is_file(), "configure.md should be a file"
 
 
+@pytest.mark.skip(reason="/spec:* commands removed - replaced by /flow:* commands")
 class TestRoleSelectionIntegration:
     """Integration tests for role selection workflow."""
 

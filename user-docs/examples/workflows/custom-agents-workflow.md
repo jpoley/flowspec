@@ -86,10 +86,10 @@ Accessibility Tested
 Validated
   ↓ /flow:devrel-review (CUSTOM - developer-advocate)
 Documentation Reviewed
-  ↓ /flow:operate (+ ml-ops-engineer)
-Deployed
-  ↓ manual
+  ↓ (deployment via CI/CD - outer loop)
 Done
+
+> **Note:** `/flow:operate` has been removed. Use `/ops:*` commands for operational tasks. For MLOps, use external platforms (MLflow, Kubeflow) or add custom agents to the validate workflow.
 ```
 
 ## Custom Workflows Added
@@ -332,8 +332,8 @@ flowspec workflow validate
 /flow:devrel-review
 # Developer documentation review
 
-/flow:operate
-# Includes ml-ops-engineer
+# Deployment is outer loop - use CI/CD pipeline
+# For MLOps, use external platforms (MLflow, Kubeflow)
 
 backlog task edit task-123 -s Done
 ```

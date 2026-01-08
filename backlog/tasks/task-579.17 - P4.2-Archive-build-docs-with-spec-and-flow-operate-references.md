@@ -1,10 +1,10 @@
 ---
 id: task-579.17
 title: 'P4.2: Archive build-docs with /spec:* and /flow:operate references'
-status: In Progress
+status: Done
 assignee: []
 created_date: '2026-01-06 17:21'
-updated_date: '2026-01-06 21:47'
+updated_date: '2026-01-08 02:46'
 labels:
   - phase-4
   - documentation
@@ -37,7 +37,21 @@ Options:
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Build-docs archived or updated
-- [ ] #2 Deprecation notices added where appropriate
-- [ ] #3 Active docs don't reference deprecated commands
+- [x] #1 Build-docs archived or updated
+- [x] #2 Deprecation notices added where appropriate
+- [x] #3 Active docs don't reference deprecated commands
 <!-- AC:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Archived build-docs with deprecated /flow:operate and /spec:* references:
+
+- docs/building/archive/: 5 files moved with deprecation README
+
+- docs/platform/archive/: 2 files moved with deprecation README
+
+- ADR-002, ADR-003: Updated status to Implemented with historical context note
+
+- docs/guides/custom-workflows.md: Already has removal note - no change needed
+<!-- SECTION:NOTES:END -->
