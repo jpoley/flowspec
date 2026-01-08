@@ -99,17 +99,14 @@ Done                    →   Done
     ┌───────────┐
     │ Validated │  QA/security approved
     └─────┬─────┘
-          │ /flow:operate
-          ▼
-    ┌──────────┐
-    │ Deployed │  In production
-    └─────┬────┘
-          │ manual
+          │ (CI/CD - outer loop)
           ▼
     ┌──────┐
     │ Done │  Complete
     └──────┘
 ```
+
+> **Note:** `/flow:operate` and `Deployed` state have been removed. Use CI/CD for deployment.
 
 ### Backward Transitions (Rework)
 
@@ -282,12 +279,12 @@ Day 10: Validation
 │   workflow_step: Validated   │
 └──────────────────────────────┘
 
-Day 11: Deployment
+Day 11: Deployment (Outer Loop)
 ┌──────────────────────────────┐
-│ Run: /flow:operate         │
+│ Deploy via CI/CD pipeline    │
 │ Result:                      │
 │   status: Done               │
-│   workflow_step: Deployed    │
+│   workflow_step: Complete    │
 └──────────────────────────────┘
 
 Day 12: Complete
@@ -442,7 +439,7 @@ backlog task list --filter "workflow_step:Planned" --plain
 # Tasks that need /flow:validate
 backlog task list --filter "workflow_step:In Implementation" --plain
 
-# Tasks that need /flow:operate
+# Tasks ready for deployment (use CI/CD)
 backlog task list --filter "workflow_step:Validated" --plain
 ```
 
@@ -515,12 +512,10 @@ workflow_step_mappings:
 ✓ Researched → Planned       (via /flow:plan)
 ✓ Planned → In Implementation (via /flow:implement)
 ✓ In Implementation → Validated (via /flow:validate)
-✓ Validated → Deployed       (via /flow:operate)
-✓ Deployed → Done            (manual)
+✓ Validated → Done           (via CI/CD + manual)
 
 ✓ In Implementation → Planned (rework)
 ✓ Validated → In Implementation (rework)
-✓ Deployed → Validated       (rollback)
 ```
 
 ### Invalid Transitions (Blocked)
@@ -730,7 +725,7 @@ Hint: Run /flow:plan first
 │   /flow:plan      → Planned                            │
 │   /flow:implement → In Implementation                  │
 │   /flow:validate  → Validated                          │
-│   /flow:operate   → Deployed                           │
+│   (CI/CD)         → Done (deployment is outer loop)    │
 │                                                          │
 └──────────────────────────────────────────────────────────┘
 ```

@@ -58,10 +58,9 @@ flowspec automates the software delivery lifecycle through six specialized workf
 
 # 5. Validate and prepare for release
 /flow:validate Task management REST API
-
-# 6. (Optional) Set up operations infrastructure
-/flow:operate Task management REST API
 ```
+
+> **Note:** Deployment and operations are "outer loop" concerns. Use `/ops:*` commands (`/ops:monitor`, `/ops:respond`, `/ops:scale`) or your CI/CD pipeline for production deployment.
 
 Each command launches specialized AI agents that collaborate to complete that phase of development.
 
@@ -2275,26 +2274,21 @@ Next Step: Begin canary deployment (Phase 1: 10%)
 
 ---
 
-### Step 6: Operations Infrastructure
+### Step 6: Deployment (Outer Loop)
 
-**Command:**
-```bash
-/flow:operate AI customer service chatbot
-```
+> **Note:** Deployment is an "outer loop" concern handled by external CI/CD pipelines and DevOps tooling.
 
-**What happens:**
-- **SRE agent** designs and implements comprehensive operational infrastructure
-- Sets up CI/CD pipelines, Kubernetes deployments, observability stack, and incident management procedures
+**After validation completes**, deploy using your standard deployment pipeline:
+- CI/CD workflows (GitHub Actions, GitLab CI, etc.)
+- Container orchestration (Kubernetes, Docker Compose)
+- Cloud deployment (AWS, GCP, Azure)
 
-**Deliverables:**
-- GitHub Actions CI/CD workflows
-- Kubernetes deployment manifests
-- Observability stack configuration (Prometheus, Grafana, Loki, Jaeger)
-- Runbooks and operational procedures
-- Incident response plan
-- SLI/SLO definitions
+**For operational tasks**, use `/ops:*` commands:
+- `/ops:monitor` - Set up observability and alerting
+- `/ops:respond` - Incident response guidance
+- `/ops:scale` - Scaling recommendations
 
-**Output includes:**
+**Example CI/CD output from validated code:**
 
 *CI/CD Pipeline:*
 ```yaml
@@ -3213,39 +3207,16 @@ Trend: STABLE - monthly consumption typically 20-30% of budget
 
 ---
 
-### /flow:operate
+### /flow:operate (REMOVED)
 
-**Purpose:** Design and implement operational infrastructure for production.
+> **Note:** `/flow:operate` has been removed from the workflow. Deployment and operations are "outer loop" concerns.
 
-**Agents Used:**
-1. **sre-agent** - CI/CD, Kubernetes, observability, incident management, DR planning
+**For operational tasks**, use `/ops:*` commands directly:
+- `/ops:monitor` - Set up monitoring, alerting, and observability
+- `/ops:respond` - Incident response guidance for production issues
+- `/ops:scale` - Infrastructure and application scaling recommendations
 
-**Input Format:**
-```bash
-/flow:operate <project name> [architecture and platform specs]
-```
-
-**Example:**
-```bash
-/flow:operate Microservices platform with multi-region deployment and 99.99% SLA
-```
-
-**Output:**
-- GitHub Actions CI/CD workflows
-- Kubernetes deployment manifests
-- Observability stack (Prometheus, Grafana, Loki, Jaeger)
-- Alerting rules and dashboards
-- Runbooks and incident response procedures
-- SLI/SLO definitions
-- Disaster recovery plan
-
-**When to Use:**
-- After validation phase complete
-- Ready to set up production infrastructure
-- Need operational procedures
-- Want SRE best practices applied
-
-**Operational Excellence:** Applies DORA Elite Performance metrics, SRE principles, and DevSecOps practices.
+**For deployment**, use your standard CI/CD pipeline (GitHub Actions, GitLab CI, etc.).
 
 ---
 
@@ -3334,7 +3305,7 @@ Each workflow includes quality gates:
 /flow:plan <idea>          # Then plan
 /flow:implement <idea>     # Then implement
 /flow:validate <idea>      # Then validate
-/flow:operate <idea>       # Finally operate
+# Deployment is outer loop - use CI/CD pipeline
 ```
 
 **Why:** Each phase builds on previous outputs. Skipping phases leads to gaps and rework.

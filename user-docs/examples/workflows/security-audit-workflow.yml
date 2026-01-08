@@ -208,19 +208,11 @@ workflows:
     optional: false
     requires_human_approval: true
 
-  operate:
-    command: "/flow:operate"
-    description: "Execute operations workflow"
-    agents:
-      - name: "sre-agent"
-        identity: "@sre-agent"
-        description: "Principal Site Reliability Engineer"
-        responsibilities:
-          - "Secure CI/CD pipeline"
-          - "Security monitoring setup"
-    input_states: ["Security Audited"]
-    output_state: "Deployed"
-    optional: false
+  # NOTE: /flow:operate has been removed - deployment is outer loop
+  # Use /ops:* commands for operational tasks:
+  #   /ops:monitor - Set up monitoring and alerting
+  #   /ops:respond - Incident response guidance
+  #   /ops:scale - Scaling recommendations
 
 transitions:
   - name: "assess"
