@@ -109,10 +109,10 @@ Simple tasks: Backlog.md only. Complex tasks: Backlog.md + Beads.
 
 | Topic | Location |
 |-------|----------|
-| Backlog Quick Start | `docs/guides/backlog-quickstart.md` |
-| Workflow Integration | `docs/guides/flowspec-backlog-workflow.md` |
+| Backlog Quick Start | `user-docs/guides/backlog-quickstart.md` |
+| Workflow Integration | `user-docs/guides/flowspec-backlog-workflow.md` |
 | Task Tiers | `docs/guides/task-management-tiers.md` |
-| Inner/Outer Loop | `docs/reference/inner-loop.md`, `docs/reference/outer-loop.md` |
+| Inner/Outer Loop | `user-docs/reference/inner-loop.md`, `user-docs/reference/outer-loop.md` |
 
 ## Environment Variables
 
@@ -155,7 +155,7 @@ Test hooks: `.claude/hooks/test-hooks.sh`
 - `qa-validator`: Test plans and quality gates
 - `security-reviewer`: Vulnerability assessment
 
-Full list: `docs/reference/claude-skills.md` or `.claude/skills/`
+Full list: `memory/claude-skills.md` or `.claude/skills/`
 
 ## Checkpoints
 
