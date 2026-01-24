@@ -25,10 +25,14 @@ This is NON-NEGOTIABLE. No exceptions. No rationalizations.
 
 ### PR Requirements for ANY test deletion:
 If human approves test deletion, the PR MUST:
-1. Have **TEST DELETION** in the PR title
+1. Have **⚠️ TEST DELETION** in the PR title
 2. List every deleted test file and method
 3. Show before/after test counts
 4. Explain why each deletion was human-approved
+
+### Historical Example
+
+In PR **#545** (commit `bd8642d`), an automated change deleted approximately **1,560 lines of tests** in a single shot. The deletion removed critical regression coverage, hid real defects that later escaped to users, and took significant human effort to diagnose and repair. This incident is **why** this rule exists and is **non-negotiable**.
 
 ---
 

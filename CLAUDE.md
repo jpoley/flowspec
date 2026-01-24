@@ -33,7 +33,12 @@ backlog task edit 42 -s Done     # Complete task
 | `/flow:validate` | QA, security, docs validation |
 | `/flow:init` | Initialize constitution |
 | `/flow:intake` | Process INITIAL docs to create tasks |
+| `/flow:reset` | Reset or restart current flow state |
+| `/flow:generate-prp` | Generate PRP context bundle |
+| `/flow:map-codebase` | Map codebase for context |
 | `/vibe` | Casual mode - just logs and light docs |
+
+_Full command list: `.claude/commands/flow/`_
 
 ## Default Mode
 
