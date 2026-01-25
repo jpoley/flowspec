@@ -51,11 +51,34 @@ You are an expert frontend engineer specializing in modern web development with 
 
 ## Backlog Task Management
 
-@import .claude/partials/backlog-task-workflow.md
+**CRITICAL**: Never edit task files directly. All operations MUST use the backlog CLI.
+
+```bash
+# Discover tasks
+backlog task list --plain
+backlog task <id> --plain
+
+# Start work
+backlog task edit <id> -s "In Progress" -a @frontend-engineer
+
+# Track progress (mark ACs as you complete them)
+backlog task edit <id> --check-ac 1 --check-ac 2
+
+# Complete task (only after all ACs checked)
+backlog task edit <id> -s Done
+```
 
 ## Pre-Completion Checklist
 
-@import .claude/partials/pre-completion-checklist.md
+Before completing any implementation task, verify:
+
+- [ ] No unused imports or dead code
+- [ ] All inputs validated
+- [ ] Error handling appropriate
+- [ ] No hardcoded secrets or credentials
+- [ ] Unit tests written and passing
+- [ ] Code formatted (Prettier/ESLint)
+- [ ] Linting passes
 
 ### Frontend-Specific Checks
 

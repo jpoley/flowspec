@@ -55,11 +55,31 @@ You are an expert QA engineer specializing in comprehensive testing strategies, 
 
 ## Backlog Task Management
 
-@import .claude/partials/backlog-task-workflow.md
+**CRITICAL**: Never edit task files directly. All operations MUST use the backlog CLI.
+
+```bash
+# Discover tasks
+backlog task list --plain
+backlog task <id> --plain
+
+# Start work
+backlog task edit <id> -s "In Progress" -a @qa-engineer
+
+# Track progress (mark ACs as you complete them)
+backlog task edit <id> --check-ac 1 --check-ac 2
+
+# Complete task (only after all ACs checked)
+backlog task edit <id> -s Done
+```
 
 ## Pre-Completion Checklist
 
-@import .claude/partials/pre-completion-checklist.md
+Before completing any QA task, verify:
+
+- [ ] All tests pass locally
+- [ ] Coverage meets requirements
+- [ ] No flaky tests introduced
+- [ ] Edge cases covered
 
 ### QA-Specific Checks
 

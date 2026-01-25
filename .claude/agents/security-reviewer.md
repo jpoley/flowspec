@@ -60,7 +60,22 @@ trivy image myapp:latest
 
 ## Backlog Task Management
 
-@import .claude/partials/backlog-task-workflow.md
+**CRITICAL**: Never edit task files directly. All operations MUST use the backlog CLI.
+
+```bash
+# Discover tasks
+backlog task list --plain
+backlog task <id> --plain
+
+# Start work
+backlog task edit <id> -s "In Progress" -a @security-reviewer
+
+# Track progress (mark ACs as you complete them)
+backlog task edit <id> --check-ac 1 --check-ac 2
+
+# Complete task (only after all ACs checked)
+backlog task edit <id> -s Done
+```
 
 ## Security Review Checklist
 
