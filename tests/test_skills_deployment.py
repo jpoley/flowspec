@@ -353,3 +353,457 @@ class TestSkillsStructure:
                     assert "name:" in content and "description:" in content, (
                         "SKILL.md should have name and description metadata"
                     )
+
+
+class TestCommandsDeployFunction:
+    """Tests for the deploy_commands function."""
+
+    def test_deploy_commands_creates_directory(self, tmp_path):
+        """Test that deploy_commands creates .claude/commands/ directory."""
+        from flowspec_cli.skills import deploy_commands
+
+        # Create mock templates/commands/ directory
+        templates_commands = tmp_path / "templates" / "commands"
+        templates_commands.mkdir(parents=True)
+
+        # Create a mock command subdirectory with a command file
+        flow_dir = templates_commands / "flow"
+        flow_dir.mkdir()
+        (flow_dir / "assess.md").write_text("# Assess Command\nTest content")
+
+        # Create project root
+        project_root = tmp_path / "project"
+        project_root.mkdir()
+
+        # Mock _find_templates_dir to return our test templates
+        with patch(
+            "flowspec_cli.skills.scaffold._find_templates_dir",
+            return_value=templates_commands,
+        ):
+            deployed = deploy_commands(project_root)
+
+        # Verify command was deployed
+        assert len(deployed) == 1
+        deployed_command = project_root / ".claude" / "commands" / "flow" / "assess.md"
+        assert deployed_command.exists()
+        assert "Assess Command" in deployed_command.read_text()
+
+    def test_deploy_commands_skip_flag(self, tmp_path):
+        """Test that skip_commands=True skips deployment."""
+        from flowspec_cli.skills import deploy_commands
+
+        project_root = tmp_path / "project"
+        project_root.mkdir()
+
+        # Call deploy_commands with skip_commands=True
+        deployed = deploy_commands(project_root, skip_commands=True)
+
+        # Should return empty list
+        assert deployed == []
+
+        # .claude/commands/ should not be created
+        commands_dir = project_root / ".claude" / "commands"
+        assert not commands_dir.exists()
+
+    def test_deploy_commands_no_overwrite_without_force(self, tmp_path):
+        """Test that existing commands are not overwritten without force flag."""
+        from flowspec_cli.skills import deploy_commands
+
+        templates_commands = tmp_path / "templates" / "commands"
+        templates_commands.mkdir(parents=True)
+
+        # Create mock command in templates
+        (templates_commands / "test-cmd.md").write_text("# New Version")
+
+        # Create existing command in project
+        project_root = tmp_path / "project"
+        commands_dest = project_root / ".claude" / "commands"
+        commands_dest.mkdir(parents=True)
+        existing_cmd = commands_dest / "test-cmd.md"
+        existing_cmd.write_text("# Old Version")
+
+        # Mock _find_templates_dir and deploy without force
+        with patch(
+            "flowspec_cli.skills.scaffold._find_templates_dir",
+            return_value=templates_commands,
+        ):
+            deployed = deploy_commands(project_root, force=False)
+
+        # Should not overwrite - returns empty list
+        assert deployed == []
+        # Old version should remain unchanged
+        assert "Old Version" in existing_cmd.read_text()
+
+    def test_deploy_commands_overwrites_with_force(self, tmp_path):
+        """Test that force=True overwrites existing commands."""
+        from flowspec_cli.skills import deploy_commands
+
+        templates_commands = tmp_path / "templates" / "commands"
+        templates_commands.mkdir(parents=True)
+
+        # Create mock command in templates
+        (templates_commands / "test-cmd.md").write_text("# New Version")
+
+        # Create existing command in project
+        project_root = tmp_path / "project"
+        commands_dest = project_root / ".claude" / "commands"
+        commands_dest.mkdir(parents=True)
+        existing_cmd = commands_dest / "test-cmd.md"
+        existing_cmd.write_text("# Old Version")
+
+        # Mock _find_templates_dir and deploy with force
+        with patch(
+            "flowspec_cli.skills.scaffold._find_templates_dir",
+            return_value=templates_commands,
+        ):
+            deployed = deploy_commands(project_root, force=True)
+
+        # Should overwrite - returns the deployed path
+        assert len(deployed) == 1
+        # New version should replace old
+        assert "New Version" in existing_cmd.read_text()
+
+
+class TestPartialsDeployFunction:
+    """Tests for the deploy_partials function."""
+
+    def test_deploy_partials_creates_directory(self, tmp_path):
+        """Test that deploy_partials creates .claude/partials/ directory."""
+        from flowspec_cli.skills import deploy_partials
+
+        # Create mock templates/partials/ directory
+        templates_partials = tmp_path / "templates" / "partials"
+        templates_partials.mkdir(parents=True)
+
+        # Create a mock partial subdirectory with files
+        flow_dir = templates_partials / "flow"
+        flow_dir.mkdir()
+        (flow_dir / "rules.md").write_text("# Rules Partial\nTest content")
+
+        # Create project root
+        project_root = tmp_path / "project"
+        project_root.mkdir()
+
+        # Mock _find_templates_dir to return our test templates
+        with patch(
+            "flowspec_cli.skills.scaffold._find_templates_dir",
+            return_value=templates_partials,
+        ):
+            deployed = deploy_partials(project_root)
+
+        # Verify partial was deployed
+        assert len(deployed) == 1
+        deployed_partial = project_root / ".claude" / "partials" / "flow" / "rules.md"
+        assert deployed_partial.exists()
+        assert "Rules Partial" in deployed_partial.read_text()
+
+    def test_deploy_partials_skip_flag(self, tmp_path):
+        """Test that skip_partials=True skips deployment."""
+        from flowspec_cli.skills import deploy_partials
+
+        project_root = tmp_path / "project"
+        project_root.mkdir()
+
+        # Call deploy_partials with skip_partials=True
+        deployed = deploy_partials(project_root, skip_partials=True)
+
+        # Should return empty list
+        assert deployed == []
+
+        # .claude/partials/ should not be created
+        partials_dir = project_root / ".claude" / "partials"
+        assert not partials_dir.exists()
+
+
+class TestGitHubIssue1155:
+    """Comprehensive tests for GitHub issue #1155 fix.
+
+    Issue: flowspec init --ai claude creates 'commands' directory in project root
+    Expected: commands/, partials/, skills/ should be in .claude/, NOT at project root
+
+    These tests verify the fix works on all platforms (Windows WSL, macOS, Linux)
+    by using pytest's cross-platform tmp_path fixture.
+
+    Reference: https://github.com/jpoley/flowspec/issues/1155
+    Reported on: Windows WSL, Python 3.12, flowspec 0.4.004
+    """
+
+    def test_issue_1155_commands_not_at_project_root(self, tmp_path):
+        """Verify commands/ directory is NOT created at project root.
+
+        This is the core bug from issue #1155 - the reporter found that
+        'flowspec init my-project --ai claude' created my-project/commands/
+        instead of my-project/.claude/commands/
+        """
+        project_dir = tmp_path / "test-project"
+
+        result = runner.invoke(
+            app,
+            [
+                "init",
+                str(project_dir),
+                "--ai",
+                "claude",
+                "--ignore-agent-tools",
+                "--constitution",
+                "light",
+            ],
+            input="n\nn\n",  # Answer 'no' to backlog-md and beads install prompts
+        )
+
+        assert result.exit_code == 0, (
+            f"Init failed with exit code {result.exit_code}. Output: {result.stdout}"
+        )
+
+        # THE BUG: commands/ was being created at project root
+        wrong_location = project_dir / "commands"
+        assert not wrong_location.exists(), (
+            f"BUG REGRESSION: commands/ exists at project root {wrong_location}. "
+            "This is the exact bug from GitHub issue #1155. "
+            "Commands should be in .claude/commands/, not at project root."
+        )
+
+    def test_issue_1155_commands_in_claude_directory(self, tmp_path):
+        """Verify commands are deployed to .claude/commands/ with correct structure."""
+        project_dir = tmp_path / "test-project"
+
+        result = runner.invoke(
+            app,
+            [
+                "init",
+                str(project_dir),
+                "--ai",
+                "claude",
+                "--ignore-agent-tools",
+                "--constitution",
+                "light",
+            ],
+            input="n\nn\n",
+        )
+
+        assert result.exit_code == 0
+
+        # Verify correct location exists
+        correct_location = project_dir / ".claude" / "commands"
+        assert correct_location.exists(), (
+            f".claude/commands/ should exist at {correct_location}"
+        )
+
+        # Verify expected subdirectories exist (flow/ and vibe/)
+        flow_dir = correct_location / "flow"
+        vibe_dir = correct_location / "vibe"
+        assert flow_dir.exists(), f"flow/ subdirectory should exist at {flow_dir}"
+        assert vibe_dir.exists(), f"vibe/ subdirectory should exist at {vibe_dir}"
+
+        # Verify specific command files exist with content
+        expected_commands = [
+            ("flow", "assess.md"),
+            ("flow", "implement.md"),
+            ("flow", "plan.md"),
+            ("flow", "specify.md"),
+            ("flow", "validate.md"),
+            ("vibe", "vibe.md"),
+        ]
+        for subdir, filename in expected_commands:
+            cmd_file = correct_location / subdir / filename
+            assert cmd_file.exists(), f"Command file should exist: {cmd_file}"
+            content = cmd_file.read_text(encoding="utf-8")
+            assert len(content) > 0, f"Command file should have content: {cmd_file}"
+
+    def test_issue_1155_partials_not_at_project_root(self, tmp_path):
+        """Verify partials/ directory is NOT created at project root."""
+        project_dir = tmp_path / "test-project"
+
+        result = runner.invoke(
+            app,
+            [
+                "init",
+                str(project_dir),
+                "--ai",
+                "claude",
+                "--ignore-agent-tools",
+                "--constitution",
+                "light",
+            ],
+            input="n\nn\n",
+        )
+
+        assert result.exit_code == 0
+
+        # partials/ should NOT be at project root
+        wrong_location = project_dir / "partials"
+        assert not wrong_location.exists(), (
+            f"partials/ should NOT exist at project root {wrong_location}"
+        )
+
+    def test_issue_1155_partials_in_claude_directory(self, tmp_path):
+        """Verify partials are deployed to .claude/partials/ with correct structure."""
+        project_dir = tmp_path / "test-project"
+
+        result = runner.invoke(
+            app,
+            [
+                "init",
+                str(project_dir),
+                "--ai",
+                "claude",
+                "--ignore-agent-tools",
+                "--constitution",
+                "light",
+            ],
+            input="n\nn\n",
+        )
+
+        assert result.exit_code == 0
+
+        # Verify correct location exists
+        correct_location = project_dir / ".claude" / "partials"
+        assert correct_location.exists(), (
+            f".claude/partials/ should exist at {correct_location}"
+        )
+
+        # Verify expected partial files exist
+        flow_dir = correct_location / "flow"
+        assert flow_dir.exists(), f"flow/ subdirectory should exist at {flow_dir}"
+
+        # Verify specific partial files exist with content
+        expected_partials = [
+            ("flow", "_rigor-rules.md"),
+            ("flow", "_workflow-state.md"),
+        ]
+        for subdir, filename in expected_partials:
+            partial_file = correct_location / subdir / filename
+            assert partial_file.exists(), f"Partial file should exist: {partial_file}"
+            content = partial_file.read_text(encoding="utf-8")
+            assert len(content) > 0, f"Partial file should have content: {partial_file}"
+
+    def test_issue_1155_skills_not_at_project_root(self, tmp_path):
+        """Verify skills/ directory is NOT created at project root."""
+        project_dir = tmp_path / "test-project"
+
+        result = runner.invoke(
+            app,
+            [
+                "init",
+                str(project_dir),
+                "--ai",
+                "claude",
+                "--ignore-agent-tools",
+                "--constitution",
+                "light",
+            ],
+            input="n\nn\n",
+        )
+
+        assert result.exit_code == 0
+
+        # skills/ should NOT be at project root
+        wrong_location = project_dir / "skills"
+        assert not wrong_location.exists(), (
+            f"skills/ should NOT exist at project root {wrong_location}"
+        )
+
+        # skills should be in .claude/
+        correct_location = project_dir / ".claude" / "skills"
+        assert correct_location.exists(), (
+            f".claude/skills/ should exist at {correct_location}"
+        )
+
+    def test_issue_1155_full_directory_structure(self, tmp_path):
+        """Comprehensive test verifying the complete .claude/ directory structure.
+
+        This test ensures all Claude Code directories are in the right place
+        and nothing is incorrectly placed at the project root.
+        """
+        project_dir = tmp_path / "test-project"
+
+        result = runner.invoke(
+            app,
+            [
+                "init",
+                str(project_dir),
+                "--ai",
+                "claude",
+                "--ignore-agent-tools",
+                "--constitution",
+                "light",
+            ],
+            input="n\nn\n",
+        )
+
+        assert result.exit_code == 0
+
+        # These directories should ONLY exist under .claude/, NOT at project root
+        claude_only_dirs = ["commands", "skills", "partials"]
+
+        for dirname in claude_only_dirs:
+            # Should NOT exist at project root
+            wrong_path = project_dir / dirname
+            assert not wrong_path.exists(), (
+                f"REGRESSION: {dirname}/ exists at project root. "
+                f"Should be in .claude/{dirname}/ instead."
+            )
+
+            # SHOULD exist under .claude/
+            correct_path = project_dir / ".claude" / dirname
+            assert correct_path.exists(), f".claude/{dirname}/ should exist but doesn't"
+
+            # Should have content (not empty)
+            contents = list(correct_path.iterdir())
+            assert len(contents) > 0, (
+                f".claude/{dirname}/ should have content but is empty"
+            )
+
+        # Verify .claude/ directory has expected structure
+        claude_dir = project_dir / ".claude"
+        assert claude_dir.exists(), ".claude/ directory should exist"
+
+        expected_subdirs = {"commands", "skills", "partials"}
+        actual_subdirs = {p.name for p in claude_dir.iterdir() if p.is_dir()}
+        missing = expected_subdirs - actual_subdirs
+        assert not missing, f".claude/ is missing expected subdirectories: {missing}"
+
+    def test_issue_1155_works_with_here_flag(self, tmp_path):
+        """Verify fix works with --here flag (init in current directory).
+
+        The original issue was reported with 'flowspec init my-project --ai claude'
+        but the same bug could affect --here mode.
+        """
+        import os
+
+        project_dir = tmp_path / "existing-project"
+        project_dir.mkdir()
+
+        # Change to project directory and run init with --here
+        original_cwd = os.getcwd()
+        try:
+            os.chdir(str(project_dir))
+            result = runner.invoke(
+                app,
+                [
+                    "init",
+                    "--here",
+                    "--ai",
+                    "claude",
+                    "--ignore-agent-tools",
+                    "--constitution",
+                    "light",
+                    "--force",
+                ],
+                input="n\nn\n",
+            )
+        finally:
+            os.chdir(original_cwd)
+
+        assert result.exit_code == 0
+
+        # Verify directories are in correct locations
+        for dirname in ["commands", "skills", "partials"]:
+            wrong_path = project_dir / dirname
+            correct_path = project_dir / ".claude" / dirname
+            assert not wrong_path.exists(), (
+                f"--here mode: {dirname}/ should NOT be at project root"
+            )
+            assert correct_path.exists(), (
+                f"--here mode: .claude/{dirname}/ should exist"
+            )

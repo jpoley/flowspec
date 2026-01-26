@@ -5466,6 +5466,72 @@ def init(
                     f"deployment failed ({type(skills_error).__name__}): {skills_error}",
                 )
 
+            # Deploy commands from templates/commands/ to .claude/commands/
+            tracker.add("commands", "Deploy commands")
+            tracker.start("commands")
+            try:
+                from .skills import deploy_commands
+
+                deployed_commands = deploy_commands(project_path, force=force)
+                if deployed_commands:
+                    tracker.complete(
+                        "commands",
+                        f"deployed {len(deployed_commands)} command(s) to .claude/commands/",
+                    )
+                else:
+                    tracker.complete("commands", "no new commands deployed")
+            except PermissionError as commands_error:
+                # Non-fatal error - continue with project initialization
+                tracker.error(
+                    "commands",
+                    f"deployment failed due to permission error: {commands_error}",
+                )
+            except OSError as commands_error:
+                # Non-fatal error - continue with project initialization
+                tracker.error(
+                    "commands",
+                    f"deployment failed due to OS error: {commands_error}",
+                )
+            except Exception as commands_error:
+                # Non-fatal error - continue with project initialization
+                tracker.error(
+                    "commands",
+                    f"deployment failed ({type(commands_error).__name__}): {commands_error}",
+                )
+
+            # Deploy partials from templates/partials/ to .claude/partials/
+            tracker.add("partials", "Deploy partials")
+            tracker.start("partials")
+            try:
+                from .skills import deploy_partials
+
+                deployed_partials = deploy_partials(project_path, force=force)
+                if deployed_partials:
+                    tracker.complete(
+                        "partials",
+                        f"deployed {len(deployed_partials)} partial(s) to .claude/partials/",
+                    )
+                else:
+                    tracker.complete("partials", "no new partials deployed")
+            except PermissionError as partials_error:
+                # Non-fatal error - continue with project initialization
+                tracker.error(
+                    "partials",
+                    f"deployment failed due to permission error: {partials_error}",
+                )
+            except OSError as partials_error:
+                # Non-fatal error - continue with project initialization
+                tracker.error(
+                    "partials",
+                    f"deployment failed due to OS error: {partials_error}",
+                )
+            except Exception as partials_error:
+                # Non-fatal error - continue with project initialization
+                tracker.error(
+                    "partials",
+                    f"deployment failed ({type(partials_error).__name__}): {partials_error}",
+                )
+
             # Install VS Code Copilot agents from embedded templates
             tracker.add("copilot-agents", "Install VS Code Copilot agents")
             tracker.start("copilot-agents")

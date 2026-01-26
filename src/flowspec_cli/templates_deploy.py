@@ -68,11 +68,21 @@ def deploy_local_templates(
     if tracker:
         tracker.start("fetch-base", "locating bundled templates")
 
-    # Copy base templates (everything except agent-specific directories)
+    # Copy base templates (everything except agent-specific directories
+    # and Claude-specific directories that need special handling)
+    # Note: commands, skills, and partials are deployed separately to .claude/
+    # by dedicated functions (deploy_commands, deploy_skills, deploy_partials)
     _copy_templates(
         templates_dir,
         project_path,
-        exclude_dirs={".git", "__pycache__", "agents"},
+        exclude_dirs={
+            ".git",
+            "__pycache__",
+            "agents",
+            "commands",
+            "skills",
+            "partials",
+        },
         force=force,
     )
 
