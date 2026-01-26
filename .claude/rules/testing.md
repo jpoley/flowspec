@@ -44,15 +44,9 @@ Every API function needs tests for:
 Every test that reads files MUST include:
 
 ```python
-from pathlib import Path
-
 def get_project_root() -> Path:
     """Get the project root directory reliably."""
-    current = Path(__file__).resolve()
-    for parent in (current, *current.parents):
-        if (parent / "pyproject.toml").exists():
-            return parent
-    return current.parent.parent  # Fallback
+    return Path(__file__).resolve().parent.parent
 ```
 
 Never use relative paths like `Path(".claude/agents/...")`.
@@ -60,15 +54,13 @@ Never use relative paths like `Path(".claude/agents/...")`.
 ## Safe File Reading
 
 ```python
-# Requires: from typing import Optional; import logging; logger = logging.getLogger(__name__)
 def safe_read_file(file_path: Path) -> Optional[str]:
     """Safely read a file, returning None if it doesn't exist."""
     try:
         if file_path.exists() and file_path.is_file():
             return file_path.read_text(encoding="utf-8")
-        logger.debug(f"File does not exist: {file_path}")
-    except (OSError, IOError, PermissionError) as e:
-        logger.debug(f"Failed to read {file_path}: {e}")
+    except (OSError, IOError, PermissionError):
+        pass
     return None
 ```
 
