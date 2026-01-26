@@ -37,7 +37,7 @@ email: str = Field(..., pattern=r"^[\w\.-]+@[\w\.-]+\.\w+$")
 - Escape output appropriately for context (HTML, JSON, shell)
 
 ```python
-# Good: Parameterized query
+# Good: Parameterized query (requires: from sqlalchemy import select)
 await db.scalar(select(User).where(User.email == email))
 
 # Bad: String interpolation
@@ -59,7 +59,7 @@ When writing heuristic classifiers or security scanners:
 - Never silently swallow exceptions
 
 ```python
-# Good: Log all exceptions with context
+# Good: Log exceptions (requires: import httpx, logging; logger = logging.getLogger(__name__))
 def fetch_url(url: str):
     try:
         response = httpx.get(url, timeout=5.0)

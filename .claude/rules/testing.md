@@ -60,6 +60,7 @@ Never use relative paths like `Path(".claude/agents/...")`.
 ## Safe File Reading
 
 ```python
+# Requires: from typing import Optional; import logging; logger = logging.getLogger(__name__)
 def safe_read_file(file_path: Path) -> Optional[str]:
     """Safely read a file, returning None if it doesn't exist."""
     try:
