@@ -85,12 +85,6 @@ git rebase origin/main
 uv run ruff format --check . && uv run ruff check . && uv run pytest tests/ -x -q
 ```
 
-## PR Iteration Naming
-
-When addressing review feedback, create iteration branches:
-- `original-branch-v2`
-- `original-branch-v3`
-
 ## PR-Task Synchronization
 
 When a PR completes a task, update before merging:
