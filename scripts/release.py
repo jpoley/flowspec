@@ -229,29 +229,43 @@ def cleanup_internal_dev_logs(dry_run: bool = False) -> list[Path]:
     included in releases as they contain developer-specific information.
 
     Returns:
-        List of deleted files.
+        List of deleted files that were tracked by git (need to be staged).
     """
     internal_logs_dir = Path(".flowspec/logs")
-    deleted_files: list[Path] = []
+    tracked_deleted_files: list[Path] = []
 
     if not internal_logs_dir.exists():
         print("  No internal logs directory found")
-        return deleted_files
+        return tracked_deleted_files
 
     # Find all log files (but preserve .gitkeep files)
     for log_file in internal_logs_dir.rglob("*"):
         if log_file.is_file() and log_file.name != ".gitkeep":
+            # Check if file is tracked by git before deleting
+            is_tracked = (
+                subprocess.run(
+                    ["git", "ls-files", "--error-unmatch", str(log_file)],
+                    capture_output=True,
+                    check=False,
+                ).returncode
+                == 0
+            )
+
             if dry_run:
-                print(f"  Would delete: {log_file}")
+                status = " (tracked)" if is_tracked else " (untracked)"
+                print(f"  Would delete: {log_file}{status}")
             else:
                 log_file.unlink()
                 print(f"  Deleted: {log_file}")
-            deleted_files.append(log_file)
 
-    if not deleted_files:
-        print("  No internal logs to clean up")
+            # Only include tracked files - they need to be staged for commit
+            if is_tracked:
+                tracked_deleted_files.append(log_file)
 
-    return deleted_files
+    if not tracked_deleted_files:
+        print("  No tracked internal logs to stage")
+
+    return tracked_deleted_files
 
 
 def get_current_branch() -> str:
