@@ -211,7 +211,12 @@ def update_version_files(new_version: str, dry_run: bool = False) -> None:
 def get_uncommitted_changes() -> list[str]:
     """Get list of uncommitted changes (staged and unstaged)."""
     result = run(["git", "status", "--porcelain"], capture=True, check=False)
-    if result.returncode != 0 or not result.stdout.strip():
+    if result.returncode != 0:
+        print("Error: failed to get git status")
+        if result.stderr:
+            print(result.stderr.strip())
+        sys.exit(1)
+    if not result.stdout.strip():
         return []
     return result.stdout.strip().split("\n")
 
