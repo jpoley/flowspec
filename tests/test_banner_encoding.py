@@ -5,17 +5,10 @@ These tests verify the Windows Unicode encoding fix for issue #1186.
 
 from __future__ import annotations
 
-import io
 import sys
-from typing import TYPE_CHECKING
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from flowspec_cli import BANNER, BANNER_ASCII, _can_encode_unicode
-
-if TYPE_CHECKING:
-    from collections.abc import Generator
 
 
 class TestCanEncodeUnicode:
@@ -75,22 +68,19 @@ class TestCanEncodeUnicode:
             # Should return False rather than raising LookupError
             assert _can_encode_unicode() is False
 
+    def test_handles_type_error_for_non_string_encoding(self) -> None:
+        """Test that function handles TypeError for non-string encoding values."""
+        mock_stdout = MagicMock()
+        mock_stdout.encoding = 12345  # Non-string value
+        with patch.object(sys, "stdout", mock_stdout):
+            # Should return False rather than raising TypeError
+            assert _can_encode_unicode() is False
+
 
 class TestShowBanner:
     """Tests for show_banner() function."""
 
-    @pytest.fixture
-    def capture_output(self) -> Generator[io.StringIO, None, None]:
-        """Fixture to capture console output."""
-        output = io.StringIO()
-        with patch("flowspec_cli.console") as mock_console:
-            # Capture what's passed to console.print
-            mock_console.print = MagicMock()
-            yield output
-
-    def test_uses_ascii_banner_when_unicode_not_supported(
-        self, capture_output: io.StringIO
-    ) -> None:
+    def test_uses_ascii_banner_when_unicode_not_supported(self) -> None:
         """Test that ASCII banner is used when _can_encode_unicode() returns False."""
         from flowspec_cli import show_banner
 
@@ -109,9 +99,7 @@ class TestShowBanner:
                 assert "╔" not in banner_text
                 assert "═" not in banner_text
 
-    def test_uses_unicode_banner_when_supported(
-        self, capture_output: io.StringIO
-    ) -> None:
+    def test_uses_unicode_banner_when_supported(self) -> None:
         """Test that Unicode banner is used when _can_encode_unicode() returns True."""
         from flowspec_cli import show_banner
 

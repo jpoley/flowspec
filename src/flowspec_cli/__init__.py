@@ -3443,12 +3443,12 @@ def _can_encode_unicode() -> bool:
             return False
         test_char.encode(encoding)
         return True
-    except (UnicodeEncodeError, LookupError):
+    except (UnicodeEncodeError, LookupError, TypeError):
         return False
 
 
 def show_banner():
-    """Display the ASCII art banner.
+    """Display the banner with Unicode or ASCII fallback.
 
     Uses Unicode box-drawing characters by default. Falls back to ASCII
     on Windows terminals that don't support Unicode (e.g., cp1252 encoding).
