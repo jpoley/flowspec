@@ -1298,6 +1298,16 @@ BANNER = """
 ╚═╝     ╚══════╝ ╚═════╝  ╚══╝╚══╝ ╚══════╝╚═╝     ╚══════╝ ╚═════╝
 """
 
+# ASCII fallback banner for terminals that don't support Unicode (e.g., Windows cp1252)
+BANNER_ASCII = """
+ _____ _
+|  ___| | _____      _____ _ __   ___  ___
+| |_  | |/ _ \\ \\ /\\ / / __| '_ \\ / _ \\/ __|
+|  _| | | (_) \\ V  V /\\__ \\ |_) |  __/ (__
+|_|   |_|\\___/ \\_/\\_/ |___/ .__/ \\___|\\___|
+                          |_|
+"""
+
 # Version - keep in sync with pyproject.toml
 
 __version__ = "0.4.007"
@@ -3416,16 +3426,42 @@ def generate_flowspec_workflow_yml(
     workflow_file.write_text("\n".join(lines), encoding="utf-8")
 
 
-def show_banner():
-    """Display the ASCII art banner."""
-    banner_lines = BANNER.strip().split("\n")
+def _can_encode_unicode() -> bool:
+    """Check if stdout can encode Unicode box-drawing characters.
+
+    Returns False on Windows terminals using legacy encodings like cp1252,
+    or when stdout/encoding cannot be determined.
+    """
+    try:
+        # Test with a box-drawing character from the banner
+        test_char = "█"
+        stdout = sys.stdout
+        if stdout is None:
+            return False
+        encoding = getattr(stdout, "encoding", None)
+        if not encoding:
+            return False
+        test_char.encode(encoding)
+        return True
+    except (UnicodeEncodeError, LookupError, TypeError):
+        return False
+
+
+def show_banner() -> None:
+    """Display the banner with Unicode or ASCII fallback.
+
+    Uses Unicode box-drawing characters by default. Falls back to ASCII
+    on Windows terminals that don't support Unicode (e.g., cp1252 encoding).
+    """
+    # Check encoding support upfront to avoid Rich's internal encoding errors
+    banner_text = BANNER if _can_encode_unicode() else BANNER_ASCII
     colors = ["bright_blue", "blue", "cyan", "bright_cyan", "white", "bright_white"]
 
+    banner_lines = banner_text.strip().split("\n")
     styled_banner = Text()
     for i, line in enumerate(banner_lines):
         color = colors[i % len(colors)]
         styled_banner.append(line + "\n", style=color)
-
     console.print(Align.center(styled_banner))
     console.print(Align.center(Text(TAGLINE, style="italic bright_yellow")))
     console.print()
