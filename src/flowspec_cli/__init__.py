@@ -3429,13 +3429,19 @@ def generate_flowspec_workflow_yml(
 def _can_encode_unicode() -> bool:
     """Check if stdout can encode Unicode box-drawing characters.
 
-    Returns False on Windows terminals using legacy encodings like cp1252.
+    Returns False on Windows terminals using legacy encodings like cp1252,
+    or when stdout/encoding cannot be determined.
     """
     try:
         # Test with a box-drawing character from the banner
         test_char = "█"
-        if hasattr(sys.stdout, "encoding") and sys.stdout.encoding:
-            test_char.encode(sys.stdout.encoding)
+        stdout = sys.stdout
+        if stdout is None:
+            return False
+        encoding = getattr(stdout, "encoding", None)
+        if not encoding:
+            return False
+        test_char.encode(encoding)
         return True
     except (UnicodeEncodeError, LookupError):
         return False
