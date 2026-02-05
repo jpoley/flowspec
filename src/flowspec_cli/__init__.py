@@ -1310,7 +1310,7 @@ BANNER_ASCII = """
 
 # Version - keep in sync with pyproject.toml
 
-__version__ = "0.4.007"
+__version__ = "0.4.008"
 
 
 # Constitution template version
