@@ -5560,6 +5560,17 @@ def init(
                 ".claude/partials/",
             )
 
+            # Deploy Claude Code hooks from templates/hooks/ to .claude/hooks/
+            from .skills import deploy_claude_hooks
+
+            run_deploy_step(
+                "claude-hooks",
+                lambda: deploy_claude_hooks(
+                    project_path, project_name=project_path.name, force=force
+                ),
+                ".claude/hooks/",
+            )
+
             # Install VS Code Copilot agents from embedded templates
             tracker.add("copilot-agents", "Install VS Code Copilot agents")
             tracker.start("copilot-agents")

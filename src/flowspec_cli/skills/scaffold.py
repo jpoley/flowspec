@@ -491,10 +491,147 @@ def deploy_partials(
     )
 
 
+def deploy_claude_hooks(
+    project_root: Path,
+    project_name: str = "",
+    *,
+    force: bool = False,
+    skip_hooks: bool = False,
+) -> list[Path]:
+    """Deploy Claude Code hooks from templates/hooks/ to .claude/hooks/.
+
+    This deploys the fail-open hooks for Claude Code that provide:
+    - Session startup with environment verification
+    - Auto-approval for safe read operations
+    - Git command safety checks
+    - Sensitive file protection
+    - Auto-formatting and linting for Python files
+    - Quality gate on PR creation
+
+    Args:
+        project_root: Root directory of the project
+        project_name: Name of the project (for settings.json template)
+        force: If True, overwrite existing hooks
+        skip_hooks: If True, skip hook deployment entirely
+
+    Returns:
+        List of paths to deployed hook files
+    """
+    if skip_hooks:
+        return []
+
+    templates_hooks_dir = _find_templates_dir("hooks")
+    if templates_hooks_dir is None:
+        logger.warning(
+            "Hooks templates directory not found. "
+            "This may indicate an installation issue if running from a package."
+        )
+        return []
+
+    # Create .claude/hooks directory
+    hooks_dir = project_root / ".claude" / "hooks"
+    hooks_dir.mkdir(parents=True, exist_ok=True)
+
+    deployed = []
+
+    # Copy each hook file from templates/hooks/ to .claude/hooks/
+    for item in templates_hooks_dir.iterdir():
+        # Skip symlinks and the template file
+        if item.is_symlink():
+            continue
+        if item.name == "settings.json.template":
+            continue
+
+        # Only process files (hooks are individual scripts)
+        if not item.is_file():
+            continue
+
+        # Destination path
+        dest_item = hooks_dir / item.name
+
+        # Check if item already exists
+        if dest_item.exists() and not force:
+            # Skip existing items unless --force
+            continue
+
+        # Copy file
+        if dest_item.exists():
+            try:
+                dest_item.unlink()
+            except OSError as exc:
+                raise RuntimeError(
+                    f"Failed to remove existing hook '{dest_item}'. "
+                    "Please check file permissions."
+                ) from exc
+
+        try:
+            shutil.copy2(item, dest_item)
+            # Make shell scripts executable
+            if item.suffix == ".sh":
+                dest_item.chmod(0o755)
+        except OSError as exc:
+            raise RuntimeError(
+                f"Failed to copy hook '{item}' to '{dest_item}'. "
+                "Please check file permissions and available disk space."
+            ) from exc
+        deployed.append(dest_item)
+
+    # Generate settings.json from template if it doesn't exist
+    settings_file = project_root / ".claude" / "settings.json"
+    settings_template = templates_hooks_dir / "settings.json.template"
+
+    if settings_template.exists() and (not settings_file.exists() or force):
+        try:
+            template_content = settings_template.read_text(encoding="utf-8")
+
+            # Determine project-specific settings
+            if not project_name:
+                project_name = project_root.name
+
+            # Detect tech stack for preferences
+            code_style = "ruff"  # Default to ruff for Python
+            test_framework = "pytest"  # Default
+            package_manager = "uv"  # Default
+
+            # Check for package.json (Node.js project)
+            if (project_root / "package.json").exists():
+                code_style = "prettier"
+                test_framework = "jest"
+                package_manager = "npm"
+
+            # Check for pyproject.toml (Python project)
+            if (project_root / "pyproject.toml").exists():
+                code_style = "ruff"
+                test_framework = "pytest"
+                # Check for uv.lock vs requirements.txt
+                if (project_root / "uv.lock").exists():
+                    package_manager = "uv"
+                elif (project_root / "poetry.lock").exists():
+                    package_manager = "poetry"
+                else:
+                    package_manager = "pip"
+
+            # Replace placeholders
+            content = template_content.replace("{{PROJECT_NAME}}", project_name)
+            content = content.replace("{{CODE_STYLE}}", code_style)
+            content = content.replace("{{TEST_FRAMEWORK}}", test_framework)
+            content = content.replace("{{PACKAGE_MANAGER}}", package_manager)
+
+            settings_file.write_text(content, encoding="utf-8")
+            deployed.append(settings_file)
+        except OSError as exc:
+            raise RuntimeError(
+                f"Failed to create settings.json: {exc}. Please check file permissions."
+            ) from exc
+
+    return deployed
+
+
 __all__ = [
     "deploy_skills",
     "deploy_commands",
     "deploy_partials",
+    "deploy_claude_hooks",
     "sync_skills_directory",
     "compare_skills_after_extraction",
     "SkillSyncResult",

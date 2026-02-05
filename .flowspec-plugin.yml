@@ -24,9 +24,6 @@ provides:
     - path: templates/commands/flowspec/plan.md
       name: flow:plan
       description: Architecture & Platform Planning
-    - path: templates/commands/flowspec/research.md
-      name: flow:research
-      description: Market Research & Analysis
     - path: templates/commands/flowspec/implement.md
       name: flow:implement
       description: Multi-Agent Implementation
