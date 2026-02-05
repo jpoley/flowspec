@@ -4,11 +4,10 @@ A comprehensive Spec-Driven Development (SDD) toolkit designed specifically for 
 
 ## 🎯 What This Plugin Provides
 
-### Workflow Commands (5)
+### Workflow Commands (4)
 Execute complete development workflows with a single command:
 - `/flow:specify` - Create comprehensive feature specifications
 - `/flow:plan` - Architectural planning and design
-- `/flow:research` - Research and business validation
 - `/flow:implement` - Frontend + backend implementation with code review
 - `/flow:validate` - QA, security, documentation, and release validation
 
@@ -89,19 +88,13 @@ Design the system:
 /flow:plan Design authentication system architecture
 ```
 
-### 4. Research and Validate
-Conduct research if needed:
-```bash
-/flow:research Evaluate OAuth2 providers and security best practices
-```
-
-### 5. Implement
+### 4. Implement
 Execute implementation:
 ```bash
 /flow:implement Build OAuth2 authentication system
 ```
 
-### 6. Validate
+### 5. Validate
 Run comprehensive validation:
 ```bash
 /flow:validate Check authentication implementation for security and quality
@@ -137,21 +130,6 @@ Run comprehensive validation:
 **Example**:
 ```bash
 /flow:plan Design microservices architecture for chat system
-```
-
-### /flow:research
-**Purpose**: Technical research and business validation
-**Agents**: researcher, business-validator
-**Outputs**:
-- Technology evaluation
-- Market analysis
-- Competitive analysis
-- Risk assessment
-- Recommendations
-
-**Example**:
-```bash
-/flow:research Compare WebSocket vs Server-Sent Events for real-time messaging
 ```
 
 ### /flow:implement
@@ -278,7 +256,7 @@ Agents are launched via the Task tool. Ensure:
 ### 1. Follow the Workflow Order
 For best results, follow the workflow sequence:
 ```
-specify → plan → research → implement → validate
+specify → plan → implement → validate
 ```
 
 ### 2. Provide Context
@@ -294,13 +272,7 @@ Don't hesitate to re-run commands with refinements:
 /flow:plan Update architecture to use event-driven design instead of polling
 ```
 
-### 4. Use Research for Decisions
-Before making major technical decisions:
-```bash
-/flow:research Evaluate trade-offs between PostgreSQL and MongoDB for chat persistence
-```
-
-### 5. Validate Early and Often
+### 4. Validate Early and Often
 Run validation throughout development, not just at the end:
 ```bash
 /flow:validate Check current implementation for security issues

@@ -453,36 +453,10 @@ WORKFLOW_TRANSITIONS: list[TransitionSchema] = [
         validation=ValidationMode.NONE,
         description="Create PRD with user stories and acceptance criteria",
     ),
-    # Research transition (optional)
-    TransitionSchema(
-        name="research",
-        from_state="Specified",
-        to_state="Researched",
-        via="research",
-        input_artifacts=[
-            Artifact(
-                type="prd",
-                path="./docs/prd/{feature}.md",
-                required=True,
-            ),
-        ],
-        output_artifacts=[
-            Artifact(
-                type="research_report",
-                path="./docs/research/{feature}-research.md",
-            ),
-            Artifact(
-                type="business_validation",
-                path="./docs/research/{feature}-validation.md",
-            ),
-        ],
-        validation=ValidationMode.NONE,
-        description="Technical and business research completed",
-    ),
-    # Plan transition (can come from Specified or Researched)
+    # Plan transition
     TransitionSchema(
         name="plan",
-        from_state=["Specified", "Researched"],
+        from_state="Specified",
         to_state="Planned",
         via="plan",
         input_artifacts=[

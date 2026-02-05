@@ -230,31 +230,6 @@ class TestLightModeWorkflow:
             pytest.skip("flowspec commands directory not found")
             return primary_path  # Unreachable but satisfies type checker
 
-    def test_research_command_has_light_mode_check(self, commands_path: Path) -> None:
-        """research.md should check for light mode and skip if detected."""
-        research_cmd = commands_path / "research.md"
-        if not research_cmd.exists():
-            pytest.skip(f"research.md not found at {research_cmd}")
-
-        content = safe_read_file(research_cmd)
-        assert content is not None, f"Could not read {research_cmd}"
-
-        # Should have light mode detection with actual conditional check
-        # Pattern matches: if [ -f ".flowspec-light-mode" ] or similar conditional
-        light_mode_conditional = re.search(
-            r"if\s+\[.*\.flowspec-light-mode.*\]", content
-        )
-        assert light_mode_conditional is not None, (
-            'Missing conditional check for .flowspec-light-mode (expected: if [ -f ".flowspec-light-mode" ])'
-        )
-        assert "LIGHT MODE" in content or "Light Mode" in content, (
-            "Missing light mode text"
-        )
-
-        # Should indicate skipping
-        content_upper = content.upper()
-        assert "SKIP" in content_upper, "Missing skip indication for light mode"
-
     def test_plan_command_has_light_mode_check(self, commands_path: Path) -> None:
         """plan.md should check for light mode and use simplified planning."""
         plan_cmd = commands_path / "plan.md"

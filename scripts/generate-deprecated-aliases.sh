@@ -10,7 +10,6 @@ TEMPLATES_DIR="$SCRIPT_DIR/../templates/commands"
 declare -A COMMAND_MAP=(
     ["flowspec/assess.md"]="pm/assess.md"
     ["flowspec/specify.md"]="pm/define.md"
-    ["flowspec/research.md"]="pm/discover.md"
     ["flowspec/plan.md"]="arch/design.md"
     ["flowspec/implement.md"]="dev/build.md"
     ["flowspec/validate.md"]="qa/verify.md"

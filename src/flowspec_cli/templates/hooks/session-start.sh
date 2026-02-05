@@ -208,17 +208,19 @@ fi
 
 # Output JSON decision
 # Try python3 first, fall back to pure bash if python3 unavailable
+# Pass additional_context via environment variable to prevent code injection
 if command -v python3 &> /dev/null; then
-    python3 <<JSONEOF 2>/dev/null || echo '{"decision":"allow","reason":"session started"}'
+    ADDITIONAL_CONTEXT="$additional_context" python3 <<'JSONEOF' 2>/dev/null || echo '{"decision":"allow","reason":"session started"}'
 import json
-import sys
+import os
 
 decision = {
     "decision": "allow",
     "reason": "Session started - environment verified",
 }
 
-additional_context = """$additional_context"""
+# Read from environment variable (safe from code injection)
+additional_context = os.environ.get("ADDITIONAL_CONTEXT", "")
 if additional_context.strip():
     decision["additionalContext"] = additional_context
 

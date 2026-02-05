@@ -105,13 +105,13 @@ class TestPromptValidationModes:
     ) -> None:
         """Test that pressing Enter for all prompts returns all NONE modes."""
         # Mock typer.prompt to return default "1" for mode and empty for keyword
-        # NOTE: operate removed - deployment is outer loop (use /ops:* commands)
-        mock_prompt = MagicMock(side_effect=["1"] * 6)
+        # NOTE: operate and research removed - simplified workflow
+        mock_prompt = MagicMock(side_effect=["1"] * 5)
         monkeypatch.setattr("flowspec_cli.typer.prompt", mock_prompt)
 
         result = prompt_validation_modes()
 
-        assert len(result) == 6
+        assert len(result) == 5
         for mode in result.values():
             assert mode == "none"
 
@@ -120,11 +120,10 @@ class TestPromptValidationModes:
     ) -> None:
         """Test that selecting KEYWORD (option 2) prompts for the keyword."""
         # Simulate: select KEYWORD for specify transition, then enter custom keyword
-        # NOTE: operate removed - deployment is outer loop (use /ops:* commands)
+        # NOTE: operate and research removed - simplified workflow
         prompt_responses = [
             "1",  # assess: NONE
             "1",  # specify: We'll override below
-            "1",  # research: NONE
             "1",  # plan: NONE
             "1",  # implement: NONE
             "1",  # validate: NONE
@@ -161,8 +160,8 @@ class TestPromptValidationModes:
 
         def mock_prompt(message: str, default: str = "") -> str:
             call_count[0] += 1
-            # Plan is the 4th transition
-            if call_count[0] == 4:
+            # Plan is the 3rd transition (after research removed)
+            if call_count[0] == 3:
                 return "3"  # PULL_REQUEST
             return "1"  # NONE for others
 
@@ -224,7 +223,7 @@ class TestPromptValidationModes:
             prompt_validation_modes()
 
     def test_all_transitions_covered(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Test that all 6 standard transitions are covered (operate removed)."""
+        """Test that all 5 standard transitions are covered (operate, research removed)."""
         mock_prompt = MagicMock(return_value="1")
         monkeypatch.setattr("flowspec_cli.typer.prompt", mock_prompt)
 
@@ -338,8 +337,8 @@ class TestInitInteractivePrompts:
         workflow_file = project_dir / "flowspec_workflow.yml"
         assert workflow_file.exists()
         content = workflow_file.read_text()
-        # All should be NONE (default) - 6 transitions (operate removed)
-        assert content.count("validation: NONE") >= 6
+        # All should be NONE (default) - 5 transitions (operate, research removed)
+        assert content.count("validation: NONE") >= 5
 
     def test_no_validation_prompts_flag_skips_interactive(
         self, tmp_path: Path, mock_github_releases
@@ -366,16 +365,16 @@ class TestInitInteractivePrompts:
         workflow_file = project_dir / "flowspec_workflow.yml"
         assert workflow_file.exists()
         content = workflow_file.read_text()
-        # All should be NONE - 6 transitions (operate removed)
-        assert content.count("validation: NONE") >= 6
+        # All should be NONE - 5 transitions (operate, research removed)
+        assert content.count("validation: NONE") >= 5
 
 
 class TestWorkflowTransitionsConstant:
     """Tests for WORKFLOW_TRANSITIONS constant."""
 
-    def test_has_six_transitions(self) -> None:
-        """Test that WORKFLOW_TRANSITIONS has all 6 standard transitions (operate removed)."""
-        assert len(WORKFLOW_TRANSITIONS) == 6
+    def test_has_five_transitions(self) -> None:
+        """Test that WORKFLOW_TRANSITIONS has all 5 standard transitions (operate, research removed)."""
+        assert len(WORKFLOW_TRANSITIONS) == 5
 
     def test_all_have_required_fields(self) -> None:
         """Test that all transitions have required fields."""

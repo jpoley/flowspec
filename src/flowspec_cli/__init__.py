@@ -2295,7 +2295,6 @@ def generate_claude_md(project_path: Path, project_name: str) -> None:
 # Workflow Commands (stateful, sequential stages)
 /flow:assess    # Evaluate SDD workflow suitability
 /flow:specify   # Create/update feature specs
-/flow:research  # Research and validation
 /flow:plan      # Execute planning workflow
 /flow:implement # Implementation with code review
 /flow:validate  # QA, security, docs validation
@@ -3255,14 +3254,23 @@ app = typer.Typer(
 
 # Workflow transitions with their default validation modes
 # Each transition can have a different validation mode
-# NOTE: operate removed - deployment is outer loop (use /ops:* commands)
+# NOTE: operate and research removed - simplified workflow
 WORKFLOW_TRANSITIONS = [
     {"name": "assess", "from": "To Do", "to": "Assessed", "default": "NONE"},
-    {"name": "research", "from": "Assessed", "to": "Researched", "default": "NONE"},
-    {"name": "specify", "from": "Researched", "to": "Specified", "default": "NONE"},
+    {"name": "specify", "from": "Assessed", "to": "Specified", "default": "NONE"},
     {"name": "plan", "from": "Specified", "to": "Planned", "default": "NONE"},
-    {"name": "implement", "from": "Planned", "to": "Implemented", "default": "NONE"},
-    {"name": "validate", "from": "Implemented", "to": "Validated", "default": "NONE"},
+    {
+        "name": "implement",
+        "from": "Planned",
+        "to": "In Implementation",
+        "default": "NONE",
+    },
+    {
+        "name": "validate",
+        "from": "In Implementation",
+        "to": "Validated",
+        "default": "NONE",
+    },
 ]
 
 
@@ -3280,11 +3288,10 @@ def prompt_validation_modes() -> dict[str, str]:
     transitions_info = [
         ("assess", "To Do → Assessed", "after /flow:assess"),
         ("specify", "Assessed → Specified", "after /flow:specify, produces PRD"),
-        ("research", "Specified → Researched", "after /flow:research"),
-        ("plan", "Researched → Planned", "after /flow:plan, produces ADRs"),
+        ("plan", "Specified → Planned", "after /flow:plan, produces ADRs"),
         ("implement", "Planned → In Implementation", "after /flow:implement"),
         ("validate", "In Implementation → Validated", "after /flow:validate"),
-        # NOTE: operate removed - deployment is outer loop
+        # NOTE: research and operate removed - simplified workflow
     ]
 
     modes: dict[str, str] = {}
@@ -5560,6 +5567,17 @@ def init(
                 ".claude/partials/",
             )
 
+            # Deploy Claude Code hooks from templates/hooks/ to .claude/hooks/
+            from .skills import deploy_claude_hooks
+
+            run_deploy_step(
+                "claude-hooks",
+                lambda: deploy_claude_hooks(
+                    project_path, project_name=project_path.name, force=force
+                ),
+                ".claude/hooks/",
+            )
+
             # Install VS Code Copilot agents from embedded templates
             tracker.add("copilot-agents", "Install VS Code Copilot agents")
             tracker.start("copilot-agents")
@@ -5997,7 +6015,6 @@ def init(
         "Optional commands [bright_black](improve quality & confidence)[/bright_black]",
         "",
         "○ [cyan]/flow:assess[/] - Evaluate complexity and recommend workflow mode",
-        "○ [cyan]/flow:research[/] - Research and business validation (after specify)",
         "○ [cyan]/flow:submit-n-watch-pr[/] - Submit PR and watch CI/reviews",
     ]
     enhancements_panel = Panel(
