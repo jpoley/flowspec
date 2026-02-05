@@ -2,6 +2,7 @@
 
 from .scaffold import SkillSyncResult
 from .scaffold import compare_skills_after_extraction
+from .scaffold import deploy_claude_hooks
 from .scaffold import deploy_commands
 from .scaffold import deploy_partials
 from .scaffold import deploy_skills
@@ -11,6 +12,7 @@ __all__ = [
     "deploy_skills",
     "deploy_commands",
     "deploy_partials",
+    "deploy_claude_hooks",
     "sync_skills_directory",
     "compare_skills_after_extraction",
     "SkillSyncResult",

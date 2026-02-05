@@ -3,8 +3,9 @@
 # Format: [Phase] task-ID (N/M) | branch*
 #
 # Example output: [Impl] task-188 (2/5) | feature-auth*
-
-set -euo pipefail
+#
+# IMPORTANT: No strict mode - statusline must be fail-safe.
+# Shows "no task" when no active task to nudge task usage.
 
 # Exit early if not in a git repo
 git rev-parse --git-dir >/dev/null 2>&1 || exit 0
@@ -31,7 +32,7 @@ get_task_data() {
 
     # Parse backlog output - format is "  [PRIORITY] task-XXX - Title"
     local task_line task_id
-    task_line=$(backlog task list --plain -s "In Progress" 2>/dev/null | grep -E '^\s*\[' | head -1)
+    task_line=$(backlog task list --plain -s "In Progress" 2>/dev/null | grep -E '^\s*(\[|task-)' | head -1 || true)
     [[ -z "$task_line" ]] && return 1
 
     # Extract task ID (e.g., "task-188")
@@ -100,6 +101,11 @@ main() {
             else
                 output="${output:+$output }${task_id}"
             fi
+        fi
+    else
+        # Nudge: show "no task" when backlog available but no active task
+        if command -v backlog >/dev/null 2>&1; then
+            output="no task"
         fi
     fi
 

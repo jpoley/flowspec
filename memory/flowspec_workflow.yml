@@ -31,12 +31,11 @@ states:
   - "To Do"           # Initial state - work has not started
   - "Assessed"        # SDD workflow suitability evaluated via /flow:assess
   - "Specified"       # Requirements captured via /flow:specify
-  - "Researched"      # Technical and business research completed via /flow:research
   - "Planned"         # Architecture and infrastructure planned via /flow:plan
   - "In Implementation"  # Code actively being written via /flow:implement
   - "Validated"       # QA, security, and documentation validated via /flow:validate
   - "Done"            # Work complete - ready for archive
-  # NOTE: "Deployed" state removed - /flow:operate is outer loop (use /ops:* commands)
+  # NOTE: "Deployed" and "Researched" states removed - outer loop / not a state
 
 # ==============================================================================
 # WORKFLOW DEFINITIONS
@@ -77,29 +76,6 @@ workflows:
     optional: false
     creates_backlog_tasks: true
 
-  research:
-    command: "/flow:research"
-    description: "Execute research and business validation workflow"
-    agents:
-      - name: "researcher"
-        identity: "@researcher"
-        description: "Senior Research Analyst"
-        responsibilities:
-          - "Market analysis (TAM/SAM/SOM, growth trends)"
-          - "Competitive landscape assessment"
-          - "Technical feasibility evaluation"
-      - name: "business-validator"
-        identity: "@business-validator"
-        description: "Senior Business Analyst"
-        responsibilities:
-          - "Financial viability analysis"
-          - "Operational feasibility assessment"
-          - "Go/No-Go recommendations"
-    input_states: ["Specified"]
-    output_state: "Researched"
-    optional: true
-    creates_backlog_tasks: true
-
   plan:
     command: "/flow:plan"
     description: "Execute planning workflow using architect and platform engineer"
@@ -119,7 +95,7 @@ workflows:
           - "CI/CD pipeline architecture"
           - "Infrastructure architecture (Kubernetes, cloud)"
           - "DevSecOps integration (SBOM, SLSA)"
-    input_states: ["Specified", "Researched"]
+    input_states: ["Specified"]
     output_state: "Planned"
     optional: false
     creates_backlog_tasks: true
@@ -242,52 +218,14 @@ transitions:
         multiple: true
     validation: "NONE"
 
-  - name: "research"
-    from: "Specified"
-    to: "Researched"
-    via: "research"
-    description: "Technical and business research completed"
-    input_artifacts:
-      - type: "prd"
-        path: "./docs/prd/{feature}.md"
-        required: true
-    output_artifacts:
-      - type: "research_report"
-        path: "./docs/research/{feature}-research.md"
-      - type: "business_validation"
-        path: "./docs/research/{feature}-validation.md"
-    validation: "NONE"
-
-  - name: "plan_from_specified"
+  - name: "plan"
     from: "Specified"
     to: "Planned"
     via: "plan"
-    description: "Architecture planned (skipping optional research)"
+    description: "Architecture planned"
     input_artifacts:
       - type: "prd"
         path: "./docs/prd/{feature}.md"
-        required: true
-    output_artifacts:
-      - type: "adr"
-        path: "./docs/adr/ADR-{NNN}-{slug}.md"
-        required: true
-        multiple: true
-    validation: "NONE"
-
-  - name: "plan_from_researched"
-    from: "Researched"
-    to: "Planned"
-    via: "plan"
-    description: "Architecture planned after research"
-    input_artifacts:
-      - type: "prd"
-        path: "./docs/prd/{feature}.md"
-        required: true
-      - type: "research_report"
-        path: "./docs/research/{feature}-research.md"
-        required: true
-      - type: "business_validation"
-        path: "./docs/research/{feature}-validation.md"
         required: true
     output_artifacts:
       - type: "adr"

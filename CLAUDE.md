@@ -27,7 +27,6 @@ backlog task edit 42 -s Done     # Complete task
 |---------|---------|
 | `/flow:assess` | Evaluate SDD workflow suitability |
 | `/flow:specify` | Create/update feature specs |
-| `/flow:research` | Research and validation (optional) |
 | `/flow:plan` | Execute planning workflow |
 | `/flow:implement` | Implementation with code review |
 | `/flow:validate` | QA, security, docs validation |
@@ -72,8 +71,7 @@ flowspec workflow validate
 |---------|-------------|--------------|
 | `/flow:assess` | To Do | Assessed |
 | `/flow:specify` | Assessed | Specified |
-| `/flow:research` | Specified | Researched |
-| `/flow:plan` | Specified/Researched | Planned |
+| `/flow:plan` | Specified | Planned |
 | `/flow:implement` | Planned | In Implementation |
 | `/flow:validate` | In Implementation | Validated |
 

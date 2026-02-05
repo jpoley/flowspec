@@ -1,0 +1,147 @@
+{
+  "description": "Claude Code settings for {{PROJECT_NAME}} project",
+  "projectName": "{{PROJECT_NAME}}",
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Write(./.env)",
+      "Write(./.env.*)",
+      "Write(./secrets/**)",
+      "Edit(./.env)",
+      "Edit(./.env.*)",
+      "Edit(./secrets/**)",
+      "Delete(./.env)",
+      "Delete(./.env.*)",
+      "Delete(./secrets/**)",
+      "Write(./CLAUDE.md)",
+      "Edit(./CLAUDE.md)",
+      "Delete(./CLAUDE.md)",
+      "Write(./memory/constitution.md)",
+      "Edit(./memory/constitution.md)",
+      "Delete(./memory/constitution.md)",
+      "Write(./uv.lock)",
+      "Edit(./uv.lock)",
+      "Delete(./uv.lock)",
+      "Write(./package-lock.json)",
+      "Edit(./package-lock.json)",
+      "Delete(./package-lock.json)",
+      "Write(./pnpm-lock.yaml)",
+      "Edit(./pnpm-lock.yaml)",
+      "Delete(./pnpm-lock.yaml)",
+      "Bash(sudo:*)",
+      "Bash(rm -rf /)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf ~/*)",
+      "Bash(chmod:777:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(rm -rf:*)"
+    ]
+  },
+  "allowedTools": [
+    "Read",
+    "Write",
+    "Edit",
+    "Glob",
+    "Grep",
+    "Bash",
+    "WebFetch",
+    "WebSearch",
+    "Task",
+    "TodoWrite"
+  ],
+  "preferences": {
+    "codeStyle": "{{CODE_STYLE}}",
+    "testFramework": "{{TEST_FRAMEWORK}}",
+    "packageManager": "{{PACKAGE_MANAGER}}"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/run-hook.sh .claude/hooks/session-start.sh",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Read|Glob|Grep|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/run-hook.sh python3 .claude/hooks/permission-auto-approve.py",
+            "timeout": 3
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/run-hook.sh python3 .claude/hooks/pre-tool-use-sensitive-files.py",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/run-hook.sh python3 .claude/hooks/pre-tool-use-git-safety.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/run-hook.sh .claude/hooks/post-tool-use-format-python.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/run-hook.sh .claude/hooks/post-tool-use-lint-python.sh",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "SlashCommand",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/run-hook.sh python3 .claude/hooks/post-slash-command-emit.py",
+            "timeout": 35
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/run-hook.sh python3 .claude/hooks/stop-quality-gate.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

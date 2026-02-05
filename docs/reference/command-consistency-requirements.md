@@ -12,7 +12,7 @@ All `/flow:*` commands MUST consistently implement three core behaviors:
 2. **Integrate with backlog** for task tracking
 3. **Log decisions** for auditability
 
-Currently, only 5 of 23 commands fully implement all three requirements.
+Currently, only 4 of 22 commands fully implement all three requirements.
 
 ## Required Behaviors
 
@@ -24,12 +24,11 @@ Every command that performs work MUST produce artifacts in `docs/` subdirectorie
 |--------------|-------------------|---------|
 | Assessment | `docs/assess/` | `docs/assess/{feature}-assessment.md` |
 | Specification | `docs/prd/` | `docs/prd/{feature}-prd.md` |
-| Research | `docs/research/` | `docs/research/{feature}-research.md` |
 | Planning | `docs/adr/` | `docs/adr/ADR-{number}-{title}.md` |
 | Security | `docs/security/` | `docs/security/{feature}-scan.json` |
 | QA | `docs/qa/` | `docs/qa/{feature}-test-plan.md` |
 
-**Exception:** Utility commands (`reset`, `rigor`) may not produce artifacts.
+**Exception:** Utility commands (`init`, `reset`, `rigor`, `gate`) may not produce artifacts.
 
 ### 2. Backlog Integration
 
@@ -49,36 +48,51 @@ backlog task edit 123 --append-notes "Completed via /flow:implement"
 
 ### 3. Decision Logging
 
-Every command that makes decisions MUST log to `.flowspec/logs/decisions/`:
+Every command that makes decisions MUST log to `.flowspec/logs/decisions/` in JSONL format (one JSON object per line).
 
 ```
 .flowspec/logs/decisions/
-├── {date}-{command}-{feature}.md
+├── {date}-{command}-{feature}.jsonl
 └── ...
 ```
 
-**Decision log format:**
-```markdown
-# Decision: {Title}
+**JSONL Record Format:**
 
-**Date:** YYYY-MM-DD HH:MM
-**Command:** /flow:{command}
-**Task:** task-{id} (if applicable)
-**Actor:** @{user|agent}
-
-## Context
-{Why this decision was needed}
-
-## Decision
-{What was decided}
-
-## Rationale
-{Why this option was chosen}
-
-## Alternatives Considered
-- {Alternative 1}: {Why rejected}
-- {Alternative 2}: {Why rejected}
+```json
+{
+  "timestamp": "2026-02-03T14:30:00Z",
+  "command": "/flow:implement",
+  "task_id": "task-123",
+  "actor": "@developer",
+  "title": "Database migration strategy",
+  "context": "Need to add user preferences table without downtime",
+  "decision": "Use online schema migration with pt-online-schema-change",
+  "rationale": "Zero-downtime requirement, table has 10M+ rows",
+  "alternatives": [
+    {"option": "Direct ALTER TABLE", "rejected_reason": "Would lock table for minutes"},
+    {"option": "Shadow table swap", "rejected_reason": "More complex, same outcome"}
+  ]
+}
 ```
+
+**Required Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `timestamp` | ISO 8601 | When decision was made |
+| `command` | string | The /flow command that logged it |
+| `decision` | string | What was decided |
+| `rationale` | string | Why this option was chosen |
+
+**Optional Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `task_id` | string | Linked backlog task (if applicable) |
+| `actor` | string | Who/what made the decision |
+| `title` | string | Short summary of decision |
+| `context` | string | Why decision was needed |
+| `alternatives` | array | Other options considered with rejection reasons |
 
 ## Current Compliance Audit
 
@@ -90,7 +104,6 @@ Every command that makes decisions MUST log to `.flowspec/logs/decisions/`:
 |---------|-----------|---------|-----------|-------|
 | assess | ✅ | ✅ | ✅ | 301 |
 | plan | ✅ | ✅ | ✅ | 433 |
-| research | ✅ | ✅ | ✅ | 439 |
 | specify | ✅ | ✅ | ✅ | 370 |
 | custom | ✅ | ✅ | ✅ | 222 |
 
@@ -149,7 +162,7 @@ Every command that makes decisions MUST log to `.flowspec/logs/decisions/`:
 
 ## Command Simplification Target
 
-Commands should be **<200 lines each** for maintainability.
+Commands should be **<300 lines each** for maintainability (ideal: <200).
 
 | Command | Current | Target | Reduction |
 |---------|---------|--------|-----------|
@@ -182,13 +195,13 @@ loop: inner|outer|both
 
 ## Outputs
 - **Artifact:** `docs/{type}/{feature}-{artifact}.md`
-- **Decision Log:** `.flowspec/logs/decisions/{date}-{command}.md`
+- **Decision Log:** `.flowspec/logs/decisions/{date}-{command}-{feature}.jsonl`
 - **Backlog Update:** Task status/notes updated
 
 ## Workflow
 1. {Step 1}
 2. {Step 2}
-3. Log decision to `.flowspec/logs/decisions/`
+3. Log decision to `.flowspec/logs/decisions/` (JSONL format)
 4. Update backlog task (if provided)
 
 ## Examples

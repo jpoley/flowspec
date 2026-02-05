@@ -32,11 +32,6 @@
         "file": "../.claude/commands/flowspec/plan.md"
       },
       {
-        "name": "flow:research",
-        "description": "Execute research and business validation workflow",
-        "file": "../.claude/commands/flowspec/research.md"
-      },
-      {
         "name": "flow:implement",
         "description": "Execute implementation (frontend + backend engineers + code review)",
         "file": "../.claude/commands/flowspec/implement.md"
