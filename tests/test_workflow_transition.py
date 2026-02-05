@@ -298,10 +298,10 @@ class TestTransitionSchema:
         """from_states property handles list of states."""
         schema = TransitionSchema(
             name="plan",
-            from_state=["Specified", "Researched"],
-            to_state="Planned",
+            from_state=["Specified", "Planned"],
+            to_state="In Implementation",
         )
-        assert schema.from_states == ["Specified", "Researched"]
+        assert schema.from_states == ["Specified", "Planned"]
 
     def test_transition_from_states_single(self):
         """from_states property handles single state."""
@@ -398,17 +398,16 @@ class TestWorkflowTransitions:
     """Tests for standard WORKFLOW_TRANSITIONS."""
 
     def test_all_transitions_defined(self):
-        """AC2: All 7+ workflow transitions are defined."""
-        # Should have: assess, specify, research, plan, implement, validate, operate, complete
-        assert len(WORKFLOW_TRANSITIONS) >= 7
+        """AC2: All 6+ workflow transitions are defined."""
+        # Should have: assess, specify, plan, implement, validate, submit_pr, complete
+        # NOTE: research and operate removed - workflow simplification
+        assert len(WORKFLOW_TRANSITIONS) >= 6
         names = [t.name for t in WORKFLOW_TRANSITIONS]
         assert "assess" in names
         assert "specify" in names
-        assert "research" in names
         assert "plan" in names
         assert "implement" in names
         assert "validate" in names
-        assert "operate" in names
 
     def test_all_transitions_have_validation_none(self):
         """AC4: All transitions default to validation: NONE."""
@@ -436,12 +435,11 @@ class TestWorkflowTransitions:
         assert any(a.type == "prd" for a in specify.output_artifacts)
         assert any(a.type == "backlog_tasks" for a in specify.output_artifacts)
 
-    def test_plan_transition_multiple_from_states(self):
-        """AC2: Plan transition accepts multiple from states."""
+    def test_plan_transition_from_specified(self):
+        """AC2: Plan transition accepts Specified state (research removed)."""
         plan = get_transition_by_name("plan")
         assert plan is not None
         assert "Specified" in plan.from_states
-        assert "Researched" in plan.from_states
         assert any(a.type == "adr" for a in plan.output_artifacts)
 
     def test_implement_transition(self):
@@ -517,8 +515,7 @@ class TestGetTransitionsFromState:
         """Get transitions from 'Specified' state."""
         transitions = get_transitions_from_state("Specified")
         names = [t.name for t in transitions]
-        # Should include research (optional) and plan
-        assert "research" in names
+        # Should include plan (research removed - workflow simplification)
         assert "plan" in names
 
     def test_get_transitions_from_unknown_state(self):

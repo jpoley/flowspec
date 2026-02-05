@@ -438,8 +438,6 @@ agent_loops:
     agents:
       - "workflow-assessor"
       - "product-requirements-manager"
-      - "researcher"
-      - "business-validator"
       - "software-architect"
       - "platform-engineer"
       - "quality-guardian"
@@ -474,14 +472,12 @@ custom_workflows:
 
   full_design:
     name: "Full Design Workflow"
-    description: "Complete design workflow with conditional research"
+    description: "Complete design workflow with checkpoints"
     mode: "spec-ing"  # Stop for approvals at checkpoints
     steps:
       - workflow: "assess"
       - workflow: "specify"
         checkpoint: "Review PRD before continuing?"
-      - workflow: "research"
-        condition: "complexity >= 7"  # Only research if complex
       - workflow: "plan"
         checkpoint: "Review architecture before implementing?"
     rigor:
@@ -514,10 +510,10 @@ custom_workflows:
 
 metadata:
   schema_version: "2.0"
-  last_updated: "2025-12-26"
-  state_count: 8  # Removed "Deployed" (outer loop)
-  workflow_count: 7  # Removed "operate", added custom workflows support
-  agent_count: 16  # Removed sre-agent from workflows (outer loop)
+  last_updated: "2026-02-05"
+  state_count: 7  # Removed "Researched" (simplification)
+  workflow_count: 6  # Core workflows: assess, specify, plan, implement, validate, submit-n-watch-pr
+  agent_count: 14  # Removed researcher/business-validator (research workflow removed)
   inner_loop_agent_count: 5
-  outer_loop_agent_count: 12  # SRE moved to outer loop tools
-  transition_count: 12  # Removed Deployed state and related transitions (operate, complete_from_deployed, rollback)
+  outer_loop_agent_count: 10  # Removed researcher/business-validator
+  transition_count: 10  # Removed research-related transitions

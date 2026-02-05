@@ -71,19 +71,18 @@ class TestStates:
     """Test the states configuration."""
 
     def test_has_all_required_states(self, workflow_config: dict[str, Any]) -> None:
-        """Verify all 8 required states are defined (Deployed removed - outer loop)."""
+        """Verify all 7 required states are defined (Deployed, Researched removed)."""
         expected_states = [
             "To Do",
             "Assessed",
             "Specified",
-            "Researched",
             "Planned",
             "In Implementation",
             "Validated",
             "Done",
         ]
         states = workflow_config["states"]
-        assert len(states) == 8, f"Expected 8 states, got {len(states)}"
+        assert len(states) == 7, f"Expected 7 states, got {len(states)}"
         for state in expected_states:
             assert state in states, f"Missing state: {state}"
 
@@ -107,19 +106,19 @@ class TestWorkflows:
     """Test the workflows configuration."""
 
     def test_has_all_six_workflows(self, workflow_config: dict[str, Any]) -> None:
-        """Verify all 6 /flowspec workflows are defined (operate removed - outer loop)."""
+        """Verify all 6 /flowspec workflows are defined (operate, research removed)."""
         expected_workflows = [
             "assess",
             "specify",
-            "research",
             "plan",
             "implement",
             "validate",
+            "submit-n-watch-pr",
         ]
         workflows = workflow_config["workflows"]
-        # We have 6 core workflows + submit-n-watch-pr = 7 total
+        # We have 5 core workflows + submit-n-watch-pr = 6 total
         assert len(workflows) >= 6, (
-            f"Expected at least 6 core workflows, got {len(workflows)}"
+            f"Expected at least 6 workflows, got {len(workflows)}"
         )
         for workflow in expected_workflows:
             assert workflow in workflows, f"Missing workflow: {workflow}"
@@ -190,12 +189,9 @@ class TestAgentAssignments:
         agent_names = [a["name"] for a in agents]
         assert "product-requirements-manager" in agent_names
 
-    def test_research_has_correct_agents(self, workflow_config: dict[str, Any]) -> None:
-        """Verify research workflow uses researcher and business-validator."""
-        agents = workflow_config["workflows"]["research"]["agents"]
-        agent_names = [a["name"] for a in agents]
-        assert "researcher" in agent_names
-        assert "business-validator" in agent_names
+    # NOTE: test_research_has_correct_agents REMOVED
+    # /flow:research was removed - workflow simplification
+    # See: build-docs/simplify/flowspec-loop.md
 
     def test_plan_has_correct_agents(self, workflow_config: dict[str, Any]) -> None:
         """Verify plan workflow uses software-architect and platform-engineer."""
@@ -272,13 +268,9 @@ class TestTransitions:
         assert "Specified" in adj["Assessed"], (
             "No transition from 'Assessed' to 'Specified'"
         )
-        # Specified can go to Researched or Planned
-        assert "Researched" in adj["Specified"] or "Planned" in adj["Specified"], (
-            "No transition from 'Specified'"
-        )
-        # Planned comes from either Specified or Researched
-        assert "Planned" in adj.get("Specified", []) or "Planned" in adj.get(
-            "Researched", []
+        # Specified goes directly to Planned (research workflow removed)
+        assert "Planned" in adj["Specified"], (
+            "No transition from 'Specified' to 'Planned'"
         )
         assert "In Implementation" in adj["Planned"], "No transition from 'Planned'"
         assert "Validated" in adj["In Implementation"], (

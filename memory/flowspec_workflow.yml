@@ -35,7 +35,7 @@ states:
   - "In Implementation"  # Code actively being written via /flow:implement
   - "Validated"       # QA, security, and documentation validated via /flow:validate
   - "Done"            # Work complete - ready for archive
-  # NOTE: "Deployed" and "Researched" states removed - outer loop / not a state
+  # NOTE: "Deployed" state removed - outer loop; "Researched" state removed - workflow simplification
 
 # ==============================================================================
 # WORKFLOW DEFINITIONS
@@ -328,15 +328,13 @@ agent_loops:
   outer_loop:
     - "workflow-assessor"
     - "product-requirements-manager"
-    - "researcher"
-    - "business-validator"
     - "software-architect"
     - "platform-engineer"
     - "quality-guardian"
     - "secure-by-design-engineer"
     - "tech-writer"
     - "release-manager"
-    # NOTE: sre-agent removed - use /ops:* commands for SRE operations
+    # NOTE: sre-agent, researcher, business-validator removed - workflow simplification
 
 # ==============================================================================
 # METADATA
@@ -344,11 +342,11 @@ agent_loops:
 
 metadata:
   schema_version: "1.2"
-  last_updated: "2026-01-03"
-  state_count: 8
-  workflow_count: 6
-  agent_count: 15
+  last_updated: "2026-02-05"
+  state_count: 7
+  workflow_count: 5
+  agent_count: 13
   inner_loop_agent_count: 5
-  outer_loop_agent_count: 10
-  transition_count: 11
-  notes: "/flow:operate removed - deployment is outer loop (use /ops:* commands)"
+  outer_loop_agent_count: 8
+  transition_count: 9
+  notes: "/flow:operate and /flow:research removed - workflow simplification"
