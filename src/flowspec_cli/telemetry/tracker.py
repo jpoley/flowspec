@@ -190,6 +190,19 @@ def track_role_event(
         os.environ.get("HOSTNAME", "unknown")
     )
 
+    # Add GPG key fingerprint if available (for provenance)
+    try:
+        from flowspec_cli.gpg import GPGKeyManager
+
+        manager = GPGKeyManager(project_root=project_root)
+        key_info = manager.get_stored_key()
+        if key_info:
+            sanitized_metadata["gpg_fingerprint"] = key_info.fingerprint
+            sanitized_metadata["gpg_key_id"] = key_info.key_id
+    except Exception:
+        # GPG not configured or unavailable - this is fine
+        pass
+
     # Create the event
     event = TelemetryEvent.create(
         event_type=event_type,
