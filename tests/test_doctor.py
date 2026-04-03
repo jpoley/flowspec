@@ -1,10 +1,6 @@
 """Tests for flowspec doctor health check command."""
 
-import sys
-from pathlib import Path
 from unittest.mock import MagicMock, patch
-
-import pytest
 import yaml
 
 from flowspec_cli.doctor import (

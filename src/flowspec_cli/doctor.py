@@ -4,7 +4,7 @@ This module provides the `flowspec doctor` command to verify that the environmen
 is properly configured for flowspec development.
 
 Checks performed:
-- flowspec CLI version vs latest available
+- flowspec CLI version (currently installed)
 - Python version compatibility (requires 3.11+)
 - Required tools installed (backlog.md, beads)
 - Workflow configuration present and valid
@@ -13,8 +13,9 @@ Checks performed:
 
 Example:
     >>> from flowspec_cli.doctor import run_doctor
-    >>> issues = run_doctor(fix=False)
-    >>> if not issues:
+    >>> results = run_doctor(fix=False)
+    >>> failures = [r for r in results if r.status == CheckStatus.FAIL]
+    >>> if not failures:
     ...     print("All checks passed!")
 """
 
@@ -28,7 +29,6 @@ from typing import Any
 
 import yaml
 from rich.console import Console
-from rich.panel import Panel
 from rich.table import Table
 
 from flowspec_cli.workflow.validator import validate_workflow
@@ -246,35 +246,25 @@ def check_workflow_config() -> CheckResult:
 
 
 def check_agent_files() -> CheckResult:
-    """Check if agent files use correct naming convention (dot notation).
+    """Check if agent files use correct naming convention.
 
-    Looks for agent files in .github/agents/ and .claude/agents/ and checks
-    if they use the new dot notation (e.g., backend.engineer.md) instead of
-    old hyphen notation (e.g., backend-engineer.md).
+    Only checks .github/agents/ for flow.*.agent.md vs flow-*.agent.md patterns.
+    Note: .claude/agents/ intentionally uses hyphens and is not checked.
 
     Returns:
         CheckResult indicating agent file naming status
     """
     project_root = Path.cwd()
-    agent_dirs = [
-        project_root / ".github" / "agents",
-        project_root / ".claude" / "agents",
-    ]
+    github_agents_dir = project_root / ".github" / "agents"
 
     old_convention_files = []
 
-    for agent_dir in agent_dirs:
-        if not agent_dir.exists():
-            continue
-
-        for agent_file in agent_dir.glob("*.md"):
-            # Skip files that don't look like agent definitions
-            if agent_file.name.startswith("_") or agent_file.name.startswith("README"):
-                continue
-
-            # Check if file uses hyphens (old convention)
-            # New convention uses dots (e.g., backend.engineer.md)
-            if "-" in agent_file.stem and "." not in agent_file.stem:
+    if github_agents_dir.exists():
+        for agent_file in github_agents_dir.glob("*.agent.md"):
+            # Check if file uses old flow- prefix instead of new flow. prefix
+            # Old: flow-specify.agent.md
+            # New: flow.specify.agent.md
+            if agent_file.name.startswith("flow-"):
                 old_convention_files.append(
                     str(agent_file.relative_to(project_root))
                 )
@@ -283,34 +273,28 @@ def check_agent_files() -> CheckResult:
         return CheckResult(
             name="Agent file naming",
             status=CheckStatus.WARN,
-            message=f"{len(old_convention_files)} files using old hyphen naming",
+            message=f"{len(old_convention_files)} files using old flow- prefix",
             fix_command="Run: flowspec upgrade-repo",
             details={"files": old_convention_files},
         )
 
-    # Check if there are any agent files at all
-    has_agents = any(
-        agent_dir.exists()
-        and any(
-            f.suffix == ".md"
-            and not f.name.startswith("_")
-            and not f.name.startswith("README")
-            for f in agent_dir.glob("*.md")
-        )
-        for agent_dir in agent_dirs
+    # Check if there are any agent files at all in .github/agents/
+    has_agents = (
+        github_agents_dir.exists()
+        and any(f.suffix == ".md" for f in github_agents_dir.glob("*.agent.md"))
     )
 
     if not has_agents:
         return CheckResult(
             name="Agent file naming",
             status=CheckStatus.WARN,
-            message="No agent files found",
+            message="No agent files found in .github/agents/",
         )
 
     return CheckResult(
         name="Agent file naming",
         status=CheckStatus.PASS,
-        message="Using dot notation",
+        message="Using flow. prefix convention",
     )
 
 
@@ -436,7 +420,7 @@ def run_doctor(fix: bool = False, verbose: bool = False) -> list[CheckResult]:
         verbose: If True, show additional details
 
     Returns:
-        List of CheckResult objects with issues found
+        List of all CheckResult objects from checks performed
     """
     console.print()
     console.print("[bold]flowspec doctor[/bold]")
