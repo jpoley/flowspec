@@ -58,6 +58,10 @@ from flowspec_cli.placeholders import (
     replace_placeholders,
 )
 from flowspec_cli.telemetry.cli import telemetry_app
+from flowspec_cli.templates import (
+    get_all_agent_templates,
+    get_all_constitution_templates,
+)
 
 # Module-level logger
 logger = logging.getLogger(__name__)
@@ -3462,6 +3466,42 @@ def callback(
 def version():
     """Show detailed version information for all components."""
     show_version_info(detailed=True)
+
+
+@app.command()
+def status(
+    json_output: bool = typer.Option(
+        False, "--json", help="Output status in JSON format"
+    ),
+):
+    """Show workflow orientation dashboard.
+
+    Displays current project status including:
+    - Project name and flowspec version
+    - Active workflow mode (vibe / light / full SDD)
+    - Current workflow phase
+    - In-progress backlog tasks
+    - Recent decisions and events
+    - Next recommended action
+    """
+    from flowspec_cli.status import (
+        format_status_human,
+        format_status_json,
+        get_status_data,
+    )
+
+    # Gather status data
+    data = get_status_data()
+
+    # Format and display
+    if json_output:
+        output = format_status_json(data)
+    else:
+        show_banner()
+        console.print()
+        output = format_status_human(data)
+
+    console.print(output)
 
 
 @app.command(name="repo-version")
