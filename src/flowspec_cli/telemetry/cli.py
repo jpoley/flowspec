@@ -210,6 +210,15 @@ def status_command(
     # Count events using helper function
     event_count = TelemetryWriter(telemetry_path).count_events()
 
+    # Check GPG signing status
+    try:
+        from flowspec_cli.signing import get_key_fingerprint, is_git_signing_enabled
+        gpg_fingerprint = get_key_fingerprint()
+        gpg_enabled = is_git_signing_enabled(project_root=root)
+    except ImportError:
+        gpg_fingerprint = None
+        gpg_enabled = False
+
     # Build status table
     table = Table(title="Telemetry Status", show_header=False, box=None)
     table.add_column("Setting", style="cyan")
@@ -227,6 +236,12 @@ def status_command(
     table.add_row("Events Collected", str(event_count))
     table.add_row("Config File", str(config_path))
     table.add_row("Data File", str(telemetry_path))
+
+    # Show GPG signing info if enabled
+    if gpg_enabled and gpg_fingerprint:
+        table.add_row("", "")  # Empty row for spacing
+        table.add_row("GPG Signing", "[green]Active[/green]")
+        table.add_row("GPG Fingerprint", gpg_fingerprint[:16] + "...")
 
     console.print(table)
 

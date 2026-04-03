@@ -125,6 +125,9 @@ class EventEmitter:
         # Import here to avoid circular dependency
         from .runner import HookRunner
 
+        # Emit telemetry event for hook execution
+        self._emit_telemetry_event(event)
+
         # Find matching hooks
         matching_hooks = self.config.get_matching_hooks(event)
 
@@ -190,6 +193,34 @@ class EventEmitter:
                 results.append(error_result)
 
         return results
+
+    def _emit_telemetry_event(self, event: Event) -> None:
+        """Emit telemetry event for hook execution.
+
+        Args:
+            event: Hook event being processed
+        """
+        try:
+            from ..telemetry import FlowspecEvent, HookObject, emit_event
+
+            # Map event type to hook namespace
+            hook_event_type = f"hook.{event.event_type.replace('.', '_')}"
+
+            telemetry_event = FlowspecEvent.create(
+                event_type=hook_event_type,
+                agent_id="system",
+                source="hook",
+                message=f"Hook event: {event.event_type}",
+                hook=HookObject(
+                    hook_type=event.event_type,
+                    raw_payload=event.data if hasattr(event, "data") else None,
+                ),
+            )
+
+            emit_event(telemetry_event)
+        except Exception as e:
+            # Fail silently - telemetry should never break workflows
+            logger.debug(f"Failed to emit telemetry event: {e}")
 
     def emit_async(self, event: Event) -> None:
         """Emit event asynchronously (fire-and-forget).

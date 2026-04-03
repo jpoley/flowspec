@@ -26,9 +26,22 @@ Example:
         context={"task_id": "task-123"}
     )
 
+New Event System (v1.1.0):
+    from flowspec_cli.telemetry import FlowspecEvent, emit_event
+
+    # Emit a structured event
+    event = FlowspecEvent.create(
+        event_type="lifecycle.started",
+        agent_id="@backend-engineer",
+        source="cli",
+        message="Starting implementation"
+    )
+    emit_event(event)
+
 Environment Variables:
     FLOWSPEC_TELEMETRY_DISABLED: Set to "1" to disable telemetry
     FLOWSPEC_TELEMETRY_DEBUG: Set to "1" for debug output on errors
+    FLOWSPEC_EVENT_DEBUG: Set to "1" for event system debug output
 """
 
 from .config import (
@@ -38,6 +51,14 @@ from .config import (
     is_telemetry_enabled,
     load_telemetry_config,
     save_telemetry_config,
+)
+from .event_writer import (
+    cleanup_old_logs,
+    count_events,
+    emit_event,
+    emit_event_async,
+    get_event_log_path,
+    read_events,
 )
 from .events import RoleEvent, TelemetryEvent
 from .integration import (
@@ -49,6 +70,25 @@ from .integration import (
     track_role_selection,
     track_workflow,
 )
+from .router import EventFilter, EventRouter, get_router, setup_default_router
+from .schema import (
+    ActionObject,
+    AgentId,
+    ContextObject,
+    ContainerObject,
+    CorrelationObject,
+    DecisionObject,
+    EventSource,
+    EventType,
+    FlowspecEvent,
+    GitObject,
+    HookObject,
+    SecurityObject,
+    SessionId,
+    TaskId,
+    TaskObject,
+    ToolObject,
+)
 from .tracker import (
     hash_pii,
     reset_writer,
@@ -59,9 +99,38 @@ from .tracker import (
 from .writer import TelemetryWriter
 
 __all__ = [
-    # Events
+    # Legacy Events
     "RoleEvent",
     "TelemetryEvent",
+    # New Event System (v1.1.0)
+    "FlowspecEvent",
+    "EventType",
+    "AgentId",
+    "SessionId",
+    "TaskId",
+    "EventSource",
+    "ToolObject",
+    "HookObject",
+    "GitObject",
+    "TaskObject",
+    "ContainerObject",
+    "DecisionObject",
+    "ActionObject",
+    "SecurityObject",
+    "ContextObject",
+    "CorrelationObject",
+    # Event Writer
+    "emit_event",
+    "emit_event_async",
+    "read_events",
+    "count_events",
+    "cleanup_old_logs",
+    "get_event_log_path",
+    # Event Router
+    "EventRouter",
+    "EventFilter",
+    "get_router",
+    "setup_default_router",
     # Config
     "TelemetryConfig",
     "is_telemetry_enabled",

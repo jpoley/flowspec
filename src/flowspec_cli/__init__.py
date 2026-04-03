@@ -59,6 +59,7 @@ from flowspec_cli.placeholders import (
 )
 from flowspec_cli.telemetry.cli import telemetry_app
 
+from flowspec_cli.templates import registry as template_registry
 # Module-level logger
 logger = logging.getLogger(__name__)
 
@@ -185,484 +186,49 @@ CONSTITUTION_TIER_CHOICES = {
 }
 
 # Embedded VS Code Copilot agent templates (bundled with package for reliable access)
-# These are the 6 key workflow commands that appear in VS Code's agent menu
-COPILOT_AGENT_TEMPLATES = {
-    "flow.assess.agent.md": """---
-name: FlowAssess
-description: "Evaluate feature complexity and determine SDD workflow approach (full SDD, spec-light, or skip)."
-target: "chat"
-tools:
-  - "Read"
-  - "Write"
-  - "Edit"
-  - "Grep"
-  - "Glob"
-  - "Bash"
-  - "mcp__backlog__*"
-  - "mcp__serena__*"
-  - "Skill"
 
-handoffs:
-  - label: "Create Specification"
-    agent: "flow.specify"
-    prompt: "Assessment complete. Create the feature specification and PRD."
-    send: false
----
-
-# /flow:assess - Feature Assessment
-
-Evaluate feature complexity and recommend the appropriate SDD workflow mode.
-
-## User Input
-
-```text
-$ARGUMENTS
-```
-
-You **MUST** consider the user input before proceeding (if not empty).
-
-## Instructions
-
-This command evaluates whether a feature requires the full SDD workflow, a lighter approach, or can skip formal specification entirely.
-
-**Purpose:**
-- Analyze feature complexity and scope
-- Recommend appropriate workflow mode
-- Create initial backlog task for tracking
-
-**Workflow Modes:**
-
-| Mode | When to Use | Artifacts |
-|------|-------------|-----------|
-| **Full SDD** | Complex features, multiple components, significant risk | PRD, ADRs, full spec |
-| **Spec-Light** | Medium complexity, clear requirements | Light spec, tasks |
-| **Skip SDD** | Simple changes, bug fixes, trivial updates | Just tasks |
-
-**Assessment Criteria:**
-1. **Scope**: How many files/components affected?
-2. **Risk**: Security, data, or user-facing impact?
-3. **Complexity**: New patterns, integrations, or dependencies?
-4. **Clarity**: Are requirements well-defined?
-5. **Duration**: Single session or multi-session work?
-
-**Workflow:**
-1. Gather feature description from user
-2. Search codebase for related code and patterns
-3. Assess complexity using criteria above
-4. Recommend workflow mode with rationale
-5. Create initial backlog task
-
-**Key Commands:**
-```bash
-# Search for related code
-grep -r "feature_keyword" src/
-
-# Check existing tasks
-backlog search "$ARGUMENTS" --plain
-
-# Create assessment task
-backlog task create "Assess: [Feature Name]" \\
-  -d "Complexity assessment for feature" \\
-  --ac "Determine workflow mode" \\
-  --ac "Create initial task structure" \\
-  -l assess \\
-  --priority medium
-```
-
-**Output:**
-- Assessment report with recommended mode
-- Initial backlog task created
-- Workflow state set to `Assessed`
-
-After assessment, suggest running `/flow:specify` for Full SDD or Spec-Light modes.
-""",
-    "flow.specify.agent.md": """---
-name: FlowSpecify
-description: "Create or update feature specifications using PM planner agent (manages /spec.tasks)."
-target: "chat"
-tools:
-  - "Read"
-  - "Write"
-  - "Edit"
-  - "Grep"
-  - "Glob"
-  - "Bash"
-  - "mcp__backlog__*"
-  - "mcp__serena__*"
-  - "Skill"
-
-handoffs:
-  - label: "Create Technical Design"
-    agent: "flow.plan"
-    prompt: "The specification is complete. Create the technical architecture and platform design."
-    send: false
----
-
-# /flow:specify - Feature Specification
-
-Create comprehensive Product Requirements Documents (PRDs) using the PM Planner agent.
-
-## User Input
-
-```text
-$ARGUMENTS
-```
-
-You **MUST** consider the user input before proceeding (if not empty).
-
-## Instructions
-
-This command creates feature specifications following SVPG product management principles.
-
-**Prerequisites:**
-1. Run `/flow:assess` first to evaluate complexity and create initial task
-2. Have a clear feature description or user problem to solve
-
-**Workflow:**
-1. Discover existing backlog tasks related to this feature
-2. Create a comprehensive PRD with:
-   - Executive summary and problem statement
-   - User stories with acceptance criteria
-   - DVF+V risk assessment (Value, Usability, Feasibility, Viability)
-   - Functional and non-functional requirements
-   - Task breakdown using backlog CLI
-3. Create implementation tasks in the backlog
-
-**Key Commands:**
-```bash
-# Search for existing tasks
-backlog search "$ARGUMENTS" --plain
-
-# Create implementation tasks
-backlog task create "Implement [Feature]" \
-  -d "Description" \
-  --ac "Acceptance criterion 1" \
-  --ac "Acceptance criterion 2" \
-  -l implement,backend \
-  --priority high
-```
-
-**Output:**
-- PRD document in `docs/prd/`
-- Implementation tasks in backlog with acceptance criteria
-- Workflow state updated to `Specified`
-
-After completion, suggest running `/flow:plan` to create technical design.
-""",
-    "flow.plan.agent.md": """---
-name: FlowPlan
-description: "Execute planning workflow using project architect and platform engineer agents to create ADRs and platform design."
-target: "chat"
-tools:
-  - "Read"
-  - "Write"
-  - "Edit"
-  - "Grep"
-  - "Glob"
-  - "Bash"
-  - "mcp__backlog__*"
-  - "mcp__serena__*"
-  - "Skill"
-
-handoffs:
-  - label: "Start Implementation"
-    agent: "flow.implement"
-    prompt: "The technical design is complete. Start implementing the feature."
-    send: false
----
-
-# /flow:plan - Technical Planning
-
-Create comprehensive architectural and platform planning using specialized agents.
-
-## User Input
-
-```text
-$ARGUMENTS
-```
-
-You **MUST** consider the user input before proceeding (if not empty).
-
-## Instructions
-
-This command creates technical architecture and platform design following Gregor Hohpe's principles.
-
-**Prerequisites:**
-1. Run `/flow:specify` first to create PRD
-2. Have specification with clear requirements
-
-**Workflow:**
-1. Discover existing backlog tasks and PRD documents
-2. Launch parallel planning agents:
-   - **System Architecture**: ADRs, component design, integration patterns
-   - **Platform & Infrastructure**: CI/CD, DevSecOps, observability
-3. Create planning artifacts in `docs/adr/` and `docs/platform/`
-4. Update backlog with planning tasks
-
-**Key Principles:**
-- Architecture as selling options (defer decisions until maximum information)
-- Enterprise Integration Patterns for service communication
-- Platform Quality Framework (7 C's)
-- DORA Elite Performance targets
-
-**Output:**
-- Architecture Decision Records (ADRs) in `docs/adr/`
-- Platform design document in `docs/platform/`
-- API contracts and data models
-- Workflow state updated to `Planned`
-
-After completion, suggest running `/flow:implement` to start coding.
-""",
-    "flow.implement.agent.md": """---
-name: FlowImplement
-description: "Execute implementation using specialized frontend and backend engineer agents with code review."
-target: "chat"
-tools:
-  - "Read"
-  - "Write"
-  - "Edit"
-  - "Grep"
-  - "Glob"
-  - "Bash"
-  - "mcp__backlog__*"
-  - "mcp__serena__*"
-  - "Skill"
-
-handoffs:
-  - label: "Run Validation"
-    agent: "flow.validate"
-    prompt: "Implementation is complete. Run validation and quality assurance."
-    send: false
----
-
-# /flow:implement - Implementation
-
-Execute implementation using specialized engineering agents with integrated code review.
-
-## User Input
-
-```text
-$ARGUMENTS
-```
-
-You **MUST** consider the user input before proceeding (if not empty).
-
-## Instructions
-
-This command implements features from backlog tasks with quality gates and code review.
-
-**Prerequisites:**
-1. Run `/flow:plan` first to create technical design
-2. Have backlog tasks with acceptance criteria
-3. Be on a properly named branch: `{hostname}/task-{id}/{slug}`
-
-**Workflow:**
-1. Discover backlog tasks and related specs/ADRs
-2. Run quality gate on spec (`flowspec gate`)
-3. Load PRP context if available (`docs/prp/{task-id}.md`)
-4. Launch implementation agents:
-   - **Frontend Engineer**: React, TypeScript, accessibility
-   - **Backend Engineer**: APIs, databases, business logic
-5. Run code reviews (frontend and backend reviewers)
-6. Pre-PR validation (lint, tests, format)
-
-**Key Commands:**
-```bash
-# Assign yourself to task
-backlog task edit <task-id> -s "In Progress" -a @backend-engineer
-
-# Check acceptance criteria as you complete them
-backlog task edit <task-id> --check-ac 1
-
-# Run pre-PR validation
-uv run ruff check .
-uv run pytest tests/ -x -q
-```
-
-**Deliverables (ALL REQUIRED):**
-- Production code with all ACs satisfied
-- Updated documentation
-- Complete test coverage
-
-After completion, run `/flow:validate` for comprehensive QA.
-""",
-    "flow.validate.agent.md": """---
-name: FlowValidate
-description: "Execute validation and quality assurance using QA, security, documentation, and release management agents."
-target: "chat"
-tools:
-  - "Read"
-  - "Write"
-  - "Edit"
-  - "Grep"
-  - "Glob"
-  - "Bash"
-  - "mcp__backlog__*"
-  - "mcp__serena__*"
-  - "Skill"
-
-handoffs:
-  - label: "Submit PR"
-    agent: "flow.submit-n-watch-pr"
-    prompt: "Validation is complete. Submit PR and monitor CI/reviews."
-    send: false
----
-
-# /flow:validate - Quality Assurance
-
-Execute comprehensive validation with automated testing, security scanning, and AC verification.
-
-## User Input
-
-```text
-$ARGUMENTS
-```
-
-You **MUST** consider the user input before proceeding (if not empty).
-
-## Instructions
-
-This command performs thorough validation before PR submission.
-
-**Prerequisites:**
-1. Run `/flow:implement` first to complete coding
-2. All acceptance criteria should be checked in backlog
-3. Code should pass local tests
-
-**Validation Phases:**
-
-### Phase 1: Code Quality
-- Lint check: `ruff check .` (Python), `go vet` (Go), `npm run lint` (TS)
-- Format check: `ruff format --check .`
-- Type check: `pyright`/`tsc --noEmit`
-
-### Phase 2: Test Suite
-- Unit tests: `pytest tests/unit/`
-- Integration tests: `pytest tests/integration/`
-- Coverage verification
-
-### Phase 3: Security Scan
-- SAST: `bandit -r src/` (Python)
-- Dependency audit: `npm audit`, `safety check`
-- Secret detection
-
-### Phase 4: AC Verification
-- Verify all acceptance criteria are met
-- Review implementation notes
-- Confirm test coverage for each AC
-
-### Phase 5: Documentation
-- API documentation updated
-- README current
-- CHANGELOG entry added
-
-**Output:**
-- QA report in `docs/qa/`
-- Security scan results
-- Workflow state updated to `Validated`
-
-After validation passes, run `/flow:submit-n-watch-pr` to create and monitor PR.
-""",
-    "flow.submit-n-watch-pr.agent.md": """---
-name: FlowSubmitNWatchPR
-description: "Submit PR and autonomously monitor CI checks and Copilot reviews until approval-ready. Iteratively fix issues and resubmit."
-target: "chat"
-tools:
-  - "Read"
-  - "Write"
-  - "Edit"
-  - "Grep"
-  - "Glob"
-  - "Bash"
-  - "mcp__github__*"
-  - "mcp__backlog__*"
-  - "mcp__serena__*"
-  - "Skill"
----
-
-# /flow:submit-n-watch-pr - Autonomous PR Management
-
-Submit a PR and autonomously monitor CI checks and code review feedback until approval-ready.
-
-## User Input
-
-```text
-$ARGUMENTS
-```
-
-You **MUST** consider the user input before proceeding (if not empty).
-
-## Critical Success Criteria
-
-Your PR is ONLY ready for merge when you see BOTH:
-1. **All CI checks pass** (green checkmarks)
-2. **Zero Copilot review comments** or all addressed
-
-## Instructions
-
-**Prerequisites:**
-1. Run `/flow:validate` first to ensure quality
-2. All local tests pass
-3. Branch is rebased from main
-
-**Workflow:**
-
-### Step 1: Pre-Submit Validation
-```bash
-# Verify branch is up to date
-git fetch origin main
-git rebase origin/main
-
-# Run final validation
-uv run ruff check .
-uv run pytest tests/ -x -q
-```
-
-### Step 2: Create PR
-```bash
-# Push branch
-git push origin $(git branch --show-current)
-
-# Create PR with proper description
-gh pr create \
-  --title "feat(scope): description" \
-  --body "## Summary
-1. Wait for CI checks to complete
-2. Check for Copilot review comments: `gh pr view --comments`
-3. If issues found:
-   - Fix the issues locally
-   - Push updates: `git push`
-   - Wait for re-check
-4. Repeat until all checks pass and no comments remain
-
-### Step 4: Request Review
-```bash
-# When ready, request human review
-gh pr ready
-gh pr edit --add-reviewer <reviewer>
-```
-
-**Key Commands:**
-```bash
-# Check PR status
-gh pr status
-gh pr checks
-
-# View review comments
-gh pr view --comments
-
-# Update PR after fixes
-git add .
-git commit --amend --no-edit
-git push --force-with-lease
-```
-
-**Exit Conditions:**
-- All CI checks green
-- Zero unresolved Copilot comments
-- PR marked ready for review
-""",
-}
+# Compatibility: Load agent templates from registry
+def _get_copilot_agent_templates():
+    """Load agent templates from the template registry."""
+    from flowspec_cli.templates import registry as template_registry
+    return template_registry.get_all_agent_templates()
+
+# Lazy-load templates when accessed
+class _TemplateDict(dict):
+    def __init__(self):
+        self._loaded = False
+    
+    def _ensure_loaded(self):
+        if not self._loaded:
+            from flowspec_cli.templates import registry as template_registry
+            self.update(template_registry.get_all_agent_templates())
+            self._loaded = True
+    
+    def __getitem__(self, key):
+        self._ensure_loaded()
+        return super().__getitem__(key)
+    
+    def __iter__(self):
+        self._ensure_loaded()
+        return super().__iter__()
+    
+    def __len__(self):
+        self._ensure_loaded()
+        return super().__len__()
+    
+    def items(self):
+        self._ensure_loaded()
+        return super().items()
+    
+    def keys(self):
+        self._ensure_loaded()
+        return super().keys()
+    
+    def values(self):
+        self._ensure_loaded()
+        return super().values()
+
+COPILOT_AGENT_TEMPLATES = _TemplateDict()
 
 # Embedded constitution templates (bundled with package for reliable access)
 CONSTITUTION_TEMPLATES = {
@@ -9177,6 +8743,11 @@ app.add_typer(vscode_app, name="vscode")
 
 # Telemetry sub-app
 app.add_typer(telemetry_app, name="telemetry")
+
+# GPG signing sub-app
+from flowspec_cli.gpg_cli import gpg_app  # noqa: E402
+
+app.add_typer(gpg_app, name="gpg")
 
 
 @vscode_app.command("generate")
