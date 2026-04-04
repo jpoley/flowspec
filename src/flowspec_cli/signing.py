@@ -103,11 +103,9 @@ def generate_agent_key() -> str:
         GPGKeyGenerationError: If key generation fails
     """
     # Check if key already exists
-    if key_exists():
-        fingerprint = get_key_fingerprint()
-        if fingerprint:
-            return fingerprint
-        # Key record exists but fingerprint missing - regenerate
+    existing = get_key_fingerprint()
+    if existing:
+        return existing
 
     # Generate key using batch mode
     key_params = f"""
@@ -129,9 +127,11 @@ Expire-Date: 0
         raise GPGKeyGenerationError(f"Failed to generate GPG key: {stderr}")
 
     # Extract fingerprint from the newly created key
+    # Use --fingerprint with --with-colons to get exact fpr: record for this email
     stdout, stderr, returncode = _run_gpg_command([
         "--list-keys",
         "--with-colons",
+        "--fingerprint",
         GPG_KEY_EMAIL
     ])
 

@@ -22,7 +22,7 @@ flowspec gpg setup
 # ✓ GPG key generated
 # ✓ Git configured for signing
 #
-# Fingerprint: A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0
+# Fingerprint: A1B2C3D4E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0
 ```
 
 ### 2. Verify Status
@@ -153,7 +153,7 @@ git config --local user.signingkey
 git config --local commit.gpgsign
 
 # Manual configuration (not recommended - use 'flowspec gpg setup')
-git config --local user.signingkey A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0
+git config --local user.signingkey A1B2C3D4E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0
 git config --local commit.gpgsign true
 ```
 
@@ -200,7 +200,7 @@ git log --show-signature -1
 # Output:
 # commit abc123def456...
 # gpg: Signature made Thu Apr  3 12:34:56 2025 UTC
-# gpg:                using RSA key A1B2C3D4E5F6G7H8I9J0...
+# gpg:                using RSA key A1B2C3D4E5F6A7B8C9D0...
 # gpg: Good signature from "Flowspec Agent <agent@flowspec.local>"
 ```
 
@@ -213,8 +213,8 @@ Key rotation is important for security best practices:
 flowspec gpg rotate --yes
 
 # Output:
-# Old fingerprint: A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0
-# New fingerprint: Z9Y8X7W6V5U4T3S2R1Q0P9O8N7M6L5K4J3I2H1G0
+# Old fingerprint: A1B2C3D4E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0
+# New fingerprint: F0E9D8C7B6A5F4E3D2C1B0A9F8E7D6C5B4A3F2E1
 
 # 2. Export new public key
 gpg --armor --export agent@flowspec.local > agent-key-new.asc
@@ -224,8 +224,8 @@ gpg --armor --export agent@flowspec.local > agent-key-new.asc
 # 4. (Optional) Sign a rotation commit
 git commit --allow-empty -m "chore: rotate agent GPG key
 
-Previous key: A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0
-New key:      Z9Y8X7W6V5U4T3S2R1Q0P9O8N7M6L5K4J3I2H1G0
+Previous key: A1B2C3D4E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0
+New key:      F0E9D8C7B6A5F4E3D2C1B0A9F8E7D6C5B4A3F2E1
 
 Signed-off-by: Flowspec Agent <agent@flowspec.local>"
 ```

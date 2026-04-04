@@ -14,7 +14,7 @@ Checks performed:
 Example:
     >>> from flowspec_cli.doctor import run_doctor, CheckStatus
     >>> results = run_doctor(fix=False)
-    >>> failures = [r for r in results if r.status == CheckStatus.FAIL]
+    >>> failures = [r for r in results if r.status != CheckStatus.PASS]
     >>> if not failures:
     ...     print("All checks passed!")
 """
@@ -88,8 +88,8 @@ def check_flowspec_version() -> CheckResult:
     if current == "unknown":
         return CheckResult(
             name="flowspec CLI",
-            status=CheckStatus.FAIL,
-            message="Could not determine flowspec version",
+            status=CheckStatus.WARN,
+            message="Could not determine flowspec version (source checkout?)",
         )
 
     # Check against PyPI for latest version
