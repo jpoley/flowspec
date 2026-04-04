@@ -95,6 +95,7 @@ def check_flowspec_version() -> CheckResult:
     # Check against PyPI for latest version
     try:
         import httpx
+
         resp = httpx.get("https://pypi.org/pypi/flowspec-cli/json", timeout=5)
         if resp.status_code == 200:
             latest = resp.json()["info"]["version"]
@@ -282,9 +283,7 @@ def check_agent_files() -> CheckResult:
                 continue
             # Hyphenated names are old convention; dot-separated are new
             if "-" in stem:
-                old_convention_files.append(
-                    str(agent_file.relative_to(project_root))
-                )
+                old_convention_files.append(str(agent_file.relative_to(project_root)))
 
     if old_convention_files:
         return CheckResult(
@@ -296,10 +295,10 @@ def check_agent_files() -> CheckResult:
         )
 
     # Check if there are any agent files at all in .github/agents/
-    has_agents = (
-        github_agents_dir.exists()
-        and any(f.suffix == ".md" for f in github_agents_dir.glob("*.md")
-                if not f.name.startswith("_") and f.name != "README.md")
+    has_agents = github_agents_dir.exists() and any(
+        f.suffix == ".md"
+        for f in github_agents_dir.glob("*.md")
+        if not f.name.startswith("_") and f.name != "README.md"
     )
 
     if not has_agents:

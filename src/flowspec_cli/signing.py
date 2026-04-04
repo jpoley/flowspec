@@ -22,20 +22,25 @@ GPG_KEY_EMAIL = "agent@flowspec.local"
 
 class GPGError(Exception):
     """Base exception for GPG-related errors."""
+
     pass
 
 
 class GPGKeyGenerationError(GPGError):
     """Raised when GPG key generation fails."""
+
     pass
 
 
 class GPGConfigurationError(GPGError):
     """Raised when git configuration for GPG signing fails."""
+
     pass
 
 
-def _run_gpg_command(args: list[str], input_data: Optional[str] = None) -> tuple[str, str, int]:
+def _run_gpg_command(
+    args: list[str], input_data: Optional[str] = None
+) -> tuple[str, str, int]:
     """Run a GPG command and return stdout, stderr, and return code.
 
     Args:
@@ -61,7 +66,9 @@ def _run_gpg_command(args: list[str], input_data: Optional[str] = None) -> tuple
         raise GPGError("GPG not found. Please install gnupg.")
 
 
-def _run_git_command(args: list[str], cwd: Optional[Path] = None) -> tuple[str, str, int]:
+def _run_git_command(
+    args: list[str], cwd: Optional[Path] = None
+) -> tuple[str, str, int]:
     """Run a git command and return stdout, stderr, and return code.
 
     Args:
@@ -119,8 +126,7 @@ Expire-Date: 0
 """.strip()
 
     stdout, stderr, returncode = _run_gpg_command(
-        ["--batch", "--generate-key"],
-        input_data=key_params
+        ["--batch", "--generate-key"], input_data=key_params
     )
 
     if returncode != 0:
@@ -128,12 +134,9 @@ Expire-Date: 0
 
     # Extract fingerprint from the newly created key
     # Use --fingerprint with --with-colons to get exact fpr: record for this email
-    stdout, stderr, returncode = _run_gpg_command([
-        "--list-keys",
-        "--with-colons",
-        "--fingerprint",
-        GPG_KEY_EMAIL
-    ])
+    stdout, stderr, returncode = _run_gpg_command(
+        ["--list-keys", "--with-colons", "--fingerprint", GPG_KEY_EMAIL]
+    )
 
     if returncode != 0:
         raise GPGKeyGenerationError(f"Failed to list GPG keys: {stderr}")
@@ -181,7 +184,9 @@ def configure_git_signing(project_root: Optional[Path] = None) -> None:
     # Verify the secret key is still present in the GPG keyring
     _, _, returncode = _run_gpg_command(["--list-secret-keys", GPG_KEY_EMAIL])
     if returncode != 0:
-        raise GPGError("Agent GPG secret key not found in keyring. Regenerate with generate_agent_key().")
+        raise GPGError(
+            "Agent GPG secret key not found in keyring. Regenerate with generate_agent_key()."
+        )
 
     cwd = project_root if project_root else Path.cwd()
 
@@ -192,16 +197,14 @@ def configure_git_signing(project_root: Optional[Path] = None) -> None:
 
     # Set signing key
     _, stderr, returncode = _run_git_command(
-        ["config", "--local", "user.signingkey", fingerprint],
-        cwd=cwd
+        ["config", "--local", "user.signingkey", fingerprint], cwd=cwd
     )
     if returncode != 0:
         raise GPGConfigurationError(f"Failed to set user.signingkey: {stderr}")
 
     # Enable commit signing
     _, stderr, returncode = _run_git_command(
-        ["config", "--local", "commit.gpgsign", "true"],
-        cwd=cwd
+        ["config", "--local", "commit.gpgsign", "true"], cwd=cwd
     )
     if returncode != 0:
         raise GPGConfigurationError(f"Failed to set commit.gpgsign: {stderr}")
@@ -239,11 +242,9 @@ def get_key_info() -> Optional[dict[str, str]]:
     if not fingerprint:
         return None
 
-    stdout, stderr, returncode = _run_gpg_command([
-        "--list-keys",
-        "--with-colons",
-        fingerprint
-    ])
+    stdout, stderr, returncode = _run_gpg_command(
+        ["--list-keys", "--with-colons", fingerprint]
+    )
 
     if returncode != 0:
         return None
@@ -283,16 +284,14 @@ def is_git_signing_enabled(project_root: Optional[Path] = None) -> bool:
 
     # Check commit.gpgsign
     stdout, _, returncode = _run_git_command(
-        ["config", "--local", "commit.gpgsign"],
-        cwd=cwd
+        ["config", "--local", "commit.gpgsign"], cwd=cwd
     )
     if returncode != 0 or stdout.strip().lower() != "true":
         return False
 
     # Check user.signingkey
     stdout, _, returncode = _run_git_command(
-        ["config", "--local", "user.signingkey"],
-        cwd=cwd
+        ["config", "--local", "user.signingkey"], cwd=cwd
     )
     if returncode != 0 or not stdout.strip():
         return False
@@ -314,12 +313,9 @@ def delete_agent_key() -> None:
         return  # No key to delete
 
     # Delete from GPG keychain
-    _, stderr, returncode = _run_gpg_command([
-        "--batch",
-        "--yes",
-        "--delete-secret-and-public-key",
-        fingerprint
-    ])
+    _, stderr, returncode = _run_gpg_command(
+        ["--batch", "--yes", "--delete-secret-and-public-key", fingerprint]
+    )
 
     if returncode != 0:
         raise GPGError(f"Failed to delete GPG key: {stderr}")

@@ -164,7 +164,9 @@ def status_command(
         table.add_row("Status", "[red]Not configured[/red]")
         console.print(table)
         console.print()
-        console.print("[dim]Run 'flowspec gpg setup' to enable agent commit signing.[/dim]")
+        console.print(
+            "[dim]Run 'flowspec gpg setup' to enable agent commit signing.[/dim]"
+        )
         return
 
     # Get key information
@@ -181,6 +183,7 @@ def status_command(
             # Convert Unix timestamp to readable date
             try:
                 from datetime import datetime
+
                 dt = datetime.fromtimestamp(int(created))
                 table.add_row("Created", dt.strftime("%Y-%m-%d %H:%M:%S"))
             except (ValueError, OSError):
@@ -198,8 +201,12 @@ def status_command(
     # Show next steps if git not configured
     if not git_enabled:
         console.print()
-        console.print("[yellow]Git commit signing is not enabled in this repository.[/yellow]")
-        console.print("[dim]Run 'flowspec gpg setup' to configure this repository.[/dim]")
+        console.print(
+            "[yellow]Git commit signing is not enabled in this repository.[/yellow]"
+        )
+        console.print(
+            "[dim]Run 'flowspec gpg setup' to configure this repository.[/dim]"
+        )
 
 
 @gpg_app.command("rotate")
@@ -241,7 +248,9 @@ def rotate_command(
     old_fingerprint = get_key_fingerprint()
 
     if not yes:
-        console.print("[yellow]⚠ This will delete the current agent GPG key and generate a new one.[/yellow]")
+        console.print(
+            "[yellow]⚠ This will delete the current agent GPG key and generate a new one.[/yellow]"
+        )
         console.print(f"[dim]Current fingerprint: {old_fingerprint}[/dim]")
         console.print()
         confirm = typer.confirm("Do you want to continue?", default=False)

@@ -103,9 +103,7 @@ class TestCheckWorkflowConfig:
                     "output_state": "Done",
                 }
             },
-            "transitions": [
-                {"from": "To Do", "to": "Done", "via": "complete"}
-            ],
+            "transitions": [{"from": "To Do", "to": "Done", "via": "complete"}],
         }
         config_path.write_text(yaml.dump(valid_config))
 
@@ -154,9 +152,7 @@ class TestCheckWorkflowConfig:
                     "output_state": "In Progress",
                 }
             },
-            "transitions": [
-                {"from": "To Do", "to": "In Progress", "via": "start"}
-            ],
+            "transitions": [{"from": "To Do", "to": "In Progress", "via": "start"}],
         }
         config_path.write_text(yaml.dump(config_with_warnings))
 

@@ -55,7 +55,11 @@ class TestKeyGeneration:
         # Mock GPG generate-key command
         mock_gpg_commands.side_effect = [
             ("", "", 0),  # generate-key success
-            ("fpr:::::::::ABCD1234ABCD1234ABCD1234ABCD1234ABCD1234:\n", "", 0),  # list-keys
+            (
+                "fpr:::::::::ABCD1234ABCD1234ABCD1234ABCD1234ABCD1234:\n",
+                "",
+                0,
+            ),  # list-keys
         ]
 
         fingerprint = generate_agent_key()
@@ -196,9 +200,7 @@ class TestGitConfiguration:
             ("", "config error", 1),  # config commit.gpgsign fails
         ]
 
-        with pytest.raises(
-            GPGConfigurationError, match="Failed to set commit.gpgsign"
-        ):
+        with pytest.raises(GPGConfigurationError, match="Failed to set commit.gpgsign"):
             configure_git_signing(project_root=tmp_path)
 
 
