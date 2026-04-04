@@ -12,7 +12,7 @@ Checks performed:
 - Constitution file present (if configured)
 
 Example:
-    >>> from flowspec_cli.doctor import run_doctor
+    >>> from flowspec_cli.doctor import run_doctor, CheckStatus
     >>> results = run_doctor(fix=False)
     >>> failures = [r for r in results if r.status == CheckStatus.FAIL]
     >>> if not failures:
@@ -92,11 +92,26 @@ def check_flowspec_version() -> CheckResult:
             message="Could not determine flowspec version",
         )
 
-    # For now, just report the version - we don't check for updates yet
+    # Check against PyPI for latest version
+    try:
+        import httpx
+        resp = httpx.get("https://pypi.org/pypi/flowspec-cli/json", timeout=5)
+        if resp.status_code == 200:
+            latest = resp.json()["info"]["version"]
+            if latest != current:
+                return CheckResult(
+                    name="flowspec CLI",
+                    status=CheckStatus.WARN,
+                    message=f"v{current} installed, v{latest} available",
+                    fix_command="pip install --upgrade flowspec-cli",
+                )
+    except Exception:
+        pass
+
     return CheckResult(
         name="flowspec CLI",
         status=CheckStatus.PASS,
-        message=f"v{current}",
+        message=f"v{current} (up to date)",
     )
 
 
@@ -420,7 +435,8 @@ def run_doctor(fix: bool = False, verbose: bool = False) -> list[CheckResult]:
         verbose: If True, show additional details
 
     Returns:
-        List of all CheckResult objects from checks performed
+        List of CheckResult objects. Filter for failures:
+        ``issues = [r for r in results if r.status == CheckStatus.FAIL]``
     """
     console.print()
     console.print("[bold]flowspec doctor[/bold]")

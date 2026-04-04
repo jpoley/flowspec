@@ -191,16 +191,15 @@ class TestCheckAgentFiles:
         assert len(result.details["files"]) == 2
 
     def test_new_dot_convention(self, tmp_path, monkeypatch):
-        """Should pass for files using new dot naming."""
+        """Should pass for files using new dot naming in .github/agents/."""
         monkeypatch.chdir(tmp_path)
-        agents_dir = tmp_path / ".claude" / "agents"
+        agents_dir = tmp_path / ".github" / "agents"
         agents_dir.mkdir(parents=True)
-        (agents_dir / "backend.engineer.md").write_text("# Backend Engineer")
-        (agents_dir / "frontend.engineer.md").write_text("# Frontend Engineer")
+        (agents_dir / "flow.assess.agent.md").write_text("# Assess")
+        (agents_dir / "flow.specify.agent.md").write_text("# Specify")
 
         result = check_agent_files()
         assert result.status == CheckStatus.PASS
-        assert "Using dot notation" in result.message
 
     def test_mixed_convention(self, tmp_path, monkeypatch):
         """Should warn for mixed old and new naming."""

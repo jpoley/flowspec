@@ -178,6 +178,11 @@ def configure_git_signing(project_root: Optional[Path] = None) -> None:
     if not fingerprint:
         raise GPGError("No agent GPG key found. Run generate_agent_key() first.")
 
+    # Verify the secret key is still present in the GPG keyring
+    _, _, returncode = _run_gpg_command(["--list-secret-keys", GPG_KEY_EMAIL])
+    if returncode != 0:
+        raise GPGError("Agent GPG secret key not found in keyring. Regenerate with generate_agent_key().")
+
     cwd = project_root if project_root else Path.cwd()
 
     # Check if we're in a git repository
