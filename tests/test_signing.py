@@ -51,6 +51,7 @@ class TestKeyGeneration:
 
     def test_generate_agent_key_success(self, mock_keyring, mock_gpg_commands):
         """Test successful key generation."""
+        mock_keyring.get_password.return_value = None  # no existing key
         # Mock GPG generate-key command
         mock_gpg_commands.side_effect = [
             ("", "", 0),  # generate-key success
@@ -121,10 +122,11 @@ class TestGitConfiguration:
     """Tests for git signing configuration."""
 
     def test_configure_git_signing_success(
-        self, mock_keyring, mock_git_commands, tmp_path
+        self, mock_keyring, mock_git_commands, mock_gpg_commands, tmp_path
     ):
         """Test successful git configuration."""
         mock_keyring.get_password.return_value = "ABCD1234"
+        mock_gpg_commands.return_value = ("", "", 0)  # secret key present
         mock_git_commands.side_effect = [
             ("", "", 0),  # rev-parse (check if git repo)
             ("", "", 0),  # config user.signingkey
@@ -156,20 +158,22 @@ class TestGitConfiguration:
             configure_git_signing(project_root=tmp_path)
 
     def test_configure_git_signing_not_git_repo(
-        self, mock_keyring, mock_git_commands, tmp_path
+        self, mock_keyring, mock_git_commands, mock_gpg_commands, tmp_path
     ):
         """Test git configuration in non-git directory."""
         mock_keyring.get_password.return_value = "ABCD1234"
+        mock_gpg_commands.return_value = ("", "", 0)  # secret key present
         mock_git_commands.return_value = ("", "not a git repository", 1)
 
         with pytest.raises(GPGConfigurationError, match="Not a git repository"):
             configure_git_signing(project_root=tmp_path)
 
     def test_configure_git_signing_key_config_fails(
-        self, mock_keyring, mock_git_commands, tmp_path
+        self, mock_keyring, mock_git_commands, mock_gpg_commands, tmp_path
     ):
         """Test git configuration when setting signingkey fails."""
         mock_keyring.get_password.return_value = "ABCD1234"
+        mock_gpg_commands.return_value = ("", "", 0)  # secret key present
         mock_git_commands.side_effect = [
             ("", "", 0),  # rev-parse success
             ("", "config error", 1),  # config user.signingkey fails
@@ -181,10 +185,11 @@ class TestGitConfiguration:
             configure_git_signing(project_root=tmp_path)
 
     def test_configure_git_signing_gpgsign_config_fails(
-        self, mock_keyring, mock_git_commands, tmp_path
+        self, mock_keyring, mock_git_commands, mock_gpg_commands, tmp_path
     ):
         """Test git configuration when setting commit.gpgsign fails."""
         mock_keyring.get_password.return_value = "ABCD1234"
+        mock_gpg_commands.return_value = ("", "", 0)  # secret key present
         mock_git_commands.side_effect = [
             ("", "", 0),  # rev-parse success
             ("", "", 0),  # config user.signingkey success
@@ -247,7 +252,7 @@ class TestKeyInfo:
         """Test successful key info retrieval."""
         mock_keyring.get_password.return_value = "ABCD1234"
         gpg_output = """pub:u:4096:1:KEYID:1234567890:0
-uid:u::::1234567890::Flowspec Agent <agent@flowspec.local>
+uid:u::::1234567890::HASH::Flowspec Agent <agent@flowspec.local>
 """
         mock_gpg_commands.return_value = (gpg_output, "", 0)
 

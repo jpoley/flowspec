@@ -275,11 +275,13 @@ def check_agent_files() -> CheckResult:
     old_convention_files = []
 
     if github_agents_dir.exists():
-        for agent_file in github_agents_dir.glob("*.agent.md"):
-            # Check if file uses old flow- prefix instead of new flow. prefix
-            # Old: flow-specify.agent.md
-            # New: flow.specify.agent.md
-            if agent_file.name.startswith("flow-"):
+        for agent_file in github_agents_dir.glob("*.md"):
+            stem = agent_file.stem
+            # Skip README and underscore-prefixed files
+            if stem.startswith("_") or agent_file.name == "README.md":
+                continue
+            # Hyphenated names are old convention; dot-separated are new
+            if "-" in stem:
                 old_convention_files.append(
                     str(agent_file.relative_to(project_root))
                 )
@@ -288,7 +290,7 @@ def check_agent_files() -> CheckResult:
         return CheckResult(
             name="Agent file naming",
             status=CheckStatus.WARN,
-            message=f"{len(old_convention_files)} files using old flow- prefix",
+            message=f"{len(old_convention_files)} files using old hyphen naming",
             fix_command="Run: flowspec upgrade-repo",
             details={"files": old_convention_files},
         )
@@ -296,7 +298,8 @@ def check_agent_files() -> CheckResult:
     # Check if there are any agent files at all in .github/agents/
     has_agents = (
         github_agents_dir.exists()
-        and any(f.suffix == ".md" for f in github_agents_dir.glob("*.agent.md"))
+        and any(f.suffix == ".md" for f in github_agents_dir.glob("*.md")
+                if not f.name.startswith("_") and f.name != "README.md")
     )
 
     if not has_agents:
