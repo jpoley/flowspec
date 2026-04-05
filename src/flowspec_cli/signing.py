@@ -172,9 +172,15 @@ def configure_git_signing(project_root: Optional[Path] = None) -> None:
     if not fingerprint:
         raise GPGError("No agent GPG key found. Run generate_agent_key() first.")
 
-    # Verify the secret key is still present in the GPG keyring
-    _, _, returncode = _run_gpg_command(["--list-secret-keys", GPG_KEY_EMAIL])
-    if returncode != 0:
+    # Verify the exact secret key fingerprint is still present in the GPG keyring
+    stdout, _, returncode = _run_gpg_command(
+        ["--list-secret-keys", "--with-colons", fingerprint]
+    )
+    fingerprint_found = any(
+        line.startswith("fpr:") and line.split(":")[9] == fingerprint
+        for line in stdout.splitlines()
+    )
+    if returncode != 0 or not fingerprint_found:
         raise GPGError(
             "Agent GPG secret key not found in keyring. Regenerate with generate_agent_key()."
         )
@@ -233,7 +239,7 @@ def get_key_info() -> Optional[dict[str, str]]:
     if not fingerprint:
         return None
 
-    stdout, stderr, returncode = _run_gpg_command(
+    stdout, _, returncode = _run_gpg_command(
         ["--list-keys", "--with-colons", fingerprint]
     )
 

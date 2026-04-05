@@ -157,21 +157,16 @@ git config --local user.signingkey A1B2C3D4E5F6A7B8C9D0E1F2A3B4C5D6E7F8A9B0
 git config --local commit.gpgsign true
 ```
 
-## Telemetry Integration
+## Checking GPG Status
 
-When GPG signing is active, the agent's key fingerprint is included in telemetry output:
+Use the GPG-specific commands to inspect signing configuration:
 
 ```bash
-# View telemetry status with GPG info
-flowspec telemetry status
+# Check GPG signing status
+flowspec gpg status
 
-# Output includes:
-# ┌─ Telemetry Status ──────────┐
-# │ Status          Enabled      │
-# │ Events          1,234        │
-# │ GPG Signing     Active       │
-# │ GPG Fingerprint A1B2C3...    │
-# └──────────────────────────────┘
+# Check with detailed key information
+flowspec gpg status --verbose
 ```
 
 ## Verifying Signed Commits

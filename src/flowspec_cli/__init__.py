@@ -57,6 +57,8 @@ from flowspec_cli.placeholders import (
     detect_project_metadata,
     replace_placeholders,
 )
+from flowspec_cli.doctor import run_doctor
+from flowspec_cli.gpg_cli import gpg_app
 from flowspec_cli.telemetry.cli import telemetry_app
 
 # Module-level logger
@@ -9066,6 +9068,27 @@ app.add_typer(vscode_app, name="vscode")
 
 # Telemetry sub-app
 app.add_typer(telemetry_app, name="telemetry")
+
+# GPG signing sub-app
+app.add_typer(gpg_app, name="gpg")
+
+
+@app.command("doctor")
+def doctor_command(
+    fix: bool = typer.Option(
+        False,
+        "--fix",
+        help="Attempt to auto-fix fixable issues",
+    ),
+    verbose: bool = typer.Option(
+        False,
+        "-v",
+        "--verbose",
+        help="Show additional details",
+    ),
+) -> None:
+    """Run health checks to verify flowspec environment setup."""
+    run_doctor(fix=fix, verbose=verbose)
 
 
 @vscode_app.command("generate")

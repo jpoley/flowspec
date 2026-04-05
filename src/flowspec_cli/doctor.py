@@ -1,7 +1,7 @@
 """Health check and diagnostics for flowspec setup.
 
-This module provides the `flowspec doctor` command to verify that the environment
-is properly configured for flowspec development.
+This module provides diagnostic helpers, including `run_doctor()`, to verify that
+the environment is properly configured for flowspec development.
 
 Checks performed:
 - flowspec CLI version (currently installed)
@@ -264,7 +264,7 @@ def check_workflow_config() -> CheckResult:
 def check_agent_files() -> CheckResult:
     """Check if agent files use correct naming convention.
 
-    Only checks .github/agents/ for flow.*.agent.md vs flow-*.agent.md patterns.
+    Only checks .github/agents/ for flow.*.agent.md pattern.
     Note: .claude/agents/ intentionally uses hyphens and is not checked.
 
     Returns:
@@ -273,25 +273,25 @@ def check_agent_files() -> CheckResult:
     project_root = Path.cwd()
     github_agents_dir = project_root / ".github" / "agents"
 
-    old_convention_files = []
+    non_compliant_files = []
 
     if github_agents_dir.exists():
         for agent_file in github_agents_dir.glob("*.md"):
-            stem = agent_file.stem
+            name = agent_file.name
             # Skip README and underscore-prefixed files
-            if stem.startswith("_") or agent_file.name == "README.md":
+            if name.startswith("_") or name == "README.md":
                 continue
-            # Hyphenated names are old convention; dot-separated are new
-            if "-" in stem:
-                old_convention_files.append(str(agent_file.relative_to(project_root)))
+            # Expected pattern: flow.*.agent.md
+            if not (name.startswith("flow.") and name.endswith(".agent.md")):
+                non_compliant_files.append(str(agent_file.relative_to(project_root)))
 
-    if old_convention_files:
+    if non_compliant_files:
         return CheckResult(
             name="Agent file naming",
             status=CheckStatus.WARN,
-            message=f"{len(old_convention_files)} files using old hyphen naming",
+            message=f"{len(non_compliant_files)} files not matching flow.*.agent.md",
             fix_command="Run: flowspec upgrade-repo",
-            details={"files": old_convention_files},
+            details={"files": non_compliant_files},
         )
 
     # Check if there are any agent files at all in .github/agents/
@@ -311,7 +311,7 @@ def check_agent_files() -> CheckResult:
     return CheckResult(
         name="Agent file naming",
         status=CheckStatus.PASS,
-        message="Using flow. prefix convention",
+        message="Using flow.*.agent.md convention",
     )
 
 

@@ -1,6 +1,7 @@
 """Tests for flowspec doctor health check command."""
 
 from unittest.mock import MagicMock, patch
+
 import yaml
 
 from flowspec_cli.doctor import (
@@ -19,12 +20,12 @@ from flowspec_cli.doctor import (
 class TestCheckFlowspecVersion:
     """Tests for flowspec version check."""
 
-    def test_returns_version(self):
+    @patch("httpx.get", side_effect=Exception("no network"))
+    def test_returns_version(self, _mock_httpx):
         """Should return current flowspec version."""
         result = check_flowspec_version()
         assert result.name == "flowspec CLI"
-        assert result.status == CheckStatus.PASS
-        assert "v" in result.message or result.message == "unknown"
+        assert result.status in (CheckStatus.PASS, CheckStatus.WARN)
 
 
 class TestCheckPythonVersion:
@@ -181,13 +182,13 @@ class TestCheckAgentFiles:
 
         result = check_agent_files()
         assert result.status == CheckStatus.WARN
-        assert "old hyphen naming" in result.message
+        assert "not matching flow.*.agent.md" in result.message
         assert result.fix_command == "Run: flowspec upgrade-repo"
         assert result.details is not None
         assert len(result.details["files"]) == 2
 
-    def test_new_dot_convention(self, tmp_path, monkeypatch):
-        """Should pass for files using new dot naming in .github/agents/."""
+    def test_correct_flow_agent_convention(self, tmp_path, monkeypatch):
+        """Should pass for files using flow.*.agent.md naming."""
         monkeypatch.chdir(tmp_path)
         agents_dir = tmp_path / ".github" / "agents"
         agents_dir.mkdir(parents=True)
@@ -198,17 +199,28 @@ class TestCheckAgentFiles:
         assert result.status == CheckStatus.PASS
 
     def test_mixed_convention(self, tmp_path, monkeypatch):
-        """Should warn for mixed old and new naming."""
+        """Should warn when mixing compliant and non-compliant names."""
         monkeypatch.chdir(tmp_path)
         agents_dir = tmp_path / ".github" / "agents"
         agents_dir.mkdir(parents=True)
         (agents_dir / "backend-engineer.md").write_text("# Old")
-        (agents_dir / "frontend.engineer.md").write_text("# New")
+        (agents_dir / "frontend.engineer.md").write_text("# Wrong pattern")
+        (agents_dir / "flow.assess.agent.md").write_text("# Correct")
 
         result = check_agent_files()
         assert result.status == CheckStatus.WARN
-        assert "old hyphen naming" in result.message
-        # Should only report the old convention file
+        # Both non-compliant files should be reported
+        assert len(result.details["files"]) == 2
+
+    def test_dot_separated_but_not_flow_pattern(self, tmp_path, monkeypatch):
+        """Should warn for dot-separated names that don't match flow.*.agent.md."""
+        monkeypatch.chdir(tmp_path)
+        agents_dir = tmp_path / ".github" / "agents"
+        agents_dir.mkdir(parents=True)
+        (agents_dir / "backend.engineer.md").write_text("# Backend Engineer")
+
+        result = check_agent_files()
+        assert result.status == CheckStatus.WARN
         assert len(result.details["files"]) == 1
 
     def test_skips_special_files(self, tmp_path, monkeypatch):
@@ -218,7 +230,7 @@ class TestCheckAgentFiles:
         agents_dir.mkdir(parents=True)
         (agents_dir / "README.md").write_text("# README")
         (agents_dir / "_template.md").write_text("# Template")
-        (agents_dir / "backend.engineer.md").write_text("# Backend Engineer")
+        (agents_dir / "flow.assess.agent.md").write_text("# Assess")
 
         result = check_agent_files()
         assert result.status == CheckStatus.PASS
@@ -264,13 +276,15 @@ class TestCheckConstitution:
 class TestRunAllChecks:
     """Tests for run_all_checks function."""
 
-    def test_returns_all_check_results(self):
+    @patch("httpx.get", side_effect=Exception("no network"))
+    def test_returns_all_check_results(self, _mock_httpx):
         """Should return results for all checks."""
         results = run_all_checks()
         assert len(results) == 7  # 7 checks defined
         assert all(isinstance(r, CheckResult) for r in results)
 
-    def test_check_names(self):
+    @patch("httpx.get", side_effect=Exception("no network"))
+    def test_check_names(self, _mock_httpx):
         """Should include all expected check names."""
         results = run_all_checks()
         names = {r.name for r in results}

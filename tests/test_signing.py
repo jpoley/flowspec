@@ -127,7 +127,11 @@ class TestGitConfiguration:
     ):
         """Test successful git configuration."""
         mock_keyring.get_password.return_value = "ABCD1234"
-        mock_gpg_commands.return_value = ("", "", 0)  # secret key present
+        mock_gpg_commands.return_value = (
+            "fpr:::::::::ABCD1234:\n",
+            "",
+            0,
+        )  # secret key present, fingerprint matches
         mock_git_commands.side_effect = [
             ("", "", 0),  # rev-parse (check if git repo)
             ("", "", 0),  # config user.signingkey
@@ -163,7 +167,11 @@ class TestGitConfiguration:
     ):
         """Test git configuration in non-git directory."""
         mock_keyring.get_password.return_value = "ABCD1234"
-        mock_gpg_commands.return_value = ("", "", 0)  # secret key present
+        mock_gpg_commands.return_value = (
+            "fpr:::::::::ABCD1234:\n",
+            "",
+            0,
+        )  # secret key present
         mock_git_commands.return_value = ("", "not a git repository", 1)
 
         with pytest.raises(GPGConfigurationError, match="Not a git repository"):
@@ -174,7 +182,11 @@ class TestGitConfiguration:
     ):
         """Test git configuration when setting signingkey fails."""
         mock_keyring.get_password.return_value = "ABCD1234"
-        mock_gpg_commands.return_value = ("", "", 0)  # secret key present
+        mock_gpg_commands.return_value = (
+            "fpr:::::::::ABCD1234:\n",
+            "",
+            0,
+        )  # secret key present
         mock_git_commands.side_effect = [
             ("", "", 0),  # rev-parse success
             ("", "config error", 1),  # config user.signingkey fails
@@ -190,7 +202,11 @@ class TestGitConfiguration:
     ):
         """Test git configuration when setting commit.gpgsign fails."""
         mock_keyring.get_password.return_value = "ABCD1234"
-        mock_gpg_commands.return_value = ("", "", 0)  # secret key present
+        mock_gpg_commands.return_value = (
+            "fpr:::::::::ABCD1234:\n",
+            "",
+            0,
+        )  # secret key present
         mock_git_commands.side_effect = [
             ("", "", 0),  # rev-parse success
             ("", "", 0),  # config user.signingkey success
