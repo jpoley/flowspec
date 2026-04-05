@@ -126,29 +126,20 @@ Expire-Date: 0
 """.strip()
 
     stdout, stderr, returncode = _run_gpg_command(
-        ["--batch", "--generate-key"], input_data=key_params
+        ["--batch", "--status-fd", "1", "--generate-key"], input_data=key_params
     )
 
     if returncode != 0:
         raise GPGKeyGenerationError(f"Failed to generate GPG key: {stderr}")
 
-    # Extract fingerprint from the newly created key
-    # Use --fingerprint with --with-colons to get exact fpr: record for this email
-    stdout, stderr, returncode = _run_gpg_command(
-        ["--list-keys", "--with-colons", "--fingerprint", GPG_KEY_EMAIL]
-    )
-
-    if returncode != 0:
-        raise GPGKeyGenerationError(f"Failed to list GPG keys: {stderr}")
-
-    # Parse fingerprint from colon-separated output
-    # Format: fpr:::::::::FINGERPRINT:
+    # Extract fingerprint from the key-creation status output.
+    # Expected format: [GNUPG:] KEY_CREATED <type> <fingerprint>
     fingerprint = None
     for line in stdout.splitlines():
-        if line.startswith("fpr:"):
-            parts = line.split(":")
-            if len(parts) >= 10:
-                fingerprint = parts[9]
+        if line.startswith("[GNUPG:] KEY_CREATED "):
+            parts = line.split()
+            if len(parts) >= 4:
+                fingerprint = parts[3]
                 break
 
     if not fingerprint:

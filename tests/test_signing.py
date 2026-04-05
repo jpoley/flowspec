@@ -52,15 +52,12 @@ class TestKeyGeneration:
     def test_generate_agent_key_success(self, mock_keyring, mock_gpg_commands):
         """Test successful key generation."""
         mock_keyring.get_password.return_value = None  # no existing key
-        # Mock GPG generate-key command
-        mock_gpg_commands.side_effect = [
-            ("", "", 0),  # generate-key success
-            (
-                "fpr:::::::::ABCD1234ABCD1234ABCD1234ABCD1234ABCD1234:\n",
-                "",
-                0,
-            ),  # list-keys
-        ]
+        # Mock GPG generate-key with --status-fd output
+        mock_gpg_commands.return_value = (
+            "[GNUPG:] KEY_CREATED B ABCD1234ABCD1234ABCD1234ABCD1234ABCD1234\n",
+            "",
+            0,
+        )
 
         fingerprint = generate_agent_key()
 
@@ -95,10 +92,8 @@ class TestKeyGeneration:
     ):
         """Test failure when fingerprint cannot be extracted."""
         mock_keyring.get_password.return_value = None
-        mock_gpg_commands.side_effect = [
-            ("", "", 0),  # generate-key success
-            ("invalid output\n", "", 0),  # list-keys with no fingerprint
-        ]
+        # Status output missing KEY_CREATED line
+        mock_gpg_commands.return_value = ("invalid output\n", "", 0)
 
         with pytest.raises(
             GPGKeyGenerationError, match="Failed to extract fingerprint"
@@ -111,10 +106,12 @@ class TestKeyGeneration:
         """Test failure when storing fingerprint in keyring fails."""
         mock_keyring.get_password.return_value = None
         mock_keyring.set_password.side_effect = Exception("Keyring error")
-        mock_gpg_commands.side_effect = [
-            ("", "", 0),  # generate-key success
-            ("fpr:::::::::ABCD1234:\n", "", 0),  # list-keys
-        ]
+        # Status output with fingerprint
+        mock_gpg_commands.return_value = (
+            "[GNUPG:] KEY_CREATED B ABCD1234\n",
+            "",
+            0,
+        )
 
         with pytest.raises(
             GPGKeyGenerationError, match="Failed to store fingerprint in keyring"
