@@ -413,7 +413,9 @@ def _check_installed_tool_version(command: str) -> str | None:
         if result.returncode != 0:
             continue
 
-        output = (result.stdout or result.stderr).strip()
+        stdout = (result.stdout or "").strip()
+        stderr = (result.stderr or "").strip()
+        output = stdout or stderr
         if output:
             return output.splitlines()[0].strip()
 
