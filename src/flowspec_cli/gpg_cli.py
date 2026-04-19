@@ -88,12 +88,12 @@ def setup_command(
 
             # Generate new key
             console.print("[cyan]Generating agent GPG key...[/cyan]")
-            fingerprint = generate_agent_key(fingerprint=existing_fingerprint)
+            fingerprint = generate_agent_key()
             console.print("[green]✓[/green] GPG key generated")
 
         # Configure git
         console.print("[cyan]Configuring git for commit signing...[/cyan]")
-        configure_git_signing(project_root=root, fingerprint=fingerprint)
+        configure_git_signing(project_root=root)
         console.print("[green]✓[/green] Git configured for signing")
 
         # Display summary
@@ -273,11 +273,6 @@ def rotate_command(
         # Delete old key
         console.print("[cyan]Deleting old key...[/cyan]")
         delete_agent_key()
-        remaining_fingerprint = get_key_fingerprint()
-        if remaining_fingerprint == old_fingerprint:
-            raise GPGConfigurationError(
-                "Failed to delete the existing agent GPG key."
-            )
         console.print("[green]✓[/green] Old key deleted")
 
         # Generate new key
