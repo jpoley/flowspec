@@ -9189,7 +9189,7 @@ def doctor_command(
     fix: bool = typer.Option(
         False,
         "--fix",
-        help="Attempt to auto-fix fixable issues",
+        help="Reserved for future auto-fix support; currently only reports issues",
     ),
     verbose: bool = typer.Option(
         False,
