@@ -252,13 +252,22 @@ def key_exists() -> bool:
     return get_key_fingerprint() is not None
 
 
-def get_key_info() -> Optional[dict[str, str]]:
+def get_key_info(fingerprint: Optional[str] = None) -> Optional[dict[str, str]]:
     """Get detailed information about the agent's GPG key.
 
+    Args:
+        fingerprint: Optional cached fingerprint to use instead of reading
+            the keyring. When omitted, the fingerprint is read via
+            :func:`get_key_fingerprint`. Pass a value already in hand to
+            avoid a redundant keyring read (and the inconsistency that
+            multiple reads can surface during transient failures).
+
     Returns:
-        Dictionary with key details (fingerprint, uid, creation date), or None if no key exists or GPG command fails
+        Dictionary with key details (fingerprint, uid, creation date), or
+        None if no key exists or the GPG command fails.
     """
-    fingerprint = get_key_fingerprint()
+    if fingerprint is None:
+        fingerprint = get_key_fingerprint()
     if not fingerprint:
         return None
 

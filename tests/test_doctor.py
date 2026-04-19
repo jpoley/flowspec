@@ -1,5 +1,6 @@
 """Tests for flowspec doctor health check command."""
 
+import subprocess
 from unittest.mock import MagicMock, patch
 
 import yaml
@@ -7,6 +8,7 @@ import yaml
 from flowspec_cli.doctor import (
     CheckResult,
     CheckStatus,
+    _check_installed_tool_version,
     check_agent_files,
     check_constitution,
     check_flowspec_version,
@@ -366,3 +368,46 @@ class TestRunAllChecks:
         assert "beads" not in probed, (
             f"'beads' should not be probed directly, got {probed}"
         )
+
+
+class TestCheckInstalledToolVersionTimeout:
+    """``_check_installed_tool_version`` must not hang on a slow/blocked tool.
+
+    Regression guard for PR #1244 Copilot feedback: the ``subprocess.run``
+    calls in the version-probe cascade previously had no ``timeout`` and
+    would block ``flowspec doctor`` indefinitely if a tool hung.
+    """
+
+    @patch("flowspec_cli.doctor.subprocess.run")
+    @patch("flowspec_cli.doctor.shutil.which")
+    def test_timeout_expired_is_treated_as_unknown_version(self, mock_which, mock_run):
+        """A ``TimeoutExpired`` from any probe must be swallowed, not re-raised."""
+        mock_which.return_value = "/usr/local/bin/stuck-tool"
+        mock_run.side_effect = subprocess.TimeoutExpired(
+            cmd=["stuck-tool", "--version"], timeout=5
+        )
+
+        # Must return None (unknown), not raise.
+        result = _check_installed_tool_version("stuck-tool")
+
+        assert result is None
+        # All three probe variants should have been attempted; none should
+        # have been re-raised.
+        assert mock_run.call_count == 3
+
+    @patch("flowspec_cli.doctor.subprocess.run")
+    @patch("flowspec_cli.doctor.shutil.which")
+    def test_timeout_is_configured_on_each_probe(self, mock_which, mock_run):
+        """Every ``subprocess.run`` call must pass an explicit ``timeout``."""
+        mock_which.return_value = "/usr/local/bin/tool"
+        # Return non-zero so the cascade keeps trying each probe variant.
+        mock_run.return_value = MagicMock(returncode=1, stdout="", stderr="")
+
+        _check_installed_tool_version("tool")
+
+        assert mock_run.call_count == 3
+        for call in mock_run.call_args_list:
+            assert "timeout" in call.kwargs, (
+                f"subprocess.run invoked without timeout: {call}"
+            )
+            assert call.kwargs["timeout"] > 0

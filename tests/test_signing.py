@@ -343,6 +343,47 @@ uid:u::::1234567890::HASH::Flowspec Agent <agent@flowspec.local>
 
         assert info is None
 
+    def test_get_key_info_accepts_cached_fingerprint(
+        self, mock_keyring, mock_gpg_commands
+    ):
+        """Passing ``fingerprint=`` must skip the keyring read entirely.
+
+        Regression guard: callers that already hold the fingerprint (e.g.
+        ``gpg status``) pass it in to avoid duplicate keyring reads that
+        could produce inconsistent output under transient keyring errors.
+        """
+        mock_gpg_commands.return_value = (
+            "pub:u:4096:1:KEYID:1234567890:0\n"
+            "uid:u::::1234567890::HASH::Flowspec Agent <agent@flowspec.local>\n",
+            "",
+            0,
+        )
+
+        info = get_key_info(fingerprint=TEST_FP)
+
+        assert info is not None
+        assert info["fingerprint"] == TEST_FP
+        # No keyring access should have occurred — the caller supplied the
+        # fingerprint directly.
+        mock_keyring.get_password.assert_not_called()
+
+    def test_get_key_info_cached_none_returns_none_without_keyring(
+        self, mock_keyring, mock_gpg_commands
+    ):
+        """Explicit ``fingerprint=None`` should fall back to reading the keyring.
+
+        This preserves the zero-argument contract and confirms the optional
+        parameter is treated as a *cache*, not a suppression flag.
+        """
+        mock_keyring.get_password.return_value = None
+
+        info = get_key_info(fingerprint=None)
+
+        assert info is None
+        # Fell back to the keyring exactly once.
+        assert mock_keyring.get_password.call_count == 1
+        mock_gpg_commands.assert_not_called()
+
 
 class TestGitSigningStatus:
     """Tests for checking git signing status."""

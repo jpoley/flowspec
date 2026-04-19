@@ -24,7 +24,6 @@ from .signing import (
     get_key_fingerprint,
     get_key_info,
     is_git_signing_enabled,
-    key_exists,
     GPGConfigurationError,
     GPGError,
     GPGKeyGenerationError,
@@ -165,8 +164,13 @@ def status_command(
     table.add_column("Setting", style="cyan")
     table.add_column("Value")
 
-    # Check if key exists
-    if not key_exists():
+    # Read keyring state exactly once. ``key_exists()`` and ``get_key_info()``
+    # both call ``get_key_fingerprint()`` internally; chaining them would
+    # issue three separate keyring reads and could report "Configured" with
+    # fingerprint "unknown" if the second read transiently failed.
+    fingerprint = get_key_fingerprint()
+
+    if not fingerprint:
         table.add_row("Status", "[red]Not configured[/red]")
         console.print(table)
         console.print()
@@ -175,12 +179,12 @@ def status_command(
         )
         return
 
-    # Get key information
-    fingerprint = get_key_fingerprint()
-    key_info = get_key_info()
+    # Pass the cached fingerprint so ``get_key_info`` does not re-read the
+    # keyring.
+    key_info = get_key_info(fingerprint=fingerprint)
 
     table.add_row("Status", "[green]Configured[/green]")
-    table.add_row("Fingerprint", fingerprint or "[dim]unknown[/dim]")
+    table.add_row("Fingerprint", fingerprint)
 
     if verbose and key_info:
         if uid := key_info.get("uid"):
@@ -243,13 +247,16 @@ def rotate_command(
     """
     root = Path(project_root) if project_root else Path.cwd()
 
-    if not key_exists():
+    # Read keyring state exactly once. ``key_exists()`` is implemented in
+    # terms of ``get_key_fingerprint()``, so calling both would duplicate
+    # reads and could produce the "exists but no fingerprint" inconsistency
+    # under transient keyring failures.
+    old_fingerprint = get_key_fingerprint()
+
+    if not old_fingerprint:
         console.print("[yellow]No agent GPG key found. Nothing to rotate.[/yellow]")
         console.print("[dim]Run 'flowspec gpg setup' to create a new key.[/dim]")
         return
-
-    # Get old fingerprint for display
-    old_fingerprint = get_key_fingerprint()
 
     if not yes:
         console.print(

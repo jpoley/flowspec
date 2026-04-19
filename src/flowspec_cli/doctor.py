@@ -402,8 +402,12 @@ def _check_installed_tool_version(command: str) -> str | None:
                 capture_output=True,
                 text=True,
                 check=False,
+                # Cap each probe so a hung or interactive tool can't make
+                # ``flowspec doctor`` block indefinitely. 5s is enough for
+                # any reasonable ``--version`` print.
+                timeout=5,
             )
-        except OSError:
+        except (OSError, subprocess.TimeoutExpired):
             continue
 
         if result.returncode != 0:
