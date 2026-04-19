@@ -273,6 +273,11 @@ def rotate_command(
         # Delete old key
         console.print("[cyan]Deleting old key...[/cyan]")
         delete_agent_key()
+        remaining_fingerprint = get_key_fingerprint()
+        if remaining_fingerprint == old_fingerprint:
+            raise GPGConfigurationError(
+                "Failed to delete the existing agent GPG key."
+            )
         console.print("[green]✓[/green] Old key deleted")
 
         # Generate new key
