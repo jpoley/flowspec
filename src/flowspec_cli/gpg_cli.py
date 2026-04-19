@@ -72,13 +72,18 @@ def setup_command(
     root = Path(project_root) if project_root else Path.cwd()
 
     try:
-        # Check if key exists
-        if key_exists() and not force:
+        # Read key state once to avoid inconsistent behavior from repeated
+        # keyring access (e.g., a transient read failure could otherwise make
+        # us report "already exists" and then fail configuring git signing
+        # because no fingerprint is available).
+        existing_fingerprint = get_key_fingerprint() if key_exists() else None
+
+        if existing_fingerprint and not force:
             console.print("[yellow]Agent GPG key already exists.[/yellow]")
             console.print("[dim]Use --force to regenerate the key.[/dim]")
-            fingerprint = get_key_fingerprint()
+            fingerprint = existing_fingerprint
         else:
-            if force and key_exists():
+            if existing_fingerprint and force:
                 console.print("[yellow]Regenerating agent GPG key...[/yellow]")
                 delete_agent_key()
 

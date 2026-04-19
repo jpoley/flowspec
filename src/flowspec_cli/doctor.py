@@ -22,6 +22,7 @@ Example:
 import shutil
 import subprocess
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -145,42 +146,61 @@ def check_python_version() -> CheckResult:
     )
 
 
-def check_tool_installed(tool_name: str) -> CheckResult:
+def check_tool_installed(
+    binary_name: str,
+    display_name: str | None = None,
+    version_getter: Callable[[], str | None] | None = None,
+) -> CheckResult:
     """Check if a CLI tool is installed and accessible.
 
     Args:
-        tool_name: Name of the tool to check (e.g., "backlog", "beads")
+        binary_name: Executable name to look for in PATH (e.g., "backlog", "bd")
+        display_name: Human-friendly name shown in output (defaults to binary_name)
+        version_getter: Optional callable returning the installed version; used
+            in preference to a generic ``--version`` probe so parsing matches
+            the rest of the CLI.
 
     Returns:
         CheckResult indicating tool installation status
     """
-    tool_path = shutil.which(tool_name)
-    if tool_path is None:
+    label = display_name or binary_name
+
+    if shutil.which(binary_name) is None:
         return CheckResult(
-            name=f"{tool_name} CLI",
+            name=f"{label} CLI",
             status=CheckStatus.FAIL,
-            message=f"{tool_name} not found in PATH",
-            fix_command=f"Install {tool_name} following the installation guide",
+            message=f"{binary_name} not found in PATH",
+            fix_command=f"Install {label} following the installation guide",
         )
 
-    # Try to get version if possible
-    try:
-        result = subprocess.run(
-            [tool_name, "--version"],
-            capture_output=True,
-            text=True,
-            timeout=5,
-        )
-        version_output = result.stdout.strip() or result.stderr.strip()
-        # Extract just the version number if present
-        version = version_output.split()[-1] if version_output else "installed"
-    except Exception:
-        version = "installed"
+    version: str | None = None
+
+    if version_getter is not None:
+        try:
+            version = version_getter()
+        except Exception:
+            version = None
+
+    if version is None:
+        # Fallback: probe ``<tool> --version`` and take the last whitespace-
+        # separated token as the version.
+        try:
+            result = subprocess.run(
+                [binary_name, "--version"],
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+            version_output = result.stdout.strip() or result.stderr.strip()
+            if version_output:
+                version = version_output.split()[-1]
+        except Exception:
+            version = None
 
     return CheckResult(
-        name=f"{tool_name} CLI",
+        name=f"{label} CLI",
         status=CheckStatus.PASS,
-        message=version,
+        message=version or "installed",
     )
 
 
@@ -370,11 +390,27 @@ def run_all_checks() -> list[CheckResult]:
     Returns:
         List of CheckResult objects for all checks performed
     """
+    # Lazy import to avoid a circular import at module load time: the top-level
+    # package imports ``doctor`` while ``doctor`` needs the version helpers that
+    # live in the package's ``__init__``.
+    from flowspec_cli import (
+        check_backlog_installed_version,
+        check_beads_installed_version,
+    )
+
     checks = [
         check_flowspec_version(),
         check_python_version(),
-        check_tool_installed("backlog"),
-        check_tool_installed("beads"),
+        check_tool_installed(
+            "backlog",
+            display_name="backlog",
+            version_getter=check_backlog_installed_version,
+        ),
+        check_tool_installed(
+            "bd",
+            display_name="beads",
+            version_getter=check_beads_installed_version,
+        ),
         check_workflow_config(),
         check_agent_files(),
         check_constitution(),
@@ -476,20 +512,11 @@ def run_doctor(fix: bool = False, verbose: bool = False) -> list[CheckResult]:
             summary_parts.append(f"[yellow]{warnings} warning(s)[/yellow]")
         console.print(" ".join(summary_parts))
 
-        # Show suggestion to run with --fix if there are fixable issues
-        if not fix:
-            fixable = sum(1 for r in results if r.fix_command is not None)
-            if fixable > 0:
-                console.print()
-                console.print(
-                    f"[dim]Hint: Run 'flowspec doctor --fix' to attempt "
-                    f"automatic fixes ({fixable} fixable)[/dim]"
-                )
-
     console.print()
 
-    # Auto-fix handling (not implemented yet - would require complex logic)
     if fix:
+        # Auto-fix is intentionally not implemented yet; the per-check
+        # ``fix_command`` hints rendered above are the manual remediation path.
         console.print(
             "[yellow]Note: Auto-fix is not yet implemented. "
             "Please run the suggested fix commands manually.[/yellow]"
