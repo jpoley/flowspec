@@ -88,12 +88,12 @@ def setup_command(
 
             # Generate new key
             console.print("[cyan]Generating agent GPG key...[/cyan]")
-            fingerprint = generate_agent_key()
+            fingerprint = generate_agent_key(fingerprint=existing_fingerprint)
             console.print("[green]✓[/green] GPG key generated")
 
         # Configure git
         console.print("[cyan]Configuring git for commit signing...[/cyan]")
-        configure_git_signing(project_root=root)
+        configure_git_signing(project_root=root, fingerprint=fingerprint)
         console.print("[green]✓[/green] Git configured for signing")
 
         # Display summary
