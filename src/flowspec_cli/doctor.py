@@ -384,32 +384,66 @@ def check_constitution() -> CheckResult:
     )
 
 
+def _check_installed_tool_version(command: str) -> str | None:
+    """Return the installed version string for a CLI tool, if available."""
+    if shutil.which(command) is None:
+        return None
+
+    version_commands = (
+        [command, "--version"],
+        [command, "version"],
+        [command, "-V"],
+    )
+
+    for version_command in version_commands:
+        try:
+            result = subprocess.run(
+                version_command,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        except OSError:
+            continue
+
+        if result.returncode != 0:
+            continue
+
+        output = (result.stdout or result.stderr).strip()
+        if output:
+            return output.splitlines()[0].strip()
+
+    return None
+
+
+def _check_backlog_installed_version() -> str | None:
+    """Return the installed backlog CLI version, if available."""
+    return _check_installed_tool_version("backlog")
+
+
+def _check_beads_installed_version() -> str | None:
+    """Return the installed beads CLI version, if available."""
+    return _check_installed_tool_version("bd")
+
+
 def run_all_checks() -> list[CheckResult]:
     """Run all health checks.
 
     Returns:
         List of CheckResult objects for all checks performed
     """
-    # Lazy import to avoid a circular import at module load time: the top-level
-    # package imports ``doctor`` while ``doctor`` needs the version helpers that
-    # live in the package's ``__init__``.
-    from flowspec_cli import (
-        check_backlog_installed_version,
-        check_beads_installed_version,
-    )
-
     checks = [
         check_flowspec_version(),
         check_python_version(),
         check_tool_installed(
             "backlog",
             display_name="backlog",
-            version_getter=check_backlog_installed_version,
+            version_getter=_check_backlog_installed_version,
         ),
         check_tool_installed(
             "bd",
             display_name="beads",
-            version_getter=check_beads_installed_version,
+            version_getter=_check_beads_installed_version,
         ),
         check_workflow_config(),
         check_agent_files(),
