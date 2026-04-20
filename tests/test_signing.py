@@ -249,6 +249,30 @@ class TestGitConfiguration:
         with pytest.raises(GPGConfigurationError, match="Failed to set commit.gpgsign"):
             configure_git_signing(project_root=tmp_path)
 
+    def test_configure_git_signing_uses_cached_fingerprint(
+        self, mock_keyring, mock_git_commands, mock_gpg_commands, tmp_path
+    ):
+        """Passing ``fingerprint=`` must skip the keyring read entirely.
+
+        Regression guard: callers that already hold the fingerprint (e.g.
+        ``gpg setup`` / ``gpg rotate``) pass it in to avoid a redundant
+        keyring read and potential inconsistency under transient failures.
+        """
+        mock_gpg_commands.return_value = (
+            f"fpr:::::::::{TEST_FP}:\n",
+            "",
+            0,
+        )
+        mock_git_commands.side_effect = [
+            ("", "", 0),  # rev-parse
+            ("", "", 0),  # config user.signingkey
+            ("", "", 0),  # config commit.gpgsign
+        ]
+
+        configure_git_signing(project_root=tmp_path, fingerprint=TEST_FP)
+
+        mock_keyring.get_password.assert_not_called()
+
     def test_configure_git_signing_secret_key_mismatch(
         self, mock_keyring, mock_git_commands, mock_gpg_commands, tmp_path
     ):
@@ -367,13 +391,14 @@ uid:u::::1234567890::HASH::Flowspec Agent <agent@flowspec.local>
         # fingerprint directly.
         mock_keyring.get_password.assert_not_called()
 
-    def test_get_key_info_cached_none_returns_none_without_keyring(
+    def test_get_key_info_explicit_none_falls_back_to_keyring(
         self, mock_keyring, mock_gpg_commands
     ):
-        """Explicit ``fingerprint=None`` should fall back to reading the keyring.
+        """Explicit ``fingerprint=None`` falls back to reading the keyring.
 
-        This preserves the zero-argument contract and confirms the optional
-        parameter is treated as a *cache*, not a suppression flag.
+        This preserves the zero-argument contract: ``None`` means "not yet
+        read", not "key is absent". Confirms the optional parameter is treated
+        as a *cache*, not a suppression flag.
         """
         mock_keyring.get_password.return_value = None
 
@@ -453,6 +478,23 @@ class TestKeyDeletion:
         # Should return early without calling GPG
         mock_gpg_commands.assert_not_called()
         mock_keyring.delete_password.assert_not_called()
+
+    def test_delete_agent_key_uses_cached_fingerprint(
+        self, mock_keyring, mock_gpg_commands
+    ):
+        """Passing ``cached_fingerprint=`` must skip the keyring read entirely.
+
+        Regression guard: ``gpg rotate`` passes the fingerprint it already
+        holds to avoid a redundant keyring read.
+        """
+        mock_gpg_commands.return_value = ("", "", 0)
+
+        delete_agent_key(cached_fingerprint=TEST_FP)
+
+        mock_keyring.get_password.assert_not_called()
+        mock_gpg_commands.assert_called_once()
+        assert "--delete-secret-and-public-key" in mock_gpg_commands.call_args[0][0]
+        mock_keyring.delete_password.assert_called_once()
 
     def test_delete_agent_key_gpg_fails(self, mock_keyring, mock_gpg_commands):
         """Test key deletion when GPG command fails."""

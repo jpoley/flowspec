@@ -46,10 +46,11 @@ class TestSetupCommandKeyringReads:
     @patch("flowspec_cli.gpg_cli.generate_agent_key")
     @patch("flowspec_cli.gpg_cli.get_key_fingerprint")
     def test_reads_fingerprint_once_when_key_exists(
-        self, mock_get_fp, mock_generate, mock_delete, _mock_configure
+        self, mock_get_fp, mock_generate, mock_delete, mock_configure
     ):
-        """Existing-key path: one keyring read, no regeneration."""
-        mock_get_fp.return_value = "A" * 40
+        """Existing-key path: one keyring read, no regeneration, fingerprint forwarded."""
+        fp = "A" * 40
+        mock_get_fp.return_value = fp
 
         result = runner.invoke(gpg_app, ["setup"])
 
@@ -59,17 +60,21 @@ class TestSetupCommandKeyringReads:
         )
         mock_generate.assert_not_called()
         mock_delete.assert_not_called()
+        mock_configure.assert_called_once_with(
+            project_root=mock_configure.call_args[1]["project_root"], fingerprint=fp
+        )
 
     @patch("flowspec_cli.gpg_cli.configure_git_signing")
     @patch("flowspec_cli.gpg_cli.delete_agent_key")
     @patch("flowspec_cli.gpg_cli.generate_agent_key")
     @patch("flowspec_cli.gpg_cli.get_key_fingerprint")
     def test_reads_fingerprint_once_when_no_key(
-        self, mock_get_fp, mock_generate, mock_delete, _mock_configure
+        self, mock_get_fp, mock_generate, mock_delete, mock_configure
     ):
-        """No-key path: one keyring read, generates a new key."""
+        """No-key path: one keyring read, generates key, fingerprint forwarded."""
+        new_fp = "B" * 40
         mock_get_fp.return_value = None
-        mock_generate.return_value = "B" * 40
+        mock_generate.return_value = new_fp
 
         result = runner.invoke(gpg_app, ["setup"])
 
@@ -77,6 +82,9 @@ class TestSetupCommandKeyringReads:
         assert mock_get_fp.call_count == 1
         mock_generate.assert_called_once()
         mock_delete.assert_not_called()
+        mock_configure.assert_called_once_with(
+            project_root=mock_configure.call_args[1]["project_root"], fingerprint=new_fp
+        )
 
     @patch("flowspec_cli.gpg_cli.configure_git_signing")
     @patch("flowspec_cli.gpg_cli.delete_agent_key")
@@ -165,15 +173,22 @@ class TestRotateCommandKeyringReads:
     @patch("flowspec_cli.gpg_cli.delete_agent_key")
     @patch("flowspec_cli.gpg_cli.get_key_fingerprint")
     def test_reads_fingerprint_once_when_rotating(
-        self, mock_get_fp, mock_delete, mock_generate, _mock_configure
+        self, mock_get_fp, mock_delete, mock_generate, mock_configure
     ):
-        """Existing-key path (--yes): one keyring read, delete + regenerate."""
-        mock_get_fp.return_value = "F" * 40
-        mock_generate.return_value = "G" * 40
+        """Existing-key path (--yes): one keyring read; fingerprints forwarded."""
+        old_fp = "F" * 40
+        new_fp = "G" * 40
+        mock_get_fp.return_value = old_fp
+        mock_generate.return_value = new_fp
 
         result = runner.invoke(gpg_app, ["rotate", "--yes"])
 
         assert result.exit_code == 0, result.output
         assert mock_get_fp.call_count == 1
-        mock_delete.assert_called_once()
+        # Cached old fingerprint forwarded to delete_agent_key.
+        mock_delete.assert_called_once_with(cached_fingerprint=old_fp)
         mock_generate.assert_called_once()
+        # New fingerprint forwarded to configure_git_signing.
+        mock_configure.assert_called_once_with(
+            project_root=mock_configure.call_args[1]["project_root"], fingerprint=new_fp
+        )

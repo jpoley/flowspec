@@ -89,11 +89,11 @@ def setup_command(
             # Generate new key
             console.print("[cyan]Generating agent GPG key...[/cyan]")
             fingerprint = generate_agent_key()
-            console.print("[green]✓[/green] GPG key generated")
+            console.print("[green]✓[/green] GPG key ready")
 
-        # Configure git
+        # Configure git — pass cached fingerprint to skip a redundant keyring read.
         console.print("[cyan]Configuring git for commit signing...[/cyan]")
-        configure_git_signing(project_root=root)
+        configure_git_signing(project_root=root, fingerprint=fingerprint)
         console.print("[green]✓[/green] Git configured for signing")
 
         # Display summary
@@ -270,9 +270,9 @@ def rotate_command(
             raise typer.Exit(0)
 
     try:
-        # Delete old key
+        # Delete old key — pass cached fingerprint to skip a redundant keyring read.
         console.print("[cyan]Deleting old key...[/cyan]")
-        delete_agent_key()
+        delete_agent_key(cached_fingerprint=old_fingerprint)
         console.print("[green]✓[/green] Old key deleted")
 
         # Generate new key
@@ -280,9 +280,9 @@ def rotate_command(
         new_fingerprint = generate_agent_key()
         console.print("[green]✓[/green] New key generated")
 
-        # Reconfigure git
+        # Reconfigure git — pass new fingerprint to skip a redundant keyring read.
         console.print("[cyan]Updating git configuration...[/cyan]")
-        configure_git_signing(project_root=root)
+        configure_git_signing(project_root=root, fingerprint=new_fingerprint)
         console.print("[green]✓[/green] Git configuration updated")
 
         # Display summary

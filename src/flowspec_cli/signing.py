@@ -163,7 +163,9 @@ Expire-Date: 0
     return fingerprint
 
 
-def configure_git_signing(project_root: Optional[Path] = None) -> None:
+def configure_git_signing(
+    project_root: Optional[Path] = None, fingerprint: Optional[str] = None
+) -> None:
     """Configure git to sign commits with the agent's GPG key.
 
     Sets the following local git config options:
@@ -172,12 +174,16 @@ def configure_git_signing(project_root: Optional[Path] = None) -> None:
 
     Args:
         project_root: Project directory for local git config (default: current directory)
+        fingerprint: Cached key fingerprint. When not provided or None, reads via
+            :func:`get_key_fingerprint`. Pass a value already in hand to avoid a
+            redundant keyring read.
 
     Raises:
         GPGConfigurationError: If git configuration fails
         GPGError: If no agent key exists (call generate_agent_key() first)
     """
-    fingerprint = get_key_fingerprint()
+    if fingerprint is None:
+        fingerprint = get_key_fingerprint()
     if not fingerprint:
         raise GPGError("No agent GPG key found. Run generate_agent_key() first.")
 
@@ -257,7 +263,7 @@ def get_key_info(fingerprint: Optional[str] = None) -> Optional[dict[str, str]]:
 
     Args:
         fingerprint: Optional cached fingerprint to use instead of reading
-            the keyring. When omitted, the fingerprint is read via
+            the keyring. When not provided or None, the fingerprint is read via
             :func:`get_key_fingerprint`. Pass a value already in hand to
             avoid a redundant keyring read (and the inconsistency that
             multiple reads can surface during transient failures).
@@ -328,16 +334,22 @@ def is_git_signing_enabled(project_root: Optional[Path] = None) -> bool:
     return True
 
 
-def delete_agent_key() -> None:
+def delete_agent_key(cached_fingerprint: Optional[str] = None) -> None:
     """Delete the agent's GPG key from the keyring and GPG keychain.
 
     This is useful for key rotation. After deletion, call generate_agent_key()
     to create a new key.
 
+    Args:
+        cached_fingerprint: A cached fingerprint to skip the keyring read.
+            When not provided or None, reads via :func:`get_key_fingerprint`.
+
     Raises:
         GPGError: If key deletion fails
     """
-    fingerprint = get_key_fingerprint()
+    fingerprint = (
+        cached_fingerprint if cached_fingerprint is not None else get_key_fingerprint()
+    )
     if not fingerprint:
         return  # No key to delete
 
