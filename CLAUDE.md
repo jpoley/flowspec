@@ -1,183 +1,99 @@
-# Flowspec - Claude Code Configuration
+<!-- CLAUDE.md and AGENTS.md share Operator Preferences and Hard Guardrails. Keep in sync. -->
 
-Standalone toolkit for Spec-Driven Development (SDD): CLI tool (`flowspec-cli`), templates for AI agents, and comprehensive documentation.
+# CLAUDE.md — flowspec-cli
 
-## Essential Commands
-
-```bash
-pytest tests/                    # Run tests
-ruff check . --fix && ruff format .  # Lint and format
-uv sync                          # Install dependencies
-uv tool install . --force        # Install CLI locally
-```
-
-## Backlog Commands
-
-```bash
-backlog task list --plain        # List tasks (AI-friendly)
-backlog task 42 --plain          # View task details
-backlog task edit 42 -s "In Progress" -a @myself  # Start work
-backlog task edit 42 --check-ac 1  # Mark AC done
-backlog task edit 42 -s Done     # Complete task
-```
-
-## Slash Commands
-
-| Command | Purpose |
-|---------|---------|
-| `/flow:assess` | Evaluate SDD workflow suitability |
-| `/flow:specify` | Create/update feature specs |
-| `/flow:plan` | Execute planning workflow |
-| `/flow:implement` | Implementation with code review |
-| `/flow:validate` | QA, security, docs validation |
-| `/flow:init` | Initialize constitution |
-| `/flow:intake` | Process INITIAL docs to create tasks |
-| `/flow:reset` | Reset or restart current flow state |
-| `/flow:generate-prp` | Generate PRP context bundle |
-| `/flow:map-codebase` | Map codebase for context |
-| `/vibe` | Casual mode - just logs and light docs |
-
-_Full command list: `.claude/commands/flow/`_
-
-## Default Mode
-
-When no `/flow:*` command is specified, default to **vibe mode**:
-- Quick fixes, prototypes, exploration: just code it
-- Log decisions to `.flowspec/logs/decisions/`
-- Escalate to full SDD if work grows complex
-
-## INITIAL Documents
-
-**ALWAYS** check for `docs/features/<feature-slug>-initial.md` before `/flow:assess` or `/flow:specify`. Contains feature context, examples, constraints.
-
-## Engineering Subagents
-
-| Agent | Location | Use For |
-|-------|----------|---------|
-| Backend | `.claude/agents/backend-engineer.md` | APIs, databases, Python |
-| Frontend | `.claude/agents/frontend-engineer.md` | React, TypeScript, UI |
-| QA | `.claude/agents/qa-engineer.md` | Tests, coverage |
-| Security | `.claude/agents/security-reviewer.md` | Security review (read-only) |
-
-## Workflow Configuration
-
-Defined in `flowspec_workflow.yml`. Validate with:
-
-```bash
-flowspec workflow validate
-```
-
-| Command | Input State | Output State |
-|---------|-------------|--------------|
-| `/flow:assess` | To Do | Assessed |
-| `/flow:specify` | Assessed | Specified |
-| `/flow:plan` | Specified | Planned |
-| `/flow:implement` | Planned | In Implementation |
-| `/flow:validate` | In Implementation | Validated |
-
-## Project Structure
-
-```
-flowspec/
-├── src/flowspec_cli/       # CLI source code
-├── tests/                  # Test suite (pytest)
-├── templates/              # Project templates
-│   ├── docs/               # Workflow artifact directories
-│   └── commands/           # Slash command templates
-├── docs/                   # Documentation
-│   ├── guides/             # User guides
-│   └── reference/          # Reference docs
-├── memory/                 # Constitution & specs
-├── backlog/                # Task management
-├── .claude/commands/       # Slash command implementations
-├── .claude/skills/         # Model-invoked skills
-└── .claude/rules/          # Automatic rules
-```
-
-## Task Management
-
-| Layer | Tool | Purpose |
-|-------|------|---------|
-| Feature/Task | Backlog.md | High-level work items, ACs |
-| Agent Work | Beads | Detailed implementation steps |
-
-Simple tasks: Backlog.md only. Complex tasks: Backlog.md + Beads.
-
-## Documentation
-
-| Topic | Location |
-|-------|----------|
-| Backlog Quick Start | `user-docs/guides/backlog-quickstart.md` |
-| Workflow Integration | `user-docs/guides/flowspec-backlog-workflow.md` |
-| Task Tiers | `docs/guides/task-management-tiers.md` |
-| Inner/Outer Loop | `user-docs/reference/inner-loop.md`, `user-docs/reference/outer-loop.md` |
-
-## Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `GITHUB_FLOWSPEC` | GitHub token for API requests |
-| `SPECIFY_FEATURE` | Override feature detection for non-Git repos |
-
-## MCP Servers
-
-| Server | Description |
-|--------|-------------|
-| `github` | GitHub API: repos, issues, PRs |
-| `backlog` | Backlog.md task management |
-| `serena` | LSP-grade code understanding |
-| `playwright-test` | Browser automation |
-| `trivy` | Container/IaC security scans |
-| `semgrep` | SAST code scanning |
-
-Health check: `./scripts/check-mcp-servers.sh`
-
-## Claude Code Hooks
-
-| Hook | Type | Purpose |
-|------|------|---------|
-| `session-start.sh` | SessionStart | Environment verification |
-| `pre-tool-use-sensitive-files.py` | PreToolUse | Protect .env, secrets |
-| `pre-tool-use-git-safety.py` | PreToolUse | Warn on dangerous git |
-| `post-tool-use-format-python.sh` | PostToolUse | Auto-format Python |
-| `post-tool-use-lint-python.sh` | PostToolUse | Auto-lint Python |
-| `stop-quality-gate.py` | Stop | Backlog task quality gate |
-
-Test hooks: `.claude/hooks/test-hooks.sh`
-
-## Claude Code Skills
-
-Specialized skills auto-invoked by context. Key skills:
-- `pm-planner`: Task creation and breakdown
-- `architect`: Architecture decisions and ADRs
-- `qa-validator`: Test plans and quality gates
-- `security-reviewer`: Vulnerability assessment
-
-Full list: `memory/claude-skills.md` or `.claude/skills/`
-
-## Checkpoints
-
-Press `Esc Esc` to undo last change. Use `/rewind` for interactive restore.
-
-## Extended Thinking
-
-| Trigger | Budget | Use Case |
-|---------|--------|----------|
-| `think` | 4K tokens | Quick decisions |
-| `think hard` | 10K tokens | Architecture, security |
-| `megathink` | 10K tokens | Complex research |
-| `ultrathink` | 32K tokens | Critical decisions |
-
-## Quick Troubleshooting
-
-```bash
-uv sync --force              # Dependencies issues
-uv tool install . --force    # CLI not found
-chmod +x scripts/bash/*.sh   # Make scripts executable
-python --version             # Check Python 3.11+
-.claude/hooks/test-hooks.sh  # Test hooks
-```
+## Project
+**Name:** flowspec-cli  
+**Repo:** github.com/jpoley/flowspec  
+**Purpose:** CLI toolkit that initialises, upgrades, and orchestrates AI agent workflows using Spec-Driven Development (SDD). Ships as `flowspec` (and legacy alias `specify`).  
+**Current focus:** Run `backlog task list -s "In Progress" --plain` to see the active task
 
 ---
 
-*Rules in `.claude/rules/` are automatically loaded by Claude Code. See that directory for critical rules, coding standards, security, testing, and rigor enforcement.*
+## Operator Preferences
+- State facts only. No sugarcoating.
+- Surface problems, blockers, and risks immediately.
+- Consult before one-way-door decisions and before any architectural change.
+- Never answer from a guess. Validate claims against primary sources; if impossible, say so explicitly.
+- Objective language. No first-person pronouns. No apologies or hedges.
+
+---
+
+## Hard Guardrails (always apply)
+- Plan before any non-trivial change. Write the plan to `.claude/plans/`. Wait for approval.
+- Never commit or merge directly to `main`.
+- Never commit secrets, tokens, keys, or `.env` files.
+- No destructive git (`reset --hard`, force-push, branch delete) without explicit operator approval.
+- **NEVER delete test files or test methods** without explicit human instruction — see `.claude/rules/critical.md`.
+- **NEVER edit `backlog/tasks/*.md` files directly** — use `backlog task edit` CLI only.
+- All commits require DCO sign-off: `git commit -s -m "..."`.
+- Run formatter + linter + tests after every change set before declaring done.
+
+---
+
+## Stack
+| Layer | Detail |
+|-------|--------|
+| Language | Python 3.11+ (`requires-python = ">=3.11"` in `pyproject.toml`) |
+| Package manager | `uv` — `uv sync` to install, `uv tool install . --force` to install CLI |
+| Formatter | `ruff format` |
+| Linter | `ruff check` |
+| Test framework | `pytest` — run with `uv run pytest tests/ -x -q` |
+| CLI framework | Typer + Rich (`src/flowspec_cli/__init__.py` — 10K-line monolith, decompose carefully) |
+| HTTP client | `httpx` with `truststore` for SSL |
+| Config | `pyproject.toml`, `flowspec_workflow.yml` |
+
+## Key Commands
+```bash
+uv sync                            # install deps
+uv tool install . --force          # install CLI locally
+uv run pytest tests/ -x -q        # run tests
+uv run ruff check . --fix && uv run ruff format .   # lint + format
+backlog task list --plain          # list tasks
+backlog task list -s "In Progress" --plain  # view active tasks
+```
+
+## Project Structure
+```
+src/flowspec_cli/
+├── __init__.py        # main CLI — Typer app, COPILOT_AGENT_TEMPLATES, all top-level commands
+├── doctor/            # health-check module (`flowspec doctor`)
+├── workflow/          # workflow state machine, validator, config
+├── security/          # SAST, MCP security server
+├── memory/            # task memory CLI
+├── hooks/             # Claude Code hook system
+├── telemetry/         # telemetry CLI
+├── deprecated.py      # cleanup logic for upgrade-repo
+└── templates/         # files deployed to user repos
+tests/                 # pytest suite (3473 tests, ~37s)
+backlog/tasks/         # project task files — CLI-only, never edit directly
+.claude/
+├── plans/             # implementation plans (write here before coding)
+├── rules/             # critical, git-workflow, testing, coding-style, security, rigor
+└── workflow.md        # planning/DoD reference
+```
+
+## Existing Utilities to Reuse
+When adding new commands, use these already-present helpers in `__init__.py`:
+- `check_backlog_installed_version()` — runs `backlog --version`
+- `check_beads_installed_version()` — runs `bd --version`
+- `get_github_latest_release(owner, repo)` — GitHub API fetch
+- `get_npm_latest_version(package)` — npm registry fetch
+- `COPILOT_AGENT_TEMPLATES` — embedded agent file content
+- `show_banner()` — standard CLI banner
+- `console` — shared `rich.Console` instance
+
+New modules go in `src/flowspec_cli/<name>/` and register via `@app.command()` or `app.add_typer()` at the bottom of `__init__.py`.
+
+---
+
+## Required Reading
+`.claude/workflow.md` is loaded on every task — planning and DoD apply always.
+
+Before you act:
+- write or edit code → `.claude/rules/coding-style.md`, `.claude/rules/testing.md`
+- architectural decision → `.claude/rules/critical.md`
+- git / branch / PR → `.claude/rules/git-workflow.md`
+- security-touching code → `.claude/rules/security.md`
+
+@.claude/workflow.md

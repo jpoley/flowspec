@@ -10533,6 +10533,16 @@ def uninstall(
         raise typer.Exit(1)
 
 
+@app.command(name="doctor")
+def doctor_cmd(
+    fix: bool = typer.Option(False, "--fix", help="Attempt auto-fix where possible"),
+) -> None:
+    """Check flowspec setup health and diagnose configuration issues."""
+    from flowspec_cli.doctor.cli import run_doctor
+
+    run_doctor(project_path=Path.cwd(), fix=fix)
+
+
 def main():
     app()
 
