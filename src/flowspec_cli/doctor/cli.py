@@ -5,6 +5,7 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
+import httpx
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -53,8 +54,13 @@ def _attempt_fixes(results: list[CheckResult], project_path: Path) -> None:
             _fix_constitution(project_path)
         elif r.name == "Agent naming convention" and r.fix_cmd:
             try:
-                subprocess.run(["flowspec", "upgrade-repo"], check=False)
-                console.print("    [green]✓[/green] upgrade-repo ran")
+                proc = subprocess.run(["flowspec", "upgrade-repo"], check=False)
+                if proc.returncode == 0:
+                    console.print("    [green]✓[/green] upgrade-repo succeeded")
+                else:
+                    console.print(
+                        f"    [red]✗[/red] upgrade-repo exited {proc.returncode}"
+                    )
             except FileNotFoundError:
                 console.print("    [red]✗[/red] flowspec not found in PATH")
         else:
@@ -83,14 +89,18 @@ def _fix_constitution(project_path: Path) -> None:
 
 def run_doctor(project_path: Path, fix: bool = False) -> None:
     """Run all health checks and print results."""
-    from flowspec_cli import __version__
+    from flowspec_cli import (
+        REPO_NAME,
+        REPO_OWNER,
+        __version__,
+        get_github_latest_release,
+    )
 
+    latest: str | None = None
     try:
-        from flowspec_cli import REPO_NAME, REPO_OWNER, get_github_latest_release
-
         latest = get_github_latest_release(REPO_OWNER, REPO_NAME)
-    except Exception:
-        latest = None
+    except (httpx.HTTPError, httpx.TimeoutException, OSError):
+        pass
 
     results = run_all_checks(
         project_path, current_version=__version__, latest_version=latest

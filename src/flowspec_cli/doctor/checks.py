@@ -11,6 +11,13 @@ from typing import Optional
 
 import yaml
 
+from flowspec_cli.workflow.config import WorkflowConfig
+from flowspec_cli.workflow.exceptions import (
+    WorkflowConfigError,
+    WorkflowConfigValidationError,
+)
+from flowspec_cli.workflow.validator import WorkflowValidator
+
 
 class CheckStatus(Enum):
     PASS = "pass"
@@ -24,6 +31,15 @@ class CheckResult:
     status: CheckStatus
     message: str
     fix_cmd: Optional[str] = field(default=None)
+
+
+def _parse_version(v: str) -> tuple[int, ...]:
+    """Normalize a version string to a comparable tuple, stripping leading v and zero-padding."""
+    v = v.lstrip("v").strip()
+    try:
+        return tuple(int(part) for part in v.split("."))
+    except ValueError:
+        return (0,)
 
 
 def check_python_version() -> CheckResult:
@@ -52,7 +68,9 @@ def check_flowspec_version(current: str, latest: Optional[str]) -> CheckResult:
             status=CheckStatus.WARN,
             message=f"flowspec v{current} (could not check latest)",
         )
-    if current == latest:
+    current_tuple = _parse_version(current)
+    latest_tuple = _parse_version(latest)
+    if current_tuple >= latest_tuple:
         return CheckResult(
             name="flowspec version",
             status=CheckStatus.PASS,
@@ -66,6 +84,11 @@ def check_flowspec_version(current: str, latest: Optional[str]) -> CheckResult:
     )
 
 
+def _is_version_string(s: str) -> bool:
+    """Return True if s looks like a dotted-integer version string."""
+    return bool(s) and all(c.isdigit() or c == "." for c in s)
+
+
 def check_backlog_installed() -> CheckResult:
     """Check that the backlog CLI is installed."""
     try:
@@ -74,11 +97,12 @@ def check_backlog_installed() -> CheckResult:
         )
         if result.returncode == 0:
             version = result.stdout.strip()
-            return CheckResult(
-                name="backlog.md",
-                status=CheckStatus.PASS,
-                message=f"backlog.md v{version}",
-            )
+            if _is_version_string(version):
+                return CheckResult(
+                    name="backlog.md",
+                    status=CheckStatus.PASS,
+                    message=f"backlog.md v{version}",
+                )
     except FileNotFoundError:
         pass
     return CheckResult(
@@ -97,16 +121,18 @@ def check_beads_installed() -> CheckResult:
         )
         if result.returncode == 0:
             output = result.stdout.strip()
-            version = output
+            # Expected: "bd version X.Y.Z (hash)"
+            version = None
             if output.startswith("bd version "):
                 parts = output.split()
-                if len(parts) >= 3:
+                if len(parts) >= 3 and _is_version_string(parts[2]):
                     version = parts[2]
-            return CheckResult(
-                name="beads",
-                status=CheckStatus.PASS,
-                message=f"beads v{version}",
-            )
+            if version:
+                return CheckResult(
+                    name="beads",
+                    status=CheckStatus.PASS,
+                    message=f"beads v{version}",
+                )
     except FileNotFoundError:
         pass
     return CheckResult(
@@ -118,7 +144,7 @@ def check_beads_installed() -> CheckResult:
 
 
 def check_workflow_config(project_path: Path) -> CheckResult:
-    """Check that flowspec_workflow.yml exists and is valid YAML."""
+    """Check that flowspec_workflow.yml exists, is valid YAML, and passes schema+semantic validation."""
     config_path = project_path / "flowspec_workflow.yml"
     if not config_path.exists():
         return CheckResult(
@@ -127,14 +153,11 @@ def check_workflow_config(project_path: Path) -> CheckResult:
             message="flowspec_workflow.yml not found",
             fix_cmd="flowspec init --here",
         )
+
+    # Basic YAML parse
     try:
         content = config_path.read_text(encoding="utf-8")
-        yaml.safe_load(content)
-        return CheckResult(
-            name="flowspec_workflow.yml",
-            status=CheckStatus.PASS,
-            message="flowspec_workflow.yml present and valid",
-        )
+        config_data = yaml.safe_load(content)
     except yaml.YAMLError as exc:
         return CheckResult(
             name="flowspec_workflow.yml",
@@ -142,6 +165,41 @@ def check_workflow_config(project_path: Path) -> CheckResult:
             message=f"flowspec_workflow.yml parse error: {exc}",
             fix_cmd="flowspec init --here",
         )
+
+    # Schema + semantic validation via existing WorkflowValidator
+    try:
+        WorkflowConfig.load(path=config_path, validate=True, cache=False)
+    except WorkflowConfigValidationError as exc:
+        return CheckResult(
+            name="flowspec_workflow.yml",
+            status=CheckStatus.FAIL,
+            message=f"flowspec_workflow.yml schema error: {exc}",
+            fix_cmd="flowspec init --here",
+        )
+    except WorkflowConfigError as exc:
+        return CheckResult(
+            name="flowspec_workflow.yml",
+            status=CheckStatus.FAIL,
+            message=f"flowspec_workflow.yml config error: {exc}",
+            fix_cmd="flowspec init --here",
+        )
+
+    validator = WorkflowValidator(config_data)
+    validation_result = validator.validate()
+    if not validation_result.is_valid:
+        error_count = len(validation_result.errors)
+        return CheckResult(
+            name="flowspec_workflow.yml",
+            status=CheckStatus.WARN,
+            message=f"flowspec_workflow.yml has {error_count} semantic issue(s)",
+            fix_cmd="flowspec workflow validate --verbose",
+        )
+
+    return CheckResult(
+        name="flowspec_workflow.yml",
+        status=CheckStatus.PASS,
+        message="flowspec_workflow.yml present and valid",
+    )
 
 
 def check_agent_naming(project_path: Path) -> CheckResult:

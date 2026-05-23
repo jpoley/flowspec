@@ -15,7 +15,7 @@ flowspec-cli: CLI toolkit for Spec-Driven Development (`flowspec init`, `upgrade
 - Ruff: formatter + linter, line length 88.
 - Type hints required on public API functions.
 - `pathlib.Path` for all file paths, never `os.path`.
-- All imports at module level — no inline imports.
+- Prefer module-level imports; inline imports inside functions are acceptable to avoid circular imports or defer heavy loads in Typer command handlers.
 - `encoding="utf-8"` on all file reads/writes.
 - No Python builtin shadowing (`type`, `list`, `dict`, `input`, `filter`, `map`, `hash`).
 
@@ -31,5 +31,5 @@ Register with `@app.command("name")` wrapper at the bottom of `__init__.py`.
 Reuse: `check_backlog_installed_version()`, `check_beads_installed_version()`, `get_github_latest_release()`, `console`, `show_banner()`.
 
 ## Current Focus
-TASK-606 — `flowspec doctor` health-check command. Branch: `galway/task-606/flowspec-doctor`.
-Plan: `.claude/plans/task-606-flowspec-doctor.md`.
+Check the active backlog task: `backlog task list -s "In Progress" --plain`
+Plans live in `.claude/plans/`. Follow the DoD in `.claude/workflow.md`.

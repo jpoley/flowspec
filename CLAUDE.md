@@ -6,7 +6,7 @@
 **Name:** flowspec-cli  
 **Repo:** github.com/jpoley/flowspec  
 **Purpose:** CLI toolkit that initialises, upgrades, and orchestrates AI agent workflows using Spec-Driven Development (SDD). Ships as `flowspec` (and legacy alias `specify`).  
-**Current focus:** TASK-606 — `flowspec doctor` health-check command, branch `galway/task-606/flowspec-doctor`
+**Current focus:** Run `backlog task list -s "In Progress" --plain` to see the active task
 
 ---
 
@@ -50,15 +50,14 @@ uv tool install . --force          # install CLI locally
 uv run pytest tests/ -x -q        # run tests
 uv run ruff check . --fix && uv run ruff format .   # lint + format
 backlog task list --plain          # list tasks
-backlog task 606 --plain           # view current task
-backlog task edit 606 --check-ac 1 # mark AC done
+backlog task list -s "In Progress" --plain  # view active tasks
 ```
 
 ## Project Structure
 ```
 src/flowspec_cli/
 ├── __init__.py        # main CLI — Typer app, COPILOT_AGENT_TEMPLATES, all top-level commands
-├── doctor/            # NEW — health-check module (TASK-606)
+├── doctor/            # health-check module (`flowspec doctor`)
 ├── workflow/          # workflow state machine, validator, config
 ├── security/          # SAST, MCP security server
 ├── memory/            # task memory CLI
