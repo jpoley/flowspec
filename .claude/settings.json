@@ -15,9 +15,7 @@
       "Delete(./.env)",
       "Delete(./.env.*)",
       "Delete(./secrets/**)",
-      "Write(./CLAUDE.md)",
-      "Edit(./CLAUDE.md)",
-      "Delete(./CLAUDE.md)",
+
       "Write(./memory/constitution.md)",
       "Edit(./memory/constitution.md)",
       "Delete(./memory/constitution.md)",
