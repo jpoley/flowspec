@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import subprocess
 import sys
 from dataclasses import dataclass, field
@@ -17,6 +18,8 @@ from flowspec_cli.workflow.exceptions import (
     WorkflowConfigValidationError,
 )
 from flowspec_cli.workflow.validator import WorkflowValidator
+
+_VERSION_RE = re.compile(r"^\d+(\.\d+)*$")
 
 
 class CheckStatus(Enum):
@@ -55,7 +58,7 @@ def check_python_version() -> CheckResult:
     return CheckResult(
         name="Python version",
         status=CheckStatus.FAIL,
-        message=f"Python {version_str} — requires ≥ 3.11",
+        message=f"Python {version_str} -- requires >= 3.11",
         fix_cmd="Install Python 3.11+ from https://python.org",
     )
 
@@ -79,21 +82,25 @@ def check_flowspec_version(current: str, latest: Optional[str]) -> CheckResult:
     return CheckResult(
         name="flowspec version",
         status=CheckStatus.WARN,
-        message=f"flowspec v{current} — v{latest} available",
+        message=f"flowspec v{current} -- v{latest} available",
         fix_cmd="flowspec upgrade",
     )
 
 
 def _is_version_string(s: str) -> bool:
-    """Return True if s looks like a dotted-integer version string."""
-    return bool(s) and all(c.isdigit() or c == "." for c in s)
+    """Return True if s looks like a dotted-integer version string (e.g. '1.2.3')."""
+    return bool(_VERSION_RE.match(s)) if s else False
 
 
 def check_backlog_installed() -> CheckResult:
     """Check that the backlog CLI is installed."""
     try:
         result = subprocess.run(
-            ["backlog", "--version"], capture_output=True, text=True, check=False
+            ["backlog", "--version"],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=5,
         )
         if result.returncode == 0:
             version = result.stdout.strip()
@@ -104,6 +111,8 @@ def check_backlog_installed() -> CheckResult:
                     message=f"backlog.md v{version}",
                 )
     except FileNotFoundError:
+        pass
+    except subprocess.TimeoutExpired:
         pass
     return CheckResult(
         name="backlog.md",
@@ -117,7 +126,11 @@ def check_beads_installed() -> CheckResult:
     """Check that the beads CLI is installed."""
     try:
         result = subprocess.run(
-            ["bd", "--version"], capture_output=True, text=True, check=False
+            ["bd", "--version"],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=5,
         )
         if result.returncode == 0:
             output = result.stdout.strip()
@@ -134,6 +147,8 @@ def check_beads_installed() -> CheckResult:
                     message=f"beads v{version}",
                 )
     except FileNotFoundError:
+        pass
+    except subprocess.TimeoutExpired:
         pass
     return CheckResult(
         name="beads",
@@ -163,6 +178,21 @@ def check_workflow_config(project_path: Path) -> CheckResult:
             name="flowspec_workflow.yml",
             status=CheckStatus.FAIL,
             message=f"flowspec_workflow.yml parse error: {exc}",
+            fix_cmd="flowspec init --here",
+        )
+    except (OSError, UnicodeDecodeError) as exc:
+        return CheckResult(
+            name="flowspec_workflow.yml",
+            status=CheckStatus.FAIL,
+            message=f"flowspec_workflow.yml read error: {exc}",
+            fix_cmd="flowspec init --here",
+        )
+
+    if not isinstance(config_data, dict):
+        return CheckResult(
+            name="flowspec_workflow.yml",
+            status=CheckStatus.FAIL,
+            message="flowspec_workflow.yml is empty or not a YAML mapping",
             fix_cmd="flowspec init --here",
         )
 
@@ -205,7 +235,7 @@ def check_workflow_config(project_path: Path) -> CheckResult:
 def check_agent_naming(project_path: Path) -> CheckResult:
     """Warn if old hyphen-naming agent files exist in .github/agents/."""
     agents_dir = project_path / ".github" / "agents"
-    if not agents_dir.exists():
+    if not agents_dir.is_dir():
         return CheckResult(
             name="Agent naming convention",
             status=CheckStatus.PASS,
@@ -233,7 +263,7 @@ def check_agent_naming(project_path: Path) -> CheckResult:
 def check_constitution(project_path: Path) -> CheckResult:
     """Warn if memory/constitution.md is missing."""
     constitution_path = project_path / "memory" / "constitution.md"
-    if constitution_path.exists():
+    if constitution_path.is_file():
         return CheckResult(
             name="constitution.md",
             status=CheckStatus.PASS,
@@ -250,7 +280,7 @@ def check_constitution(project_path: Path) -> CheckResult:
 def check_flowspec_dir(project_path: Path) -> CheckResult:
     """Warn if .flowspec/ directory is missing."""
     flowspec_dir = project_path / ".flowspec"
-    if flowspec_dir.exists():
+    if flowspec_dir.is_dir():
         return CheckResult(
             name=".flowspec/ directory",
             status=CheckStatus.PASS,

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import subprocess
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -99,6 +100,14 @@ class TestCheckBacklogInstalled:
         assert result.status == CheckStatus.FAIL
         assert result.fix_cmd is not None
 
+    def test_fail_when_timeout(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        def raise_timeout(*args, **kwargs):
+            raise subprocess.TimeoutExpired(cmd=["backlog"], timeout=5)
+
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", raise_timeout)
+        result = check_backlog_installed()
+        assert result.status == CheckStatus.FAIL, "Timeout should report as FAIL"
+
     def test_fail_when_nonzero_exit(self, monkeypatch: pytest.MonkeyPatch) -> None:
         mock_run = MagicMock()
         mock_run.return_value = MagicMock(returncode=1, stdout="")
@@ -116,6 +125,15 @@ class TestCheckBacklogInstalled:
         monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
         result = check_backlog_installed()
         assert result.status == CheckStatus.FAIL
+
+    def test_fail_when_version_string_has_trailing_dot(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        mock_run = MagicMock()
+        mock_run.return_value = MagicMock(returncode=0, stdout="1.2.\n")
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
+        result = check_backlog_installed()
+        assert result.status == CheckStatus.FAIL, "'1.2.' is not a valid version string"
 
 
 class TestCheckBeadsInstalled:
@@ -137,6 +155,14 @@ class TestCheckBeadsInstalled:
         result = check_beads_installed()
         assert result.status == CheckStatus.FAIL
         assert result.fix_cmd is not None
+
+    def test_fail_when_timeout(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        def raise_timeout(*args, **kwargs):
+            raise subprocess.TimeoutExpired(cmd=["bd"], timeout=5)
+
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", raise_timeout)
+        result = check_beads_installed()
+        assert result.status == CheckStatus.FAIL, "Timeout should report as FAIL"
 
     def test_fail_when_nonzero_exit(self, monkeypatch: pytest.MonkeyPatch) -> None:
         mock_run = MagicMock()
@@ -179,6 +205,20 @@ class TestCheckWorkflowConfig:
         assert result.status == CheckStatus.FAIL
         assert "parse error" in result.message
 
+    def test_fail_empty_yaml(self, tmp_path: Path) -> None:
+        (tmp_path / "flowspec_workflow.yml").write_text("", encoding="utf-8")
+        result = check_workflow_config(tmp_path)
+        assert result.status == CheckStatus.FAIL, "Empty YAML should fail"
+        assert "empty or not a YAML mapping" in result.message
+
+    def test_fail_yaml_not_mapping(self, tmp_path: Path) -> None:
+        (tmp_path / "flowspec_workflow.yml").write_text(
+            "- item1\n- item2\n", encoding="utf-8"
+        )
+        result = check_workflow_config(tmp_path)
+        assert result.status == CheckStatus.FAIL, "YAML list (not mapping) should fail"
+        assert "empty or not a YAML mapping" in result.message
+
 
 class TestCheckAgentNaming:
     def test_pass_no_agents_dir(self, tmp_path: Path) -> None:
@@ -202,6 +242,15 @@ class TestCheckAgentNaming:
         assert "2" in result.message
         assert result.fix_cmd == "flowspec upgrade-repo"
 
+    def test_pass_when_agents_path_is_file(self, tmp_path: Path) -> None:
+        github_dir = tmp_path / ".github"
+        github_dir.mkdir()
+        (github_dir / "agents").write_text("", encoding="utf-8")
+        result = check_agent_naming(tmp_path)
+        assert result.status == CheckStatus.PASS, (
+            "A file named 'agents' should not crash or warn"
+        )
+
 
 class TestCheckConstitution:
     def test_pass_constitution_exists(self, tmp_path: Path) -> None:
@@ -216,6 +265,15 @@ class TestCheckConstitution:
         assert result.status == CheckStatus.WARN
         assert result.fix_cmd is not None
 
+    def test_warn_when_constitution_is_directory(self, tmp_path: Path) -> None:
+        memory_dir = tmp_path / "memory"
+        memory_dir.mkdir()
+        (memory_dir / "constitution.md").mkdir()
+        result = check_constitution(tmp_path)
+        assert result.status == CheckStatus.WARN, (
+            "A directory named constitution.md should not count"
+        )
+
 
 class TestCheckFlowspecDir:
     def test_pass_dir_exists(self, tmp_path: Path) -> None:
@@ -228,29 +286,40 @@ class TestCheckFlowspecDir:
         assert result.status == CheckStatus.WARN
         assert result.fix_cmd is not None
 
+    def test_warn_when_flowspec_is_file(self, tmp_path: Path) -> None:
+        (tmp_path / ".flowspec").write_text("", encoding="utf-8")
+        result = check_flowspec_dir(tmp_path)
+        assert result.status == CheckStatus.WARN, (
+            "A file named .flowspec should not count as directory"
+        )
+
 
 class TestRunAllChecks:
     def test_returns_eight_checks(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        mock_run = MagicMock()
-        mock_run.return_value = MagicMock(returncode=0, stdout="1.0.0\n")
+        backlog_result = MagicMock(returncode=0, stdout="1.21.0\n")
+        beads_result = MagicMock(returncode=0, stdout="bd version 0.29.0 (abc123)\n")
+        mock_run = MagicMock(side_effect=[backlog_result, beads_result])
         monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
         results = run_all_checks(
             tmp_path, current_version="0.1.0", latest_version="0.1.0"
         )
-        assert len(results) == 8
+        assert len(results) == 8, f"Expected 8 checks, got {len(results)}"
 
     def test_all_results_are_check_result(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        mock_run = MagicMock()
-        mock_run.return_value = MagicMock(returncode=0, stdout="1.0.0\n")
+        backlog_result = MagicMock(returncode=0, stdout="1.21.0\n")
+        beads_result = MagicMock(returncode=0, stdout="bd version 0.29.0 (abc123)\n")
+        mock_run = MagicMock(side_effect=[backlog_result, beads_result])
         monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
         results = run_all_checks(tmp_path, current_version="0.1.0")
         for r in results:
-            assert isinstance(r, CheckResult)
-            assert isinstance(r.status, CheckStatus)
+            assert isinstance(r, CheckResult), f"Expected CheckResult, got {type(r)}"
+            assert isinstance(r.status, CheckStatus), (
+                f"Expected CheckStatus, got {type(r.status)}"
+            )
 
 
 class TestDoctorCli:
@@ -270,6 +339,7 @@ class TestDoctorCli:
         monkeypatch.setattr(
             "flowspec_cli.get_github_latest_release", lambda *a, **k: None
         )
+        monkeypatch.chdir(tmp_path)
 
         from flowspec_cli import app
 
@@ -308,11 +378,35 @@ class TestDoctorCli:
             "flowspec_cli.get_github_latest_release", lambda *a, **k: None
         )
         monkeypatch.chdir(tmp_path)
+        (tmp_path / ".flowspec").mkdir()  # mark as flowspec project
+
+        from flowspec_cli import app
+
+        runner = self._make_runner()
+        result = runner.invoke(app, ["doctor", "--fix"], catch_exceptions=False)
+        assert (tmp_path / "memory" / "constitution.md").exists(), (
+            "--fix should create memory/constitution.md"
+        )
+        assert result.exit_code != 0, (
+            "--fix should exit non-zero when other checks still fail"
+        )
+
+    def test_fix_skips_constitution_in_non_project_dir(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        mock_run = MagicMock()
+        mock_run.return_value = MagicMock(returncode=0, stdout="1.21.0\n")
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
+        monkeypatch.setattr(
+            "flowspec_cli.get_github_latest_release", lambda *a, **k: None
+        )
+        monkeypatch.chdir(tmp_path)
+        # No .flowspec or flowspec_workflow.yml — not a project directory
 
         from flowspec_cli import app
 
         runner = self._make_runner()
         runner.invoke(app, ["doctor", "--fix"], catch_exceptions=False)
-        assert (tmp_path / "memory" / "constitution.md").exists(), (
-            "--fix should create memory/constitution.md"
+        assert not (tmp_path / "memory" / "constitution.md").exists(), (
+            "--fix must not create constitution.md outside a flowspec project"
         )
