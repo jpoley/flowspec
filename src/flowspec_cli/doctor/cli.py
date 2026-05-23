@@ -56,7 +56,20 @@ def _print_summary(fails: int, warns: int) -> None:
 def _attempt_fixes(results: list[CheckResult], project_path: Path) -> None:
     fixable = [r for r in results if r.status != CheckStatus.PASS and r.fix_cmd]
     if not fixable:
-        console.print("\n[green]Nothing to fix -- all checks passed.[/green]")
+        fails = sum(1 for r in results if r.status == CheckStatus.FAIL)
+        warns = sum(1 for r in results if r.status == CheckStatus.WARN)
+        if fails == 0 and warns == 0:
+            console.print("\n[green]Nothing to auto-fix -- all checks passed.[/green]")
+        else:
+            parts = []
+            if fails:
+                parts.append(f"[red]{fails} failure(s)[/red]")
+            if warns:
+                parts.append(f"[yellow]{warns} warning(s)[/yellow]")
+            console.print(
+                "\n[yellow]Nothing to auto-fix.[/yellow] "
+                f"Remaining issues require manual action: {', '.join(parts)}"
+            )
         return
 
     console.print("\n[bold cyan]Attempting fixes...[/bold cyan]\n")
@@ -93,9 +106,16 @@ def _fix_constitution(project_path: Path) -> None:
     memory_dir = project_path / "memory"
     memory_dir.mkdir(parents=True, exist_ok=True)
     constitution_path = memory_dir / "constitution.md"
-    if constitution_path.exists():
+    if constitution_path.is_file():
         console.print(
             "    [yellow]->[/yellow] constitution.md already exists, skipping"
+        )
+        return
+    if constitution_path.is_dir():
+        console.print(
+            "    [red]✗[/red] Cannot create constitution.md because that path is a "
+            "directory. Remove or rename "
+            f"{constitution_path} and run the fix again."
         )
         return
     minimal = (

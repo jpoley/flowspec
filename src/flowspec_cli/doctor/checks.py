@@ -102,23 +102,39 @@ def check_backlog_installed() -> CheckResult:
             check=False,
             timeout=5,
         )
-        if result.returncode == 0:
-            version = result.stdout.strip()
-            if _is_version_string(version):
-                return CheckResult(
-                    name="backlog.md",
-                    status=CheckStatus.PASS,
-                    message=f"backlog.md v{version}",
-                )
     except FileNotFoundError:
-        pass
+        return CheckResult(
+            name="backlog.md",
+            status=CheckStatus.FAIL,
+            message="backlog not found",
+            fix_cmd="npm install -g backlog.md",
+        )
     except subprocess.TimeoutExpired:
-        pass
+        return CheckResult(
+            name="backlog.md",
+            status=CheckStatus.FAIL,
+            message="backlog --version timed out",
+        )
+
+    if result.returncode != 0:
+        return CheckResult(
+            name="backlog.md",
+            status=CheckStatus.FAIL,
+            message=f"backlog --version exited with code {result.returncode}",
+        )
+
+    version = result.stdout.strip()
+    if _is_version_string(version):
+        return CheckResult(
+            name="backlog.md",
+            status=CheckStatus.PASS,
+            message=f"backlog.md v{version}",
+        )
+
     return CheckResult(
         name="backlog.md",
         status=CheckStatus.FAIL,
-        message="backlog not found",
-        fix_cmd="npm install -g backlog.md",
+        message=f"backlog --version returned unrecognized output: {version!r}",
     )
 
 
@@ -132,29 +148,53 @@ def check_beads_installed() -> CheckResult:
             check=False,
             timeout=5,
         )
-        if result.returncode == 0:
-            output = result.stdout.strip()
-            # Expected: "bd version X.Y.Z (hash)"
-            version = None
-            if output.startswith("bd version "):
-                parts = output.split()
-                if len(parts) >= 3 and _is_version_string(parts[2]):
-                    version = parts[2]
-            if version:
-                return CheckResult(
-                    name="beads",
-                    status=CheckStatus.PASS,
-                    message=f"beads v{version}",
-                )
     except FileNotFoundError:
-        pass
+        return CheckResult(
+            name="beads",
+            status=CheckStatus.FAIL,
+            message="beads (bd) not found",
+            fix_cmd="npm install -g @jpoley/beads",
+        )
     except subprocess.TimeoutExpired:
-        pass
+        return CheckResult(
+            name="beads",
+            status=CheckStatus.FAIL,
+            message="beads (bd) command timed out while checking version",
+            fix_cmd="Run `bd --version` manually to diagnose hangs or reinstall @jpoley/beads",
+        )
+
+    if result.returncode != 0:
+        error_output = (result.stderr or result.stdout or "").strip()
+        message = f"beads (bd) failed with exit code {result.returncode}"
+        if error_output:
+            message = f"{message}: {error_output}"
+        return CheckResult(
+            name="beads",
+            status=CheckStatus.FAIL,
+            message=message,
+            fix_cmd="Run `bd --version` manually to diagnose the failure or reinstall @jpoley/beads",
+        )
+
+    output = result.stdout.strip()
+    # Expected: "bd version X.Y.Z (hash)"
+    version = None
+    if output.startswith("bd version "):
+        parts = output.split()
+        if len(parts) >= 3 and _is_version_string(parts[2]):
+            version = parts[2]
+    if version:
+        return CheckResult(
+            name="beads",
+            status=CheckStatus.PASS,
+            message=f"beads v{version}",
+        )
+
+    unexpected_output = output or "<empty output>"
     return CheckResult(
         name="beads",
         status=CheckStatus.FAIL,
-        message="beads (bd) not found",
-        fix_cmd="npm install -g @jpoley/beads",
+        message=f"beads (bd) returned unexpected version output: {unexpected_output}",
+        fix_cmd="Run `bd --version` manually to inspect the output or reinstall @jpoley/beads",
     )
 
 
@@ -244,7 +284,7 @@ def check_agent_naming(project_path: Path) -> CheckResult:
     old_files = [
         f.name
         for f in agents_dir.iterdir()
-        if f.name.startswith("flow-") and f.suffix == ".md"
+        if f.is_file() and f.name.startswith("flow-") and f.name.endswith(".agent.md")
     ]
     if old_files:
         return CheckResult(
