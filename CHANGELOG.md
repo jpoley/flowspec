@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.4.008] - 2026-07-11
+
 ### Fixed
 
 - **CRITICAL: Multi-agent installation completely broken** (#no-flow-analysis)
@@ -16,6 +18,9 @@
   - Previous backups are preserved instead of being overwritten
   - Example: `.flowspec-backup-20251207-143052/` instead of `.flowspec-backup/`
   - Enables rollback to any previous backup version
+- **Updated recommended dependency versions**:
+  - `backlog.md` recommended version bumped from `1.21.0` → `1.47.1`
+  - `@beads/bd` latest available version is now `1.1.0` (dynamically resolved at runtime)
 
 ## [0.3.012] - 2025-12-27
 

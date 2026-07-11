@@ -1337,10 +1337,10 @@ def get_backlog_validated_version() -> Optional[str]:
     """Get the recommended backlog-md version.
 
     Returns:
-        Recommended version string (e.g., "1.21.0")
+        Recommended version string (e.g., "1.47.1")
     """
     # Hardcoded recommended version - update as needed
-    return "1.21.0"
+    return "1.47.1"
 
 
 def check_backlog_installed_version() -> Optional[str]:
