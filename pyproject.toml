@@ -35,10 +35,6 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/flowspec_cli"]
 
-# Include templates directory in the package
-[tool.hatch.build.targets.wheel.force-include]
-"src/flowspec_cli/templates" = "flowspec_cli/templates"
-
 [project.optional-dependencies]
 dast = [
     "playwright>=1.48.0",
@@ -57,4 +53,3 @@ markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "git_sync: marks tests that require git sync operations (skip in CI with '-m \"not git_sync\"')",
 ]
-

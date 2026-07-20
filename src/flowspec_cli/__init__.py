@@ -44,6 +44,7 @@ import readchar
 import truststore
 import typer
 import yaml
+from click.exceptions import Exit as ClickExit
 from rich.align import Align
 from rich.console import Console
 from rich.live import Live
@@ -3956,7 +3957,7 @@ def download_template_from_github(
                 pass
         console.print("[red]Error fetching release information[/red]")
         console.print(Panel(msg, title="Fetch Error", border_style="red"))
-        raise typer.Exit(1)
+        raise ClickExit(1)
 
     assets = release_data.get("assets", [])
     # Support both new (flowspec-template-*) and legacy (spec-kit-template-*) naming
