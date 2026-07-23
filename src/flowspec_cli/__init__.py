@@ -57,7 +57,6 @@ from flowspec_cli.placeholders import (
     detect_project_metadata,
     replace_placeholders,
 )
-from flowspec_cli.doctor import run_doctor
 from flowspec_cli.gpg_cli import gpg_app
 from flowspec_cli.telemetry.cli import telemetry_app
 
@@ -9184,24 +9183,6 @@ app.add_typer(telemetry_app, name="telemetry")
 app.add_typer(gpg_app, name="gpg")
 
 
-@app.command("doctor")
-def doctor_command(
-    fix: bool = typer.Option(
-        False,
-        "--fix",
-        help="Reserved for future auto-fix support; currently only reports issues",
-    ),
-    verbose: bool = typer.Option(
-        False,
-        "-v",
-        "--verbose",
-        help="Show additional details",
-    ),
-) -> None:
-    """Run health checks to verify flowspec environment setup."""
-    run_doctor(fix=fix, verbose=verbose)
-
-
 @vscode_app.command("generate")
 def vscode_generate(
     role: Optional[str] = typer.Option(
@@ -10554,6 +10535,16 @@ def uninstall(
             f"({removed_count} removed, {error_count} errors)"
         )
         raise typer.Exit(1)
+
+
+@app.command(name="doctor")
+def doctor_cmd(
+    fix: bool = typer.Option(False, "--fix", help="Attempt auto-fix where possible"),
+) -> None:
+    """Check flowspec setup health and diagnose configuration issues."""
+    from flowspec_cli.doctor.cli import run_doctor
+
+    run_doctor(project_path=Path.cwd(), fix=fix)
 
 
 def main():

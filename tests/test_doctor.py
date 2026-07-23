@@ -1,413 +1,412 @@
-"""Tests for flowspec doctor health check command."""
+"""Tests for flowspec doctor health checks."""
+
+from __future__ import annotations
 
 import subprocess
+import sys
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import yaml
+import pytest
+from typer.testing import CliRunner
 
-from flowspec_cli.doctor import (
+from flowspec_cli.doctor.checks import (
     CheckResult,
     CheckStatus,
-    _check_installed_tool_version,
-    check_agent_files,
+    _parse_version,
+    check_agent_naming,
+    check_backlog_installed,
+    check_beads_installed,
     check_constitution,
+    check_flowspec_dir,
     check_flowspec_version,
     check_python_version,
-    check_tool_installed,
     check_workflow_config,
     run_all_checks,
 )
 
 
-class TestCheckFlowspecVersion:
-    """Tests for flowspec version check."""
-
-    @patch("flowspec_cli.doctor.httpx.get", side_effect=Exception("no network"))
-    def test_returns_version(self, _mock_httpx):
-        """Should return current flowspec version."""
-        result = check_flowspec_version()
-        assert result.name == "flowspec CLI"
-        assert result.status in (CheckStatus.PASS, CheckStatus.WARN)
+def get_project_root() -> Path:
+    return Path(__file__).resolve().parent.parent
 
 
 class TestCheckPythonVersion:
-    """Tests for Python version check."""
-
-    def test_compatible_version(self):
-        """Should pass for Python 3.11+."""
-        # Current test is running on 3.11+ since that's a requirement
+    def test_pass_current_version(self) -> None:
         result = check_python_version()
-        assert result.name == "Python version"
+        # This test always runs on >= 3.11 (project requirement)
         assert result.status == CheckStatus.PASS
         assert "Python" in result.message
 
-    @patch("flowspec_cli.doctor.sys.version_info", (3, 10, 0))
-    def test_incompatible_version(self):
-        """Should fail for Python < 3.11."""
+    def test_fail_old_version(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(sys, "version_info", (3, 10, 0, "final", 0))
         result = check_python_version()
         assert result.status == CheckStatus.FAIL
         assert "3.10" in result.message
-        assert "requires 3.11+" in result.message
+        assert result.fix_cmd is not None
 
 
-class TestCheckToolInstalled:
-    """Tests for tool installation checks."""
+class TestParseVersion:
+    def test_plain_version(self) -> None:
+        assert _parse_version("1.2.3") == (1, 2, 3)
 
-    @patch("flowspec_cli.doctor.shutil.which")
-    def test_tool_not_found(self, mock_which):
-        """Should fail when tool not in PATH."""
-        mock_which.return_value = None
-        result = check_tool_installed("nonexistent-tool")
+    def test_strips_v_prefix(self) -> None:
+        assert _parse_version("v1.2.3") == (1, 2, 3)
+
+    def test_zero_padded_equivalent(self) -> None:
+        assert _parse_version("0.4.008") == _parse_version("0.4.8")
+
+
+class TestCheckFlowspecVersion:
+    def test_pass_when_up_to_date(self) -> None:
+        result = check_flowspec_version("1.2.3", "1.2.3")
+        assert result.status == CheckStatus.PASS
+        assert "up to date" in result.message
+
+    def test_pass_when_zero_padded_equivalent(self) -> None:
+        result = check_flowspec_version("0.4.008", "0.4.8")
+        assert result.status == CheckStatus.PASS
+
+    def test_pass_when_current_ahead(self) -> None:
+        result = check_flowspec_version("1.2.4", "1.2.3")
+        assert result.status == CheckStatus.PASS
+
+    def test_warn_when_behind(self) -> None:
+        result = check_flowspec_version("1.2.3", "1.2.4")
+        assert result.status == CheckStatus.WARN
+        assert "1.2.4" in result.message
+        assert result.fix_cmd is not None
+
+    def test_warn_when_latest_unknown(self) -> None:
+        result = check_flowspec_version("1.2.3", None)
+        assert result.status == CheckStatus.WARN
+        assert "could not check" in result.message
+
+
+class TestCheckBacklogInstalled:
+    def test_pass_when_installed(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        mock_run = MagicMock()
+        mock_run.return_value = MagicMock(returncode=0, stdout="1.21.0\n")
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
+        result = check_backlog_installed()
+        assert result.status == CheckStatus.PASS
+        assert "1.21.0" in result.message
+
+    def test_fail_when_not_found(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        def raise_fnf(*args, **kwargs):
+            raise FileNotFoundError
+
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", raise_fnf)
+        result = check_backlog_installed()
         assert result.status == CheckStatus.FAIL
-        assert "not found in PATH" in result.message
-        assert result.fix_command is not None
+        assert result.fix_cmd is not None
 
-    @patch("flowspec_cli.doctor.shutil.which")
-    @patch("flowspec_cli.doctor.subprocess.run")
-    def test_tool_found_with_version(self, mock_run, mock_which):
-        """Should pass when tool is found and can get version."""
-        mock_which.return_value = "/usr/bin/backlog"
-        mock_run.return_value = MagicMock(stdout="backlog 1.28.1\n", stderr="")
-        result = check_tool_installed("backlog")
-        assert result.status == CheckStatus.PASS
-        assert "1.28.1" in result.message
+    def test_fail_when_timeout(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        def raise_timeout(*args, **kwargs):
+            raise subprocess.TimeoutExpired(cmd=["backlog"], timeout=5)
 
-    @patch("flowspec_cli.doctor.shutil.which")
-    @patch("flowspec_cli.doctor.subprocess.run")
-    def test_tool_found_version_fails(self, mock_run, mock_which):
-        """Should still pass if tool found but version check fails."""
-        mock_which.return_value = "/usr/bin/tool"
-        mock_run.side_effect = Exception("Version check failed")
-        result = check_tool_installed("tool")
-        assert result.status == CheckStatus.PASS
-        assert "installed" in result.message
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", raise_timeout)
+        result = check_backlog_installed()
+        assert result.status == CheckStatus.FAIL, "Timeout should report as FAIL"
 
-    @patch("flowspec_cli.doctor.shutil.which")
-    def test_display_name_separate_from_binary(self, mock_which):
-        """Should report display_name in the check label while probing the binary."""
-        mock_which.return_value = None
-        result = check_tool_installed("bd", display_name="beads")
-        assert result.name == "beads CLI"
-        # Failure message references the actual binary that was probed
-        assert "bd not found in PATH" in result.message
-        # Fix hint references the human-friendly display name
-        assert "Install beads" in (result.fix_command or "")
+    def test_fail_when_nonzero_exit(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        mock_run = MagicMock()
+        mock_run.return_value = MagicMock(returncode=1, stdout="")
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
+        result = check_backlog_installed()
+        assert result.status == CheckStatus.FAIL
 
-    @patch("flowspec_cli.doctor.shutil.which")
-    def test_version_getter_preferred_over_subprocess(self, mock_which):
-        """Should use version_getter result instead of subprocess probe."""
-        mock_which.return_value = "/usr/local/bin/bd"
-        result = check_tool_installed(
-            "bd",
-            display_name="beads",
-            version_getter=lambda: "0.29.0",
+    def test_fail_when_output_not_version_string(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        mock_run = MagicMock()
+        mock_run.return_value = MagicMock(
+            returncode=0, stdout="some unexpected output\n"
         )
-        assert result.status == CheckStatus.PASS
-        assert result.message == "0.29.0"
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
+        result = check_backlog_installed()
+        assert result.status == CheckStatus.FAIL
 
-    @patch("flowspec_cli.doctor.shutil.which")
-    @patch("flowspec_cli.doctor.subprocess.run")
-    def test_version_getter_none_falls_back_to_subprocess(self, mock_run, mock_which):
-        """Should fall back to subprocess probe if version_getter returns None."""
-        mock_which.return_value = "/usr/local/bin/bd"
-        mock_run.return_value = MagicMock(stdout="bd version 0.29.0 (abc)\n", stderr="")
-        result = check_tool_installed(
-            "bd",
-            display_name="beads",
-            version_getter=lambda: None,
+    def test_fail_when_version_string_has_trailing_dot(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        mock_run = MagicMock()
+        mock_run.return_value = MagicMock(returncode=0, stdout="1.2.\n")
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
+        result = check_backlog_installed()
+        assert result.status == CheckStatus.FAIL, "'1.2.' is not a valid version string"
+
+
+class TestCheckBeadsInstalled:
+    def test_pass_when_installed(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        mock_run = MagicMock()
+        mock_run.return_value = MagicMock(
+            returncode=0, stdout="bd version 0.29.0 (abc123)\n"
         )
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
+        result = check_beads_installed()
         assert result.status == CheckStatus.PASS
-        # split()[-1] on "bd version 0.29.0 (abc)" is "(abc)" — falling back is
-        # intentionally lossy; the assertion just proves we didn't crash and
-        # returned *something* non-empty.
-        assert result.message and result.message != "installed"
+        assert "0.29.0" in result.message
+
+    def test_fail_when_not_found(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        def raise_fnf(*args, **kwargs):
+            raise FileNotFoundError
+
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", raise_fnf)
+        result = check_beads_installed()
+        assert result.status == CheckStatus.FAIL
+        assert result.fix_cmd is not None
+
+    def test_fail_when_timeout(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        def raise_timeout(*args, **kwargs):
+            raise subprocess.TimeoutExpired(cmd=["bd"], timeout=5)
+
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", raise_timeout)
+        result = check_beads_installed()
+        assert result.status == CheckStatus.FAIL, "Timeout should report as FAIL"
+
+    def test_fail_when_nonzero_exit(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        mock_run = MagicMock()
+        mock_run.return_value = MagicMock(returncode=1, stdout="")
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
+        result = check_beads_installed()
+        assert result.status == CheckStatus.FAIL
 
 
 class TestCheckWorkflowConfig:
-    """Tests for workflow configuration check."""
-
-    def test_no_config_file(self, tmp_path, monkeypatch):
-        """Should warn when no workflow config exists."""
-        monkeypatch.chdir(tmp_path)
-        result = check_workflow_config()
-        assert result.status == CheckStatus.WARN
-        assert "No workflow configuration found" in result.message
-        assert result.fix_command == "Run: /flow:init"
-
-    def test_valid_config(self, tmp_path, monkeypatch):
-        """Should pass for valid workflow config."""
-        monkeypatch.chdir(tmp_path)
-        config_path = tmp_path / "flowspec_workflow.yml"
-        valid_config = {
-            "states": ["To Do", "Done"],
-            "workflows": {
-                "complete": {
-                    "input_states": ["To Do"],
-                    "output_state": "Done",
-                }
-            },
-            "transitions": [{"from": "To Do", "to": "Done", "via": "complete"}],
-        }
-        config_path.write_text(yaml.dump(valid_config))
-
-        result = check_workflow_config()
+    def test_pass_valid_yml(self, tmp_path: Path) -> None:
+        (tmp_path / "flowspec_workflow.yml").write_text(
+            "version: 2\nname: test\n", encoding="utf-8"
+        )
+        # Mock schema+semantic validation so any valid YAML counts as passing
+        mock_validation = MagicMock()
+        mock_validation.is_valid = True
+        mock_validation.errors = []
+        with (
+            patch("flowspec_cli.doctor.checks.WorkflowConfig") as mock_cfg,
+            patch("flowspec_cli.doctor.checks.WorkflowValidator") as mock_val,
+        ):
+            mock_cfg.load.return_value = MagicMock()
+            mock_val.return_value.validate.return_value = mock_validation
+            result = check_workflow_config(tmp_path)
         assert result.status == CheckStatus.PASS
-        assert "Valid" in result.message
+        assert "valid" in result.message
 
-    def test_invalid_yaml(self, tmp_path, monkeypatch):
-        """Should fail for invalid YAML."""
-        monkeypatch.chdir(tmp_path)
-        config_path = tmp_path / "flowspec_workflow.yml"
-        config_path.write_text("invalid: yaml: content: [")
-
-        result = check_workflow_config()
+    def test_fail_missing(self, tmp_path: Path) -> None:
+        result = check_workflow_config(tmp_path)
         assert result.status == CheckStatus.FAIL
-        assert "Invalid YAML" in result.message
+        assert "not found" in result.message
+        assert result.fix_cmd is not None
 
-    def test_config_with_errors(self, tmp_path, monkeypatch):
-        """Should fail for config with validation errors."""
-        monkeypatch.chdir(tmp_path)
-        config_path = tmp_path / "flowspec_workflow.yml"
-        # Config missing initial state "To Do"
-        invalid_config = {
-            "states": ["In Progress", "Done"],
-            "workflows": {},
-            "transitions": [],
-        }
-        config_path.write_text(yaml.dump(invalid_config))
-
-        result = check_workflow_config()
+    def test_fail_invalid_yaml(self, tmp_path: Path) -> None:
+        (tmp_path / "flowspec_workflow.yml").write_text(
+            "key: [unclosed bracket\n", encoding="utf-8"
+        )
+        result = check_workflow_config(tmp_path)
         assert result.status == CheckStatus.FAIL
-        assert "Invalid" in result.message
-        assert result.details is not None
-        assert "errors" in result.details
+        assert "parse error" in result.message
 
-    def test_config_with_warnings(self, tmp_path, monkeypatch):
-        """Should warn for config with validation warnings only."""
-        monkeypatch.chdir(tmp_path)
-        config_path = tmp_path / "flowspec_workflow.yml"
-        # Config with warnings but no errors
-        config_with_warnings = {
-            "states": ["To Do", "In Progress"],  # No terminal states (warning)
-            "workflows": {
-                "start": {
-                    "input_states": ["To Do"],
-                    "output_state": "In Progress",
-                }
-            },
-            "transitions": [{"from": "To Do", "to": "In Progress", "via": "start"}],
-        }
-        config_path.write_text(yaml.dump(config_with_warnings))
+    def test_fail_empty_yaml(self, tmp_path: Path) -> None:
+        (tmp_path / "flowspec_workflow.yml").write_text("", encoding="utf-8")
+        result = check_workflow_config(tmp_path)
+        assert result.status == CheckStatus.FAIL, "Empty YAML should fail"
+        assert "empty or not a YAML mapping" in result.message
 
-        result = check_workflow_config()
-        # Should pass with warnings (warnings don't make config invalid)
-        assert result.status in (CheckStatus.PASS, CheckStatus.WARN)
+    def test_fail_yaml_not_mapping(self, tmp_path: Path) -> None:
+        (tmp_path / "flowspec_workflow.yml").write_text(
+            "- item1\n- item2\n", encoding="utf-8"
+        )
+        result = check_workflow_config(tmp_path)
+        assert result.status == CheckStatus.FAIL, "YAML list (not mapping) should fail"
+        assert "empty or not a YAML mapping" in result.message
 
 
-class TestCheckAgentFiles:
-    """Tests for agent file naming check."""
-
-    def test_no_agent_files(self, tmp_path, monkeypatch):
-        """Should warn when no agent files found."""
-        monkeypatch.chdir(tmp_path)
-        result = check_agent_files()
-        assert result.status == CheckStatus.WARN
-        assert "No agent files found" in result.message
-
-    def test_old_hyphen_convention(self, tmp_path, monkeypatch):
-        """Should warn for files using old hyphen naming."""
-        monkeypatch.chdir(tmp_path)
-        agents_dir = tmp_path / ".github" / "agents"
-        agents_dir.mkdir(parents=True)
-        (agents_dir / "backend-engineer.md").write_text("# Backend Engineer")
-        (agents_dir / "frontend-engineer.md").write_text("# Frontend Engineer")
-
-        result = check_agent_files()
-        assert result.status == CheckStatus.WARN
-        assert "not matching flow.*.agent.md" in result.message
-        assert result.fix_command == "Run: flowspec upgrade-repo"
-        assert result.details is not None
-        assert len(result.details["files"]) == 2
-
-    def test_correct_flow_agent_convention(self, tmp_path, monkeypatch):
-        """Should pass for files using flow.*.agent.md naming."""
-        monkeypatch.chdir(tmp_path)
-        agents_dir = tmp_path / ".github" / "agents"
-        agents_dir.mkdir(parents=True)
-        (agents_dir / "flow.assess.agent.md").write_text("# Assess")
-        (agents_dir / "flow.specify.agent.md").write_text("# Specify")
-
-        result = check_agent_files()
+class TestCheckAgentNaming:
+    def test_pass_no_agents_dir(self, tmp_path: Path) -> None:
+        result = check_agent_naming(tmp_path)
         assert result.status == CheckStatus.PASS
 
-    def test_mixed_convention(self, tmp_path, monkeypatch):
-        """Should warn when mixing compliant and non-compliant names."""
-        monkeypatch.chdir(tmp_path)
+    def test_pass_no_old_files(self, tmp_path: Path) -> None:
         agents_dir = tmp_path / ".github" / "agents"
         agents_dir.mkdir(parents=True)
-        (agents_dir / "backend-engineer.md").write_text("# Old")
-        (agents_dir / "frontend.engineer.md").write_text("# Wrong pattern")
-        (agents_dir / "flow.assess.agent.md").write_text("# Correct")
-
-        result = check_agent_files()
-        assert result.status == CheckStatus.WARN
-        # Both non-compliant files should be reported
-        assert len(result.details["files"]) == 2
-
-    def test_dot_separated_but_not_flow_pattern(self, tmp_path, monkeypatch):
-        """Should warn for dot-separated names that don't match flow.*.agent.md."""
-        monkeypatch.chdir(tmp_path)
-        agents_dir = tmp_path / ".github" / "agents"
-        agents_dir.mkdir(parents=True)
-        (agents_dir / "backend.engineer.md").write_text("# Backend Engineer")
-
-        result = check_agent_files()
-        assert result.status == CheckStatus.WARN
-        assert len(result.details["files"]) == 1
-
-    def test_rejects_degenerate_flow_names(self, tmp_path, monkeypatch):
-        """Should warn for flow.agent.md and flow..agent.md (missing phase)."""
-        monkeypatch.chdir(tmp_path)
-        agents_dir = tmp_path / ".github" / "agents"
-        agents_dir.mkdir(parents=True)
-        (agents_dir / "flow.agent.md").write_text("# Missing phase")
-        (agents_dir / "flow..agent.md").write_text("# Empty phase")
-
-        result = check_agent_files()
-        assert result.status == CheckStatus.WARN
-        assert len(result.details["files"]) == 2
-
-    def test_skips_special_files(self, tmp_path, monkeypatch):
-        """Should skip README and underscore-prefixed files."""
-        monkeypatch.chdir(tmp_path)
-        agents_dir = tmp_path / ".github" / "agents"
-        agents_dir.mkdir(parents=True)
-        (agents_dir / "README.md").write_text("# README")
-        (agents_dir / "_template.md").write_text("# Template")
-        (agents_dir / "flow.assess.agent.md").write_text("# Assess")
-
-        result = check_agent_files()
+        (agents_dir / "qa.agent.md").write_text("", encoding="utf-8")
+        result = check_agent_naming(tmp_path)
         assert result.status == CheckStatus.PASS
+
+    def test_warn_old_hyphen_files(self, tmp_path: Path) -> None:
+        agents_dir = tmp_path / ".github" / "agents"
+        agents_dir.mkdir(parents=True)
+        (agents_dir / "flow-qa.agent.md").write_text("", encoding="utf-8")
+        (agents_dir / "flow-dev.agent.md").write_text("", encoding="utf-8")
+        result = check_agent_naming(tmp_path)
+        assert result.status == CheckStatus.WARN
+        assert "2" in result.message
+        assert result.fix_cmd == "flowspec upgrade-repo"
+
+    def test_pass_when_agents_path_is_file(self, tmp_path: Path) -> None:
+        github_dir = tmp_path / ".github"
+        github_dir.mkdir()
+        (github_dir / "agents").write_text("", encoding="utf-8")
+        result = check_agent_naming(tmp_path)
+        assert result.status == CheckStatus.PASS, (
+            "A file named 'agents' should not crash or warn"
+        )
 
 
 class TestCheckConstitution:
-    """Tests for constitution file check."""
-
-    def test_no_constitution(self, tmp_path, monkeypatch):
-        """Should warn when constitution not found."""
-        monkeypatch.chdir(tmp_path)
-        result = check_constitution()
-        assert result.status == CheckStatus.WARN
-        assert "Constitution not found" in result.message
-        assert result.fix_command == "Run: /flow:init"
-
-    def test_constitution_with_placeholders(self, tmp_path, monkeypatch):
-        """Should warn for constitution with placeholders."""
-        monkeypatch.chdir(tmp_path)
+    def test_pass_constitution_exists(self, tmp_path: Path) -> None:
         memory_dir = tmp_path / "memory"
         memory_dir.mkdir()
-        constitution = memory_dir / "constitution.md"
-        constitution.write_text("# [PROJECT_NAME]\n\nPrinciple: [PRINCIPLE_1_NAME]")
-
-        result = check_constitution()
-        assert result.status == CheckStatus.WARN
-        assert "placeholders" in result.message
-        assert result.fix_command == "Run: /flow:init"
-
-    def test_valid_constitution(self, tmp_path, monkeypatch):
-        """Should pass for properly configured constitution."""
-        monkeypatch.chdir(tmp_path)
-        memory_dir = tmp_path / "memory"
-        memory_dir.mkdir()
-        constitution = memory_dir / "constitution.md"
-        constitution.write_text("# My Project\n\nPrinciple: Security First")
-
-        result = check_constitution()
+        (memory_dir / "constitution.md").write_text("# Constitution", encoding="utf-8")
+        result = check_constitution(tmp_path)
         assert result.status == CheckStatus.PASS
-        assert "Present" in result.message
+
+    def test_warn_constitution_missing(self, tmp_path: Path) -> None:
+        result = check_constitution(tmp_path)
+        assert result.status == CheckStatus.WARN
+        assert result.fix_cmd is not None
+
+    def test_warn_when_constitution_is_directory(self, tmp_path: Path) -> None:
+        memory_dir = tmp_path / "memory"
+        memory_dir.mkdir()
+        (memory_dir / "constitution.md").mkdir()
+        result = check_constitution(tmp_path)
+        assert result.status == CheckStatus.WARN, (
+            "A directory named constitution.md should not count"
+        )
+
+
+class TestCheckFlowspecDir:
+    def test_pass_dir_exists(self, tmp_path: Path) -> None:
+        (tmp_path / ".flowspec").mkdir()
+        result = check_flowspec_dir(tmp_path)
+        assert result.status == CheckStatus.PASS
+
+    def test_warn_dir_missing(self, tmp_path: Path) -> None:
+        result = check_flowspec_dir(tmp_path)
+        assert result.status == CheckStatus.WARN
+        assert result.fix_cmd is not None
+
+    def test_warn_when_flowspec_is_file(self, tmp_path: Path) -> None:
+        (tmp_path / ".flowspec").write_text("", encoding="utf-8")
+        result = check_flowspec_dir(tmp_path)
+        assert result.status == CheckStatus.WARN, (
+            "A file named .flowspec should not count as directory"
+        )
 
 
 class TestRunAllChecks:
-    """Tests for run_all_checks function."""
-
-    # Update count/names when adding checks to run_all_checks()
-    @patch("flowspec_cli.doctor.httpx.get", side_effect=Exception("no network"))
-    def test_returns_all_check_results(self, _mock_httpx):
-        """Should return results for all checks."""
-        results = run_all_checks()
-        assert len(results) == 7  # 7 checks defined
-        assert all(isinstance(r, CheckResult) for r in results)
-
-    # Update count/names when adding checks to run_all_checks()
-    @patch("flowspec_cli.doctor.httpx.get", side_effect=Exception("no network"))
-    def test_check_names(self, _mock_httpx):
-        """Should include all expected check names."""
-        results = run_all_checks()
-        names = {r.name for r in results}
-        expected = {
-            "flowspec CLI",
-            "Python version",
-            "backlog CLI",
-            "beads CLI",
-            "Workflow config",
-            "Agent file naming",
-            "Constitution",
-        }
-        assert names == expected
-
-    @patch("flowspec_cli.doctor.httpx.get", side_effect=Exception("no network"))
-    @patch("flowspec_cli.doctor.shutil.which")
-    def test_beads_check_probes_bd_binary(self, mock_which, _mock_httpx):
-        """Regression: the 'beads CLI' check must look up the 'bd' binary."""
-        # shutil.which returns None for everything so checks fail fast; we only
-        # care about the binary names that were looked up.
-        mock_which.return_value = None
-        run_all_checks()
-        probed = {call.args[0] for call in mock_which.call_args_list}
-        assert "bd" in probed, f"expected 'bd' in probed binaries, got {probed}"
-        assert "beads" not in probed, (
-            f"'beads' should not be probed directly, got {probed}"
+    def test_returns_eight_checks(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        backlog_result = MagicMock(returncode=0, stdout="1.21.0\n")
+        beads_result = MagicMock(returncode=0, stdout="bd version 0.29.0 (abc123)\n")
+        mock_run = MagicMock(side_effect=[backlog_result, beads_result])
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
+        results = run_all_checks(
+            tmp_path, current_version="0.1.0", latest_version="0.1.0"
         )
+        assert len(results) == 8, f"Expected 8 checks, got {len(results)}"
 
-
-class TestCheckInstalledToolVersionTimeout:
-    """``_check_installed_tool_version`` must not hang on a slow/blocked tool.
-
-    Regression guard for PR #1244 Copilot feedback: the ``subprocess.run``
-    calls in the version-probe cascade previously had no ``timeout`` and
-    would block ``flowspec doctor`` indefinitely if a tool hung.
-    """
-
-    @patch("flowspec_cli.doctor.subprocess.run")
-    @patch("flowspec_cli.doctor.shutil.which")
-    def test_timeout_expired_is_treated_as_unknown_version(self, mock_which, mock_run):
-        """A ``TimeoutExpired`` from any probe must be swallowed, not re-raised."""
-        mock_which.return_value = "/usr/local/bin/stuck-tool"
-        mock_run.side_effect = subprocess.TimeoutExpired(
-            cmd=["stuck-tool", "--version"], timeout=5
-        )
-
-        # Must return None (unknown), not raise.
-        result = _check_installed_tool_version("stuck-tool")
-
-        assert result is None
-        # All three probe variants should have been attempted; none should
-        # have been re-raised.
-        assert mock_run.call_count == 3
-
-    @patch("flowspec_cli.doctor.subprocess.run")
-    @patch("flowspec_cli.doctor.shutil.which")
-    def test_timeout_is_configured_on_each_probe(self, mock_which, mock_run):
-        """Every ``subprocess.run`` call must pass an explicit ``timeout``."""
-        mock_which.return_value = "/usr/local/bin/tool"
-        # Return non-zero so the cascade keeps trying each probe variant.
-        mock_run.return_value = MagicMock(returncode=1, stdout="", stderr="")
-
-        _check_installed_tool_version("tool")
-
-        assert mock_run.call_count == 3
-        for call in mock_run.call_args_list:
-            assert "timeout" in call.kwargs, (
-                f"subprocess.run invoked without timeout: {call}"
+    def test_all_results_are_check_result(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        backlog_result = MagicMock(returncode=0, stdout="1.21.0\n")
+        beads_result = MagicMock(returncode=0, stdout="bd version 0.29.0 (abc123)\n")
+        mock_run = MagicMock(side_effect=[backlog_result, beads_result])
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
+        results = run_all_checks(tmp_path, current_version="0.1.0")
+        for r in results:
+            assert isinstance(r, CheckResult), f"Expected CheckResult, got {type(r)}"
+            assert isinstance(r.status, CheckStatus), (
+                f"Expected CheckStatus, got {type(r.status)}"
             )
-            assert call.kwargs["timeout"] > 0
+
+
+class TestDoctorCli:
+    """Integration tests for the doctor CLI command via CliRunner."""
+
+    def _make_runner(self) -> CliRunner:
+        return CliRunner()
+
+    def test_exits_nonzero_on_fail(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # Force a FAIL: backlog subprocess raises FileNotFoundError, no workflow yml
+        def raise_fnf(*args, **kwargs):
+            raise FileNotFoundError
+
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", raise_fnf)
+        monkeypatch.setattr(
+            "flowspec_cli.get_github_latest_release", lambda *a, **k: None
+        )
+        monkeypatch.chdir(tmp_path)
+
+        from flowspec_cli import app
+
+        runner = self._make_runner()
+        result = runner.invoke(app, ["doctor"], catch_exceptions=False)
+        assert result.exit_code != 0, "Expected non-zero exit when checks fail"
+
+    def test_exits_zero_all_pass(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        all_pass = [
+            CheckResult(name=f"check-{i}", status=CheckStatus.PASS, message="ok")
+            for i in range(8)
+        ]
+        monkeypatch.setattr(
+            "flowspec_cli.doctor.cli.run_all_checks", lambda *a, **k: all_pass
+        )
+        monkeypatch.setattr(
+            "flowspec_cli.get_github_latest_release", lambda *a, **k: "0.4.008"
+        )
+        monkeypatch.chdir(tmp_path)
+
+        from flowspec_cli import app
+
+        runner = self._make_runner()
+        result = runner.invoke(app, ["doctor"], catch_exceptions=False)
+        assert result.exit_code == 0, f"Expected zero exit; got: {result.output}"
+
+    def test_fix_creates_constitution(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        mock_run = MagicMock()
+        mock_run.return_value = MagicMock(returncode=0, stdout="1.0.0\n")
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
+        monkeypatch.setattr(
+            "flowspec_cli.get_github_latest_release", lambda *a, **k: None
+        )
+        monkeypatch.chdir(tmp_path)
+        (tmp_path / ".flowspec").mkdir()  # mark as flowspec project
+
+        from flowspec_cli import app
+
+        runner = self._make_runner()
+        result = runner.invoke(app, ["doctor", "--fix"], catch_exceptions=False)
+        assert (tmp_path / "memory" / "constitution.md").exists(), (
+            "--fix should create memory/constitution.md"
+        )
+        assert result.exit_code != 0, (
+            "--fix should exit non-zero when other checks still fail"
+        )
+
+    def test_fix_skips_constitution_in_non_project_dir(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        mock_run = MagicMock()
+        mock_run.return_value = MagicMock(returncode=0, stdout="1.21.0\n")
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
+        monkeypatch.setattr(
+            "flowspec_cli.get_github_latest_release", lambda *a, **k: None
+        )
+        monkeypatch.chdir(tmp_path)
+        # No .flowspec or flowspec_workflow.yml — not a project directory
+
+        from flowspec_cli import app
+
+        runner = self._make_runner()
+        runner.invoke(app, ["doctor", "--fix"], catch_exceptions=False)
+        assert not (tmp_path / "memory" / "constitution.md").exists(), (
+            "--fix must not create constitution.md outside a flowspec project"
+        )
