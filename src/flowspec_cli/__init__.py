@@ -58,6 +58,10 @@ from flowspec_cli.placeholders import (
     replace_placeholders,
 )
 from flowspec_cli.telemetry.cli import telemetry_app
+from flowspec_cli.versions import (
+    BACKLOG_MIN_VERSION,
+    BACKLOG_RECOMMENDED_VERSION,
+)
 
 # Module-level logger
 logger = logging.getLogger(__name__)
@@ -1331,16 +1335,16 @@ BEADS_REPO_NAME = "beads"
 SOURCE_REPO_MARKER = ".flowspec-source"
 
 # Compatibility configuration (embedded in code, no external file needed)
+# Version constants live in flowspec_cli.versions so `flowspec doctor` can share them.
 
 
 def get_backlog_validated_version() -> Optional[str]:
     """Get the recommended backlog-md version.
 
     Returns:
-        Recommended version string (e.g., "1.21.0")
+        Recommended version string (e.g., "1.50.1"), guaranteed to return a value
     """
-    # Hardcoded recommended version - update as needed
-    return "1.21.0"
+    return BACKLOG_RECOMMENDED_VERSION
 
 
 def check_backlog_installed_version() -> Optional[str]:
@@ -4907,7 +4911,7 @@ def init(
     backlog_version: str = typer.Option(
         None,
         "--backlog-version",
-        help="Specific version of backlog-md to install (default: recommended from compatibility matrix)",
+        help="Specific version of backlog-md to install (default: flowspec's recommended version)",
     ),
     # Per-transition validation mode flags
     validation_assess: str = typer.Option(
@@ -7604,7 +7608,7 @@ def dev_setup(
 # Create backlog subcommand group
 backlog_app = typer.Typer(
     name="backlog",
-    help="Manage Backlog.md format tasks",
+    help="Manage Backlog.md tasks and the backlog-md CLI installation",
     add_completion=False,
 )
 app.add_typer(backlog_app, name="backlog")
@@ -8095,12 +8099,26 @@ def tasks(
         raise typer.Exit(1)
 
 
-# Create backlog subcommand group
-backlog_app = typer.Typer(
-    name="backlog",
-    help="Manage backlog-md installation and upgrades",
-)
-app.add_typer(backlog_app, name="backlog")
+def warn_if_backlog_version_below_minimum(target_version: str) -> None:
+    """Warn when an explicitly requested backlog-md version predates the minimum.
+
+    flowspec's Definition of Done workflow relies on backlog-md's native `--dod`
+    flags, first released in BACKLOG_MIN_VERSION. Older versions still install,
+    but those flags will not exist.
+
+    Args:
+        target_version: The version the user asked for.
+    """
+    if compare_semver(target_version, BACKLOG_MIN_VERSION) >= 0:
+        return
+    console.print(
+        f"[yellow]Warning:[/yellow] backlog-md {target_version} is older than the "
+        f"minimum flowspec supports ({BACKLOG_MIN_VERSION})."
+    )
+    console.print(
+        "[dim]Definition of Done flags (--dod, --check-dod) are unavailable "
+        "before that release.[/dim]\n"
+    )
 
 
 @backlog_app.command("install")
@@ -8108,7 +8126,7 @@ def backlog_install(
     version: Optional[str] = typer.Option(
         None,
         "--version",
-        help="Specific version to install (default: recommended version from compatibility matrix)",
+        help="Specific version to install (default: flowspec's recommended version)",
     ),
     force: bool = typer.Option(
         False,
@@ -8121,7 +8139,7 @@ def backlog_install(
 
     This command will:
     1. Auto-detect pnpm or npm package manager
-    2. Fetch the recommended version from compatibility matrix
+    2. Resolve flowspec's recommended version
     3. Install backlog-md globally with version pinning
     4. Verify installation success
 
@@ -8144,11 +8162,10 @@ def backlog_install(
     # Determine version to install
     target_version = version or get_backlog_validated_version()
     if not target_version:
-        console.print(
-            "[red]Error:[/red] Could not determine version to install. "
-            "Compatibility matrix may be missing or invalid."
-        )
+        console.print("[red]Error:[/red] Could not determine version to install.")
         raise typer.Exit(1)
+
+    warn_if_backlog_version_below_minimum(target_version)
 
     # Detect package manager
     pkg_manager = detect_package_manager()
@@ -8215,7 +8232,7 @@ def backlog_upgrade(
     version: Optional[str] = typer.Option(
         None,
         "--version",
-        help="Specific version to upgrade to (default: recommended version from compatibility matrix)",
+        help="Specific version to upgrade to (default: flowspec's recommended version)",
     ),
     force: bool = typer.Option(
         False,
@@ -8228,7 +8245,7 @@ def backlog_upgrade(
 
     This command will:
     1. Check currently installed version
-    2. Compare to recommended version from compatibility matrix
+    2. Compare to flowspec's recommended version
     3. Upgrade if needed using detected package manager
     4. Verify upgrade success
 
@@ -8249,11 +8266,10 @@ def backlog_upgrade(
     # Determine target version
     target_version = version or get_backlog_validated_version()
     if not target_version:
-        console.print(
-            "[red]Error:[/red] Could not determine version to upgrade to. "
-            "Compatibility matrix may be missing or invalid."
-        )
+        console.print("[red]Error:[/red] Could not determine version to upgrade to.")
         raise typer.Exit(1)
+
+    warn_if_backlog_version_below_minimum(target_version)
 
     console.print(f"[cyan]Current Version:[/cyan] {current_version}")
     console.print(f"[cyan]Target Version:[/cyan] {target_version}\n")
@@ -8264,9 +8280,7 @@ def backlog_upgrade(
         console.print(
             f"[green]backlog-md is already at a newer version ({current_version})[/green]"
         )
-        console.print(
-            "[dim]Use --force to downgrade, or update .spec-kit-compatibility.yml[/dim]"
-        )
+        console.print("[dim]Use --force to downgrade[/dim]")
         # Exit 0: This is a successful outcome (already up-to-date), not an error
         raise typer.Exit(0)
     if version_cmp == 0 and not force:

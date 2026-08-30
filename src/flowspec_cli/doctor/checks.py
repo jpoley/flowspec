@@ -12,6 +12,7 @@ from typing import Optional
 
 import yaml
 
+from flowspec_cli.versions import BACKLOG_MIN_VERSION
 from flowspec_cli.workflow.config import WorkflowConfig
 from flowspec_cli.workflow.exceptions import (
     WorkflowConfigError,
@@ -37,12 +38,22 @@ class CheckResult:
 
 
 def _parse_version(v: str) -> tuple[int, ...]:
-    """Normalize a version string to a comparable tuple, stripping leading v and zero-padding."""
+    """Normalize a version string to a comparable tuple, stripping leading v and zero-padding.
+
+    Short versions are padded to three components so "1.34" compares equal to
+    "1.34.0" rather than sorting below it.
+
+    Returns:
+        Tuple of ints with at least three components, or (0, 0, 0) if unparseable.
+    """
     v = v.lstrip("v").strip()
     try:
-        return tuple(int(part) for part in v.split("."))
+        parts = tuple(int(part) for part in v.split("."))
     except ValueError:
-        return (0,)
+        return (0, 0, 0)
+    if len(parts) < 3:
+        parts += (0,) * (3 - len(parts))
+    return parts
 
 
 def check_python_version() -> CheckResult:
@@ -125,6 +136,17 @@ def check_backlog_installed() -> CheckResult:
 
     version = result.stdout.strip()
     if _is_version_string(version):
+        if _parse_version(version) < _parse_version(BACKLOG_MIN_VERSION):
+            return CheckResult(
+                name="backlog.md",
+                status=CheckStatus.WARN,
+                message=(
+                    f"backlog.md v{version} is older than the minimum "
+                    f"supported version ({BACKLOG_MIN_VERSION}); "
+                    "Definition of Done flags are unavailable"
+                ),
+                fix_cmd="flowspec backlog upgrade",
+            )
         return CheckResult(
             name="backlog.md",
             status=CheckStatus.PASS,
