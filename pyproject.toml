@@ -35,9 +35,10 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/flowspec_cli"]
 
-# Include templates directory in the package
-[tool.hatch.build.targets.wheel.force-include]
-"src/flowspec_cli/templates" = "flowspec_cli/templates"
+# NOTE: Do NOT add a `[tool.hatch.build.targets.wheel.force-include]` entry for
+# `src/flowspec_cli/templates`. That path is already inside the `packages` entry
+# above, so force-including it makes hatchling add every template twice and the
+# wheel build fails with "A second file is being added to the wheel archive".
 
 [project.optional-dependencies]
 dast = [

@@ -2,6 +2,23 @@
 
 ### Fixed
 
+- **CRITICAL: `uv build` produced no wheel** (release blocker)
+  - Root cause: `src/flowspec_cli/templates` was listed in
+    `[tool.hatch.build.targets.wheel.force-include]` while already being inside the
+    `packages = ["src/flowspec_cli"]` entry
+  - Hatchling added every template twice and aborted with
+    `A second file is being added to the wheel archive at the same path: flowspec_cli/templates/.mcp.json`
+  - Fix: removed the redundant `force-include` table; templates (including dotfiles
+    and dot-directories) still ship via the normal package walk - verified 128/128
+    template files present in the built wheel
+  - Added `tests/test_packaging.py` to pin the invariant
+- **`flowspec backlog migrate` was unreachable**
+  - A second `backlog_app = typer.Typer(...)` definition shadowed the first, so only
+    `install` and `upgrade` were registered
+  - Fix: merged both command sets onto a single `backlog` Typer group
+- `_parse_version()` in `flowspec doctor` now zero-pads short versions, so `1.34`
+  compares equal to `1.34.0` instead of sorting below it
+
 - **CRITICAL: Multi-agent installation completely broken** (#no-flow-analysis)
   - Root cause: `download_and_extract_two_stage()` only downloaded first agent's ZIP
   - When running `flowspec init --ai claude,copilot`, only `.claude/commands/` was installed
@@ -10,7 +27,30 @@
   - Now correctly installs all agent-specific directories when multiple agents specified
   - Affects all v0.3.x releases - this is a critical bug fix
 
+### Added
+
+- **Backlog.md Definition of Done integration**
+  - Deployed backlog partials now document `--dod`, `--check-dod`, `--uncheck-dod`,
+    `--no-dod-defaults`, `--final-summary`, `--ref`, `--modified-file`, `--depends-on`
+  - Completing a task now requires checking native DoD items, not just prose review
+  - Seeded `definition_of_done` defaults in this repo's `backlog/config.yml`
+- **`flowspec doctor` warns on a stale backlog-md install**
+  - Warns when the installed version is below `BACKLOG_MIN_VERSION` (1.34.0, the first
+    release with native Definition of Done), with `flowspec backlog upgrade` as the fix
+- **Minimum-version guard on `flowspec backlog install/upgrade --version`**
+- Ported upstream spec-kit 1.0.1 template improvements:
+  - `spec-template.md`: new `## Assumptions` section
+  - `plan-template.md`: concrete `Project Type` options; `Complexity Tracking` callout
+  - `checklist-template.md`: reviewer-ownership and marker semantics (`[x]` means the
+    requirements-quality criterion was reviewed, not that implementation is done)
+
 ### Changed
+
+- Recommended backlog-md version raised from **1.21.0** to **1.50.1**
+  - Version constants moved to `src/flowspec_cli/versions.py` so `flowspec doctor` can
+    share them without a circular import
+  - Removed help text referencing `.spec-kit-compatibility.yml`, a file that does not
+    exist in this repository
 
 - **File-friendly timestamp in specify-backup path**: Backup directories now include timestamp (`YYYYMMDD-HHMMSS`) format
   - Previous backups are preserved instead of being overwritten
