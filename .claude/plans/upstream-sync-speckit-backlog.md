@@ -139,12 +139,20 @@ public spec-kit extension catalog.**
 ### BLOCKER FOUND AND FIXED: the wheel did not build
 
 `uv build` failed on `refresh` **before any of this work** (confirmed by stashing all
-changes and rebuilding):
+changes and rebuilding). It fails on `main` too - the misconfiguration is committed:
 
 ```
 ValueError: A second file is being added to the wheel archive at the same path:
 `flowspec_cli/templates/.mcp.json`.
 ```
+
+This is a *latent* misconfiguration, not a historical outage. Releases v0.4.007 and
+v0.4.008 built successfully on an older hatchling that tolerated duplicate archive
+entries; hatchling 1.32.0 rejects them. Since `release.yml` runs `uv build` before
+creating the GitHub Release, the **next** release attempt publishes nothing at all -
+not even the template zips. Note also that `create-github-release.sh` only ever
+attached template zips, never `dist/*.whl`, so the absence of a wheel on past releases
+is by design and is not evidence of this bug.
 
 Root cause: `pyproject.toml` declared
 
@@ -157,8 +165,8 @@ packages = ["src/flowspec_cli"]
 ```
 
 `src/flowspec_cli/templates` is *already inside* the packaged path, so hatchling added
-every template twice and aborted. Since flowspec is standalone and serves `init`
-entirely from bundled templates, **no wheel meant no releasable artifact at all.**
+every template twice and aborted. Since `release.yml` builds before it publishes,
+**a failing build means the whole release job dies and nothing ships.**
 
 Fix: dropped the redundant `force-include` table. Verified the built wheel contains
 **128/128** template files — matching `git ls-files src/flowspec_cli/templates` exactly

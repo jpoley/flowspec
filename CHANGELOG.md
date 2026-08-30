@@ -2,12 +2,17 @@
 
 ### Fixed
 
-- **CRITICAL: `uv build` produced no wheel** (release blocker)
-  - Root cause: `src/flowspec_cli/templates` was listed in
+- **CRITICAL: `uv build` fails, blocking any further release**
+  - `src/flowspec_cli/templates` was listed in
     `[tool.hatch.build.targets.wheel.force-include]` while already being inside the
-    `packages = ["src/flowspec_cli"]` entry
-  - Hatchling added every template twice and aborted with
+    `packages = ["src/flowspec_cli"]` entry, so hatchling was asked to add every
+    template twice
+  - Older hatchling tolerated the duplicate; hatchling 1.32.0 rejects it outright:
     `A second file is being added to the wheel archive at the same path: flowspec_cli/templates/.mcp.json`
+  - `.github/workflows/release.yml` runs `uv build` before creating the GitHub
+    Release, so the next release attempt would have failed and published nothing -
+    not even the template zips. Releases v0.4.007 and v0.4.008 succeeded on older
+    hatchling and were unaffected.
   - Fix: removed the redundant `force-include` table; templates (including dotfiles
     and dot-directories) still ship via the normal package walk - verified 128/128
     template files present in the built wheel
