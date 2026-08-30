@@ -251,7 +251,7 @@ class TestGitHubAuthRetry:
 
     def test_401_without_token_no_retry(self, temp_dir):
         """401 without token should not retry (nothing to retry without)."""
-        from click.exceptions import Exit as ClickExit
+        from typer import Exit as TyperExit
 
         from flowspec_cli import download_template_from_github
 
@@ -262,7 +262,7 @@ class TestGitHubAuthRetry:
         mock_client.get.return_value = mock_response_401
 
         with patch.dict("os.environ", {}, clear=True):
-            with pytest.raises(ClickExit):
+            with pytest.raises(TyperExit):
                 download_template_from_github(
                     ai_assistant="claude",
                     download_dir=temp_dir,
@@ -280,7 +280,7 @@ class TestGitHubAuthRetry:
 
     def test_401_retry_also_fails_exits_gracefully(self, temp_dir):
         """If retry without auth also returns 401, should exit gracefully."""
-        from click.exceptions import Exit as ClickExit
+        from typer import Exit as TyperExit
 
         from flowspec_cli import download_template_from_github
 
@@ -292,7 +292,7 @@ class TestGitHubAuthRetry:
         mock_client.get.return_value = mock_response_401
 
         with patch.dict("os.environ", {"GITHUB_FLOWSPEC": "invalid_token"}, clear=True):
-            with pytest.raises(ClickExit) as exc_info:
+            with pytest.raises(TyperExit) as exc_info:
                 download_template_from_github(
                     ai_assistant="claude",
                     download_dir=temp_dir,
@@ -308,7 +308,7 @@ class TestGitHubAuthRetry:
 
     def test_403_triggers_retry_without_auth(self, temp_dir):
         """403 should trigger retry-without-auth for public repos (bad token can cause 403)."""
-        from click.exceptions import Exit as ClickExit
+        from typer import Exit as TyperExit
 
         from flowspec_cli import download_template_from_github
 
@@ -319,7 +319,7 @@ class TestGitHubAuthRetry:
         mock_client.get.return_value = mock_response_403
 
         with patch.dict("os.environ", {"GITHUB_FLOWSPEC": "valid_token"}, clear=True):
-            with pytest.raises(ClickExit):
+            with pytest.raises(TyperExit):
                 download_template_from_github(
                     ai_assistant="claude",
                     download_dir=temp_dir,

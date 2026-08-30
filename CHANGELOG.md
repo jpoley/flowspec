@@ -23,6 +23,21 @@
   - Fix: merged both command sets onto a single `backlog` Typer group
 - `_parse_version()` in `flowspec doctor` now zero-pads short versions, so `1.34`
   compares equal to `1.34.0` instead of sorting below it
+- **CI was resolving dependencies outside the tested range**
+  - `.github/workflows/ci.yml` installs uv via unpinned `astral-sh/setup-uv@v4` and
+    re-resolves, so the loose `mcp>=0.1.0` and `ruff>=0.8.0` ranges drifted well past
+    what was ever tested
+  - `mcp` drifted to 2.1.1: FastMCP 2.x stopped exposing `@mcp.tool()`-decorated
+    functions as plain module attributes, failing 30+ tests in
+    `tests/security/test_mcp_server.py` with `AttributeError`
+  - `ruff` drifted to 0.16.5, which formats Markdown code blocks and wanted to
+    reformat 213 files under `docs/` and `user-docs/`
+  - Fix: pinned `mcp>=1.26.0,<2` and `ruff>=0.14.14,<0.15`, and refreshed `uv.lock`
+    to the newest versions inside those ranges so local and CI agree
+- **`typer.Exit` no longer subclasses `click.exceptions.Exit`** (typer 0.27)
+  - Three tests in `tests/test_github_auth.py` asserted on the click class and broke
+    once typer was re-resolved; they now assert on `typer.Exit`, which is what the
+    CLI actually raises
 
 - **CRITICAL: Multi-agent installation completely broken** (#no-flow-analysis)
   - Root cause: `download_and_extract_two_stage()` only downloaded first agent's ZIP

@@ -17,7 +17,9 @@ dependencies = [
     "pyyaml>=6.0",
     "keyring>=25.0.0",
     "jsonschema>=4.0.0",
-    "mcp>=0.1.0",
+    # Pinned below 2.0: FastMCP 2.x no longer exposes @mcp.tool()-decorated
+    # functions as plain module attributes, which breaks flowspec_cli.security.mcp_server.
+    "mcp>=1.26.0,<2",
 ]
 
 [project.scripts]
@@ -50,7 +52,9 @@ dev = [
     "pytest>=9.0.1",
     "pytest-asyncio>=0.21.0",
     "pytest-cov>=7.0.0",
-    "ruff>=0.8.0",
+    # Pinned below 0.15: ruff 0.16 formats Markdown code blocks, which would
+    # reformat 213 files under docs/ and user-docs/. Adopt deliberately, not by drift.
+    "ruff>=0.14.14,<0.15",
 ]
 
 [tool.pytest.ini_options]
