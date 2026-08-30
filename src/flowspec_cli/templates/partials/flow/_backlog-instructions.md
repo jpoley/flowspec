@@ -134,6 +134,10 @@ PRs that fail CI:
 
 Before marking a task Done, verify the Definition of Done:
 
+Backlog.md tracks Definition of Done natively, alongside acceptance criteria.
+Project-wide defaults live under the `definitionOfDone` config key and are applied
+to every new task automatically.
+
 ### Definition of Done Checklist
 
 1. ✅ **All acceptance criteria checked** - Every `[ ]` must be `[x]`
@@ -144,8 +148,24 @@ Before marking a task Done, verify the Definition of Done:
 6. ✅ **Pre-PR validation passed** - Lint and tests pass locally
 
 ```bash
-# Mark task as done (only after DoD is satisfied)
+# Inspect the task's DoD items alongside its acceptance criteria
+backlog task <id> --plain
+
+# Check DoD items off as they are satisfied (1-based, repeatable)
+backlog task edit <id> --check-dod 1 --check-dod 2
+
+# Add a task-specific DoD item on top of the project defaults
+backlog task edit <id> --dod "Migration guide updated"
+
+# Record the outcome, then mark the task done
+backlog task edit <id> --final-summary "Shipped via PR #123"
 backlog task edit <id> -s Done
+```
+
+Create a task without the project DoD defaults only when they genuinely do not apply:
+
+```bash
+backlog task create "Spike: evaluate X" --no-dod-defaults
 ```
 
 ## Key Flags Reference
@@ -163,6 +183,14 @@ backlog task edit <id> -s Done
 | `--plan` | Set implementation plan |
 | `-l` | Labels (comma-separated) |
 | `--priority` | Priority: low, medium, high |
+| `--dod` | Add a Definition of Done item |
+| `--check-dod N` | Mark DoD item #N as satisfied |
+| `--uncheck-dod N` | Mark DoD item #N as unsatisfied |
+| `--no-dod-defaults` | Create a task without the project DoD defaults |
+| `--final-summary` | Record the outcome when closing a task |
+| `--ref` | Attach a reference URL or file path |
+| `--modified-file` | Record a file the task changed |
+| `--depends-on` | Declare task dependencies |
 
 ## Multi-line Input Syntax
 
