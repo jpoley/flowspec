@@ -11,8 +11,10 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Optional
+from unittest.mock import patch
 
 import pytest
+from typer.testing import CliRunner
 
 from flowspec_cli import (
     compare_semver,
@@ -22,6 +24,8 @@ from flowspec_cli import (
 from flowspec_cli.versions import (
     BACKLOG_MIN_VERSION,
     BACKLOG_RECOMMENDED_VERSION,
+    compare_versions,
+    parse_version,
 )
 
 # Minimum length for a template section to count as real content, not a stub.
@@ -144,3 +148,96 @@ class TestDefinitionOfDoneGuidance:
         content = read_template("partials", "backlog-instructions.md")
         assert "--check-dod" in content
         assert "definitionOfDone" in content
+
+
+class TestVersionParsing:
+    """parse_version/compare_versions must be total - they take user input."""
+
+    @pytest.mark.parametrize(
+        "value,expected",
+        [
+            ("1.50.1", (1, 50, 1)),
+            ("v1.50.1", (1, 50, 1)),
+            ("1.50.2-beta.1", (1, 50, 2)),
+            ("1.2.3+build5", (1, 2, 3)),
+            ("1.2", (1, 2)),
+            ("1.2.3.4", (1, 2, 3, 4)),
+            ("  1.2.3  ", (1, 2, 3)),
+        ],
+    )
+    def test_parses_valid_versions(self, value: str, expected: tuple) -> None:
+        assert parse_version(value) == expected
+
+    @pytest.mark.parametrize("value", ["latest", "", "abc", "v", "1.x.3", None])
+    def test_returns_none_for_unparseable(self, value) -> None:
+        assert parse_version(value) is None
+
+    def test_pads_to_equal_length(self) -> None:
+        # Regression: "1.2.3" used to sort below "1.2.3.0", producing a phantom
+        # "upgrade available" prompt.
+        assert compare_versions("1.2.3", "1.2.3.0") == 0
+        assert compare_versions("1.2.3.0", "1.2.3") == 0
+
+    def test_orders_correctly(self) -> None:
+        assert compare_versions("1.34.0", "1.50.1") == -1
+        assert compare_versions("1.50.1", "1.34.0") == 1
+
+    @pytest.mark.parametrize(
+        "a,b", [("latest", "1.0.0"), ("1.0.0", "latest"), ("x", "y")]
+    )
+    def test_returns_none_when_either_side_unparseable(self, a: str, b: str) -> None:
+        assert compare_versions(a, b) is None
+
+    def test_compare_semver_never_raises_on_user_input(self) -> None:
+        from flowspec_cli import compare_semver
+
+        for value in ["latest", "1.2.3-beta", "", "nightly", "1.2.3"]:
+            compare_semver(value, BACKLOG_MIN_VERSION)
+
+
+class TestBacklogCommandGroupWiring:
+    """The backlog Typer group was silently shadowed once; pin the registry."""
+
+    def test_all_backlog_subcommands_are_reachable(self) -> None:
+        from flowspec_cli import app
+
+        result = CliRunner().invoke(app, ["backlog", "--help"])
+        assert result.exit_code == 0, result.output
+        for command in ("migrate", "install", "upgrade"):
+            assert command in result.output, (
+                f"'{command}' missing from `flowspec backlog --help`:\n{result.output}"
+            )
+
+    def test_install_warns_below_minimum_version(self) -> None:
+        import flowspec_cli
+
+        with (
+            patch.object(
+                flowspec_cli, "check_backlog_installed_version", return_value=None
+            ),
+            patch.object(flowspec_cli, "detect_package_manager", return_value=None),
+        ):
+            result = CliRunner().invoke(
+                flowspec_cli.app, ["backlog", "install", "--version", "1.21.0"]
+            )
+        assert BACKLOG_MIN_VERSION in result.output, result.output
+
+    @pytest.mark.parametrize("bad_version", ["latest", "1.2.3-beta", "nightly"])
+    def test_install_does_not_crash_on_unparseable_version(
+        self, bad_version: str
+    ) -> None:
+        # Regression: compare_semver used to raise ValueError straight through the CLI.
+        import flowspec_cli
+
+        with (
+            patch.object(
+                flowspec_cli, "check_backlog_installed_version", return_value=None
+            ),
+            patch.object(flowspec_cli, "detect_package_manager", return_value=None),
+        ):
+            result = CliRunner().invoke(
+                flowspec_cli.app, ["backlog", "install", "--version", bad_version]
+            )
+        assert result.exception is None or isinstance(result.exception, SystemExit), (
+            f"unhandled exception for {bad_version!r}: {result.exception!r}"
+        )

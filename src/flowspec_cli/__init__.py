@@ -61,6 +61,7 @@ from flowspec_cli.telemetry.cli import telemetry_app
 from flowspec_cli.versions import (
     BACKLOG_MIN_VERSION,
     BACKLOG_RECOMMENDED_VERSION,
+    compare_versions,
 )
 
 # Module-level logger
@@ -1467,36 +1468,22 @@ def _run_npm_global_install(
     return False, "; ".join(errors), None
 
 
-def compare_semver(version1: str, version2: str) -> int:
-    """Simple semantic version comparison.
+def compare_semver(version1: str, version2: str) -> Optional[int]:
+    """Compare two version strings.
+
+    Delegates to flowspec_cli.versions.compare_versions, which ignores a leading
+    "v" and any SemVer prerelease/build suffix, pads to equal length so "1.2.3"
+    equals "1.2.3.0", and never raises.
 
     Args:
-        version1: First version (e.g., "1.21.0")
-        version2: Second version (e.g., "1.20.0")
+        version1: First version (e.g., "1.50.1")
+        version2: Second version (e.g., "1.34.0")
 
     Returns:
-        -1 if version1 < version2
-         0 if version1 == version2
-         1 if version1 > version2
+        -1 if version1 < version2, 0 if equal, 1 if version1 > version2, or
+        None if either value is not a recognisable version (e.g. "latest").
     """
-
-    def parse_version(v: str) -> Tuple[int, int, int]:
-        """Parse version string into tuple of ints."""
-        parts = v.lstrip("v").split(".")
-        major = int(parts[0]) if len(parts) > 0 else 0
-        minor = int(parts[1]) if len(parts) > 1 else 0
-        patch = int(parts[2]) if len(parts) > 2 else 0
-        return (major, minor, patch)
-
-    v1 = parse_version(version1)
-    v2 = parse_version(version2)
-
-    if v1 < v2:
-        return -1
-    elif v1 > v2:
-        return 1
-    else:
-        return 0
+    return compare_versions(version1, version2)
 
 
 # =============================================================================
@@ -1777,7 +1764,7 @@ def _has_upgrade(versions: dict) -> bool:
     return bool(
         versions.get("available")
         and versions.get("installed")
-        and compare_semver(versions["installed"], versions["available"]) < 0
+        and (compare_semver(versions["installed"], versions["available"]) or 0) < 0
     )
 
 
@@ -6659,7 +6646,10 @@ def _upgrade_flowspec(
     if branch:
         # Check if there's a newer release available - user might want to upgrade
         latest_release = get_github_latest_release(REPO_OWNER, REPO_NAME)
-        if latest_release and compare_semver(current_version, latest_release) < 0:
+        release_cmp = (
+            compare_semver(current_version, latest_release) if latest_release else None
+        )
+        if release_cmp is not None and release_cmp < 0:
             console.print(
                 f"[yellow]Note:[/yellow] Release v{latest_release} available "
                 f"(current: {current_version})"
@@ -6712,7 +6702,8 @@ def _upgrade_flowspec(
         return True, f"Already at version {current_version}"
 
     # For latest upgrades only, skip if current is newer
-    if not target_version and compare_semver(current_version, install_version) >= 0:
+    install_cmp = compare_semver(current_version, install_version)
+    if not target_version and install_cmp is not None and install_cmp >= 0:
         return True, f"Already at latest version ({current_version})"
 
     if dry_run:
@@ -6784,7 +6775,8 @@ def _upgrade_backlog_md(dry_run: bool = False) -> tuple[bool, str]:
         return False, "Install completed but version check failed"
 
     # Already at latest
-    if compare_semver(current_version, available_version) >= 0:
+    available_cmp = compare_semver(current_version, available_version)
+    if available_cmp is not None and available_cmp >= 0:
         return True, f"Already at latest version ({current_version})"
 
     if dry_run:
@@ -6832,7 +6824,8 @@ def _upgrade_beads(dry_run: bool = False) -> tuple[bool, str]:
         return False, "Install completed but version check failed"
 
     # Already at latest
-    if compare_semver(current_version, available_version) >= 0:
+    available_cmp = compare_semver(current_version, available_version)
+    if available_cmp is not None and available_cmp >= 0:
         return True, f"Already at latest version ({current_version})"
 
     if dry_run:
@@ -8109,7 +8102,15 @@ def warn_if_backlog_version_below_minimum(target_version: str) -> None:
     Args:
         target_version: The version the user asked for.
     """
-    if compare_semver(target_version, BACKLOG_MIN_VERSION) >= 0:
+    comparison = compare_semver(target_version, BACKLOG_MIN_VERSION)
+    if comparison is None:
+        console.print(
+            f"[yellow]Warning:[/yellow] '{target_version}' is not a recognisable "
+            f"version number; skipping the minimum-version check "
+            f"(flowspec requires backlog-md >= {BACKLOG_MIN_VERSION})."
+        )
+        return
+    if comparison >= 0:
         return
     console.print(
         f"[yellow]Warning:[/yellow] backlog-md {target_version} is older than the "
@@ -8276,6 +8277,12 @@ def backlog_upgrade(
 
     # Check if upgrade needed (don't downgrade unless forced)
     version_cmp = compare_semver(current_version, target_version)
+    if version_cmp is None:
+        console.print(
+            f"[yellow]Warning:[/yellow] cannot compare '{current_version}' with "
+            f"'{target_version}'; proceeding without an up-to-date check."
+        )
+        version_cmp = -1
     if version_cmp > 0 and not force:
         console.print(
             f"[green]backlog-md is already at a newer version ({current_version})[/green]"

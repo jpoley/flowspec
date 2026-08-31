@@ -2,6 +2,37 @@
 
 ### Fixed
 
+- **Adversarial review follow-up (GPT-5.6-sol)** - seven findings against the merged
+  upstream-sync work, all confirmed and fixed:
+  - `compare_semver()` raised an uncaught `ValueError` on any non-numeric version, so
+    `flowspec backlog install --version latest` (or a `1.2.3-beta` prerelease) crashed
+    with a traceback. Version parsing now lives in `flowspec_cli.versions`, is total,
+    tolerates a leading `v` and SemVer prerelease/build suffixes, and returns `None`
+    rather than raising. All seven call sites handle the unknown case explicitly.
+  - Version comparison now pads to equal length, so `1.2.3` equals `1.2.3.0`. It
+    previously reported a phantom "upgrade available".
+  - `flowspec doctor` reported a confident PASS ("up to date") when it could not parse
+    a version - e.g. a `nightly` latest-release tag. It now reports "could not compare".
+  - The doctor rejected valid prerelease versions as unrecognized output.
+  - `tests/test_packaging.py` only inspected `pyproject.toml` and the source tree, so a
+    Hatch `exclude` rule could strip every template from the wheel with the tests still
+    green. It now builds the real wheel and sdist and diffs their template members
+    against `git ls-files`. Both mutations (excluding templates, and reintroducing the
+    duplicate `force-include`) were verified to fail these tests.
+  - The minimum-version tests called the helper directly and never exercised the CLI.
+    Added `CliRunner` coverage asserting `backlog --help` exposes `migrate`, `install`
+    and `upgrade` - the shadowing regression - and that install warns and never crashes.
+  - The "no breaking changes" claim had only been checked against backlog-md 1.48.0.
+    Re-verified against **1.50.1** directly: all 17 `task edit` flags, the `task create`
+    DoD flags, and the `--version` output shape.
+- **CI had no dependency reproducibility at all**
+  - `uv.lock` was excluded by a blanket `*.lock` rule in `.gitignore`, so CI re-resolved
+    every dependency on every run. Added a `!uv.lock` negation and committed the lock.
+  - CI now runs `uv sync --frozen`, so a lock that drifts from `pyproject.toml` fails
+    loudly instead of silently resolving something else.
+  - Pinned `astral-sh/setup-uv@v4` to `v4.2.0` (verified to exist; `v4.3.0` does not)
+    and the build backend to `hatchling>=1.27,<2`.
+
 - **CRITICAL: `uv build` fails, blocking any further release**
   - `src/flowspec_cli/templates` was listed in
     `[tool.hatch.build.targets.wheel.force-include]` while already being inside the

@@ -43,6 +43,10 @@ env/
 .env
 .env.local
 *.lock
+# uv.lock is the dependency lockfile and MUST be tracked: CI runs
+# `uv sync --frozen`, and without a committed lock it re-resolves every run and
+# silently drifts onto untested versions.
+!uv.lock
 .test-projects/
 
 # Node modules for logging wrapper

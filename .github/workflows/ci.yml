@@ -19,10 +19,10 @@ jobs:
           python-version: '3.11'
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v4.2.0
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --frozen
 
       - name: Check formatting
         run: uv run ruff format --check .
@@ -42,10 +42,10 @@ jobs:
           python-version: '3.11'
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v4.2.0
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --frozen
 
       - name: Run tests
         env:
@@ -65,7 +65,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v4.2.0
 
       - name: Build package
         run: uv build
@@ -88,10 +88,10 @@ jobs:
           python-version: '3.11'
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v4.2.0
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --frozen
 
       - name: Run security check (bandit)
         continue-on-error: true

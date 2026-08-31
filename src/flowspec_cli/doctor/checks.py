@@ -12,7 +12,11 @@ from typing import Optional
 
 import yaml
 
-from flowspec_cli.versions import BACKLOG_MIN_VERSION
+from flowspec_cli.versions import (
+    BACKLOG_MIN_VERSION,
+    compare_versions,
+    parse_version,
+)
 from flowspec_cli.workflow.config import WorkflowConfig
 from flowspec_cli.workflow.exceptions import (
     WorkflowConfigError,
@@ -20,7 +24,7 @@ from flowspec_cli.workflow.exceptions import (
 )
 from flowspec_cli.workflow.validator import WorkflowValidator
 
-_VERSION_RE = re.compile(r"^\d+(\.\d+)*$")
+_VERSION_RE = re.compile(r"^v?\d+(\.\d+)*([-+].*)?$")
 
 
 class CheckStatus(Enum):
@@ -38,18 +42,17 @@ class CheckResult:
 
 
 def _parse_version(v: str) -> tuple[int, ...]:
-    """Normalize a version string to a comparable tuple, stripping leading v and zero-padding.
+    """Normalize a version string to a comparable tuple, padded to three components.
 
-    Short versions are padded to three components so "1.34" compares equal to
-    "1.34.0" rather than sorting below it.
+    Thin wrapper over flowspec_cli.versions.parse_version that keeps the historic
+    "always returns a tuple" contract for callers that only need ordering. Use
+    `parse_version` directly when you need to distinguish unparseable input.
 
     Returns:
         Tuple of ints with at least three components, or (0, 0, 0) if unparseable.
     """
-    v = v.lstrip("v").strip()
-    try:
-        parts = tuple(int(part) for part in v.split("."))
-    except ValueError:
+    parts = parse_version(v)
+    if parts is None:
         return (0, 0, 0)
     if len(parts) < 3:
         parts += (0,) * (3 - len(parts))
@@ -82,9 +85,14 @@ def check_flowspec_version(current: str, latest: Optional[str]) -> CheckResult:
             status=CheckStatus.WARN,
             message=f"flowspec v{current} (could not check latest)",
         )
-    current_tuple = _parse_version(current)
-    latest_tuple = _parse_version(latest)
-    if current_tuple >= latest_tuple:
+    comparison = compare_versions(current, latest)
+    if comparison is None:
+        return CheckResult(
+            name="flowspec version",
+            status=CheckStatus.WARN,
+            message=(f"flowspec v{current} (could not compare against v{latest})"),
+        )
+    if comparison >= 0:
         return CheckResult(
             name="flowspec version",
             status=CheckStatus.PASS,
@@ -136,7 +144,8 @@ def check_backlog_installed() -> CheckResult:
 
     version = result.stdout.strip()
     if _is_version_string(version):
-        if _parse_version(version) < _parse_version(BACKLOG_MIN_VERSION):
+        min_cmp = compare_versions(version, BACKLOG_MIN_VERSION)
+        if min_cmp is not None and min_cmp < 0:
             return CheckResult(
                 name="backlog.md",
                 status=CheckStatus.WARN,

@@ -31,7 +31,9 @@ specify = "flowspec_cli:main"
 flowspec_ac = "flowspec_cli.pytest_plugin"
 
 [build-system]
-requires = ["hatchling"]
+# Pinned: an unbounded backend silently changes build behaviour between runs
+# (hatchling 1.32 started rejecting duplicate wheel entries).
+requires = ["hatchling>=1.27,<2"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
