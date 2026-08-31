@@ -158,14 +158,19 @@ A task is considered **Done** when:
 
 ### Via CLI:
 1. ✅ All acceptance criteria checked (`--check-ac` for each)
-2. ✅ Implementation notes added (`--notes` with PR-ready summary)
-3. ✅ Status set to Done (`-s Done`)
+2. ✅ All Definition of Done items checked (`--check-dod` for each)
+3. ✅ Implementation notes added (`--notes` with PR-ready summary)
+4. ✅ Status set to Done (`-s Done`)
+
+Backlog.md tracks DoD items natively. Project-wide defaults live under the
+`definitionOfDone` config key and are applied to every new task; add task-specific
+items with `--dod`, and opt out at creation time with `--no-dod-defaults`.
 
 ### Via Work Quality:
-4. ✅ Tests pass (unit, integration, etc.)
-5. ✅ Documentation updated (if applicable)
-6. ✅ Code reviewed (if applicable)
-7. ✅ No regressions (performance, security)
+5. ✅ Tests pass (unit, integration, etc.)
+6. ✅ Documentation updated (if applicable)
+7. ✅ Code reviewed (if applicable)
+8. ✅ No regressions (performance, security)
 
 **Command-level exit hooks typically handle final task completion, but you should prepare tasks by checking ACs and adding notes during your work.**
 

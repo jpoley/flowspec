@@ -24,6 +24,7 @@ from flowspec_cli.doctor.checks import (
     check_workflow_config,
     run_all_checks,
 )
+from flowspec_cli.versions import BACKLOG_MIN_VERSION
 
 
 def get_project_root() -> Path:
@@ -85,11 +86,33 @@ class TestCheckFlowspecVersion:
 class TestCheckBacklogInstalled:
     def test_pass_when_installed(self, monkeypatch: pytest.MonkeyPatch) -> None:
         mock_run = MagicMock()
-        mock_run.return_value = MagicMock(returncode=0, stdout="1.21.0\n")
+        mock_run.return_value = MagicMock(returncode=0, stdout="1.50.1\n")
         monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
         result = check_backlog_installed()
         assert result.status == CheckStatus.PASS
-        assert "1.21.0" in result.message
+        assert "1.50.1" in result.message
+
+    def test_pass_at_exact_minimum_version(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        mock_run = MagicMock()
+        mock_run.return_value = MagicMock(
+            returncode=0, stdout=f"{BACKLOG_MIN_VERSION}\n"
+        )
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
+        result = check_backlog_installed()
+        assert result.status == CheckStatus.PASS, result.message
+
+    def test_warn_when_below_minimum_version(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        mock_run = MagicMock()
+        mock_run.return_value = MagicMock(returncode=0, stdout="1.21.0\n")
+        monkeypatch.setattr("flowspec_cli.doctor.checks.subprocess.run", mock_run)
+        result = check_backlog_installed()
+        assert result.status == CheckStatus.WARN
+        assert BACKLOG_MIN_VERSION in result.message
+        assert result.fix_cmd == "flowspec backlog upgrade"
 
     def test_fail_when_not_found(self, monkeypatch: pytest.MonkeyPatch) -> None:
         def raise_fnf(*args, **kwargs):
